@@ -201,7 +201,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             private void CheckoutFileIfRequired(string fileName)
             {
-               SourceControl sc = dte.SourceControl;
+               EnvDTE.SourceControl sc = dte.SourceControl;
 
                if (sc != null && sc.IsItemUnderSCC(fileName) && !sc.IsItemCheckedOut(fileName))
                   sc.CheckOutItem(fileName);

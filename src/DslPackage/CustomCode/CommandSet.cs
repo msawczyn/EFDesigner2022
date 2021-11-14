@@ -38,7 +38,6 @@ namespace Sawczyn.EFDesigner.EFModel
       private const int cmdidGenerateCode = 0x0015;
       private const int cmdidAddCodeProperties = 0x0016;
       private const int cmdidSaveAsImage = 0x0017;
-      private const int cmdidLoadNuGet = 0x0018;
       private const int cmdidAddCodeValues = 0x0019;
       private const int cmdidExpandSelected = 0x001A;
       private const int cmdidCollapseSelected = 0x001B;
@@ -194,17 +193,6 @@ namespace Sawczyn.EFDesigner.EFModel
             new DynamicStatusMenuCommand(OnStatusImageToClipboard, OnMenuImageToClipboard, new CommandID(guidEFDiagramMenuCmdSet, cmdidImageToClipboard));
 
          commands.Add(imageToClipboard);
-
-         #endregion
-
-         #region loadNuGetCommand
-
-#pragma warning disable 612
-         DynamicStatusMenuCommand loadNuGetCommand =
-            new DynamicStatusMenuCommand(OnStatusLoadNuGet, OnMenuLoadNuGet, new CommandID(guidEFDiagramMenuCmdSet, cmdidLoadNuGet));
-#pragma warning restore 612
-
-         commands.Add(loadNuGetCommand);
 
          #endregion
 
@@ -1079,31 +1067,6 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       #endregion
-
-      #region Load NuGet
-
-      [Obsolete]
-      private void OnStatusLoadNuGet(object sender, EventArgs e)
-      {
-         if (sender is MenuCommand command)
-         {
-            //Store store = CurrentDocData.Store;
-            //ModelRoot modelRoot = store.ModelRoot();
-            command.Visible = false; // modelRoot != null && CurrentDocData is EFModelDocData && IsDiagramSelected();
-            command.Enabled = false; // IsDiagramSelected() && ModelRoot.CanLoadNugetPackages;
-         }
-      }
-
-      [Obsolete]
-      private void OnMenuLoadNuGet(object sender, EventArgs e)
-      {
-         //Store store = CurrentDocData.Store;
-         //ModelRoot modelRoot = store.ModelRoot();
-
-         //((EFModelDocData)CurrentDocData).EnsureCorrectNuGetPackages(modelRoot);
-      }
-
-      #endregion Load NuGet
 
       #region Merge Unidirectional Associations
 
