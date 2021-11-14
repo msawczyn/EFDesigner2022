@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EFCore2Parser": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Code\\EFDesigner\\src\\testing\\EFCoreV2\\EFCore2NetCore3\\bin\\Debug\\netcoreapp3.1\\EFCore2NetCore3.dll c:\\Temp\\parsertest.json"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "EFCore3Parser": {
+      "commandName": "Project"
+    }
+  }
+}

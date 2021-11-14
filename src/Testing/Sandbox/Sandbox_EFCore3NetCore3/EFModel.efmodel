@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<modelRoot xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="3.0.0.4" Id="cba47279-0950-4257-bb2c-e4d5e72a52a4" entityContainerName="AllFeatureModel" namespace="Testing" connectionString="Data Source=.;Initial Catalog=Sandbox;Integrated Security=True" automaticMigrationsEnabled="false" entityOutputDirectory="Generated\Entities" contextOutputDirectory="Generated\Context" enumOutputDirectory="Generated\Enums" fileNameMarker="" chopMethodChains="false" transformOnSave="false" showCascadeDeletes="true" databaseType="None" warnOnMissingDocumentation="false" structOutputDirectory="Generated\Structs" showWarningsInDesigner="false" entityNamespace="Sandbox" enumNamespace="Sandbox" exposeForeignKeys="true" propertyAccessModeDefault="Field" generateDbContextFactory="false" xmlns="http://schemas.microsoft.com/dsltools/EFModel">
+  <diagrams>
+    <modelRootHasModelDiagrams Id="a2ddc094-270e-4aaa-ac94-2ea6584b5e69">
+      <modelDiagramData name="EFModel" />
+    </modelRootHasModelDiagrams>
+  </diagrams>
+</modelRoot>

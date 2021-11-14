@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EFCore5Parser": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Code\\EFDesignerCoreTest2\\bin\\Debug\\net5.0-windows\\EFDesignerCoreTest.exe\"  c:\\temp\\parsertest.txt"
+    }
+  }
+}

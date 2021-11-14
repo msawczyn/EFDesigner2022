@@ -1,0 +1,30 @@
+namespace Sawczyn.EFDesigner.EFModel.DslPackage.GeneratedCode
+{
+    using System;
+    
+    /// <summary>
+    /// Helper class that exposes all GUIDs used across VS Package.
+    /// </summary>
+    internal sealed partial class PackageGuids
+    {
+        public const string guidPkgString = "56bbe1ba-aaee-4883-848f-e3c8656f8db2";
+        public static Guid guidPkg = new Guid(guidPkgString);
+
+        public const string guidCmdSetString = "c14ba8cb-e4e3-401c-b66f-fc923e227abf";
+        public static Guid guidCmdSet = new Guid(guidCmdSetString);
+
+        public const string guidEditorString = "4e135186-c9c4-4b55-8959-217a3e025622";
+        public static Guid guidEditor = new Guid(guidEditorString);
+    }
+    /// <summary>
+    /// Helper class that encapsulates all CommandIDs uses across VS Package.
+    /// </summary>
+    internal sealed partial class PackageIds
+    {
+        public const int menuidContext = 0x10000;
+        public const int grpidContextMain = 0x20000;
+        public const int grpidExplorerCopyPaste = 0x30000;
+        public const int menuidExplorer = 0x10001;
+        public const int cmdidViewExplorer = 0x0001;
+    }
+}

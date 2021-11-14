@@ -1,0 +1,13 @@
+docs/.jekyll-metadata
+docs/_site
+/.vs
+/src/DslPackage/Parsers
+/src/Utilities/EFCoreParser/dotnetwarp_temp
+/src/Utilities/DslPackage/Parsers
+/src/_ReSharper.Caches
+/src/.sonarqube
+/c-o-s-space differences.txt
+/docs/api/Working
+*.bak
+/src - Copy
+*.dtt

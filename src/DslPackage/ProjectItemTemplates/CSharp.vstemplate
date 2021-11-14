@@ -1,0 +1,17 @@
+﻿<!--DSL Tools Language Template-->
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<TemplateData>
+		<TemplateID>{8f47b4ff-2183-46de-ad2f-1e427ac1c4ea}</TemplateID>
+		<Name Package="{bb88f66d-c4c2-4eb6-acd9-b603e8bedc72}" ID="103"/>
+		<Description Package="{bb88f66d-c4c2-4eb6-acd9-b603e8bedc72}" ID="102"/>
+		<Icon Package="{bb88f66d-c4c2-4eb6-acd9-b603e8bedc72}" ID="201" />
+		<ProjectType>CSharp</ProjectType>
+		<SortOrder>360</SortOrder>
+		<DefaultName>EFModel.efmodel</DefaultName>
+	</TemplateData>
+	<TemplateContent>
+		<ProjectItem TargetFileName="$fileinputname$.efmodel">efmodel.efmodel</ProjectItem>
+		<ProjectItem TargetFileName="$fileinputname$.efmodel.diagram">efmodel.diagram</ProjectItem>
+	</TemplateContent>
+</VSTemplate>
+
