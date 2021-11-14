@@ -10,7 +10,7 @@ namespace Sawczyn.EFDesigner.EFModel.DslPackage.GeneratedCode
         public const string guidPkgString = "56bbe1ba-aaee-4883-848f-e3c8656f8db2";
         public static Guid guidPkg = new Guid(guidPkgString);
 
-        public const string guidCmdSetString = "c14ba8cb-e4e3-401c-b66f-fc923e227abf";
+        public const string guidCmdSetString = "49f3aada-0211-457c-84e5-9925654ab8a1";
         public static Guid guidCmdSet = new Guid(guidCmdSetString);
 
         public const string guidEditorString = "4e135186-c9c4-4b55-8959-217a3e025622";

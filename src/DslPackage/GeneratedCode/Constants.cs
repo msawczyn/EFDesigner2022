@@ -28,7 +28,7 @@ namespace Sawczyn.EFDesigner.EFModel
       public static readonly global::System.ComponentModel.Design.CommandID ViewEFModelExplorerCommand = new global::System.ComponentModel.Design.CommandID(new global::System.Guid(EFModelCommandSetId), 0x0001);
    
       // Package identifier
-      public const string EFModelPackageId = "bb88f66d-c4c2-4eb6-acd9-b603e8bedc72";
+      public const string EFModelPackageId = "56bbe1ba-aaee-4883-848f-e3c8656f8db2";
       
       // Editor factory identifier
       public const string EFModelEditorFactoryId = "4e135186-c9c4-4b55-8959-217a3e025622";
@@ -49,6 +49,6 @@ namespace Sawczyn.EFDesigner.EFModel
 	internal static partial class Constants
 	{
 		// Menu identifier
-		public const string EFModelCommandSetId = "c14ba8cb-e4e3-401c-b66f-fc923e227abf";
+		public const string EFModelCommandSetId = "49f3aada-0211-457c-84e5-9925654ab8a1";
 	}
 }

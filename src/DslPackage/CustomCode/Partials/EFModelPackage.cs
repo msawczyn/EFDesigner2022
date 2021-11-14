@@ -32,8 +32,7 @@ namespace Sawczyn.EFDesigner.EFModel
          TypeDescriptor.AddProvider(new ModelAttributeTypeDescriptionProvider(), typeof(ModelAttribute));
          TypeDescriptor.AddProvider(new ModelRootTypeDescriptionProvider(), typeof(ModelRoot));
 
-         Initialize();
-         return Task.CompletedTask;
+         return base.InitializeAsync(cancellationToken, progress);
       }
    }
 }

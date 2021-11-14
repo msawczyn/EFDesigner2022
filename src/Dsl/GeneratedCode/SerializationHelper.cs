@@ -1181,6 +1181,8 @@ namespace Sawczyn.EFDesigner.EFModel
 		/// <param name="reader">Reader for the file being read. The reader is positioned at the open tag of the root element being read.</param>
 		protected virtual void CheckVersion(DslModeling::SerializationContext serializationContext, global::System.Xml.XmlReader reader)
 		{
+			return;
+			/*
 			#region Check Parameters
 			global::System.Diagnostics.Debug.Assert(serializationContext != null);
 			if (serializationContext == null)
@@ -1215,6 +1217,7 @@ namespace Sawczyn.EFDesigner.EFModel
 					EFModelSerializationBehaviorSerializationMessages.InvalidPropertyValue(serializationContext, reader, "dslVersion", typeof(global::System.Version), dslVersionStr);
 				}
 			}
+			*/
 		}
 	
 	

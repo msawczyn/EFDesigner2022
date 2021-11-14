@@ -428,6 +428,7 @@
     <Content Include="Resources\ShowDiagramPane_16x.png" />
     <Content Include="Resources\Spacer.png" />
     <Content Include="Resources\SQL.png" />
+    <None Include="Templates\SerializationHelper.tt" />
     <None Include="Resources\SQLVisible.png" />
     <Content Include="Resources\TransientClass.png" />
     <Content Include="Resources\TransientClassVisible.png" />
