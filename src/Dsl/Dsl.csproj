@@ -59,9 +59,6 @@
   </Target>
   -->
   <ItemGroup>
-    <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="GOLD Engine">
       <HintPath>..\Libraries\GOLD Engine.dll</HintPath>
     </Reference>
@@ -578,7 +575,7 @@
       <Version>13.0.1</Version>
     </PackageReference>
     <PackageReference Include="SQLitePCLRaw.bundle_green">
-      <Version>2.0.4</Version>
+      <Version>2.0.7</Version>
     </PackageReference>
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux">
       <Version>1.1.14</Version>
@@ -602,7 +599,7 @@
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Composition">
-      <Version>5.0.1</Version>
+      <Version>6.0.0</Version>
     </PackageReference>
     <PackageReference Include="System.Console">
       <Version>4.3.1</Version>
@@ -671,13 +668,13 @@
       <Version>4.3.2</Version>
     </PackageReference>
     <PackageReference Include="System.Spatial">
-      <Version>5.8.4</Version>
+      <Version>5.8.5</Version>
     </PackageReference>
     <PackageReference Include="System.Text.Encoding">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Text.Encoding.CodePages">
-      <Version>5.0.0</Version>
+      <Version>6.0.0</Version>
     </PackageReference>
     <PackageReference Include="System.Text.Encoding.Extensions">
       <Version>4.3.0</Version>
