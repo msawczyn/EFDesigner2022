@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v3.0.7.1
+//     Produced by Entity Framework Visual Editor v4.0.0.0
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -96,7 +96,7 @@ namespace SureImpact.Data.Framework
                      .IsRequired();
 
          modelBuilder.Entity<global::SureImpact.Data.Framework.TestView>()
-                     .ToTable("TestViews");
+                     .ToView("TestView");
          modelBuilder.Entity<global::SureImpact.Data.Framework.TestView>()
                      .Property(t => t.TestString)
                      .HasMaxLength(200)

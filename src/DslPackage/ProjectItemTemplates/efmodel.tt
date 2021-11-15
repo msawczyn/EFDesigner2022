@@ -2,7 +2,7 @@
              hostSpecific="true" language="C#" compilerOptions="/langversion:latest"#>
 <#@ CleanupBehavior processor="T4VSHost" CleanupAfterProcessingtemplate="true" #>  
 <#@ assembly name="System.Data.Entity.Design.dll" 
-#><#@ assembly name="EnvDTE"
+#><#@ assembly name="Microsoft.VisualStudio.Interop"
 #><#@ include file="EFDesigner.ttinclude" once="true"
 #><#@ output extension=".cs" 
 #><#@ import namespace="System.Linq" 
