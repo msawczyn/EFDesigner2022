@@ -60,14 +60,26 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="EF6Designer.ttinclude" />
+    <None Include="EF6ModelGenerator.ttinclude" />
+    <None Include="EFCore2ModelGenerator.ttinclude" />
+    <None Include="EFCore3ModelGenerator.ttinclude" />
+    <None Include="EFCore5ModelGenerator.ttinclude" />
+    <None Include="EFCoreDesigner.ttinclude" />
+    <None Include="EFCoreModelGenerator.ttinclude" />
+    <None Include="EFDesigner.ttinclude" />
     <None Include="EFModel1.efmodel" />
     <None Include="EFModel1.efmodel.diagramx">
       <DependentUpon>EFModel1.efmodel</DependentUpon>
     </None>
+    <None Include="EFModelFileManager.ttinclude" />
+    <None Include="EFModelGenerator.ttinclude" />
+    <None Include="MultipleOutputHelper.ttinclude" />
     <None Include="Properties\EFModel.efmodel" />
     <None Include="Properties\EFModel.efmodel.diagram">
       <DependentUpon>EFModel.efmodel</DependentUpon>
     </None>
+    <None Include="VSIntegration.ttinclude" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

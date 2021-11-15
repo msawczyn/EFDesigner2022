@@ -87,9 +87,6 @@
     <Reference Include="Microsoft.VisualStudio.Modeling.Components">
       <HintPath>..\..\..\..\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\Modeling\17.0\Microsoft.VisualStudio.Modeling.Components.dll</HintPath>
     </Reference>
-    <PackageReference Include="Microsoft.VisualStudio.Interop">
-      <Version>17.0.31902.203</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.*-*" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk" Version="17.0.*-*" />
     <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Diagrams" Version="17.0.*-*" />
