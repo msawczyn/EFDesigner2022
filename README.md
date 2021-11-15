@@ -4,7 +4,7 @@
 
 Model and generate code for both Entity Framework v6.x and Entity Framework Core 2.x, 3.x and 5.
 
-**[Install with NuGet](https://docs.microsoft.com/en-us/visualstudio/ide/finding-and-using-visual-studio-extensions) from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner)**
+**[Install with NuGet](https://docs.microsoft.com/en-us/visualstudio/ide/finding-and-using-visual-studio-extensions) from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner)** (available soon)
 
 **Complete documentation in the [project's documentation site](https://msawczyn.github.io/EFDesigner/)**
 
