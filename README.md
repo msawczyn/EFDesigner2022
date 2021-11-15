@@ -57,6 +57,7 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 
 ### Change Log
 
-Changes? There aren't any changes ... because there aren't any solid builds yet.
+**4.0.0**
+   - VS2022 support
 
-You want changes, go look at [the VS2019 version](https://github.com/msawczyn/EFDesigner) of the designer. There's _lots_ of changes there.
+Earlier changes at [the VS2019 version](https://github.com/msawczyn/EFDesigner).

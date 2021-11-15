@@ -28,6 +28,7 @@ Dsl processor="DslDirectiveProcessor" requires="fileName='..\Dsl\DslDefinition.d
     <DisplayName><#= this.Dsl.DisplayName #></DisplayName>
     <Description><#= this.Dsl.Description #></Description>
     <Icon>Logo.ico</Icon>
+    <Preview>true</Preview>
   </Metadata>
   <Installation InstalledByMsi="false" AllUsers="true">
     <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Community">
