@@ -59,4 +59,4 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 
 Changes? There aren't any changes ... because there aren't any solid builds yet.
 
-You want changes, go look at [the 2017-2019 version](https://github.com/msawczyn/EFDesigner) of the designer. There's _lots_ of changes there.
+You want changes, go look at [the VS2019 version](https://github.com/msawczyn/EFDesigner) of the designer. There's _lots_ of changes there.
