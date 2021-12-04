@@ -57,7 +57,7 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 
 ### Change Log
 
-**4.0.0**
+**4.0.0** (pre-release - bug reports welcome!)
    - VS2022 support
 
 Earlier changes at [the VS2019 version](https://github.com/msawczyn/EFDesigner).
