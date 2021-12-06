@@ -49,6 +49,22 @@ well.
 
 You can read more about how to use the designer in the [Documentation site](https://msawczyn.github.io/EFDesigner/).
 
+**Migrating from VS2019**
+You'll have to change a line in your model's <modelname>.tt file to accommodate how Visual Studio 2022 handles library imports in text templates.
+
+Change line 5, which reads
+```
+#><#@ assembly name="EnvDTE"
+```
+to be
+```
+#><#@ assembly name="Microsoft.VisualStudio.Interop"
+
+```
+That's it. Of course, if you customized any of the standard templates, you'll have to go through the customizations the same way you've always done and 
+bump your changes up against the new templates. Not much has changed that didn't absolutely _need_ to be changed due to the VS2022 differences, but there
+may be a bugfix or two your customized templates don't have. But, hey ... if you've been customizing the templates, you know the drill, right?
+
 ### Shout out and a big thanks
 <!-- <table border="0" cellspacing="0" cellpadding="0" style="border:none">
 <tr vstyle="center" style="border:none"><td>to</td><td><a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawczyn.github.io/EFDesigner/images/jetbrains-variant-2a.png"></a></td><td>for providing free development tools to support this project.</td></tr>
