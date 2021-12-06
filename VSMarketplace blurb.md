@@ -1,4 +1,6 @@
-This Visual Studio 2019 extension is the easiest way to add a consistently correct Entity Framework model to your project with support for EF6, EFCore2, EFCore3 and EFCore5.
+<h1>For Visual Studio 2022</h1>
+
+This Visual Studio 2022 extension is the easiest way to add a consistently correct Entity Framework model to your project with support for EF6, EFCore2, EFCore3 and EFCore5.
 
 It's an opinionated code generator, adding a new file type (.efmodel) that allows for fast, easy and, most importantly, **visual** design of persistent classes. Inheritance, unidirectional and bidirectional associations are all supported. Enumerations are also included in the visual model, as is the ability to add text blocks to explain potentially arcane parts of your design.
 
@@ -22,6 +24,8 @@ and many other nice-to-have bits.
 **Note:** This tool does not reverse engineer from the database (i.e., "database-first"). Microsoft has provided tools for that, and there are other, well-maintained opensourced projects that provide that functionality as well. 
 
 For comprehensive documentation, please visit [the project's documentation site](https://msawczyn.github.io/EFDesigner/).
+
+For the VS2019 version, click over to [Entity Framework Visual Editor](https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner)
 
 **Migrating from VS2019**
 You'll have to change a line in your model's <modelname>.tt file to accommodate how Visual Studio 2022 handles library imports in text templates.
