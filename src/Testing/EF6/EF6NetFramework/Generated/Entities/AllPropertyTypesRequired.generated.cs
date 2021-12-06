@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v3.0.4.7
+//     Produced by Entity Framework Visual Editor v4.0.0.2
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -64,34 +64,34 @@ namespace Testing
       /// <param name="stringattr"></param>
       public AllPropertyTypesRequired(byte[] binaryattr, bool booleanattr, byte byteattr, DateTime datetimeattr, DateTimeOffset datetimeoffsetattr, decimal decimalattr, double doubleattr, Guid guidattr, short int16attr, int int32attr, long int64attr, Single singleattr, TimeSpan timeattr, string stringattr)
       {
-         this.BinaryAttr = binaryattr;
+         this._binaryAttr = binaryattr;
 
-         this.BooleanAttr = booleanattr;
+         this._booleanAttr = booleanattr;
 
-         this.ByteAttr = byteattr;
+         this._byteAttr = byteattr;
 
-         this.DateTimeAttr = datetimeattr;
+         this._dateTimeAttr = datetimeattr;
 
-         this.DateTimeOffsetAttr = datetimeoffsetattr;
+         this._dateTimeOffsetAttr = datetimeoffsetattr;
 
-         this.DecimalAttr = decimalattr;
+         this._decimalAttr = decimalattr;
 
-         this.DoubleAttr = doubleattr;
+         this._doubleAttr = doubleattr;
 
-         this.GuidAttr = guidattr;
+         this._guidAttr = guidattr;
 
-         this.Int16Attr = int16attr;
+         this._int16Attr = int16attr;
 
-         this.Int32Attr = int32attr;
+         this._int32Attr = int32attr;
 
-         this.Int64Attr = int64attr;
+         this._int64Attr = int64attr;
 
-         this.SingleAttr = singleattr;
+         this._singleAttr = singleattr;
 
-         this.TimeAttr = timeattr;
+         this._timeAttr = timeattr;
 
          if (string.IsNullOrEmpty(stringattr)) throw new ArgumentNullException(nameof(stringattr));
-         this.StringAttr = stringattr;
+         this._stringAttr = stringattr;
 
          Init();
       }

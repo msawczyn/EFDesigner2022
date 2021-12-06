@@ -10,22 +10,22 @@
    </PropertyGroup>
 
    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-      <DefineConstants>DEBUG;TRACE</DefineConstants>
+      <DefineConstants>TRACE</DefineConstants>
    </PropertyGroup>
 
    <PropertyGroup Condition="'$(Configuration)'=='Release'">
-      <DefineConstants />
+      <DefineConstants>TRACE</DefineConstants>
    </PropertyGroup>
 
    <ItemGroup>
-     <None Remove="log4net.config" />
+     <Compile Include="..\..\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
    </ItemGroup>
 
    <ItemGroup>
       <PackageReference Include="EntityFramework" Version="6.4.4" />
-      <PackageReference Include="log4net" Version="2.0.12" />
+      <PackageReference Include="log4net" Version="2.0.13" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-      <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
+      <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
       <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
       <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
       <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
@@ -37,15 +37,6 @@
 
    <ItemGroup>
       <ProjectReference Include="..\ParsingModels\ParsingModels.csproj" />
-   </ItemGroup>
-
-   <ItemGroup>
-      <Resource Include="C:\Code\EFDesigner\src\Utilities\log4net.config" Link="log4net.config">
-         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </Resource>
-      <Resource Include="log4net.config">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </Resource>
    </ItemGroup>
 
    <ItemGroup>

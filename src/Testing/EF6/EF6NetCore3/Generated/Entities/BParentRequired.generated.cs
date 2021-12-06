@@ -38,133 +38,24 @@ namespace Testing
        *************************************************************************/
 
       /// <summary>
-      /// Backing field for Id
-      /// </summary>
-      internal int _id;
-      /// <summary>
-      /// When provided in a partial class, allows value of Id to be changed before setting.
-      /// </summary>
-      partial void SetId(int oldValue, ref int newValue);
-      /// <summary>
-      /// When provided in a partial class, allows value of Id to be changed before returning.
-      /// </summary>
-      partial void GetId(ref int result);
-
-      /// <summary>
       /// Identity, Indexed, Required
       /// </summary>
       [Key]
       [Required]
-      public int Id
-      {
-         get
-         {
-            int value = _id;
-            GetId(ref value);
-            return (_id = value);
-         }
-         set
-         {
-            int oldValue = _id;
-            SetId(oldValue, ref value);
-            if (oldValue != value)
-            {
-               _id = value;
-            }
-         }
-      }
+      public int Id { get; set; }
 
       /*************************************************************************
        * Navigation properties
        *************************************************************************/
 
-      /// <summary>
-      /// Backing field for BChildOptional
-      /// </summary>
-      protected global::Testing.BChild _bChildOptional;
-
-      /// <summary>
-      /// When provided in a partial class, allows value of BChildOptional to be changed before setting.
-      /// </summary>
-      partial void SetBChildOptional(global::Testing.BChild oldValue, ref global::Testing.BChild newValue);
-
-      /// <summary>
-      /// When provided in a partial class, allows value of BChildOptional to be changed before returning.
-      /// </summary>
-      partial void GetBChildOptional(ref global::Testing.BChild result);
-
-      public virtual global::Testing.BChild BChildOptional
-      {
-         get
-         {
-            global::Testing.BChild value = _bChildOptional;
-            GetBChildOptional(ref value);
-            return (_bChildOptional = value);
-         }
-         set
-         {
-            global::Testing.BChild oldValue = _bChildOptional;
-            SetBChildOptional(oldValue, ref value);
-            if (oldValue != value)
-            {
-               _bChildOptional = value;
-            }
-         }
-      }
-
-      /// <summary>
-      /// Backing field for BChildRequired
-      /// </summary>
-      protected global::Testing.BChild _bChildRequired;
-
-      /// <summary>
-      /// When provided in a partial class, allows value of BChildRequired to be changed before setting.
-      /// </summary>
-      partial void SetBChildRequired(global::Testing.BChild oldValue, ref global::Testing.BChild newValue);
-
-      /// <summary>
-      /// When provided in a partial class, allows value of BChildRequired to be changed before returning.
-      /// </summary>
-      partial void GetBChildRequired(ref global::Testing.BChild result);
+      public virtual global::Testing.BChild BChildOptional { get; set; }
 
       /// <summary>
       /// Required
       /// </summary>
-      public virtual global::Testing.BChild BChildRequired
-      {
-         get
-         {
-            global::Testing.BChild value = _bChildRequired;
-            GetBChildRequired(ref value);
-            return (_bChildRequired = value);
-         }
-         set
-         {
-            global::Testing.BChild oldValue = _bChildRequired;
-            SetBChildRequired(oldValue, ref value);
-            if (oldValue != value)
-            {
-               _bChildRequired = value;
-            }
-         }
-      }
+      public virtual global::Testing.BChild BChildRequired { get; set; }
 
-      /// <summary>
-      /// Backing field for BChildCollection
-      /// </summary>
-      protected ICollection<global::Testing.BChild> _bChildCollection;
-
-      public virtual ICollection<global::Testing.BChild> BChildCollection
-      {
-         get
-         {
-            return _bChildCollection;
-         }
-         private set
-         {
-            _bChildCollection = value;
-         }
-      }
+      public virtual ICollection<global::Testing.BChild> BChildCollection { get; private set; }
 
    }
 }

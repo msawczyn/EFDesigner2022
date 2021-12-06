@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v3.0.4.7
+//     Produced by Entity Framework Visual Editor v4.0.0.2
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -34,7 +34,7 @@ namespace Testing
       /// </summary>
       protected Child()
       {
-         Children = new System.Collections.ObjectModel.ObservableCollection<global::Testing.Child>();
+         _children = new System.Collections.ObjectModel.ObservableCollection<global::Testing.Child>();
 
          Init();
       }
@@ -61,7 +61,7 @@ namespace Testing
          if (_master0 == null) throw new ArgumentNullException(nameof(_master0));
          _master0.Children.Add(this);
 
-         this.Children = new System.Collections.ObjectModel.ObservableCollection<global::Testing.Child>();
+         _children = new System.Collections.ObjectModel.ObservableCollection<global::Testing.Child>();
          Init();
       }
 

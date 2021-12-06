@@ -14,3 +14,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Parameter used in .ttinclude file", Scope = "member", Target = "~M:Sawczyn.EFDesigner.EFModel.EditingOnly.GeneratedTextTransformation.PushIndent(System.String)")]
 [assembly: SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Parameter used in .ttinclude file", Scope = "member", Target = "~M:Sawczyn.EFDesigner.EFModel.EditingOnly.GeneratedTextTransformation.WriteLine(System.String)")]
 [assembly: SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Members parallel vsct resources", Scope = "member", Target = "~F:Sawczyn.EFDesigner.EFModel.EFModelCommandSet.grpidEFDiagram")]
+[assembly: SuppressMessage("Style", "IDE0090:Use 'new(...)'", Justification = "Code clarity")]

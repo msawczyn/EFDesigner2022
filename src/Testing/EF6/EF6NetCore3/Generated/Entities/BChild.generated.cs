@@ -64,9 +64,9 @@ namespace Testing
          this.BParentRequired_2 = bparentrequired_2;
          bparentrequired_2.BChildCollection.Add(this);
 
-         this.BParentCollection = new System.Collections.ObjectModel.ObservableCollection<global::Testing.BParentCollection>();
-         this.BParentCollection_1 = new System.Collections.ObjectModel.ObservableCollection<global::Testing.BParentCollection>();
-         this.BParentCollection_2 = new System.Collections.ObjectModel.ObservableCollection<global::Testing.BParentCollection>();
+         BParentCollection = new System.Collections.ObjectModel.ObservableCollection<global::Testing.BParentCollection>();
+         BParentCollection_1 = new System.Collections.ObjectModel.ObservableCollection<global::Testing.BParentCollection>();
+         BParentCollection_2 = new System.Collections.ObjectModel.ObservableCollection<global::Testing.BParentCollection>();
          Init();
       }
 
@@ -85,41 +85,11 @@ namespace Testing
        *************************************************************************/
 
       /// <summary>
-      /// Backing field for Id
-      /// </summary>
-      internal int _id;
-      /// <summary>
-      /// When provided in a partial class, allows value of Id to be changed before setting.
-      /// </summary>
-      partial void SetId(int oldValue, ref int newValue);
-      /// <summary>
-      /// When provided in a partial class, allows value of Id to be changed before returning.
-      /// </summary>
-      partial void GetId(ref int result);
-
-      /// <summary>
       /// Identity, Indexed, Required
       /// </summary>
       [Key]
       [Required]
-      public int Id
-      {
-         get
-         {
-            int value = _id;
-            GetId(ref value);
-            return (_id = value);
-         }
-         set
-         {
-            int oldValue = _id;
-            SetId(oldValue, ref value);
-            if (oldValue != value)
-            {
-               _id = value;
-            }
-         }
-      }
+      public int Id { get; set; }
 
       /*************************************************************************
        * Navigation properties

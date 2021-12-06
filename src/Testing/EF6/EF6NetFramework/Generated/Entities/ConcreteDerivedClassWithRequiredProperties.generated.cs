@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v3.0.4.7
+//     Produced by Entity Framework Visual Editor v4.0.0.2
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -53,10 +53,10 @@ namespace Testing
       public ConcreteDerivedClassWithRequiredProperties(string property1, string property0)
       {
          if (string.IsNullOrEmpty(property1)) throw new ArgumentNullException(nameof(property1));
-         this.Property1 = property1;
+         this._property1 = property1;
 
          if (string.IsNullOrEmpty(property0)) throw new ArgumentNullException(nameof(property0));
-         this.Property0 = property0;
+         this._property0 = property0;
 
          Init();
       }
