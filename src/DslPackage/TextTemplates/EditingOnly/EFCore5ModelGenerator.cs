@@ -8,8 +8,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    public partial class GeneratedTextTransformation
    {
       #region Template
-      // EFDesigner v4.0.0.3
-      // Copyright (c) 2017-2021 Michael Sawczyn
+      // EFDesigner v4.0.0.5
+      // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
       public class EFCore5ModelGenerator : EFCore3ModelGenerator
@@ -23,10 +23,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             string schema = string.IsNullOrEmpty(modelClass.DatabaseSchema) || modelClass.DatabaseSchema == modelClass.ModelRoot.DatabaseSchema ? string.Empty : $", \"{modelClass.DatabaseSchema}\"";
             string buildAction = modelClass.ExcludeFromMigrations ? ", t => t.ExcludeFromMigrations()" : string.Empty;
 
-            if (modelClass.IsDatabaseView)
-               segments.Add($"ToView(\"{viewName}\"{schema}{buildAction})");
-            else
-               segments.Add($"ToTable(\"{tableName}\"{schema}{buildAction})");
+            segments.Add(modelClass.IsDatabaseView
+                            ? $"ToView(\"{viewName}\"{schema}{buildAction})"
+                            : $"ToTable(\"{tableName}\"{schema}{buildAction})");
 
             if (modelClass.Superclass != null)
                segments.Add($"HasBaseType<{modelClass.Superclass.FullName}>()");
@@ -85,6 +84,13 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
              && modelAttribute.DatabaseCollation != modelRoot.DatabaseCollationDefault
              && modelAttribute.Type == "String")
                segments.Add($"UseCollation(\"{modelAttribute.DatabaseCollation.Trim('"')}\")");
+
+            int index = segments.IndexOf("IsRequired()");
+            if (index >= 0)
+            {
+               segments.RemoveAt(index);
+               segments.Add("IsRequired()");
+            }
 
             return segments;
          }
@@ -282,8 +288,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                visited.Add(association);
 
                List<string> segments = new List<string>();
-               bool sourceRequired = false;
-               bool targetRequired = false;
+               bool required = false;
 
                segments.Add($"modelBuilder.Entity<{modelClass.FullName}>()");
 
@@ -292,18 +297,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      {
                         segments.Add($"HasMany<{association.Target.FullName}>(p => p.{association.TargetPropertyName})");
+                        required = association.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One;
 
                         break;
                      }
 
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
-                     {
-                        segments.Add($"HasOne<{association.Target.FullName}>(p => p.{association.TargetPropertyName})");
-                        targetRequired = true;
-
-                        break;
-                     }
-
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      {
                         segments.Add($"HasOne<{association.Target.FullName}>(p => p.{association.TargetPropertyName})");
@@ -317,6 +316,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      {
                         segments.Add($"WithMany(p => p.{association.SourcePropertyName})");
+                        required = association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One;
 
                         if (association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
                         {
@@ -331,13 +331,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                      }
 
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
-                     {
-                        segments.Add($"WithOne(p => p.{association.SourcePropertyName})");
-                        sourceRequired = true;
-
-                        break;
-                     }
-
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      segments.Add($"WithOne(p => p.{association.SourcePropertyName})");
 
@@ -355,9 +348,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                      segments.Add("OnDelete(DeleteBehavior.NoAction)");
                   else if (association.SourceDeleteAction == DeleteAction.Cascade)
                      segments.Add("OnDelete(DeleteBehavior.Cascade)");
-
-                  if (targetRequired)
-                     segments.Add("IsRequired()");
                }
                else if (association.Dependent == association.Source)
                {
@@ -365,17 +355,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                      segments.Add("OnDelete(DeleteBehavior.NoAction)");
                   else if (association.TargetDeleteAction == DeleteAction.Cascade)
                      segments.Add("OnDelete(DeleteBehavior.Cascade)");
-
-                  if (sourceRequired)
-                     segments.Add("IsRequired()");
                }
 
-               Output(segments);
+               if (required)
+                  segments.Add("IsRequired()");
 
-               if (association.Principal == association.Target && targetRequired)
-                  Output($"modelBuilder.Entity<{association.Source.FullName}>().Navigation(e => e.{association.TargetPropertyName}).IsRequired();");
-               else if (association.Principal == association.Source && sourceRequired)
-                  Output($"modelBuilder.Entity<{association.Target.FullName}>().Navigation(e => e.{association.SourcePropertyName}).IsRequired();");
+               Output(segments);
 
                if (association.TargetAutoInclude)
                   Output($"modelBuilder.Entity<{association.Source.FullName}>().Navigation(e => e.{association.TargetPropertyName}).AutoInclude();");
@@ -385,19 +370,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                if (!association.TargetAutoProperty)
                {
                   segments.Add($"modelBuilder.Entity<{association.Source.FullName}>().Navigation(e => e.{association.TargetPropertyName})");
+                  segments.Add($"HasField(\"{association.TargetBackingFieldName}\")");
 
-                  if (association.Source == association.Principal)
-                  {
-                     segments.Add($"HasField(\"{association.TargetBackingFieldName}\")");
-                     segments.Add($"Metadata.SetPropertyAccessMode(PropertyAccessMode.{association.TargetPropertyAccessMode});");
-                  }
-                  else if (association.Target == association.Principal)
-                  {
-                     segments.Add($"HasField(\"{association.TargetBackingFieldName}\")");
-                     segments.Add($"Metadata.SetPropertyAccessMode(PropertyAccessMode.{association.TargetPropertyAccessMode});");
-                  }
-                  else
-                     segments.Add($"HasField(\"{association.TargetBackingFieldName}\");");
+                  segments.Add(modelClass.ModelRoot.IsEFCore6Plus
+                                  ? $"UsePropertyAccessMode(PropertyAccessMode.{association.TargetPropertyAccessMode})"
+                                  : $"Metadata.SetPropertyAccessMode(PropertyAccessMode.{association.TargetPropertyAccessMode})");
 
                   Output(segments);
                }
@@ -405,23 +382,14 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                if (!association.SourceAutoProperty)
                {
                   segments.Add($"modelBuilder.Entity<{association.Target.FullName}>().Navigation(e => e.{association.SourcePropertyName})");
+                  segments.Add($"HasField(\"{association.SourceBackingFieldName}\")");
 
-                  if (association.Target == association.Principal)
-                  {
-                     segments.Add($"HasField(\"{association.SourceBackingFieldName}\")");
-                     segments.Add($"Metadata.SetPropertyAccessMode(PropertyAccessMode.{association.SourcePropertyAccessMode});");
-                  }
-                  else if (association.Source == association.Principal)
-                  {
-                     segments.Add($"HasField(\"{association.SourceBackingFieldName}\")");
-                     segments.Add($"Metadata.SetPropertyAccessMode(PropertyAccessMode.{association.SourcePropertyAccessMode});");
-                  }
-                  else
-                     segments.Add($"HasField(\"{association.SourceBackingFieldName}\");");
+                  segments.Add(modelClass.ModelRoot.IsEFCore6Plus
+                                  ? $"UsePropertyAccessMode(PropertyAccessMode.{association.SourcePropertyAccessMode})"
+                                  : $"Metadata.SetPropertyAccessMode(PropertyAccessMode.{association.SourcePropertyAccessMode})");
 
                   Output(segments);
                }
-
             }
          }
 
@@ -538,8 +506,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                visited.Add(association);
 
                List<string> segments = new List<string>();
-               bool sourceRequired = false;
-               bool targetRequired = false;
+               bool required = false;
 
                segments.Add($"modelBuilder.Entity<{modelClass.FullName}>()");
 
@@ -547,15 +514,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                {
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      segments.Add($"HasMany<{association.Target.FullName}>(p => p.{association.TargetPropertyName})");
-
+                     required = (association.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One);
                      break;
 
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
-                     segments.Add($"HasOne<{association.Target.FullName}>(p => p.{association.TargetPropertyName})");
-                     targetRequired = true;
-
-                     break;
-
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      segments.Add($"HasOne<{association.Target.FullName}>(p => p.{association.TargetPropertyName})");
 
@@ -566,6 +528,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                {
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      segments.Add("WithMany()");
+                     required = (association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One);
 
                      if (association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
                      {
@@ -579,11 +542,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                      break;
 
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
-                     segments.Add("WithOne()");
-                     sourceRequired = true;
-
-                     break;
-
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      segments.Add("WithOne()");
 
@@ -601,9 +559,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                      segments.Add("OnDelete(DeleteBehavior.NoAction)");
                   else if (association.SourceDeleteAction == DeleteAction.Cascade)
                      segments.Add("OnDelete(DeleteBehavior.Cascade)");
-
-                  if (targetRequired)
-                     segments.Add("IsRequired()");
                }
                else if (association.Dependent == association.Source)
                {
@@ -611,15 +566,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                      segments.Add("OnDelete(DeleteBehavior.NoAction)");
                   else if (association.TargetDeleteAction == DeleteAction.Cascade)
                      segments.Add("OnDelete(DeleteBehavior.Cascade)");
-
-                  if (sourceRequired)
-                     segments.Add("IsRequired()");
                }
 
-               Output(segments);
+               if (required)
+                  segments.Add("IsRequired()");
 
-               if (association.Principal == association.Target && targetRequired)
-                  Output($"modelBuilder.Entity<{association.Source.FullName}>().Navigation(e => e.{association.TargetPropertyName}).IsRequired();");
+               Output(segments);
 
                if (association.TargetAutoInclude)
                   Output($"modelBuilder.Entity<{association.Source.FullName}>().Navigation(e => e.{association.TargetPropertyName}).AutoInclude();");
@@ -628,18 +580,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                {
                   segments.Add($"modelBuilder.Entity<{association.Source.FullName}>().Navigation(e => e.{association.TargetPropertyName})");
 
-                  if (association.Source == association.Principal)
-                  {
-                     segments.Add($"HasField(\"{association.TargetBackingFieldName}\")");
-                     segments.Add($"Metadata.SetPropertyAccessMode(PropertyAccessMode.{association.TargetPropertyAccessMode});");
-                  }
-                  else if (association.Target == association.Principal)
-                  {
-                     segments.Add($"HasField(\"{association.TargetBackingFieldName}\")");
-                     segments.Add($"Metadata.SetPropertyAccessMode(PropertyAccessMode.{association.TargetPropertyAccessMode});");
-                  }
-                  else
-                     segments.Add($"HasField(\"{association.TargetBackingFieldName}\");");
+                  segments.Add(modelClass.ModelRoot.IsEFCore6Plus
+                                  ? $"UsePropertyAccessMode(PropertyAccessMode.{association.TargetPropertyAccessMode})"
+                                  : $"Metadata.SetPropertyAccessMode(PropertyAccessMode.{association.TargetPropertyAccessMode})");
 
                   Output(segments);
                }
@@ -649,5 +592,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
       #endregion Template
    }
 }
+
 
 

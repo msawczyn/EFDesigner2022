@@ -12,8 +12,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    public partial class GeneratedTextTransformation
    {
       #region Template
-      // EFDesigner v4.0.0.3
-      // Copyright (c) 2017-2021 Michael Sawczyn
+      // EFDesigner v4.0.0.5
+      // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
       protected void NL()
@@ -278,10 +278,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
 
             if (!string.IsNullOrWhiteSpace(modelAttribute.DisplayText))
-               Output($"[Display(Name=\"{modelAttribute.DisplayText.Replace("\"", "\\\"")}\")]");
+               Output($"[System.ComponentModel.DataAnnotations.Display(Name=\"{modelAttribute.DisplayText.Replace("\"", "\\\"")}\")]");
 
             if (!string.IsNullOrWhiteSpace(modelAttribute.Summary))
-               Output($"[System.ComponentModel.Description(\"{modelAttribute.Summary.Replace("\"", "\\\"")}\")]");
+               Output($"[System.ComponentModel.Description(\"{modelAttribute.Summary.Trim('\r','\n').Replace("\"", "\\\"")}\")]");
          }
 
          protected abstract List<string> GetAdditionalUsingStatements();
@@ -479,7 +479,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                Output($"[{modelClass.CustomAttributes.Trim('[', ']')}]");
 
             if (!string.IsNullOrWhiteSpace(modelClass.Summary))
-               Output($"[System.ComponentModel.Description(\"{modelClass.Summary.Replace("\"", "\\\"")}\")]");
+               Output($"[System.ComponentModel.Description(\"{modelClass.Summary.Trim('\r','\n').Replace("\"", "\\\"")}\")]");
 
             Output(baseClass.Length > 0
                       ? $"public {isAbstract}partial class {modelClass.Name}: {baseClass}"
@@ -896,7 +896,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                Output($"[{modelEnum.CustomAttributes.Trim('[', ']')}]");
 
             if (!string.IsNullOrWhiteSpace(modelEnum.Summary))
-               Output($"[System.ComponentModel.Description(\"{modelEnum.Summary.Replace("\"", "\\\"")}\")]");
+               Output($"[System.ComponentModel.Description(\"{modelEnum.Summary.Trim('\r','\n').Replace("\"", "\\\"")}\")]");
 
             Output($"public enum {modelEnum.Name} : {modelEnum.ValueType}");
             Output("{");
@@ -923,10 +923,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   Output($"[{values[index].CustomAttributes.Trim('[', ']')}]");
 
                if (!string.IsNullOrWhiteSpace(values[index].Summary))
-                  Output($"[System.ComponentModel.Description(\"{values[index].Summary.Replace("\"", "\\\"")}\")]");
+                  Output($"[System.ComponentModel.Description(\"{values[index].Summary.Trim('\r','\n').Replace("\"", "\\\"")}\")]");
 
                if (!string.IsNullOrWhiteSpace(values[index].DisplayText))
-                  Output($"[System.ComponentModel.DataAnnotations.Display(Name=\"{values[index].DisplayText.Replace("\"", "\\\"")}\")]");
+                  Output($"[System.ComponentModel.DataAnnotations.Display(Name=\"{values[index].DisplayText.Trim('\r','\n').Replace("\"", "\\\"")}\")]");
 
                Output(string.IsNullOrEmpty(values[index].Value)
                          ? $"{values[index].Name}{(index < values.Length - 1 ? "," : string.Empty)}"
@@ -949,7 +949,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             Output(" *************************************************************************/");
             NL();
 
-            foreach (NavigationProperty navigationProperty in modelClass.LocalNavigationProperties().Where(x => !x.ConstructorParameterOnly))
+            foreach (NavigationProperty navigationProperty in modelClass.LocalNavigationProperties().Where(x => !x.ConstructorParameterOnly).OrderBy(x => x.PropertyName))
             {
                string type = navigationProperty.IsCollection
                                 ? $"ICollection<{navigationProperty.ClassType.FullName}>"
@@ -1016,10 +1016,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   Output($"[{navigationProperty.CustomAttributes.Trim('[', ']')}]");
 
                if (!string.IsNullOrWhiteSpace(navigationProperty.Summary))
-                  Output($"[Description(\"{navigationProperty.Summary.Replace("\"", "\\\"")}\")]");
+                  Output($"[System.ComponentModel.Description(\"{navigationProperty.Summary.Replace("\"", "\\\"")}\")]");
 
                if (!string.IsNullOrWhiteSpace(navigationProperty.DisplayText))
-                  Output($"[Display(Name=\"{navigationProperty.DisplayText.Replace("\"", "\\\"")}\")]");
+                  Output($"[System.ComponentModel.DataAnnotations.Display(Name=\"{navigationProperty.DisplayText.Replace("\"", "\\\"")}\")]");
 
                if (navigationProperty.IsAutoProperty)
                {
@@ -1081,7 +1081,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             List<string> segments = new List<string>();
 
-            foreach (ModelAttribute modelAttribute in modelClass.Attributes)
+            foreach (ModelAttribute modelAttribute in modelClass.Attributes.OrderBy(x => x.Name))
             {
                segments.Clear();
 
@@ -1209,7 +1209,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                Output("/// <summary>");
                Output("/// Concurrency token");
                Output("/// </summary>");
-               Output("[Timestamp]");
+               Output("[System.ComponentModel.DataAnnotations.Timestamp]");
                Output("public Byte[] Timestamp { get; set; }");
                NL();
             }

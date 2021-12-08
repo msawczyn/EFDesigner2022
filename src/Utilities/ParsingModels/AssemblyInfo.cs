@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 #endif
 [assembly: AssemblyCompany("Michael Sawczyn")]
 [assembly: AssemblyProduct("EFDesigner")]
-[assembly: AssemblyCopyright("Copyright © Michael Sawczyn 2017-2021")]
+[assembly: AssemblyCopyright("Copyright © Michael Sawczyn 2017-2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,6 +19,6 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("fb2035a3-09f5-43ff-8545-3af8b814b405")]
 
-[assembly: AssemblyVersion("4.0.0.3")]
-[assembly: AssemblyFileVersion("4.0.0.3")]
+[assembly: AssemblyVersion("4.0.0.5")]
+[assembly: AssemblyFileVersion("4.0.0.5")]
 [assembly: ReliabilityContract(Consistency.MayCorruptProcess, Cer.None)]

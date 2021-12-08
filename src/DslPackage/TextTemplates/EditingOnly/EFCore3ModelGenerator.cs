@@ -6,8 +6,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.0.0.3
-      // Copyright (c) 2017-2021 Michael Sawczyn
+      // EFDesigner v4.0.0.5
+      // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
       public class EFCore3ModelGenerator : EFCore2ModelGenerator
