@@ -1,5 +1,7 @@
 4.0.0
-   - VS2022 support
+   - VS2022 extension
+   - Added support for EFCore6
+   - Added support for temporal tables
 
 3.0.8
    - Attribute types can now be manually added. This will require a ValueConverter at runtime to avoid errors, but allows for this EF feature to be easily used.

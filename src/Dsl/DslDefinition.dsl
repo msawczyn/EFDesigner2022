@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" Revision="5" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
+<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" Revision="6" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
   <Classes>
     <DomainClass Id="95532cb8-3452-4b09-a654-aeb2e2d0b3ad" Description="" Name="ModelRoot" DisplayName="Entity Model" Namespace="Sawczyn.EFDesigner.EFModel">
       <CustomTypeDescriptor>
@@ -589,6 +589,11 @@
           </Type>
         </DomainProperty>
         <DomainProperty Id="51846d70-8b42-4cef-843b-57cd97af3b91" Description="Used internally to determine whether an interface glyph should be shown on the diagram for the class" Name="ShouldShowInterfaceGlyph" DisplayName="Should Show Interface Glyph" Kind="Calculated" SetterAccessModifier="Private" IsBrowsable="false" IsUIReadOnly="true">
+          <Type>
+            <ExternalTypeMoniker Name="/System/Boolean" />
+          </Type>
+        </DomainProperty>
+        <DomainProperty Id="b4b06061-bd7a-4059-ac5f-f29be620d23c" Description="If true, will configure the class to use temporal tables for storage. This is not supported in all database types." Name="UseTemporalTables" DisplayName="Use Temporal Tables" Category="Database">
           <Type>
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
@@ -2438,6 +2443,9 @@
           </XmlPropertyData>
           <XmlPropertyData XmlName="shouldShowInterfaceGlyph" Representation="Ignore">
             <DomainPropertyMoniker Name="ModelClass/ShouldShowInterfaceGlyph" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="useTemporalTables">
+            <DomainPropertyMoniker Name="ModelClass/UseTemporalTables" />
           </XmlPropertyData>
         </ElementData>
       </XmlClassData>

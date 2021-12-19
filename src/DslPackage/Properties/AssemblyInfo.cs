@@ -17,8 +17,8 @@ using System.Runtime.ConstrainedExecution;
 [assembly: AssemblyCulture("")]
 [assembly: System.Resources.NeutralResourcesLanguage("en")]
 
-[assembly: AssemblyVersion("4.0.0.5")]
-[assembly: AssemblyFileVersion("4.0.0.5")]
+[assembly: AssemblyVersion("4.0.0.6")]
+[assembly: AssemblyFileVersion("4.0.0.6")]
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(false)]
 [assembly: ReliabilityContract(Consistency.MayCorruptProcess, Cer.None)]

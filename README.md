@@ -2,7 +2,9 @@
 
 ## Entity Framework visual design surface and code-first code generation for EF6, EFCore and beyond.
 
-Model and generate code for both Entity Framework v6.x and Entity Framework Core 2.x, 3.x and 5.
+### For Visual Studio 2022
+
+Model and generate code for both Entity Framework v6.x and Entity Framework Core 2 through 6.
 
 **[Install with NuGet](https://docs.microsoft.com/en-us/visualstudio/ide/finding-and-using-visual-studio-extensions) from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner2022)** (currently available as a pre-release extension)
 
@@ -40,7 +42,7 @@ and many other nice-to-have bits.
 
 Code generation is completely customizable via T4 templates. The tool installs templates that 
 target both EF6 and EFCore, and generate both a code-first DbContext class and 
-POCO entity classes. The EF6 template's DbContext code is written to allow consumption in 
+POCO entity classes. The DbContext code is written to allow consumption in 
 ASP.Net Core in addition to any other project type, so you'll have flexibility in your development.
 
 **Note:** This tool does not reverse engineer from the database (i.e., "database-first"). Microsoft has provided
@@ -73,7 +75,9 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 
 ### Change Log
 
-**4.0.0** (pre-release - bug reports welcome!)
-   - VS2022 support
+4.0.0
+   - VS2022 extension
+   - Added support for EFCore6
+   - Added support for temporal tables
 
 Earlier changes at [the VS2019 version](https://github.com/msawczyn/EFDesigner).

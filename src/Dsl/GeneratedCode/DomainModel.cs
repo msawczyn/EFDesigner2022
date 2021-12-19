@@ -198,6 +198,7 @@ namespace Sawczyn.EFDesigner.EFModel
 	         new DomainMemberInfo(typeof(ModelClass), "IsDefaultConstructorVisibilityTracking", ModelClass.IsDefaultConstructorVisibilityTrackingDomainPropertyId, typeof(ModelClass.IsDefaultConstructorVisibilityTrackingPropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelClass), "IsAutoPropertyDefaultTracking", ModelClass.IsAutoPropertyDefaultTrackingDomainPropertyId, typeof(ModelClass.IsAutoPropertyDefaultTrackingPropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelClass), "ShouldShowInterfaceGlyph", ModelClass.ShouldShowInterfaceGlyphDomainPropertyId, typeof(ModelClass.ShouldShowInterfaceGlyphPropertyHandler)),
+	         new DomainMemberInfo(typeof(ModelClass), "UseTemporalTables", ModelClass.UseTemporalTablesDomainPropertyId, typeof(ModelClass.UseTemporalTablesPropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelAttribute), "Type", ModelAttribute.TypeDomainPropertyId, typeof(ModelAttribute.TypePropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelAttribute), "InitialValue", ModelAttribute.InitialValueDomainPropertyId, typeof(ModelAttribute.InitialValuePropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelAttribute), "IsIdentity", ModelAttribute.IsIdentityDomainPropertyId, typeof(ModelAttribute.IsIdentityPropertyHandler)),

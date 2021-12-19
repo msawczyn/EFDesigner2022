@@ -8,7 +8,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    public partial class GeneratedTextTransformation
    {
       #region Template
-      // EFDesigner v4.0.0.5
+      // EFDesigner v4.0.0.6
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -21,11 +21,18 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             string tableName = string.IsNullOrEmpty(modelClass.TableName) ? modelClass.Name : modelClass.TableName;
             string viewName = string.IsNullOrEmpty(modelClass.ViewName) ? modelClass.Name : modelClass.ViewName;
             string schema = string.IsNullOrEmpty(modelClass.DatabaseSchema) || modelClass.DatabaseSchema == modelClass.ModelRoot.DatabaseSchema ? string.Empty : $", \"{modelClass.DatabaseSchema}\"";
-            string buildAction = modelClass.ExcludeFromMigrations ? ", t => t.ExcludeFromMigrations()" : string.Empty;
+            
+            List<string> modifiers = new List<string>();
+            if (modelClass.ExcludeFromMigrations) modifiers.Add("t.ExcludeFromMigrations();");
+            if (modelClass.UseTemporalTables && !modelClass.IsDatabaseView) modifiers.Add("t.IsTemporal();");
+
+            string buildActions = modifiers.Any()
+                                     ? $", t => {{ {string.Join(" ", modifiers)} }}"
+                                     : string.Empty;
 
             segments.Add(modelClass.IsDatabaseView
-                            ? $"ToView(\"{viewName}\"{schema}{buildAction})"
-                            : $"ToTable(\"{tableName}\"{schema}{buildAction})");
+                            ? $"ToView(\"{viewName}\"{schema}{buildActions})"
+                            : $"ToTable(\"{tableName}\"{schema}{buildActions})");
 
             if (modelClass.Superclass != null)
                segments.Add($"HasBaseType<{modelClass.Superclass.FullName}>()");

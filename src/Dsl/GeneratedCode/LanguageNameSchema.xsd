@@ -646,6 +646,12 @@
             <xsd:documentation>If true, ModelClass.AutoPropertyDefault tracks ModelRoot.AutoPropertyDefault</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+        <!-- Property: UseTemporalTables -->
+        <xsd:attribute name="useTemporalTables" type="xsd:boolean" >
+          <xsd:annotation>
+            <xsd:documentation>If true, will configure the class to use temporal tables for storage. This is not supported in all database types.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

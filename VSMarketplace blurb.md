@@ -1,14 +1,20 @@
 <h1>For Visual Studio 2022</h1>
 
-This Visual Studio 2022 extension is the easiest way to add a consistently correct Entity Framework model to your project with support for EF6, EFCore2, EFCore3 and EFCore5.
+This Visual Studio 2022 extension is the easiest way to add a consistently correct Entity Framework model to your project with support for EF6 and EFCore2-6.
 
-It's an opinionated code generator, adding a new file type (.efmodel) that allows for fast, easy and, most importantly, **visual** design of persistent classes. Inheritance, unidirectional and bidirectional associations are all supported. Enumerations are also included in the visual model, as is the ability to add text blocks to explain potentially arcane parts of your design.
+It's an opinionated code generator, adding a new file type (.efmodel) that allows for fast, easy and, most importantly, **visual** design of persistent classes. 
+Inheritance, unidirectional and bidirectional associations are all supported. Enumerations are also included in the visual model, as is the ability to add text blocks to 
+explain potentially arcane parts of your design.
 
 <img src="https://msawczyn.github.io/EFDesigner/images/Designer.jpg">
 
-While giving you complete control over how the code is generated you'll be able to create, out of the box, sophisticated, consistent and **correct** Entity Framework code that can be regenerated when your model changes. And, since the code is written using partial classes, any additions you make to your generated code are retained across subsequent generations. The designer doesn't need to be present to use the code that's generated - it generates standard C#, using the code-first, fluent API - so the tool doesn't become a dependency to your project.
+While giving you complete control over how the code is generated you'll be able to create, out of the box, sophisticated, consistent and **correct** Entity Framework code 
+that can be regenerated when your model changes. And, since the code is written using partial classes, any additions you make to your generated code are retained across 
+subsequent generations. The designer doesn't need to be present to use the code that's generated - it generates standard C#, using the code-first, fluent API - so the 
+tool doesn't become a dependency to your project.
 
-If you are used to the EF visual modeling that comes with Visual Studio, you'll be pretty much at home. The goal was to duplicate at least those features and, in addition, add all the little things that _should_ have been there. Things like:
+If you are used to the EF visual modeling that comes with Visual Studio, you'll be pretty much at home. The goal was to duplicate at least those features and, in addition, 
+add all the little things that _should_ have been there. Things like:
 
 *   importing entities from C# source, or existing DbContext definitions (including their entities) from compiled EF6 or EFCore assemblies
 *   multiple views of your model to highlight important aspects of your design
@@ -21,7 +27,8 @@ If you are used to the EF visual modeling that comes with Visual Studio, you'll 
 
 and many other nice-to-have bits.
 
-**Note:** This tool does not reverse engineer from the database (i.e., "database-first"). Microsoft has provided tools for that, and there are other, well-maintained opensourced projects that provide that functionality as well. 
+**Note:** This tool does not reverse engineer from the database (i.e., "database-first"). Microsoft has provided tools for that, and there are other, well-maintained opensourced 
+projects that provide that functionality as well. 
 
 For comprehensive documentation, please visit [the project's documentation site](https://msawczyn.github.io/EFDesigner/).
 
@@ -46,7 +53,9 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
 **ChangeLog**
 
 **4.0.0**
-   - VS2022 support
+   - **[NEW]** VS2022 extension
+   - **[NEW]** Added support for EFCore6
+   - **[NEW]** Added support for temporal tables
 
 Earlier changes at [the VS2019 version](https://github.com/msawczyn/EFDesigner).
 

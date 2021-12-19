@@ -3065,6 +3065,23 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
+	      // UseTemporalTables
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribUseTemporalTables = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "useTemporalTables");
+	         if (attribUseTemporalTables != null)
+	         {
+	            global::System.Boolean valueOfUseTemporalTables;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.Boolean>(serializationContext, attribUseTemporalTables, out valueOfUseTemporalTables))
+	            {
+	               instanceOfModelClass.UseTemporalTables = valueOfUseTemporalTables;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "useTemporalTables", typeof(global::System.Boolean), attribUseTemporalTables);
+	            }
+	         }
+	      }
 	   }
 	
 	   /// <summary>
@@ -4080,6 +4097,16 @@ namespace Sawczyn.EFDesigner.EFModel
 	            {   // No need to write the value out if it's the same as default value.
 	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "isAutoPropertyDefaultTracking", serializedPropValue);
 	            }
+	         }
+	      }
+	      // UseTemporalTables
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.Boolean propValue = instanceOfModelClass.UseTemporalTables;
+	         string serializedPropValue = DslModeling::SerializationUtilities.GetString<global::System.Boolean>(serializationContext, propValue);
+	         if (!serializationContext.Result.Failed)
+	         {
+	            EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "useTemporalTables", serializedPropValue);
 	         }
 	      }
 	   }

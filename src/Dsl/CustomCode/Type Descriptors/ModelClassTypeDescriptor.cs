@@ -25,6 +25,12 @@ namespace Sawczyn.EFDesigner.EFModel
             storeDomainDataDirectory = modelClass.Store.DomainDataDirectory;
             ModelRoot modelRoot = modelClass.ModelRoot;
 
+            // things unavailable if pre-EFCore6
+            if (!modelRoot.IsEFCore6Plus)
+            {
+               propertyDescriptors.Remove("UseTemporalTables");
+            }
+
             // things unavailable if pre-EFCore5
             if (!modelRoot.IsEFCore5Plus)
             {
@@ -54,6 +60,9 @@ namespace Sawczyn.EFDesigner.EFModel
                if (modelClass.IsPropertyBag)
                   propertyDescriptors.Remove("IsDependentType");
             }
+
+            if (modelClass.IsDatabaseView)
+               propertyDescriptors.Remove("UseTemporalTables");
 
             //Add the descriptors for the tracking properties 
 
