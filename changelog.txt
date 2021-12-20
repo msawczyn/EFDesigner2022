@@ -1,3 +1,6 @@
+4.0.1
+   - Added validations preventing use of temporal tables in unsupported scenarios
+
 4.0.0
    - VS2022 extension
    - Added support for EFCore6

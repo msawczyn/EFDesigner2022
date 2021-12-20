@@ -61,7 +61,9 @@ namespace Sawczyn.EFDesigner.EFModel
                   propertyDescriptors.Remove("IsDependentType");
             }
 
-            if (modelClass.IsDatabaseView)
+            if (modelClass.IsDatabaseView
+             || (modelClass.Subclasses.Any() && modelClass.ModelRoot.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
+             || modelClass.Superclass != null)
                propertyDescriptors.Remove("UseTemporalTables");
 
             //Add the descriptors for the tracking properties 

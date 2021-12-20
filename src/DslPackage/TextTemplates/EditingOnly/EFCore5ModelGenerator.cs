@@ -21,10 +21,14 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             string tableName = string.IsNullOrEmpty(modelClass.TableName) ? modelClass.Name : modelClass.TableName;
             string viewName = string.IsNullOrEmpty(modelClass.ViewName) ? modelClass.Name : modelClass.ViewName;
             string schema = string.IsNullOrEmpty(modelClass.DatabaseSchema) || modelClass.DatabaseSchema == modelClass.ModelRoot.DatabaseSchema ? string.Empty : $", \"{modelClass.DatabaseSchema}\"";
-            
+
             List<string> modifiers = new List<string>();
             if (modelClass.ExcludeFromMigrations) modifiers.Add("t.ExcludeFromMigrations();");
-            if (modelClass.UseTemporalTables && !modelClass.IsDatabaseView) modifiers.Add("t.IsTemporal();");
+            if (modelClass.UseTemporalTables
+             && !modelClass.IsDatabaseView
+             && (!modelClass.Subclasses.Any() || modelClass.ModelRoot.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
+             && modelClass.Superclass = null)
+               modifiers.Add("t.IsTemporal();");
 
             string buildActions = modifiers.Any()
                                      ? $", t => {{ {string.Join(" ", modifiers)} }}"

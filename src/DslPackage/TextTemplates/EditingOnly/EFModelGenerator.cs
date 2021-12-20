@@ -281,7 +281,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                Output($"[System.ComponentModel.DataAnnotations.Display(Name=\"{modelAttribute.DisplayText.Replace("\"", "\\\"")}\")]");
 
             if (!string.IsNullOrWhiteSpace(modelAttribute.Summary))
-               Output($"[System.ComponentModel.Description(\"{modelAttribute.Summary.Trim('\r','\n').Replace("\"", "\\\"")}\")]");
+               Output($"[System.ComponentModel.Description(\"{modelAttribute.Summary.Trim('\r', '\n').Replace("\"", "\\\"")}\")]");
          }
 
          protected abstract List<string> GetAdditionalUsingStatements();
@@ -362,7 +362,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             nsParts.Add("Migrations");
 
             return string.Join(".", nsParts);
-         }         protected List<string> GetRequiredParameterNames(ModelClass modelClass, bool publicOnly = false)
+         }
+         protected List<string> GetRequiredParameterNames(ModelClass modelClass, bool publicOnly = false)
          {
             return GetRequiredParameters(modelClass, null, publicOnly).Select(p => p.Split(' ')[1]).ToList();
          }
@@ -479,7 +480,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                Output($"[{modelClass.CustomAttributes.Trim('[', ']')}]");
 
             if (!string.IsNullOrWhiteSpace(modelClass.Summary))
-               Output($"[System.ComponentModel.Description(\"{modelClass.Summary.Trim('\r','\n').Replace("\"", "\\\"")}\")]");
+               Output($"[System.ComponentModel.Description(\"{modelClass.Summary.Trim('\r', '\n').Replace("\"", "\\\"")}\")]");
 
             Output(baseClass.Length > 0
                       ? $"public {isAbstract}partial class {modelClass.Name}: {baseClass}"
@@ -504,7 +505,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             if (!string.IsNullOrEmpty(comment))
             {
                int chunkSize = 80;
-               string[] parts = comment.Split(new[] {"\r\n", "\r", "\n"}, StringSplitOptions.RemoveEmptyEntries);
+               string[] parts = comment.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                foreach (string value in parts)
                {
@@ -536,7 +537,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          protected void WriteCommentBody(string comment)
          {
             foreach (string s in GenerateCommentBody(comment))
-                Output($"/// {s}");
+               Output($"/// {s}");
          }
 
          protected void WriteConstructor(ModelClass modelClass)
@@ -714,17 +715,21 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   string parameterName = requiredNavigationProperty.PropertyName.ToLower();
                   Output($"if ({parameterName} == null) throw new ArgumentNullException(nameof({parameterName}));");
 
+                  string targetObjectName = requiredNavigationProperty.IsAutoProperty
+                     ? requiredNavigationProperty.PropertyName
+                     : requiredNavigationProperty.BackingFieldName;
+
                   if (!requiredNavigationProperty.ConstructorParameterOnly)
                   {
                      Output(requiredNavigationProperty.IsCollection
-                               ? $"{requiredNavigationProperty.PropertyName}.Add({parameterName});"
-                               : $"this.{requiredNavigationProperty.PropertyName} = {parameterName};");
+                                ? $"this.{targetObjectName}.Add({parameterName});"
+                                : $"this.{targetObjectName} = {parameterName};");
                   }
 
                   if (!string.IsNullOrEmpty(otherSide.PropertyName))
                   {
-                     Output(otherSide.IsCollection 
-                               ? $"{parameterName}.{otherSide.PropertyName}.Add(this);" 
+                     Output(otherSide.IsCollection
+                               ? $"{parameterName}.{otherSide.PropertyName}.Add(this);"
                                : $"{parameterName}.{otherSide.PropertyName} = this;");
                   }
 
@@ -896,7 +901,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                Output($"[{modelEnum.CustomAttributes.Trim('[', ']')}]");
 
             if (!string.IsNullOrWhiteSpace(modelEnum.Summary))
-               Output($"[System.ComponentModel.Description(\"{modelEnum.Summary.Trim('\r','\n').Replace("\"", "\\\"")}\")]");
+               Output($"[System.ComponentModel.Description(\"{modelEnum.Summary.Trim('\r', '\n').Replace("\"", "\\\"")}\")]");
 
             Output($"public enum {modelEnum.Name} : {modelEnum.ValueType}");
             Output("{");
@@ -923,10 +928,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   Output($"[{values[index].CustomAttributes.Trim('[', ']')}]");
 
                if (!string.IsNullOrWhiteSpace(values[index].Summary))
-                  Output($"[System.ComponentModel.Description(\"{values[index].Summary.Trim('\r','\n').Replace("\"", "\\\"")}\")]");
+                  Output($"[System.ComponentModel.Description(\"{values[index].Summary.Trim('\r', '\n').Replace("\"", "\\\"")}\")]");
 
                if (!string.IsNullOrWhiteSpace(values[index].DisplayText))
-                  Output($"[System.ComponentModel.DataAnnotations.Display(Name=\"{values[index].DisplayText.Trim('\r','\n').Replace("\"", "\\\"")}\")]");
+                  Output($"[System.ComponentModel.DataAnnotations.Display(Name=\"{values[index].DisplayText.Trim('\r', '\n').Replace("\"", "\\\"")}\")]");
 
                Output(string.IsNullOrEmpty(values[index].Value)
                          ? $"{values[index].Name}{(index < values.Length - 1 ? "," : string.Empty)}"
