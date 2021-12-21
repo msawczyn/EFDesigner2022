@@ -128,6 +128,24 @@ namespace Sawczyn.EFDesigner.EFModel
                    : Name;
       }
 
+      /// <summary>
+      /// All custom interfaces in the class, including those inherited from base classes
+      /// </summary>
+      public IEnumerable<string> AllCustomInterfaces
+      {
+         get
+         {
+            List<string> interfaces = new List<string>();
+            ModelClass modelClass = this;
+            while (modelClass != null)
+            {
+               interfaces.AddRange(modelClass.CustomInterfaces.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+               modelClass = modelClass.Superclass;
+            }
+
+            return interfaces.Distinct();
+         }
+      }
 
       /// <summary>
       /// All attributes in the class, including those inherited from base classes
