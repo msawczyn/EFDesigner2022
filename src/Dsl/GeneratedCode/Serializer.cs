@@ -3082,6 +3082,23 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
+	      // IsAssociationClass
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribIsAssociationClass = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "isAssociationClass");
+	         if (attribIsAssociationClass != null)
+	         {
+	            global::System.Boolean valueOfIsAssociationClass;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.Boolean>(serializationContext, attribIsAssociationClass, out valueOfIsAssociationClass))
+	            {
+	               instanceOfModelClass.IsAssociationClass = valueOfIsAssociationClass;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "isAssociationClass", typeof(global::System.Boolean), attribIsAssociationClass);
+	            }
+	         }
+	      }
 	   }
 	
 	   /// <summary>
@@ -4107,6 +4124,16 @@ namespace Sawczyn.EFDesigner.EFModel
 	         if (!serializationContext.Result.Failed)
 	         {
 	            EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "useTemporalTables", serializedPropValue);
+	         }
+	      }
+	      // IsAssociationClass
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.Boolean propValue = instanceOfModelClass.IsAssociationClass;
+	         string serializedPropValue = DslModeling::SerializationUtilities.GetString<global::System.Boolean>(serializationContext, propValue);
+	         if (!serializationContext.Result.Failed)
+	         {
+	            EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "isAssociationClass", serializedPropValue);
 	         }
 	      }
 	   }

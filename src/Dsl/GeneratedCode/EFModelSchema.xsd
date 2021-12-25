@@ -652,6 +652,12 @@
             <xsd:documentation>If true, will configure the class to use temporal tables for storage. This is not supported in all database types.</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+        <!-- Property: IsAssociationClass -->
+        <xsd:attribute name="isAssociationClass" type="xsd:boolean" >
+          <xsd:annotation>
+            <xsd:documentation>If true, this is an association class for a many-to-many association</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

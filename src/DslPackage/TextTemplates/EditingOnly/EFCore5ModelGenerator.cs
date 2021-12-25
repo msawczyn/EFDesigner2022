@@ -1,14 +1,18 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+
+using Sawczyn.EFDesigner.EFModel.Annotations;
+
 // ReSharper disable RedundantNameQualifier
 
 namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 {
+   [UsedImplicitly]
    public partial class GeneratedTextTransformation
    {
       #region Template
-      // EFDesigner v4.0.0.6
+      // EFDesigner v4.1.0.0
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -27,7 +31,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             if (modelClass.UseTemporalTables
              && !modelClass.IsDatabaseView
              && (!modelClass.Subclasses.Any() || modelClass.ModelRoot.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
-             && modelClass.Superclass = null)
+             && modelClass.Superclass == null)
                modifiers.Add("t.IsTemporal();");
 
             string buildActions = modifiers.Any()

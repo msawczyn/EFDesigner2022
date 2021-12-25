@@ -598,6 +598,11 @@
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
         </DomainProperty>
+        <DomainProperty Id="e9775a9d-2c2c-4206-8a27-5adf99cc73dc" Description="If true, this is an association class for a many-to-many association" Name="IsAssociationClass" DisplayName="Is Association Class" Category="Code Generation" IsUIReadOnly="true">
+          <Type>
+            <ExternalTypeMoniker Name="/System/Boolean" />
+          </Type>
+        </DomainProperty>
       </Properties>
       <ElementMergeDirectives>
         <ElementMergeDirective>
@@ -2446,6 +2451,9 @@
           </XmlPropertyData>
           <XmlPropertyData XmlName="useTemporalTables">
             <DomainPropertyMoniker Name="ModelClass/UseTemporalTables" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="isAssociationClass">
+            <DomainPropertyMoniker Name="ModelClass/IsAssociationClass" />
           </XmlPropertyData>
         </ElementData>
       </XmlClassData>
