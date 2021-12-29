@@ -197,8 +197,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>EditorFactory.tt</DependentUpon>
     </Compile>
-    <Compile Include="GeneratedCode\GeneratedVSCT.cs" />
-    <Compile Include="GeneratedCode\GeneratedVSCT1.cs">
+    <Compile Include="GeneratedCode\GeneratedVSCT.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>GeneratedVSCT.vsct</DependentUpon>

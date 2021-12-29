@@ -7793,6 +7793,96 @@ namespace Sawczyn.EFDesigner.EFModel
 		}
 		
 		#endregion
+		#region DescribedAssociationElementId domain property code
+		
+		/// <summary>
+		/// DescribedAssociationElementId domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid DescribedAssociationElementIdDomainPropertyId = new global::System.Guid(0x2105ff46, 0xf992, 0x4148, 0x97, 0x77, 0xfa, 0x49, 0xf0, 0x27, 0x51, 0xaa);
+		
+		/// <summary>
+		/// Storage for DescribedAssociationElementId
+		/// </summary>
+		private global::System.Guid describedAssociationElementIdPropertyStorage;
+		
+		/// <summary>
+		/// Gets or sets the value of DescribedAssociationElementId domain property.
+		/// When IsAssociationClass is true, the element id of the association this entity
+		/// extends
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/DescribedAssociationElementId.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelClass/DescribedAssociationElementId.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[global::System.ComponentModel.Browsable(false)]
+		[global::System.ComponentModel.ReadOnly(true)]
+		[DslModeling::DomainObjectId("2105ff46-f992-4148-9777-fa49f02751aa")]
+		public global::System.Guid DescribedAssociationElementId
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return describedAssociationElementIdPropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			internal set
+			{
+				DescribedAssociationElementIdPropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelClass.DescribedAssociationElementId domain property.
+		/// </summary>
+		internal sealed partial class DescribedAssociationElementIdPropertyHandler : DslModeling::DomainPropertyValueHandler<ModelClass, global::System.Guid>
+		{
+			private DescribedAssociationElementIdPropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelClass.DescribedAssociationElementId domain property value handler.
+			/// </summary>
+			public static readonly DescribedAssociationElementIdPropertyHandler Instance = new DescribedAssociationElementIdPropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelClass.DescribedAssociationElementId domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return DescribedAssociationElementIdDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.Guid GetValue(ModelClass element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.describedAssociationElementIdPropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelClass element, global::System.Guid newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.Guid oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.describedAssociationElementIdPropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
 		#region Targets opposite domain role accessor
 		
 		/// <summary>
@@ -13704,6 +13794,6 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
 	partial class ModelRoot
 	{
-		public const string DSLVersion = "4.0.1.0";
+		public const string DSLVersion = "4.0.1.1";
 	}
 }

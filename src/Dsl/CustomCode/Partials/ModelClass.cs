@@ -20,21 +20,18 @@ namespace Sawczyn.EFDesigner.EFModel
       /// <summary>
       /// True if this is a normal entity type (not aggregated and not keyless), false otherwise
       /// </summary>
-      /// <returns></returns>
       [Browsable(false)]
       public bool IsEntity() => !IsDependentType && !IsKeylessType();
 
       /// <summary>
       /// True if this is a dependent (aggregated) entity type, false otherwise
       /// </summary>
-      /// <returns></returns>
       [Browsable(false)]
       public bool IsDependent() => IsDependentType;
 
       /// <summary>
       /// True if this is a keyless entity type (backed by a query or a view), false otherwise
       /// </summary>
-      /// <returns></returns>
       [Browsable(false)]
       public bool IsKeyless() => IsKeylessType();
 
@@ -336,6 +333,9 @@ namespace Sawczyn.EFDesigner.EFModel
          if (ModelRoot.ShowWarningsInDesigner && GetHasWarningValue())
             return "WarningGlyph";
 
+         if (IsAssociationClass)
+            return "AssociationClassGlyph";
+
          if (IsQueryType)
             return "SQLGlyph";
 
@@ -517,6 +517,17 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          MergeDisconnect(attribute);
          destination.MergeRelate(attribute, null);
+      }
+
+      internal bool CanBecomeAssociationClass()
+      {
+         return !AllNavigationProperties().Any()
+             && !IsAssociationClass
+             && !IsAbstract
+             && !IsDependentType
+             && !IsQueryType
+             && !IsDatabaseView
+             && string.IsNullOrEmpty(ViewName);
       }
 
       #region Validations

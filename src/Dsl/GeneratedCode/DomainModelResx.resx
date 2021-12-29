@@ -1117,6 +1117,14 @@
     <value>Code Generation</value>
     <comment>Category for DomainProperty &apos;IsAssociationClass&apos; on DomainClass &apos;ModelClass&apos;</comment>
   </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/DescribedAssociationElementId.Description" xml:space="preserve">
+    <value>When IsAssociationClass is true, the element id of the association this entity extends</value>
+    <comment>Description for DomainProperty &apos;DescribedAssociationElementId&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/DescribedAssociationElementId.DisplayName" xml:space="preserve">
+    <value>Described Association Element Id</value>
+    <comment>DisplayName for DomainProperty &apos;DescribedAssociationElementId&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
   <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute.Description" xml:space="preserve">
     <value>An attribute of a class.</value>
     <comment>Description for DomainClass &apos;ModelAttribute&apos;</comment>

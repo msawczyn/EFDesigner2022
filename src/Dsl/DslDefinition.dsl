@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" Build="1" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
+<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" Build="1" Revision="1" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
   <Classes>
     <DomainClass Id="95532cb8-3452-4b09-a654-aeb2e2d0b3ad" Description="" Name="ModelRoot" DisplayName="Entity Model" Namespace="Sawczyn.EFDesigner.EFModel">
       <CustomTypeDescriptor>
@@ -601,6 +601,11 @@
         <DomainProperty Id="e9775a9d-2c2c-4206-8a27-5adf99cc73dc" Description="If true, this is an association class for a many-to-many association" Name="IsAssociationClass" DisplayName="Is Association Class" Category="Code Generation" IsUIReadOnly="true">
           <Type>
             <ExternalTypeMoniker Name="/System/Boolean" />
+          </Type>
+        </DomainProperty>
+        <DomainProperty Id="2105ff46-f992-4148-9777-fa49f02751aa" Description="When IsAssociationClass is true, the element id of the association this entity extends" Name="DescribedAssociationElementId" DisplayName="Described Association Element Id" SetterAccessModifier="Assembly" IsBrowsable="false">
+          <Type>
+            <ExternalTypeMoniker Name="/System/Guid" />
           </Type>
         </DomainProperty>
       </Properties>
@@ -2454,6 +2459,9 @@
           </XmlPropertyData>
           <XmlPropertyData XmlName="isAssociationClass">
             <DomainPropertyMoniker Name="ModelClass/IsAssociationClass" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="describedAssociationElementId">
+            <DomainPropertyMoniker Name="ModelClass/DescribedAssociationElementId" />
           </XmlPropertyData>
         </ElementData>
       </XmlClassData>
