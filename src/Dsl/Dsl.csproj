@@ -133,6 +133,8 @@
     <Compile Include="CustomCode\Extensions\PropertyDescriptorCollectionExtensions.cs" />
     <Compile Include="CustomCode\Extensions\StringExtensions.cs" />
     <Compile Include="CustomCode\Extensions\SyntaxNodeExtensions.cs" />
+    <Compile Include="CustomCode\Gestures\ClassDragMouseAction.cs" />
+    <Compile Include="CustomCode\Gestures\ClassShapeDragData.cs" />
     <Compile Include="CustomCode\Gestures\CompartmentDragMouseAction.cs" />
     <Compile Include="CustomCode\Modeling\ViewContext.cs" />
     <Compile Include="CustomCode\Name Providers\ModelDiagramDataNameProvider.cs" />
@@ -170,7 +172,7 @@
     <Compile Include="CustomCode\ModelElement Interfaces\IHighlightFromModelExplorer.cs" />
     <Compile Include="CustomCode\ModelElement Interfaces\IModelElementInCompartment.cs" />
     <Compile Include="CustomCode\ModelElement Interfaces\IModelElementWithCompartments.cs" />
-    <Compile Include="CustomCode\ModelElement Interfaces\IMouseActionTarget.cs" />
+    <Compile Include="CustomCode\ModelElement Interfaces\ICompartmentShapeMouseTarget.cs" />
     <Compile Include="CustomCode\Partials\ModelAttribute.cs" />
     <Compile Include="CustomCode\Rules\GeneralizationDeletingRules.cs" />
     <Compile Include="CustomCode\Rules\ModelClassDeletingRules.cs" />

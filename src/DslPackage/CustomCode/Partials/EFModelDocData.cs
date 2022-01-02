@@ -43,84 +43,6 @@ namespace Sawczyn.EFDesigner.EFModel
                   ? activeSolutionProjects.GetValue(0) as Project
                   : null;
 
-      private void AssignAssociationClass(BidirectionalConnector bidirectionalConnector, ClassShape classShape)
-      {
-         if (!(RootElement is ModelRoot modelRoot))
-            return;
-
-         using (Transaction tx1 = modelRoot.Store.TransactionManager.BeginTransaction("Set association class part 1"))
-         {
-            BidirectionalAssociation bidirectionalAssociation = (BidirectionalAssociation)bidirectionalConnector.ModelElement;
-            ModelClass associationClass = (ModelClass)classShape.ModelElement;
-
-            // add the new associations 
-
-            // ReSharper disable once UnusedVariable
-            UnidirectionalAssociation element1 = new UnidirectionalAssociation(Store
-                                                                             , new[]
-                                                                               {
-                                                                                  new RoleAssignment(Association.SourceDomainRoleId, bidirectionalAssociation.Source)
-                                                                                , new RoleAssignment(Association.TargetDomainRoleId, associationClass)
-                                                                               }
-                                                                             , new[]
-                                                                               {
-                                                                                  new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, $"{bidirectionalAssociation.TargetPropertyName}_{associationClass.Name}")
-                                                                                , new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, $"Association object for {bidirectionalAssociation.TargetPropertyName}")
-                                                                                , new PropertyAssignment(Association.TargetSummaryDomainPropertyId, $"Association class for {bidirectionalAssociation.TargetPropertyName}")
-                                                                                , new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, Multiplicity.One)
-                                                                                , new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, Multiplicity.ZeroMany)
-                                                                                , new PropertyAssignment(Association.FKPropertyNameDomainPropertyId, $"{bidirectionalAssociation.TargetPropertyName}Id")
-                                                                               });
-
-            // ReSharper disable once UnusedVariable
-            UnidirectionalAssociation element2 = new UnidirectionalAssociation(Store
-                                                                             , new[]
-                                                   {
-                                                      new RoleAssignment(Association.SourceDomainRoleId, bidirectionalAssociation.Target),
-                                                      new RoleAssignment(Association.TargetDomainRoleId, associationClass)
-                                                   },
-                                                   new[]
-                                                   {
-                                                                                  new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, $"{bidirectionalAssociation.SourcePropertyName}_{associationClass.Name}")
-                                                                                , new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, $"Association object for {bidirectionalAssociation.SourcePropertyName}")
-                                                                                , new PropertyAssignment(Association.TargetSummaryDomainPropertyId, $"Association class for {bidirectionalAssociation.SourcePropertyName}")
-                                                                                , new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, Multiplicity.One)
-                                                                                , new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, Multiplicity.ZeroMany)
-                                                                                , new PropertyAssignment(Association.FKPropertyNameDomainPropertyId, $"{bidirectionalAssociation.SourcePropertyName}Id")
-                                                   });
-
-            // set some properties in the association class
-
-            associationClass.DescribedAssociationElementId = bidirectionalAssociation.Id;
-            associationClass.IsAssociationClass = true;
-
-            // get rid of any identity attributes
-
-            ModelAttribute[] oldIdentityProperties = associationClass.Attributes.Where(a => a.IsIdentity).ToArray();
-
-            foreach (ModelAttribute attribute in oldIdentityProperties)
-            {
-               attribute.IsIdentity = false;
-            }
-
-            // add the new FK properties
-
-            AssociationChangedRules.FixupForeignKeys(element1);
-            AssociationChangedRules.FixupForeignKeys(element2);
-         
-            // clean them up 
-
-            associationClass.FindAttributeNamed($"{bidirectionalAssociation.SourcePropertyName}Id").IsIdentity = true;
-            associationClass.FindAttributeNamed($"{bidirectionalAssociation.SourcePropertyName}Id").IdentityType = IdentityType.Manual;
-
-            associationClass.FindAttributeNamed($"{bidirectionalAssociation.TargetPropertyName}Id").IsIdentity = true;
-            associationClass.FindAttributeNamed($"{bidirectionalAssociation.TargetPropertyName}Id").IdentityType = IdentityType.Manual;
-
-            // and save it all
-            tx1.Commit();
-         }
-      }
-
       internal static void GenerateCode()
       {
          GenerateCode(null);
@@ -289,7 +211,6 @@ namespace Sawczyn.EFDesigner.EFModel
 
          ClassShape.OpenCodeFile = OpenFileFor;
          ClassShape.ExecCodeGeneration = GenerateCode;
-         ClassShape.AddAssociationClass = AssignAssociationClass;
          EnumShape.OpenCodeFile = OpenFileFor;
          EnumShape.ExecCodeGeneration = GenerateCode;
          ModelRoot.ExecuteValidator = ValidateAll;

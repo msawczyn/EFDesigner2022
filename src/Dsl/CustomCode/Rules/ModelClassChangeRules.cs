@@ -36,8 +36,29 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             case "BaseClass":
                {
-                  if (element.IsDependentType)
-                     errorMessages.Add($"Can't give {element.Name} a base class since it's a dependent type");
+                  if (!string.IsNullOrEmpty(element.BaseClass))
+                  {
+                     if (element.IsDependentType)
+                     {
+                        errorMessages.Add($"Can't give {element.Name} a base class since it's a dependent type");
+
+                        break;
+                     }
+
+                     if (element.IsAssociationClass)
+                     {
+                        errorMessages.Add($"Can't give {element.Name} a base class since it's an association class");
+
+                        break;
+                     }
+
+                     if (element.Superclass.IsAssociationClass)
+                     {
+                        errorMessages.Add($"Can't give {element.Name} that base class since {element.Superclass.Name} is an association class");
+
+                        break;
+                     }
+                  }
 
                   break;
                }
@@ -52,25 +73,32 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "DbSetName":
                {
-                  string newDbSetName = (string)e.NewValue;
-
                   if (element.IsDependentType)
                   {
-                     if (!string.IsNullOrEmpty(newDbSetName))
+                     if (!string.IsNullOrEmpty(element.DbSetName))
                         element.DbSetName = string.Empty;
                   }
                   else
                   {
-                     if (string.IsNullOrEmpty(newDbSetName))
+                     if (string.IsNullOrEmpty(element.DbSetName))
                         element.DbSetName = MakeDefaultTableAndSetName(element.Name);
 
                      if (current.Name.ToLowerInvariant() != "paste" &&
-                         (string.IsNullOrWhiteSpace(newDbSetName) || !CodeGenerator.IsValidLanguageIndependentIdentifier(newDbSetName)))
-                        errorMessages.Add($"DbSet name '{newDbSetName}' isn't a valid .NET identifier.");
-                     else if (store.GetAll<ModelClass>()
+                         (string.IsNullOrWhiteSpace(element.DbSetName) || !CodeGenerator.IsValidLanguageIndependentIdentifier(element.DbSetName)))
+                     {
+                        errorMessages.Add($"DbSet name '{element.DbSetName}' isn't a valid .NET identifier.");
+
+                        break;
+                     }
+                     
+                     if (store.GetAll<ModelClass>()
                                    .Except(new[] { element })
-                                   .Any(x => x.DbSetName == newDbSetName))
-                        errorMessages.Add($"DbSet name '{newDbSetName}' already in use");
+                                   .Any(x => x.DbSetName == element.DbSetName))
+                     {
+                        errorMessages.Add($"DbSet name '{element.DbSetName}' already in use");
+
+                        break;
+                     }
                   }
 
                   break;
@@ -78,9 +106,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "ImplementNotify":
                {
-                  bool newImplementNotify = (bool)e.NewValue;
-
-                  if (newImplementNotify)
+                  if (element.ImplementNotify)
                   {
                      List<string> nameList = element.Attributes.Where(x => x.AutoProperty).Select(x => x.Name).ToList();
                      if (nameList.Any())
@@ -104,20 +130,21 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "IsAbstract":
                {
-                  bool newIsAbstract = (bool)e.NewValue;
-
-                  if (newIsAbstract && element.IsDependentType)
+                  if (element.IsAbstract)
                   {
-                     errorMessages.Add($"Can't make {element.Name} abstract since it's a dependent type");
+                     if (element.IsDependentType)
+                     {
+                        errorMessages.Add($"Can't make {element.Name} abstract since it's a dependent type");
 
-                     break;
-                  }
+                        break;
+                     }
 
-                  if (newIsAbstract && element.IsAssociationClass)
-                  {
-                     errorMessages.Add($"Can't make {element.Name} abstract since it's an association class");
+                     if (element.IsAssociationClass)
+                     {
+                        errorMessages.Add($"Can't make {element.Name} abstract since it's an association class");
 
-                     break;
+                        break;
+                     }
                   }
 
                   PresentationHelper.UpdateClassDisplay(element);
@@ -127,27 +154,13 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "IsAssociationClass":
                {
-                  bool newIsAssociationClass = (bool)e.NewValue;
-
-                  if (newIsAssociationClass)
-                  {
-                     element.IsAbstract = false;
-                     element.IsDependentType = false;
-                     element.IsPropertyBag = false;
-                     element.IsQueryType = false;
-                     element.IsDatabaseView = false;
-                     element.ViewName = null;
-                  }
-
                   PresentationHelper.UpdateClassDisplay(element);
                   break;
                }
 
             case "IsDatabaseView":
                {
-                  bool newIsView = (bool)e.NewValue;
-
-                  if (newIsView)
+                  if (element.IsDatabaseView)
                   {
                      if (element.IsAssociationClass)
                      {
@@ -340,10 +353,10 @@ namespace Sawczyn.EFDesigner.EFModel
                   PresentationHelper.UpdateClassDisplay(element);
                   break;
                }
-           
+
             case "IsQueryType":
                {
-                  if ((bool)e.NewValue)
+                  if (element.IsQueryType)
                   {
                      if (element.IsAssociationClass)
                      {
@@ -367,7 +380,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
                   break;
                }
-         
+
             case "Name":
                {
                   if (current.Name.ToLowerInvariant() == "paste")
@@ -396,10 +409,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "Namespace":
                {
-                  string newNamespace = (string)e.NewValue;
-
                   if (current.Name.ToLowerInvariant() != "paste")
-                     errorMessages.Add(CommonRules.ValidateNamespace(newNamespace, CodeGenerator.IsValidLanguageIndependentIdentifier));
+                     errorMessages.Add(CommonRules.ValidateNamespace(element.Namespace, CodeGenerator.IsValidLanguageIndependentIdentifier));
 
                   break;
                }
@@ -447,7 +458,7 @@ namespace Sawczyn.EFDesigner.EFModel
                            element.TableName = MakeDefaultTableAndSetName(element.Name);
 
                         List<ModelClass> classesUsingTableName = store.GetAll<ModelClass>()
-                                                             .Except(new[] { element })
+                              .Except(new[] { element })
                                                              .Where(x => x.TableName == newViewName)
                                                              .ToList();
 
