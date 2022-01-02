@@ -21,6 +21,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Sawczyn.EFDesigner.EFModel.Extensions;
 
 using VSLangProj;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Sawczyn.EFDesigner.EFModel
 {

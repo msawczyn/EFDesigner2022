@@ -66,6 +66,17 @@ namespace Sawczyn.EFDesigner.EFModel
              || modelClass.Superclass != null)
                propertyDescriptors.Remove("UseTemporalTables");
 
+            // things unavailable for association classes
+            if (modelClass.IsAssociationClass)
+            {
+               propertyDescriptors.Remove("IsAbstract");
+               propertyDescriptors.Remove("IsDependentType");
+               propertyDescriptors.Remove("IsPropertyBag");
+               propertyDescriptors.Remove("IsQueryType");
+               propertyDescriptors.Remove("IsDatabaseView");
+               propertyDescriptors.Remove("ViewName");
+            }
+
             //Add the descriptors for the tracking properties 
 
             propertyDescriptors.Add(new TrackingPropertyDescriptor(modelClass
