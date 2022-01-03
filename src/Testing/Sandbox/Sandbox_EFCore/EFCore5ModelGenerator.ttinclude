@@ -1,18 +1,28 @@
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-
-using Sawczyn.EFDesigner.EFModel.Annotations;
-
-// ReSharper disable RedundantNameQualifier
-
-namespace Sawczyn.EFDesigner.EFModel.EditingOnly
-{
-   [UsedImplicitly]
-   public partial class GeneratedTextTransformation
-   {
-      #region Template
-      // EFDesigner v4.1.2.0
+<#@ include file="EF6ModelGenerator.ttinclude" once="true"
+#><#@ include file="EFCore2ModelGenerator.ttinclude" once="true"
+#><#@ include file="EFCore3ModelGenerator.ttinclude" once="true"
+#><#@ include file="EFCore5ModelGenerator.ttinclude" once="true"
+#><#@ include file="EFCoreModelGenerator.ttinclude" once="true"
+#><#@ include file="EFModelFileManager.ttinclude" once="true"
+#><#@ include file="EFModelGenerator.ttinclude" once="true"
+#><#@ include file="VSIntegration.ttinclude" once="true"
+#><#@ assembly name="System.Core"
+#><#@ assembly name="System.Data.Linq"
+#><#@ assembly name="System.Xml"
+#><#@ assembly name="System.Xml.Linq"
+#><#@ import namespace="System"
+#><#@ import namespace="System.IO"
+#><#@ import namespace="System.Globalization"
+#><#@ import namespace="System.Linq"
+#><#@ import namespace="System.Security"
+#><#@ import namespace="System.Text"
+#><#@ import namespace="System.Collections.Generic"
+#><#@ import namespace="System.Diagnostics.CodeAnalysis"
+#><#@ import namespace="EnvDTE"
+#><#@ import namespace="System.Data.Entity.Design.PluralizationServices"
+#><#@ import namespace="Microsoft.VisualStudio.TextTemplating"
+#><#+
+      // EFDesigner v4.1.0.0
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -402,47 +412,24 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                      }
                }
 
-               ModelClass associationClass = null;
-
                switch (association.SourceMultiplicity) // realized by property on target, but no property on target
                {
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
-                     segments.Add($"WithMany(p => p.{association.SourcePropertyName})");
-
-                     if (association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
                      {
-                        associationClass = modelClass.Store.ElementDirectory.AllElements.OfType<ModelClass>().FirstOrDefault(m => m.DescribedAssociationElementId == association.Id);
+                        segments.Add($"WithMany(p => p.{association.SourcePropertyName})");
+                        required = association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One;
 
-                        if (associationClass == null)
+                        if (association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
                         {
                            string tableMap = string.IsNullOrEmpty(association.JoinTableName)
                                                 ? $"{association.Target.Name}_{association.SourcePropertyName}_x_{association.Source.Name}_{association.TargetPropertyName}"
                                                 : association.JoinTableName;
 
-                           segments.Add($"UsingEntity(x => x.ToTable(\"{tableMap}\"))");
+                           segments.Add($"UsingEntity(x => x.ToTable(\"{tableMap.Trim('"')}\"))");
                         }
-                        else
-                        {
-                           string i = modelClass.ModelRoot.UseTabs ? "\t" : "   ";
-                           segments.Add($"UsingEntity<{associationClass.FullName}>(");
-                           segments.Add($"{i}j => j");
-                           segments.Add($"{i}     .HasOne(x => x.{association.SourcePropertyName})");
-                           segments.Add($"{i}     .WithMany(x => x.{association.TargetPropertyName}_{associationClass.Name})");
-                           segments.Add($"{i}     .HasForeignKey(x => x.{association.SourcePropertyName}Id),");
-                           segments.Add($"{i}j => j");
-                           segments.Add($"{i}     .HasOne(x => x.{association.TargetPropertyName})");
-                           segments.Add($"{i}     .WithMany(x => x.{association.SourcePropertyName}_{associationClass.Name})");
-                           segments.Add($"{i}     .HasForeignKey(x => x.{association.TargetPropertyName}Id),");
-                           segments.Add($"{i}j =>");
-                           segments.Add($"{i}{{");
-                           ConfigureTransientProperties(segments, associationClass);
-                           ConfigureTable(segments, associationClass);
-                           ConfigureModelAttributes(segments, modelClass);
-                           segments.Add($"{i}}});");
-                        }
-                     }
 
-                     break;
+                        break;
+                     }
 
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
@@ -451,21 +438,28 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                      break;
                }
 
-               if (associationClass == null)
+               string foreignKeySegment = CreateForeignKeySegment(association, foreignKeyColumns);
+
+               if (!string.IsNullOrEmpty(foreignKeySegment))
+                  segments.Add(foreignKeySegment);
+
+               if (association.Dependent == association.Target)
                {
-                  string foreignKeySegment = CreateForeignKeySegment(association, foreignKeyColumns);
-
-                  if (!string.IsNullOrEmpty(foreignKeySegment))
-                     segments.Add(foreignKeySegment);
-
-                  WriteSourceDeleteBehavior(association, segments);
-                  WriteTargetDeleteBehavior(association, segments);
-
-                  if (required
-                   && (association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One
-                    || association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
-                     segments.Add("IsRequired()");
+                  if (association.SourceDeleteAction == DeleteAction.None)
+                     segments.Add("OnDelete(DeleteBehavior.NoAction)");
+                  else if (association.SourceDeleteAction == DeleteAction.Cascade)
+                     segments.Add("OnDelete(DeleteBehavior.Cascade)");
                }
+               else if (association.Dependent == association.Source)
+               {
+                  if (association.TargetDeleteAction == DeleteAction.None)
+                     segments.Add("OnDelete(DeleteBehavior.NoAction)");
+                  else if (association.TargetDeleteAction == DeleteAction.Cascade)
+                     segments.Add("OnDelete(DeleteBehavior.Cascade)");
+               }
+
+               if (required)
+                  segments.Add("IsRequired()");
 
                Output(segments);
 
@@ -696,9 +690,5 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
       }
-      #endregion Template
-   }
-}
-
-
-
+      
+#>

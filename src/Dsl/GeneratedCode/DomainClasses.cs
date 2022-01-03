@@ -13794,6 +13794,6 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
 	partial class ModelRoot
 	{
-		public const string DSLVersion = "4.0.1.1";
+		public const string DSLVersion = "4.1.2.0";
 	}
 }

@@ -6,7 +6,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.1.0.0
+      // EFDesigner v4.1.2.0
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -14,7 +14,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
       {
          public EFCore3ModelGenerator(GeneratedTextTransformation host) : base(host) { }
 
-         protected override void WriteTargetDeleteBehavior(UnidirectionalAssociation association, List<string> segments)
+         protected override void WriteTargetDeleteBehavior(Association association, List<string> segments)
          {
             if (!association.Source.IsDependentType
              && !association.Target.IsDependentType

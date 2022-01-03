@@ -54,10 +54,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="EF6ModelGenerator.ttinclude" />
+    <None Include="EFCore2ModelGenerator.ttinclude" />
+    <None Include="EFCore3ModelGenerator.ttinclude" />
+    <None Include="EFCore5ModelGenerator.ttinclude" />
+    <None Include="EFCoreModelGenerator.ttinclude" />
     <None Include="EFModel1.efmodel" />
     <None Include="EFModel1.efmodel.diagramx">
       <DependentUpon>EFModel1.efmodel</DependentUpon>
     </None>
+    <None Include="EFModelGenerator.ttinclude" />
     <None Include="Properties\EFModel.efmodel" />
     <None Include="Properties\EFModel.efmodel.diagram">
       <DependentUpon>EFModel.efmodel</DependentUpon>
