@@ -403,6 +403,13 @@ namespace Sawczyn.EFDesigner.EFModel
             }
          }
 
+         if (CurrentSelection.OfType<ModelAttribute>().Any(a => a.ModelClass.IsAssociationClass && a.IsIdentity))
+         {
+            MessageDisplay.Show("Identity attributes of association classes can't be deleted");
+
+            return;
+         }
+
          base.ProcessOnMenuDeleteCommand();
       }
 

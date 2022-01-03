@@ -69,6 +69,20 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private bool ForceAddShape { get; set; }
 
+      public void Highlight(ShapeElement shape)
+      {
+         ShapeElement highlightShape = DetermineHighlightShape(shape);
+         if (highlightShape != null)
+            ActiveDiagramView.DiagramClientView.HighlightedShapes.Add(new DiagramItem(highlightShape));
+      }
+
+      public void Unhighlight(ShapeElement shape)
+      {
+         ShapeElement highlightShape = DetermineHighlightShape(shape);
+         if (highlightShape != null)
+            ActiveDiagramView.DiagramClientView.HighlightedShapes.Remove(new DiagramItem(highlightShape));
+      }
+
       public override void OnDragOver(DiagramDragEventArgs diagramDragEventArgs)
       {
          base.OnDragOver(diagramDragEventArgs);
@@ -76,7 +90,12 @@ namespace Sawczyn.EFDesigner.EFModel
          if (diagramDragEventArgs.Handled)
             return;
 
-         bool isDroppingAssociationClass = ClassShape.ShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition).Any() == true;
+         List<BidirectionalConnector> bidirectionalConnectorsUnderShape = ClassShape.ShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
+
+         foreach (BidirectionalConnector connector in bidirectionalConnectorsUnderShape)
+            Highlight(connector);
+
+         bool isDroppingAssociationClass = bidirectionalConnectorsUnderShape?.Any() == true;
 
          if (isDroppingAssociationClass)
             diagramDragEventArgs.Effect = DragDropEffects.Link;
