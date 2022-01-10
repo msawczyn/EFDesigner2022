@@ -31,6 +31,16 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          segments.Clear();
       }
 
+      protected void OutputNoTerminator(List<string> segments)
+      {
+         if (ModelRoot.ChopMethodChains)
+            OutputChoppedNoTerminator(segments);
+         else
+            Output(string.Join(".", segments));
+
+         segments.Clear();
+      }
+
       protected void Output(string text)
       {
          if (text == "}")
@@ -72,6 +82,34 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
          if (!segmentArray[segmentArray.Length - 1].Trim().EndsWith(";"))
             segmentArray[segmentArray.Length - 1] = segmentArray[segmentArray.Length - 1] + ";";
+
+         foreach (string segment in segmentArray)
+            Output(segment);
+
+         segments.Clear();
+      }
+
+      protected void OutputChoppedNoTerminator(List<string> segments)
+      {
+         string[] segmentArray = segments?.ToArray() ?? new string[0];
+
+         if (!segmentArray.Any())
+            return;
+
+         int indent = segmentArray[0].IndexOf('.');
+
+         if (indent == -1)
+         {
+            if (segmentArray.Length > 1)
+            {
+               segmentArray[0] = $"{segmentArray[0]}.{segmentArray[1]}";
+               indent = segmentArray[0].IndexOf('.');
+               segmentArray = segmentArray.Where((source, index) => index != 1).ToArray();
+            }
+         }
+
+         for (int index = 1; index < segmentArray.Length; ++index)
+            segmentArray[index] = $"{new string(' ', indent)}.{segmentArray[index]}";
 
          foreach (string segment in segmentArray)
             Output(segment);
@@ -139,8 +177,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          // implementations delegated to the surrounding GeneratedTextTransformation for backward compatability
          protected void NL() { host.NL(); }
          protected void Output(List<string> segments) { host.Output(segments); }
+         protected void OutputNoTerminator(List<string> segments) { host.OutputNoTerminator(segments); }
          protected void Output(string text) { host.Output(text); }
          protected void Output(string template, params object[] items) { host.Output(template, items); }
+         protected void PushIndent(string indent) { host.PushIndent(indent); }
+         protected void PopIndent() { host.PopIndent(); }
          protected void ClearIndent() { host.ClearIndent(); }
 
          public static string[] NonNullableTypes

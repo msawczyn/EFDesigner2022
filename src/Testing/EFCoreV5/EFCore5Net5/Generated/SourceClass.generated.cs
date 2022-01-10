@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.0.0.0
+//     Produced by Entity Framework Visual Editor v4.1.2.0
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -22,47 +22,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace SureImpact.Data.Framework
+namespace Testing
 {
-   public partial class TestView
+   public partial class SourceClass
    {
       partial void Init();
 
       /// <summary>
-      /// Default constructor. Protected due to required properties, but present because EF needs it.
+      /// Default constructor
       /// </summary>
-      protected TestView()
+      public SourceClass()
       {
-         Init();
-      }
-
-      /// <summary>
-      /// Replaces default constructor, since it's protected. Caller assumes responsibility for setting all required values before saving.
-      /// </summary>
-      public static TestView CreateTestViewUnsafe()
-      {
-         return new TestView();
-      }
-
-      /// <summary>
-      /// Public constructor with required data
-      /// </summary>
-      /// <param name="teststring">Test string</param>
-      public TestView(string teststring)
-      {
-         if (string.IsNullOrEmpty(teststring)) throw new ArgumentNullException(nameof(teststring));
-         this.TestString = teststring;
+         TargetClasses = new System.Collections.Generic.HashSet<global::Testing.TargetClass>();
+         AssocClasses = new System.Collections.Generic.HashSet<global::Testing.AssocClass>();
 
          Init();
-      }
-
-      /// <summary>
-      /// Static create function (for use in LINQ queries, etc.)
-      /// </summary>
-      /// <param name="teststring">Test string</param>
-      public static TestView Create(string teststring)
-      {
-         return new TestView(teststring);
       }
 
       /*************************************************************************
@@ -70,14 +44,26 @@ namespace SureImpact.Data.Framework
        *************************************************************************/
 
       /// <summary>
-      /// Indexed, Required, Max length = 200
-      /// Test string
+      /// Identity, Indexed, Required
+      /// Unique identifier
       /// </summary>
+      [Key]
       [Required]
-      [MaxLength(200)]
-      [StringLength(200)]
-      [System.ComponentModel.Description("Test string")]
-      public string TestString { get; set; }
+      [System.ComponentModel.Description("Unique identifier")]
+      public long Id { get; set; }
+
+      /*************************************************************************
+       * Navigation properties
+       *************************************************************************/
+
+      /// <summary>
+      /// Association class for TargetClasses
+      /// </summary>
+      [System.ComponentModel.Description("Association class for TargetClasses")]
+      [System.ComponentModel.DataAnnotations.Display(Name="Association object for TargetClasses")]
+      public virtual ICollection<global::Testing.AssocClass> AssocClasses { get; private set; }
+
+      public virtual ICollection<global::Testing.TargetClass> TargetClasses { get; private set; }
 
    }
 }

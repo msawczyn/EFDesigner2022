@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v3.0.4.7
+//     Produced by Entity Framework Visual Editor v4.1.2.0
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -24,15 +24,18 @@ using System.Runtime.CompilerServices;
 
 namespace Testing
 {
-   public partial class EntityImplementation: global::Testing.EntityAbstract
+   public partial class TargetClass: global::Testing.EntityAbstract
    {
       partial void Init();
 
       /// <summary>
       /// Default constructor
       /// </summary>
-      public EntityImplementation(): base()
+      public TargetClass(): base()
       {
+         AssocClasses = new System.Collections.Generic.HashSet<global::Testing.AssocClass>();
+         SourceClasses = new System.Collections.Generic.HashSet<global::Testing.SourceClass>();
+
          Init();
       }
 
@@ -51,7 +54,14 @@ namespace Testing
        * Navigation properties
        *************************************************************************/
 
-      public virtual global::Testing.Entity1 Entity1 { get; set; }
+      /// <summary>
+      /// Association class for SourceClasses
+      /// </summary>
+      [System.ComponentModel.Description("Association class for SourceClasses")]
+      [System.ComponentModel.DataAnnotations.Display(Name="Association object for SourceClasses")]
+      public virtual ICollection<global::Testing.AssocClass> AssocClasses { get; private set; }
+
+      public virtual ICollection<global::Testing.SourceClass> SourceClasses { get; private set; }
 
    }
 }

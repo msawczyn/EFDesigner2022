@@ -11,7 +11,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    [UsedImplicitly]
    public partial class GeneratedTextTransformation
    {
-      #region Template
+#region Template
+
       // EFDesigner v4.1.2.0
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
@@ -98,12 +99,23 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
          protected override void ConfigureTable(List<string> segments, ModelClass modelClass)
          {
-            string tableName = string.IsNullOrEmpty(modelClass.TableName) ? modelClass.Name : modelClass.TableName;
-            string viewName = string.IsNullOrEmpty(modelClass.ViewName) ? modelClass.Name : modelClass.ViewName;
-            string schema = string.IsNullOrEmpty(modelClass.DatabaseSchema) || modelClass.DatabaseSchema == modelClass.ModelRoot.DatabaseSchema ? string.Empty : $", \"{modelClass.DatabaseSchema}\"";
+            string tableName = string.IsNullOrEmpty(modelClass.TableName)
+                                  ? modelClass.Name
+                                  : modelClass.TableName;
+
+            string viewName = string.IsNullOrEmpty(modelClass.ViewName)
+                                 ? modelClass.Name
+                                 : modelClass.ViewName;
+
+            string schema = string.IsNullOrEmpty(modelClass.DatabaseSchema) || modelClass.DatabaseSchema == modelClass.ModelRoot.DatabaseSchema
+                               ? string.Empty
+                               : $", \"{modelClass.DatabaseSchema}\"";
 
             List<string> modifiers = new List<string>();
-            if (modelClass.ExcludeFromMigrations) modifiers.Add("t.ExcludeFromMigrations();");
+
+            if (modelClass.ExcludeFromMigrations)
+               modifiers.Add("t.ExcludeFromMigrations();");
+
             if (modelClass.UseTemporalTables
              && !modelClass.IsDatabaseView
              && (!modelClass.Subclasses.Any() || modelClass.ModelRoot.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
@@ -177,6 +189,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                segments.Add($"UseCollation(\"{modelAttribute.DatabaseCollation.Trim('"')}\")");
 
             int index = segments.IndexOf("IsRequired()");
+
             if (index >= 0)
             {
                segments.RemoveAt(index);
@@ -252,7 +265,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                visited.Add(association);
 
                List<string> segments = new List<string>();
-               string separator = sourceInstance.ModelRoot.ShadowKeyNamePattern == ShadowKeyPattern.TableColumn ? string.Empty : "_";
+
+               string separator = sourceInstance.ModelRoot.ShadowKeyNamePattern == ShadowKeyPattern.TableColumn
+                                     ? string.Empty
+                                     : "_";
 
                switch (association.TargetMultiplicity) // realized by property on source
                {
@@ -402,8 +418,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                      }
                }
 
-               ModelClass associationClass = null;
-
                switch (association.SourceMultiplicity) // realized by property on target, but no property on target
                {
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
@@ -411,34 +425,14 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                      if (association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
                      {
-                        associationClass = modelClass.Store.ElementDirectory.AllElements.OfType<ModelClass>().FirstOrDefault(m => m.DescribedAssociationElementId == association.Id);
+                        ModelClass associationClass = modelClass.Store.ElementDirectory.AllElements.OfType<ModelClass>().FirstOrDefault(m => m.DescribedAssociationElementId == association.Id);
 
                         if (associationClass == null)
-                        {
-                           string tableMap = string.IsNullOrEmpty(association.JoinTableName)
-                                                ? $"{association.Target.Name}_{association.SourcePropertyName}_x_{association.Source.Name}_{association.TargetPropertyName}"
-                                                : association.JoinTableName;
-
-                           segments.Add($"UsingEntity(x => x.ToTable(\"{tableMap}\"))");
-                        }
+                           segments.AddRange(WriteStandardBidirectionalAssociation(association, foreignKeyColumns, required));
                         else
                         {
-                           string i = modelClass.ModelRoot.UseTabs ? "\t" : "   ";
-                           segments.Add($"UsingEntity<{associationClass.FullName}>(");
-                           segments.Add($"{i}j => j");
-                           segments.Add($"{i}     .HasOne(x => x.{association.SourcePropertyName})");
-                           segments.Add($"{i}     .WithMany(x => x.{association.TargetPropertyName}_{associationClass.Name})");
-                           segments.Add($"{i}     .HasForeignKey(x => x.{association.SourcePropertyName}Id),");
-                           segments.Add($"{i}j => j");
-                           segments.Add($"{i}     .HasOne(x => x.{association.TargetPropertyName})");
-                           segments.Add($"{i}     .WithMany(x => x.{association.SourcePropertyName}_{associationClass.Name})");
-                           segments.Add($"{i}     .HasForeignKey(x => x.{association.TargetPropertyName}Id),");
-                           segments.Add($"{i}j =>");
-                           segments.Add($"{i}{{");
-                           ConfigureTransientProperties(segments, associationClass);
-                           ConfigureTable(segments, associationClass);
-                           ConfigureModelAttributes(segments, modelClass);
-                           segments.Add($"{i}}});");
+                           OutputNoTerminator(segments);
+                           WriteBidirectionalAssociationWithAssociationClass(modelClass, associationClass, association);
                         }
                      }
 
@@ -449,22 +443,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                      segments.Add($"WithOne(p => p.{association.SourcePropertyName})");
 
                      break;
-               }
-
-               if (associationClass == null)
-               {
-                  string foreignKeySegment = CreateForeignKeySegment(association, foreignKeyColumns);
-
-                  if (!string.IsNullOrEmpty(foreignKeySegment))
-                     segments.Add(foreignKeySegment);
-
-                  WriteSourceDeleteBehavior(association, segments);
-                  WriteTargetDeleteBehavior(association, segments);
-
-                  if (required
-                   && (association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One
-                    || association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
-                     segments.Add("IsRequired()");
                }
 
                Output(segments);
@@ -500,6 +478,139 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
 
+         private IEnumerable<string> WriteStandardBidirectionalAssociation(BidirectionalAssociation association, List<string> foreignKeyColumns, bool required)
+         {
+            List<string> segments = new List<string>();
+
+            string tableMap = string.IsNullOrEmpty(association.JoinTableName)
+                                 ? $"{association.Target.Name}_{association.SourcePropertyName}_x_{association.Source.Name}_{association.TargetPropertyName}"
+                                 : association.JoinTableName;
+
+            segments.Add($"UsingEntity(x => x.ToTable(\"{tableMap}\"))");
+
+            string foreignKeySegment = CreateForeignKeySegment(association, foreignKeyColumns);
+
+            if (!string.IsNullOrEmpty(foreignKeySegment))
+               segments.Add(foreignKeySegment);
+
+            WriteSourceDeleteBehavior(association, segments);
+            WriteTargetDeleteBehavior(association, segments);
+
+            if (required
+             && (association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One
+              || association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
+               segments.Add("IsRequired()");
+
+            return segments;
+         }
+
+         private void WriteBidirectionalAssociationWithAssociationClass(ModelClass modelClass, ModelClass associationClass, BidirectionalAssociation association)
+         {
+            /*
+        modelBuilder.Entity<Post>()
+            .HasMany(p => p.Tags)
+            .WithMany(p => p.Posts)
+            .UsingEntity<PostTag>(
+                j => j
+                    .HasOne(pt => pt.Tag)
+                    .WithMany(t => t.PostTags)
+                    .HasForeignKey(pt => pt.TagId),
+                j => j
+                    .HasOne(pt => pt.Post)
+                    .WithMany(p => p.PostTags)
+                    .HasForeignKey(pt => pt.PostId),
+                j =>
+                {
+                    j.Property(pt => pt.PublicationDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                    j.HasKey(t => new { t.PostId, t.TagId });
+                });
+             */
+            string indent = associationClass.ModelRoot.UseTabs
+                               ? "\t"
+                               : "   ";
+            BidirectionalAssociation associationToSource = (BidirectionalAssociation)associationClass.AllNavigationProperties().First(n => n.AssociationObject.Source == association.Source).AssociationObject;
+            BidirectionalAssociation associationToTarget = (BidirectionalAssociation)associationClass.AllNavigationProperties().First(n => n.AssociationObject.Target == association.Target).AssociationObject;
+            Output($".UsingEntity<{associationClass.FullName}>(");
+            PushIndent(indent);
+            Output("j => j");
+            PushIndent(indent);
+            Output($".HasOne(x => x.{associationToTarget.TargetPropertyName})");
+            Output($".WithMany(x => x.{associationToTarget.SourcePropertyName})");
+            Output($".HasForeignKey(x => x.{associationToTarget.TargetPropertyName}Id),");
+            PopIndent();
+            Output("j => j");
+            PushIndent(indent);
+            Output($".HasOne(x => x.{associationToSource.SourcePropertyName})");
+            Output($".WithMany(x => x.{associationToSource.TargetPropertyName})");
+            Output($".HasForeignKey(x => x.{associationToSource.SourcePropertyName}Id),");
+            PopIndent();
+            Output("j =>");
+            Output("{");
+
+#region transient properties
+
+            foreach (ModelAttribute transient in associationClass.Attributes.Where(x => !x.Persistent))
+               Output($"j.Ignore(t => t.{transient.Name});");
+
+#endregion
+
+#region table definition
+
+            string tableName = string.IsNullOrEmpty(associationClass.TableName)
+                                  ? associationClass.Name
+                                  : associationClass.TableName;
+
+            string schema = string.IsNullOrEmpty(associationClass.DatabaseSchema) || associationClass.DatabaseSchema == associationClass.ModelRoot.DatabaseSchema
+                               ? string.Empty
+                               : $", \"{associationClass.DatabaseSchema}\"";
+
+            List<string> modifiers = new List<string>();
+
+            if (associationClass.UseTemporalTables)
+               modifiers.Add(" t.IsTemporal();");
+
+            string buildActions = modifiers.Any()
+                                     ? $", t => {{ {string.Join(" ", modifiers)} }}"
+                                     : string.Empty;
+
+            Output($"j.ToTable(\"{tableName}\"{schema}{buildActions});");
+
+            // primary key code segments must be output last, since HasKey returns a different type
+            List<ModelAttribute> identityAttributes = associationClass.IdentityAttributes.ToList();
+
+            if (identityAttributes.Count == 1)
+               Output($"j.HasKey(t => t.{identityAttributes[0].Name});");
+            else if (identityAttributes.Count > 1)
+               Output($"j.HasKey(t => new {{ t.{string.Join(", t.", identityAttributes.Select(ia => ia.Name))} }});");
+
+#endregion
+
+#region model attributes
+
+            foreach (ModelAttribute modelAttribute in associationClass.Attributes.Where(x => x.Persistent && !x.IsIdentity))
+            {
+               List<string> buffer = new List<string>();
+               buffer.AddRange(GatherModelAttributeSegments(modelAttribute));
+
+               if (modelAttribute.Indexed)
+               {
+                  buffer.Add($"HasIndex(t => t.{modelAttribute.Name})");
+
+                  if (modelAttribute.IndexedUnique)
+                     buffer.Add("IsUnique()");
+               }
+
+               if (buffer.Any())
+                  Output($"j.Property(t => t.{modelAttribute.Name}).{string.Join(".", buffer)};");
+            }
+
+#endregion
+
+            PopIndent();
+            Output("});");
+            PopIndent();
+         }
+
          [SuppressMessage("ReSharper", "RedundantNameQualifier")]
          protected override void ConfigureUnidirectionalAssociations(ModelClass modelClass
                                                                    , List<Association> visited
@@ -523,7 +634,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                visited.Add(association);
 
                List<string> segments = new List<string>();
-               string separator = sourceInstance.ModelRoot.ShadowKeyNamePattern == ShadowKeyPattern.TableColumn ? string.Empty : "_";
+
+               string separator = sourceInstance.ModelRoot.ShadowKeyNamePattern == ShadowKeyPattern.TableColumn
+                                     ? string.Empty
+                                     : "_";
 
                switch (association.TargetMultiplicity) // realized by property on source
                {
@@ -622,6 +736,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      segments.Add($"HasMany<{association.Target.FullName}>(p => p.{association.TargetPropertyName})");
                      required = (association.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One);
+
                      break;
 
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
@@ -694,9 +809,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   Output(segments);
                }
             }
+
+#endregion Template
          }
       }
-      #endregion Template
    }
 }
 

@@ -90,7 +90,7 @@ namespace Sawczyn.EFDesigner.EFModel
          if (diagramDragEventArgs.Handled)
             return;
 
-         List<BidirectionalConnector> bidirectionalConnectorsUnderShape = ClassShape.ShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
+         List<BidirectionalConnector> bidirectionalConnectorsUnderShape = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
 
          foreach (BidirectionalConnector connector in bidirectionalConnectorsUnderShape)
             Highlight(connector);
@@ -121,7 +121,7 @@ namespace Sawczyn.EFDesigner.EFModel
                             && filenames2.All(File.Exists))
                            || (diagramDragEventArgs.Data.GetData("FileDrop") is string[] filenames3 && filenames3.All(File.Exists));
 
-         bool isDroppingAssociationClass = ClassShape.ShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition).Any() == true;
+         bool isDroppingAssociationClass = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition).Any() == true;
 
          return IsDroppingExternal || isDroppingAssociationClass;
       }
@@ -160,7 +160,7 @@ namespace Sawczyn.EFDesigner.EFModel
          ModelElement element = (diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelClass") as ModelElement)
                              ?? (diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelEnum") as ModelElement);
 
-         List<BidirectionalConnector> candidates = ClassShape.ShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
+         List<BidirectionalConnector> candidates = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
 
          // are we creating an association class?
          if (candidates?.Any() == true)
@@ -219,7 +219,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
          void MakeAssociationClass(List<BidirectionalConnector> possibleConnectors)
          {
-            ModelClass modelClass = (ModelClass)ClassShape.ShapeDragData.ClassShape.ModelElement;
+            ModelClass modelClass = (ModelClass)ClassShape.ClassShapeDragData.ClassShape.ModelElement;
 
             using (Transaction t = modelClass.Store.TransactionManager.BeginTransaction("Creating association class"))
             {
@@ -230,7 +230,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   if (BooleanQuestionDisplay.Show(Store, $"Make {modelClass.Name} an association class for {association.GetDisplayText()}?") == true)
                   {
                      modelClass.ConvertToAssociationClass(association);
-                     ClassShape.ShapeDragData = null;
+                     ClassShape.ClassShapeDragData = null;
 
                      break;
                   }
@@ -239,7 +239,7 @@ namespace Sawczyn.EFDesigner.EFModel
                t.Commit();
             }
 
-            ClassShape.ShapeDragData = null;
+            ClassShape.ClassShapeDragData = null;
          }
 
          void AddToDiagram(ModelElement elementToAdd, PointD atPosition)
@@ -369,7 +369,7 @@ namespace Sawczyn.EFDesigner.EFModel
       public override void OnMouseUp(DiagramMouseEventArgs e)
       {
          IsDroppingExternal = false;
-         ClassShape.ShapeDragData = null;
+         ClassShape.ClassShapeDragData = null;
          base.OnMouseUp(e);
       }
 

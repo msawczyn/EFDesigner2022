@@ -365,6 +365,11 @@
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
         </DomainProperty>
+        <DomainProperty Id="65d03977-253f-4e9c-a946-14d0e416446d" Description="If true, will allow generating [Comment] attributes on C# class" Name="GenerateTableComments" DisplayName="Generate Table Comments" DefaultValue="true" Category="Database">
+          <Type>
+            <ExternalTypeMoniker Name="/System/Boolean" />
+          </Type>
+        </DomainProperty>
       </Properties>
       <ElementMergeDirectives>
         <ElementMergeDirective>
@@ -606,6 +611,19 @@
         <DomainProperty Id="2105ff46-f992-4148-9777-fa49f02751aa" Description="When IsAssociationClass is true, the element id of the association this entity extends" Name="DescribedAssociationElementId" DisplayName="Described Association Element Id" SetterAccessModifier="Assembly" IsBrowsable="false">
           <Type>
             <ExternalTypeMoniker Name="/System/Guid" />
+          </Type>
+        </DomainProperty>
+        <DomainProperty Id="221e8cda-f6f7-49e6-a03c-9ee9ce2755ff" Description="Table comment that will be applied to the database, if possible" Name="TableComment" DisplayName="Table Comment" Category="Database">
+          <Attributes>
+            <ClrAttribute Name="System.ComponentModel.Editor">
+              <Parameters>
+                <AttributeParameter Value="typeof(System.ComponentModel.Design.MultilineStringEditor)" />
+                <AttributeParameter Value="typeof(System.Drawing.Design.UITypeEditor)" />
+              </Parameters>
+            </ClrAttribute>
+          </Attributes>
+          <Type>
+            <ExternalTypeMoniker Name="/System/String" />
           </Type>
         </DomainProperty>
       </Properties>
@@ -2344,6 +2362,9 @@
           <XmlPropertyData XmlName="showInterfaceIndicators">
             <DomainPropertyMoniker Name="ModelRoot/ShowInterfaceIndicators" />
           </XmlPropertyData>
+          <XmlPropertyData XmlName="generateTableComments">
+            <DomainPropertyMoniker Name="ModelRoot/GenerateTableComments" />
+          </XmlPropertyData>
         </ElementData>
       </XmlClassData>
       <XmlClassData TypeName="ModelClass" MonikerAttributeName="" SerializeId="true" MonikerElementName="modelClassMoniker" ElementName="modelClass" MonikerTypeName="ModelClassMoniker">
@@ -2462,6 +2483,9 @@
           </XmlPropertyData>
           <XmlPropertyData XmlName="describedAssociationElementId">
             <DomainPropertyMoniker Name="ModelClass/DescribedAssociationElementId" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="tableComment">
+            <DomainPropertyMoniker Name="ModelClass/TableComment" />
           </XmlPropertyData>
         </ElementData>
       </XmlClassData>
