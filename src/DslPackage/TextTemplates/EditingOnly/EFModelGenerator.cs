@@ -1100,7 +1100,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   Output("}");
                   Output("set");
                   Output("{");
-                  Output($"{type} oldValue = {navigationProperty.BackingFieldName};");
+                  Output($"{type} oldValue = {navigationProperty.PropertyName};");
                   Output($"Set{navigationProperty.PropertyName}(oldValue, ref value);");
                   Output("if (oldValue != value)");
                   Output("{");
@@ -1232,7 +1232,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   Output("}");
                   Output($"{setterVisibility}set");
                   Output("{");
-                  Output($"{modelAttribute.FQPrimitiveType}{nullable} oldValue = {modelAttribute.BackingFieldName};");
+                  Output($"{modelAttribute.FQPrimitiveType}{nullable} oldValue = {modelAttribute.Name};");
                   Output($"Set{modelAttribute.Name}(oldValue, ref value);");
                   Output("if (oldValue != value)");
                   Output("{");
