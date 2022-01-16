@@ -845,7 +845,7 @@
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
         </DomainProperty>
-        <DomainProperty Id="8282d835-2c0e-4d59-a638-6d3c6e494260" Description="If present, this attribute is a foreign key for the association named by this Guid" Name="IsForeignKeyFor" DisplayName="Is Foreign Key For" GetterAccessModifier="Assembly" SetterAccessModifier="Assembly" IsBrowsable="false" IsUIReadOnly="true">
+        <DomainProperty Id="8282d835-2c0e-4d59-a638-6d3c6e494260" Description="If present, this attribute is a foreign key for the association named by this Guid" Name="IsForeignKeyFor" DisplayName="Is Foreign Key For" SetterAccessModifier="Assembly" IsBrowsable="false" IsUIReadOnly="true">
           <Type>
             <ExternalTypeMoniker Name="/System/Guid" />
           </Type>

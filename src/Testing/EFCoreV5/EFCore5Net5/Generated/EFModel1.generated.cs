@@ -84,60 +84,36 @@ namespace Testing
 
          modelBuilder.HasDefaultSchema("dbo");
 
-         modelBuilder.Entity<global::Testing.EntityAbstract>()
-                     .ToTable("EntityAbstract")
-                     .HasKey(t => t.Id);
-         modelBuilder.Entity<global::Testing.EntityAbstract>()
-                     .Property(t => t.Id)
-                     .ValueGeneratedOnAdd()
-                     .IsRequired();
+         modelBuilder.Entity<global::Testing.EntityAbstract>().ToTable("EntityAbstract").HasKey(t => t.Id);
+         modelBuilder.Entity<global::Testing.EntityAbstract>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
 
-         modelBuilder.Entity<global::Testing.EntityRelated>()
-                     .ToTable("EntityRelated")
-                     .HasKey(t => t.Id);
-         modelBuilder.Entity<global::Testing.EntityRelated>()
-                     .Property(t => t.Id)
-                     .ValueGeneratedOnAdd()
-                     .IsRequired();
-         modelBuilder.Entity<global::Testing.EntityRelated>()
-                     .HasOne<global::Testing.EntityAbstract>(p => p.EntityAbstract)
-                     .WithMany(p => p.EntityRelated);
+         modelBuilder.Entity<global::Testing.EntityRelated>().ToTable("EntityRelated").HasKey(t => t.Id);
+         modelBuilder.Entity<global::Testing.EntityRelated>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
+         modelBuilder.Entity<global::Testing.EntityRelated>().HasOne<global::Testing.EntityAbstract>(p => p.EntityAbstract).WithMany(p => p.EntityRelated);
 
-         modelBuilder.Entity<global::Testing.SourceClass>()
-                     .ToTable("SourceClasses")
-                     .HasKey(t => t.Id);
-         modelBuilder.Entity<global::Testing.SourceClass>()
-                     .Property(t => t.Id)
-                     .ValueGeneratedOnAdd()
-                     .IsRequired();
-         modelBuilder.Entity<global::Testing.SourceClass>()
-                     .HasMany<global::Testing.TargetClass>(p => p.TargetClasses)
-                     .WithMany(p => p.SourceClasses)
-         .UsingEntity<global::Testing.AssocClass>(
-            j => j
-               .HasOne(x => x.SourceClass)
-               .WithMany(x => x.TargetClass)
-               .HasForeignKey(x => x.SourceClassId),
-            j => j
-               .HasOne(x => x.TargetClass)
-               .WithMany(x => x.SourceClass)
-               .HasForeignKey(x => x.TargetClassesId),
-            j =>
-            {
-               j.ToTable("AssocClasses");
-               j.HasKey(t => new { t.SourceClassesId, t.TargetClassesId });
-               j.Property(t => t.Id).IsRequired().HasIndex(t => t.Id).IsUnique();
-            });
-         modelBuilder.Entity<global::Testing.SourceClass>()
-                     .HasMany<global::Testing.AssocClass>(p => p.AssocClasses)
-                     .WithOne(p => p.SourceClass);
+         modelBuilder.Entity<global::Testing.SourceClass>().ToTable("SourceClasses").HasKey(t => t.Id);
+         modelBuilder.Entity<global::Testing.SourceClass>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
+         modelBuilder.Entity<global::Testing.SourceClass>().HasMany<global::Testing.TargetClass>(p => p.TargetClasses).WithMany(p => p.SourceClasses)
+            .UsingEntity<global::Testing.AssocClass>(
+               j => j
+                  .HasOne(x => x.TargetClass)
+                  .WithMany(x => x.AssocClasses)
+                  .HasForeignKey(x => x.TargetClassesId),
+               j => j
+                  .HasOne(x => x.SourceClass)
+                  .WithMany(x => x.AssocClasses)
+                  .HasForeignKey(x => x.SourceClassesId),
+               j =>
+               {
+                  j.ToTable("AssocClasses");
+                  j.HasKey(t => new { t.SourceClassesId, t.TargetClassesId });
+                  j.Property(t => t.Id).IsRequired();
+                  j.HasIndex(t => t.Id).IsUnique();
+               });
+         modelBuilder.Entity<global::Testing.SourceClass>().HasMany<global::Testing.AssocClass>(p => p.AssocClasses).WithOne(p => p.SourceClass);
 
-         modelBuilder.Entity<global::Testing.TargetClass>()
-                     .Property(t => t.Test)
-                     .HasMaxLength(255);
-         modelBuilder.Entity<global::Testing.TargetClass>()
-                     .HasMany<global::Testing.AssocClass>(p => p.AssocClasses)
-                     .WithOne(p => p.TargetClass);
+         modelBuilder.Entity<global::Testing.TargetClass>().Property(t => t.Test).HasMaxLength(255);
+         modelBuilder.Entity<global::Testing.TargetClass>().HasMany<global::Testing.AssocClass>(p => p.AssocClasses).WithOne(p => p.TargetClass);
 
          OnModelCreatedImpl(modelBuilder);
       }

@@ -5925,10 +5925,7 @@ namespace Sawczyn.EFDesigner.EFModel
 	      // IsForeignKeyFor
 	      if (!serializationContext.Result.Failed)
 	      {
-	         // Non-public getter, use DomainPropertyInfo method.
-	         DslModeling::DomainPropertyInfo propInfo = instanceOfModelAttribute.Partition.DomainDataDirectory.GetDomainProperty (ModelAttribute.IsForeignKeyForDomainPropertyId);
-	         global::System.Diagnostics.Debug.Assert (propInfo != null, "Cannot get DomainPropertyInfo for ModelAttribute.IsForeignKeyFor!");
-	         global::System.Guid propValue = ((global::System.Guid)propInfo.GetValue(instanceOfModelAttribute));
+	         global::System.Guid propValue = instanceOfModelAttribute.IsForeignKeyFor;
 	         string serializedPropValue = DslModeling::SerializationUtilities.GetString<global::System.Guid>(serializationContext, propValue);
 	         if (!serializationContext.Result.Failed)
 	         {

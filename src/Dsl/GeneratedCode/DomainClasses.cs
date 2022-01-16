@@ -11008,7 +11008,7 @@ namespace Sawczyn.EFDesigner.EFModel
 		[global::System.ComponentModel.Browsable(false)]
 		[global::System.ComponentModel.ReadOnly(true)]
 		[DslModeling::DomainObjectId("8282d835-2c0e-4d59-a638-6d3c6e494260")]
-		internal global::System.Guid IsForeignKeyFor
+		public global::System.Guid IsForeignKeyFor
 		{
 			[global::System.Diagnostics.DebuggerStepThrough]
 			get
@@ -11016,7 +11016,7 @@ namespace Sawczyn.EFDesigner.EFModel
 				return isForeignKeyForPropertyStorage;
 			}
 			[global::System.Diagnostics.DebuggerStepThrough]
-			set
+			internal set
 			{
 				IsForeignKeyForPropertyHandler.Instance.SetValue(this, value);
 			}

@@ -445,7 +445,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                      break;
                }
 
-               Output(segments);
+               if (segments.Any()) Output(segments);
 
                if (association.TargetAutoInclude)
                   Output($"modelBuilder.Entity<{association.Source.FullName}>().Navigation(e => e.{association.TargetPropertyName}).AutoInclude();");
@@ -506,43 +506,30 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
          private void WriteBidirectionalAssociationWithAssociationClass(ModelClass modelClass, ModelClass associationClass, BidirectionalAssociation association)
          {
-            /*
-        modelBuilder.Entity<Post>()
-            .HasMany(p => p.Tags)
-            .WithMany(p => p.Posts)
-            .UsingEntity<PostTag>(
-                j => j
-                    .HasOne(pt => pt.Tag)
-                    .WithMany(t => t.PostTags)
-                    .HasForeignKey(pt => pt.TagId),
-                j => j
-                    .HasOne(pt => pt.Post)
-                    .WithMany(p => p.PostTags)
-                    .HasForeignKey(pt => pt.PostId),
-                j =>
-                {
-                    j.Property(pt => pt.PublicationDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
-                    j.HasKey(t => new { t.PostId, t.TagId });
-                });
-             */
             string indent = associationClass.ModelRoot.UseTabs
                                ? "\t"
                                : "   ";
             BidirectionalAssociation associationToSource = (BidirectionalAssociation)associationClass.AllNavigationProperties().First(n => n.AssociationObject.Source == association.Source).AssociationObject;
-            BidirectionalAssociation associationToTarget = (BidirectionalAssociation)associationClass.AllNavigationProperties().First(n => n.AssociationObject.Target == association.Target).AssociationObject;
+            BidirectionalAssociation associationToTarget = (BidirectionalAssociation)associationClass.AllNavigationProperties().First(n => n.AssociationObject.Source == association.Target).AssociationObject;
+            
+            if (modelClass.ModelRoot.ChopMethodChains) 
+               PushIndent("            "); 
+            else 
+               PushIndent(indent);
+
             Output($".UsingEntity<{associationClass.FullName}>(");
             PushIndent(indent);
             Output("j => j");
             PushIndent(indent);
-            Output($".HasOne(x => x.{associationToTarget.TargetPropertyName})");
-            Output($".WithMany(x => x.{associationToTarget.SourcePropertyName})");
-            Output($".HasForeignKey(x => x.{associationToTarget.TargetPropertyName}Id),");
+            Output($".HasOne(x => x.{associationToTarget.SourcePropertyName})");
+            Output($".WithMany(x => x.{associationToTarget.TargetPropertyName})");
+            Output($".HasForeignKey(x => x.{associationClass.Attributes.First(a => a.IsForeignKeyFor == associationToTarget.Id).Name}),");
             PopIndent();
             Output("j => j");
             PushIndent(indent);
             Output($".HasOne(x => x.{associationToSource.SourcePropertyName})");
             Output($".WithMany(x => x.{associationToSource.TargetPropertyName})");
-            Output($".HasForeignKey(x => x.{associationToSource.SourcePropertyName}Id),");
+            Output($".HasForeignKey(x => x.{associationClass.Attributes.First(a => a.IsForeignKeyFor == associationToSource.Id).Name}),");
             PopIndent();
             Output("j =>");
             Output("{");
@@ -575,7 +562,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             Output($"j.ToTable(\"{tableName}\"{schema}{buildActions});");
 
-            // primary key code segments must be output last, since HasKey returns a different type
             List<ModelAttribute> identityAttributes = associationClass.IdentityAttributes.ToList();
 
             if (identityAttributes.Count == 1)
@@ -592,22 +578,26 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                List<string> buffer = new List<string>();
                buffer.AddRange(GatherModelAttributeSegments(modelAttribute));
 
+               if (buffer.Any())
+                  Output($"j.Property(t => t.{modelAttribute.Name}).{string.Join(".", buffer)};");
+
                if (modelAttribute.Indexed)
                {
+                  buffer.Clear();
                   buffer.Add($"HasIndex(t => t.{modelAttribute.Name})");
 
                   if (modelAttribute.IndexedUnique)
                      buffer.Add("IsUnique()");
-               }
 
-               if (buffer.Any())
-                  Output($"j.Property(t => t.{modelAttribute.Name}).{string.Join(".", buffer)};");
+                  Output($"j.{string.Join(".", buffer)};");
+               }
             }
 
 #endregion
 
             PopIndent();
             Output("});");
+            PopIndent();
             PopIndent();
          }
 
@@ -809,10 +799,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   Output(segments);
                }
             }
-
-#endregion Template
          }
       }
+#endregion Template
    }
 }
 
