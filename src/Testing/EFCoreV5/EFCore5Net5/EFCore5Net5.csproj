@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="microsoft.entityframeworkcore" Version="5.0.0" />
+    <PackageReference Include="microsoft.entityframeworkcore" Version="5.0.2" />
     <PackageReference Include="microsoft.entityframeworkcore.design" Version="5.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -43,6 +43,7 @@
     <Folder Include="Generated\Context\" />
     <Folder Include="Generated\Entities\" />
     <Folder Include="Generated\Enums\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>

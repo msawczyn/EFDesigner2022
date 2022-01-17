@@ -59,4 +59,8 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\EFCoreV5\EFCore5Net5\EFCore5Net5.csproj" />
+  </ItemGroup>
+
 </Project>
