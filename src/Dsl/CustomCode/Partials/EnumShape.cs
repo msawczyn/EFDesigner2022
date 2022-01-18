@@ -14,6 +14,32 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
    public partial class EnumShape : IHighlightFromModelExplorer, ICompartmentShapeMouseTarget
    {
+      private double backgroundLuminance = 0;
+
+      /// <summary>
+      /// This method is called when a shape is inititially created, derived classes can
+      /// override to perform shape instance initialization.  This method is always called within a transaction.
+      /// </summary>
+      public override void OnInitialize()
+      {
+         base.OnInitialize();
+
+         if (ModelDisplay.GetDiagramColors != null)
+            SetThemeColors(ModelDisplay.GetDiagramColors());
+      }
+
+      public void SetThemeColors(DiagramThemeColors diagramColors)
+      {
+         using (Transaction tx = Store.TransactionManager.BeginTransaction("Set diagram colors"))
+         {
+            // Calculate perceptive luminance - human eye favors green color... 
+            // bright colors (a < 0.5), dark colors (a >= 0.5)
+            backgroundLuminance = 1 - (0.299 * FillColor.R + 0.587 * FillColor.G + 0.114 * FillColor.B) / 255;
+
+            tx.Commit();
+         }
+      }
+
       /// <summary>
       /// Exposes NodeShape Collapse() function to DSL's context menu
       /// </summary>
@@ -50,8 +76,8 @@ namespace Sawczyn.EFDesigner.EFModel
          if (element is ModelEnumValue enumValue)
          {
             return modelRoot.ShowWarningsInDesigner && enumValue.GetHasWarningValue()
-                      ? Resources.Warning
-                      : Resources.EnumValue;
+                      ? (backgroundLuminance < .5 ? Resources.Warning : Resources.Warning_i)
+                      : (backgroundLuminance < .5 ? Resources.EnumValue : Resources.EnumValue_i);
          }
 
          return null;

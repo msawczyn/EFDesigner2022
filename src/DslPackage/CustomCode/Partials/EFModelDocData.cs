@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -15,6 +16,7 @@ using Microsoft.VisualStudio.Modeling;
 using Microsoft.VisualStudio.Modeling.Diagrams;
 using Microsoft.VisualStudio.Modeling.Shell;
 using Microsoft.VisualStudio.Modeling.Validation;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -43,6 +45,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   ? activeSolutionProjects.GetValue(0) as Project
                   : null;
 
+      
       internal static void GenerateCode()
       {
          GenerateCode(null);
@@ -208,6 +211,7 @@ namespace Sawczyn.EFDesigner.EFModel
          StatusDisplay.RegisterDisplayHandler(ShowStatus);
          ChoiceDisplay.RegisterDisplayHandler(GetChoice);
          ModelDisplay.RegisterLayoutDiagramAction(Commands.LayoutDiagram);
+         ModelDisplay.GetDiagramColors = GetDiagramColors;
 
          ClassShape.OpenCodeFile = OpenFileFor;
          ClassShape.ExecCodeGeneration = GenerateCode;
@@ -219,6 +223,8 @@ namespace Sawczyn.EFDesigner.EFModel
          ModelDiagramData.OpenDiagram = DisplayDiagram;
          ModelDiagramData.CloseDiagram = CloseDiagram;
          ModelDiagramData.RenameWindow = RenameWindow;
+
+         VSColorTheme.ThemeChanged += VSColorTheme_OnThemeChanged;
 
          // set to the project's namespace if no namespace set
          if (string.IsNullOrEmpty(modelRoot.Namespace))
@@ -324,6 +330,45 @@ namespace Sawczyn.EFDesigner.EFModel
          }
 
          SetDocDataDirty(0);
+      }
+
+      private DiagramThemeColors GetDiagramColors()
+      {
+         DiagramThemeColors result = new DiagramThemeColors();
+
+         Color backgroundColor = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
+         Color fontColor = VSColorTheme.GetThemedColor(EnvironmentColors.VSBrandingTextColorKey);
+         result.Background = backgroundColor;
+         result.Text = fontColor;
+
+         return result;
+      }
+
+      private void VSColorTheme_OnThemeChanged(ThemeChangedEventArgs e)
+      {
+         DiagramThemeColors diagramColors = GetDiagramColors();
+
+         foreach (EFModelDiagram diagram in Store.DefaultPartitionForClass(EFModelDiagram.DomainClassId).ElementDirectory.AllElements.OfType<EFModelDiagram>())
+            diagram.SetThemeColors(diagramColors);
+
+         foreach (GeneralizationConnector connector in Store.DefaultPartitionForClass(GeneralizationConnector.DomainClassId).ElementDirectory.AllElements.OfType<GeneralizationConnector>().ToArray())
+            connector.SetThemeColors(diagramColors);
+
+         foreach (AssociationConnector connector in Store.DefaultPartitionForClass(AssociationConnectorBase.DomainClassId).ElementDirectory.AllElements.OfType<AssociationConnector>().ToArray())
+            connector.SetThemeColors(diagramColors);
+
+         foreach (CommentConnector connector in Store.DefaultPartitionForClass(CommentConnector.DomainClassId).ElementDirectory.AllElements.OfType<CommentConnector>().ToArray())
+            connector.SetThemeColors(diagramColors);
+
+         foreach (ClassShape classShape in Store.DefaultPartitionForClass(ClassShapeBase.DomainClassId).ElementDirectory.AllElements.OfType<ClassShape>().ToArray())
+            classShape.SetThemeColors(diagramColors);
+
+         foreach (EnumShape enumShape in Store.DefaultPartitionForClass(EnumShapeBase.DomainClassId).ElementDirectory.AllElements.OfType<EnumShape>().ToArray())
+            enumShape.SetThemeColors(diagramColors);
+
+         foreach (CommentBoxShape commentShape in Store.DefaultPartitionForClass(CommentBoxShapeBase.DomainClassId).ElementDirectory.AllElements.OfType<CommentBoxShape>().ToArray())
+            commentShape.SetThemeColors(diagramColors);
+
       }
 
       private void DisplayDiagram(ModelDiagramData diagramData)

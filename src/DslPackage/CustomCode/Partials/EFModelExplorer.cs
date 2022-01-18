@@ -393,6 +393,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
       partial void Init()
       {
+         VSColorTheme.ThemeChanged += VSColorTheme_OnThemeChanged;
+
          // this sets up the images for use in the model explorer. They don't come out of Dsl::Resources.resx directly, but are named the same
          // See EFModelElementTreeNode.GetExplorerNodeImageName (below) for how this happens.
          foreach (KeyValuePair<string, Image> image in ClassShape.PropertyImages.Union(ClassShape.ClassImages))
@@ -425,6 +427,7 @@ namespace Sawczyn.EFDesigner.EFModel
          Controls.Add(ObjectModelBrowser);
          ObjectModelBrowser.BringToFront();
 
+         VSColorTheme_OnThemeChanged(default);
          ResumeLayout(false);
          PerformLayout();
 
@@ -432,6 +435,14 @@ namespace Sawczyn.EFDesigner.EFModel
          ObjectModelBrowser.ItemDrag += ObjectModelBrowser_OnItemDrag;
 
          InitSearch();
+      }
+
+      private void VSColorTheme_OnThemeChanged(ThemeChangedEventArgs e)
+      {
+         Color backgroundColor = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
+         Color fontColor = VSColorTheme.GetThemedColor(EnvironmentColors.VSBrandingTextColorKey);
+         ObjectModelBrowser.BackColor = backgroundColor;
+         ObjectModelBrowser.ForeColor = fontColor;
       }
 
       /// <summary>

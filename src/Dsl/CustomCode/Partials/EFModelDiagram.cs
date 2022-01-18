@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -12,10 +11,15 @@ using Microsoft.VisualStudio.Modeling.Diagrams.GraphObject;
 
 using Sawczyn.EFDesigner.EFModel.Extensions;
 
-using static System.Windows.Forms.AxHost;
-
 namespace Sawczyn.EFDesigner.EFModel
 {
+   public class DiagramThemeColors
+   {
+      public Color Background { get; set; }
+      public Color Text { get; set; }
+
+   }
+
    public partial class EFModelDiagram : IHasStore
    {
       public override void OnInitialize()
@@ -32,6 +36,20 @@ namespace Sawczyn.EFDesigner.EFModel
          ShowGrid = modelRoot?.ShowGrid ?? true;
          GridColor = modelRoot?.GridColor ?? Color.Gainsboro;
          SnapToGrid = modelRoot?.SnapToGrid ?? true;
+
+         if (ModelDisplay.GetDiagramColors != null)
+            SetThemeColors(ModelDisplay.GetDiagramColors());
+      }
+
+      public void SetThemeColors(DiagramThemeColors diagramColors)
+      {
+         using (Transaction tx = Store.TransactionManager.BeginTransaction("Set diagram colors"))
+         {
+            FillColor = diagramColors.Background;
+            TextColor = diagramColors.Text;
+
+            tx.Commit();
+         }
       }
 
       /// <summary>

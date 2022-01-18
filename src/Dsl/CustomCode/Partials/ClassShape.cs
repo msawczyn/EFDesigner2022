@@ -15,6 +15,41 @@ namespace Sawczyn.EFDesigner.EFModel
    public partial class ClassShape : IHighlightFromModelExplorer, ICompartmentShapeMouseTarget
    {
       internal static ClassShapeDragData ClassShapeDragData;
+      private static double backgroundLuminance = 0;
+
+      private bool UseInverseGlyphs
+      {
+         get
+         {
+            return backgroundLuminance >= .5;
+         }
+      }
+
+      /// <summary>
+      /// This method is called when a shape is inititially created, derived classes can
+      /// override to perform shape instance initialization.  This method is always called within a transaction.
+      /// </summary>
+      public override void OnInitialize()
+      {
+         base.OnInitialize();
+
+         if (ModelDisplay.GetDiagramColors != null)
+            SetThemeColors(ModelDisplay.GetDiagramColors());
+      }
+
+      public void SetThemeColors(DiagramThemeColors diagramColors)
+      {
+         using (Transaction tx = Store.TransactionManager.BeginTransaction("Set diagram colors"))
+         {
+            CompartmentMapping[] mappings = GetCompartmentMappings(typeof(ModelClass));
+
+            // Calculate perceptive luminance - human eye favors green color... 
+            // bright colors (a < 0.5), dark colors (a >= 0.5)
+            backgroundLuminance = 1 - (0.299 * FillColor.R + 0.587 * FillColor.G + 0.114 * FillColor.B) / 255;
+
+            tx.Commit();
+         }
+      }
 
       /// <summary>
       /// Initializes style set resources for this shape type
@@ -44,6 +79,23 @@ namespace Sawczyn.EFDesigner.EFModel
                     }}
          };
 
+      private static readonly Dictionary<bool, Dictionary<SetterAccessModifier, Bitmap>> InvertedAttributeGlyphs =
+         new Dictionary<bool, Dictionary<SetterAccessModifier, Bitmap>>
+         {
+            {true, new Dictionary<SetterAccessModifier, Bitmap>
+                   {
+                      { SetterAccessModifier.Public, Resources.Public_i },
+                      { SetterAccessModifier.Protected, Resources.Protected_i},
+                      { SetterAccessModifier.Internal, Resources.Internal_i}
+                   }},
+            {false, new Dictionary<SetterAccessModifier, Bitmap>
+                    {
+                       { SetterAccessModifier.Public, Resources.Calculated_i },
+                       { SetterAccessModifier.Protected, Resources.CalculatedProtected_i},
+                       { SetterAccessModifier.Internal, Resources.CalculatedInternal_i}
+                    }}
+         };
+
       private static readonly Dictionary<Multiplicity, Dictionary<Multiplicity, Bitmap>> AssociationGlyphs =
          new Dictionary<Multiplicity, Dictionary<Multiplicity, Bitmap>>
          {
@@ -64,6 +116,29 @@ namespace Sawczyn.EFDesigner.EFModel
                                        {Multiplicity.ZeroOne, Resources.Cardinality_many_0},
                                        {Multiplicity.One, Resources.Cardinality_many_1},
                                        {Multiplicity.ZeroMany, Resources.Cardinality_many_many},
+                                    }},
+         };
+
+      private static readonly Dictionary<Multiplicity, Dictionary<Multiplicity, Bitmap>> InvertedAssociationGlyphs =
+         new Dictionary<Multiplicity, Dictionary<Multiplicity, Bitmap>>
+         {
+            {Multiplicity.ZeroOne, new Dictionary<Multiplicity, Bitmap>
+                                   {
+                                      {Multiplicity.ZeroOne, Resources.Cardinality_0_0_i},
+                                      {Multiplicity.One, Resources.Cardinality_0_1_i},
+                                      {Multiplicity.ZeroMany, Resources.Cardinality_0_many_i},
+                                   }},
+            {Multiplicity.One, new Dictionary<Multiplicity, Bitmap>
+                               {
+                                  {Multiplicity.ZeroOne, Resources.Cardinality_1_0_i},
+                                  {Multiplicity.One, Resources.Cardinality_1_1_i},
+                                  {Multiplicity.ZeroMany, Resources.Cardinality_1_many_i},
+                               }},
+            {Multiplicity.ZeroMany, new Dictionary<Multiplicity, Bitmap>
+                                    {
+                                       {Multiplicity.ZeroOne, Resources.Cardinality_many_0_i},
+                                       {Multiplicity.One, Resources.Cardinality_many_1_i},
+                                       {Multiplicity.ZeroMany, Resources.Cardinality_many_many_i},
                                     }},
          };
 
@@ -142,10 +217,20 @@ namespace Sawczyn.EFDesigner.EFModel
          return mappings;
       }
 
+      public static ReadOnlyDictionary<string, Image> ClassImages
+      {
+         get
+         {
+            return backgroundLuminance < .5
+                      ? classImages
+                      : invertedClassImages;
+         }
+      }
+
       /// <summary>
       /// Maps names to images for class glyphs
       /// </summary>
-      public static readonly ReadOnlyDictionary<string, Image> ClassImages =
+      private static readonly ReadOnlyDictionary<string, Image> classImages =
          new ReadOnlyDictionary<string, Image>(new Dictionary<string, Image>
                                                {
                                                   { nameof(Resources.EntityGlyph), Resources.EntityGlyph }
@@ -158,10 +243,33 @@ namespace Sawczyn.EFDesigner.EFModel
                                                 , { nameof(Resources.AssociationClassGlyphVisible), Resources.AssociationClassGlyphVisible }
                                                });
 
+      private static readonly ReadOnlyDictionary<string, Image> invertedClassImages =
+         new ReadOnlyDictionary<string, Image>(new Dictionary<string, Image>
+                                               {
+                                                  { nameof(Resources.EntityGlyph), Resources.EntityGlyph_i }
+                                                , { nameof(Resources.EntityGlyphVisible), Resources.EntityGlyphVisible_i }
+                                                , { nameof(Resources.SQL), Resources.SQL_i }
+                                                , { nameof(Resources.SQLVisible), Resources.SQLVisible_i }
+                                                , { nameof(Resources.AbstractEntityGlyph), Resources.AbstractEntityGlyph_i }
+                                                , { nameof(Resources.AbstractEntityGlyphVisible), Resources.AbstractEntityGlyphVisible_i }
+                                                , { nameof(Resources.AssociationClassGlyph), Resources.AssociationClassGlyph_i }
+                                                , { nameof(Resources.AssociationClassGlyphVisible), Resources.AssociationClassGlyphVisible_i }
+                                               });
+
+      public static ReadOnlyDictionary<string, Image> PropertyImages
+      {
+         get
+         {
+            return backgroundLuminance < .5
+                      ? propertyImages
+                      : invertedPropertyImages;
+         }
+      }
+
       /// <summary>
       /// Maps names to images for property glyphs
       /// </summary>
-      public static readonly ReadOnlyDictionary<string, Image> PropertyImages =
+      private static readonly ReadOnlyDictionary<string, Image> propertyImages =
          new ReadOnlyDictionary<string, Image>(new Dictionary<string, Image>
                                                {
                                                   {nameof(Resources.Warning), Resources.Warning}
@@ -186,7 +294,34 @@ namespace Sawczyn.EFDesigner.EFModel
                                                 , {$"[{Multiplicity.ZeroOne}][{Multiplicity.ZeroOne}]", AssociationGlyphs[Multiplicity.ZeroOne][Multiplicity.ZeroOne]}
                                                });
 
-      /// <summary>
+           /// <summary>
+      /// Maps names to images for property glyphs
+      /// </summary>
+      private static readonly ReadOnlyDictionary<string, Image> invertedPropertyImages =
+         new ReadOnlyDictionary<string, Image>(new Dictionary<string, Image>
+                                               {
+                                                  {nameof(Resources.Warning), Resources.Warning_i}
+                                                , {nameof(Resources.ForeignKeyIdentity), Resources.ForeignKeyIdentity_i}
+                                                , {nameof(Resources.Identity), Resources.Identity_i}
+                                                , {nameof(Resources.ForeignKey), Resources.ForeignKey_i}
+                                                , {nameof(Resources.Spacer), Resources.Spacer}
+                                                , {$"[{true}][{SetterAccessModifier.Internal}]", InvertedAttributeGlyphs[true][SetterAccessModifier.Internal]}
+                                                , {$"[{true}][{SetterAccessModifier.Protected}]", InvertedAttributeGlyphs[true][SetterAccessModifier.Protected]}
+                                                , {$"[{true}][{SetterAccessModifier.Public}]", InvertedAttributeGlyphs[true][SetterAccessModifier.Public]}
+                                                , {$"[{false}][{SetterAccessModifier.Internal}]", InvertedAttributeGlyphs[false][SetterAccessModifier.Internal]}
+                                                , {$"[{false}][{SetterAccessModifier.Protected}]", InvertedAttributeGlyphs[false][SetterAccessModifier.Protected]}
+                                                , {$"[{false}][{SetterAccessModifier.Public}]", InvertedAttributeGlyphs[false][SetterAccessModifier.Public]}
+                                                , {$"[{Multiplicity.One}][{Multiplicity.One}]", InvertedAssociationGlyphs[Multiplicity.One][Multiplicity.One]}
+                                                , {$"[{Multiplicity.ZeroMany}][{Multiplicity.One}]", InvertedAssociationGlyphs[Multiplicity.ZeroMany][Multiplicity.One]}
+                                                , {$"[{Multiplicity.ZeroOne}][{Multiplicity.One}]", InvertedAssociationGlyphs[Multiplicity.ZeroOne][Multiplicity.One]}
+                                                , {$"[{Multiplicity.One}][{Multiplicity.ZeroMany}]", InvertedAssociationGlyphs[Multiplicity.One][Multiplicity.ZeroMany]}
+                                                , {$"[{Multiplicity.ZeroMany}][{Multiplicity.ZeroMany}]", InvertedAssociationGlyphs[Multiplicity.ZeroMany][Multiplicity.ZeroMany]}
+                                                , {$"[{Multiplicity.ZeroOne}][{Multiplicity.ZeroMany}]", InvertedAssociationGlyphs[Multiplicity.ZeroOne][Multiplicity.ZeroMany]}
+                                                , {$"[{Multiplicity.One}][{Multiplicity.ZeroOne}]", InvertedAssociationGlyphs[Multiplicity.One][Multiplicity.ZeroOne]}
+                                                , {$"[{Multiplicity.ZeroMany}][{Multiplicity.ZeroOne}]", InvertedAssociationGlyphs[Multiplicity.ZeroMany][Multiplicity.ZeroOne]}
+                                                , {$"[{Multiplicity.ZeroOne}][{Multiplicity.ZeroOne}]", InvertedAssociationGlyphs[Multiplicity.ZeroOne][Multiplicity.ZeroOne]}
+                                               });
+ /// <summary>
       /// Determines which image to display for a property on the diagram only. Model explorer uses GetExplorerNodeImageName instead.
       /// </summary>
       /// <param name="element"></param>

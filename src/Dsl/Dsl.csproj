@@ -86,12 +86,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk" Version="17.0.*-*" />
-    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Diagrams" Version="17.0.*-*" />
-    <PackageReference Include="Microsoft.VisualStudio.TextTemplating" Version="17.0.*-*" />
-    <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Interfaces.10.0" Version="17.0.*-*" />
-    <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Interfaces.11.0" Version="17.0.*-*" />
-    <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Modeling" Version="17.0.*-*" />
+    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk" Version="17.0.31902.203" />
+    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Diagrams" Version="17.0.31902.203" />
+    <PackageReference Include="Microsoft.VisualStudio.TextTemplating" Version="17.0.31902.203" />
+    <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Interfaces.10.0" Version="17.0.31902.203" />
+    <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Interfaces.11.0" Version="17.0.31902.203" />
+    <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Modeling" Version="17.0.31902.203" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Utilities\ParsingModels\AssociationRole.cs">
@@ -395,46 +395,87 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SynchronizationHelper.cs</LastGenOutput>
     </Content>
+    <Content Include="Resources\AbstractEntityGlyph-i.png" />
     <Content Include="Resources\AbstractEntityGlyph.png" />
+    <Content Include="Resources\AbstractEntityGlyphVisible-i.png" />
     <Content Include="Resources\AbstractEntityGlyphVisible.png" />
+    <Content Include="Resources\Association-i.png" />
+    <Content Include="Resources\AssociationClassGlyph-i.png" />
     <Content Include="Resources\AssociationClassGlyph.png" />
+    <Content Include="Resources\AssociationClassGlyphVisible-i.png" />
     <Content Include="Resources\AssociationClassGlyphVisible.png" />
+    <Content Include="Resources\Calculated-i.png" />
     <Content Include="Resources\Calculated.png" />
+    <Content Include="Resources\CalculatedInternal-i.png" />
     <Content Include="Resources\CalculatedInternal.png" />
+    <Content Include="Resources\CalculatedProtected-i.png" />
     <Content Include="Resources\CalculatedProtected.png" />
+    <Content Include="Resources\cardinality-0-0-i.png" />
     <Content Include="Resources\cardinality-0-0.png" />
+    <Content Include="Resources\cardinality-0-1-i.png" />
     <Content Include="Resources\cardinality-0-1.png" />
+    <Content Include="Resources\cardinality-0-many-i.png" />
     <Content Include="Resources\cardinality-0-many.png" />
+    <Content Include="Resources\cardinality-1-0-i.png" />
     <Content Include="Resources\cardinality-1-0.png" />
+    <Content Include="Resources\cardinality-1-1-i.png" />
     <Content Include="Resources\cardinality-1-1.png" />
+    <Content Include="Resources\cardinality-1-many-i.png" />
     <Content Include="Resources\cardinality-1-many.png" />
+    <Content Include="Resources\cardinality-many-0-i.png" />
     <Content Include="Resources\cardinality-many-0.png" />
+    <Content Include="Resources\cardinality-many-1-i.png" />
     <Content Include="Resources\cardinality-many-1.png" />
+    <Content Include="Resources\cardinality-many-many-i.png" />
     <Content Include="Resources\cardinality-many-many.png" />
+    <Content Include="Resources\Dictionary_16x-i.png" />
+    <Content Include="Resources\Dictionary_16xVisible-i.png" />
     <Content Include="Resources\Dictionary_16xVisible.png" />
     <Content Include="Resources\Dictionary_16x.png" />
+    <Content Include="Resources\EntityGlyph-i.png" />
     <Content Include="Resources\EntityGlyph.png" />
+    <Content Include="Resources\EntityGlyphVisible-i.png" />
     <Content Include="Resources\EntityGlyphVisible.png" />
+    <Content Include="Resources\Enumerator_16x-i.png" />
     <Content Include="Resources\Enumerator_16x.png" />
+    <Content Include="Resources\Enumerator_16xVisible-i.png" />
     <Content Include="Resources\Enumerator_16xVisible.png" />
+    <Content Include="Resources\EnumItem_16x-i.png" />
     <Content Include="Resources\EnumItem_16x.png" />
+    <Content Include="Resources\EnumValue-i.png" />
     <Content Include="Resources\EnumValue.png" />
+    <Content Include="Resources\ForeignKey-i.png" />
     <Content Include="Resources\ForeignKey.png" />
+    <Content Include="Resources\ForeignKeyIdentity-i.png" />
     <Content Include="Resources\ForeignKeyIdentity.png" />
+    <Content Include="Resources\Identity-i.png" />
     <Content Include="Resources\Identity.png" />
+    <Content Include="Resources\Interface-i.png" />
     <Content Include="Resources\Interface.png" />
+    <Content Include="Resources\Internal-i.png" />
     <Content Include="Resources\Internal.png" />
+    <Content Include="Resources\KeyRight_left_16x-i.png" />
     <Content Include="Resources\KeyRight_left_16x.png" />
+    <Content Include="Resources\No-i.png" />
     <Content Include="Resources\No.png" />
+    <Content Include="Resources\Protected-i.png" />
     <Content Include="Resources\Protected.png" />
+    <Content Include="Resources\Public-i.png" />
     <Content Include="Resources\Public.png" />
+    <Content Include="Resources\ShowDiagramPane_16x-i.png" />
     <Content Include="Resources\ShowDiagramPane_16x.png" />
+    <Content Include="Resources\Spacer-i.png" />
     <Content Include="Resources\Spacer.png" />
+    <Content Include="Resources\SQL-i.png" />
     <Content Include="Resources\SQL.png" />
     <None Include="Templates\SerializationHelper.tt" />
     <None Include="Resources\SQLVisible.png" />
+    <Content Include="Resources\SQLVisible-i.png" />
+    <Content Include="Resources\TransientClass-i.png" />
     <Content Include="Resources\TransientClass.png" />
+    <Content Include="Resources\TransientClassVisible-i.png" />
     <Content Include="Resources\TransientClassVisible.png" />
+    <Content Include="Resources\Warning-i.png" />
     <Content Include="Resources\Warning.png" />
     <None Include="Templates\MonikerAmbiguityValidation.tt" />
     <None Include="Templates\Diagram.tt" />
@@ -565,7 +606,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Shell" Version="17.0.*-*" />
+    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Shell" Version="17.0.31902.203" />
     <PackageReference Include="DataConnectionDialog">
       <Version>1.2.0</Version>
     </PackageReference>
