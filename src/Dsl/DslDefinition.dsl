@@ -1948,9 +1948,9 @@
       <ShapeHasDecorators Position="OuterTopLeft" HorizontalOffset="0.2" VerticalOffset="0.1">
         <IconDecorator Name="Interface" DisplayName="Interface" DefaultIcon="Resources\Interface.png" />
       </ShapeHasDecorators>
-      <Compartment FillColor="IndianRed" Name="AttributesCompartment" Title="Properties" />
-      <Compartment Name="AssociationsCompartment" Title="Association Targets" />
-      <Compartment Name="SourcesCompartment" Title="Association Sources" />
+      <Compartment FillColor="Transparent" Name="AttributesCompartment" Title="Properties" />
+      <Compartment FillColor="Transparent" Name="AssociationsCompartment" Title="Association Targets" />
+      <Compartment FillColor="Transparent" Name="SourcesCompartment" Title="Association Sources" />
     </CompartmentShape>
     <GeometryShape Id="ac82cb66-4d3d-46ac-a7e2-b7f0cd67a73f" Description="" Name="CommentBoxShape" DisplayName="Comment Box Shape" Namespace="Sawczyn.EFDesigner.EFModel" GeneratesDoubleDerived="true" FixedTooltipText="Comment Box Shape" ExposesTextColor="true" FillColor="255, 255, 204" OutlineColor="204, 204, 102" InitialHeight="0.3" OutlineThickness="0.01" FillGradientMode="ForwardDiagonal" ExposesOutlineColorAsProperty="true" ExposesFillColorAsProperty="true" ExposesOutlineDashStyleAsProperty="true" ExposesOutlineThicknessAsProperty="true" Geometry="RoundedRectangle">
       <Properties>
@@ -2037,7 +2037,7 @@
       <ShapeHasDecorators Position="InnerTopLeft" HorizontalOffset="16" VerticalOffset="0">
         <IconDecorator Name="NoGenGlyph" DisplayName="No Code Generation" DefaultIcon="Resources\No.png" />
       </ShapeHasDecorators>
-      <Compartment Name="ValuesCompartment" Title="Values" />
+      <Compartment FillColor="Transparent" Name="ValuesCompartment" Title="Values" EntryTextColor="IndianRed" />
     </CompartmentShape>
   </Shapes>
   <Connectors>

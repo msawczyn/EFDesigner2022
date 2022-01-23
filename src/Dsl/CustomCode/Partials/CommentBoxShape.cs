@@ -6,16 +6,14 @@ using Microsoft.VisualStudio.Modeling;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
-   public partial class CommentBoxShape: IHasStore
+   public partial class CommentBoxShape: IHasStore, IThemeable
    {
       /// <summary>
-      /// This method is called when a shape is inititially created, derived classes can
-      /// override to perform shape instance initialization.  This method is always called within a transaction.
+      /// Shape instance initialization.
       /// </summary>
       public override void OnInitialize()
       {
          base.OnInitialize();
-
          if (ModelDisplay.GetDiagramColors != null)
             SetThemeColors(ModelDisplay.GetDiagramColors());
       }
@@ -27,10 +25,12 @@ namespace Sawczyn.EFDesigner.EFModel
             FillColor = diagramColors.Background;
             TextColor = FillColor.LegibleTextColor();
 
+            Invalidate();
+
             tx.Commit();
          }
       }
-      
+
       //Called once for each shape instance. 
       protected override void InitializeDecorators(IList<ShapeField> shapeFields, IList<Decorator> decorators)
       {

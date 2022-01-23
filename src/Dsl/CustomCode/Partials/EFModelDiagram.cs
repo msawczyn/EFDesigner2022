@@ -15,12 +15,18 @@ namespace Sawczyn.EFDesigner.EFModel
 {
    public class DiagramThemeColors
    {
-      public Color Background { get; set; }
-      public Color Text { get; set; }
+      public DiagramThemeColors(Color background)
+      {
+         Background = background;
+      }
 
+      public Color Background { get; }
+      public Color Text => Background.LegibleTextColor();
+      public Color HeaderBackground => Background.IsDark() ? Color.Gray : Color.LightGray;
+      public Color HeaderText => HeaderBackground.LegibleTextColor();
    }
 
-   public partial class EFModelDiagram : IHasStore
+   public partial class EFModelDiagram : IHasStore, IThemeable
    {
       public override void OnInitialize()
       {
@@ -43,12 +49,24 @@ namespace Sawczyn.EFDesigner.EFModel
 
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
-         using (Transaction tx = Store.TransactionManager.BeginTransaction("Set diagram colors"))
+         Transaction tx = Store.TransactionManager.InTransaction
+                             ? null
+                             : Store.TransactionManager.BeginTransaction("Set diagram colors");
+
+         try
          {
             FillColor = diagramColors.Background;
             TextColor = diagramColors.Text;
 
-            tx.Commit();
+            Invalidate();
+         }
+         finally
+         {
+            if (tx != null)
+            {
+               tx.Commit();
+               tx.Dispose();
+            }
          }
       }
 

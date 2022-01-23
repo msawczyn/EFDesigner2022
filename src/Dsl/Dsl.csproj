@@ -136,6 +136,7 @@
     <Compile Include="CustomCode\Gestures\ClassDragMouseAction.cs" />
     <Compile Include="CustomCode\Gestures\ClassShapeDragData.cs" />
     <Compile Include="CustomCode\Gestures\CompartmentDragMouseAction.cs" />
+    <Compile Include="CustomCode\ModelElement Interfaces\IThemeable.cs" />
     <Compile Include="CustomCode\Modeling\ViewContext.cs" />
     <Compile Include="CustomCode\Name Providers\ModelDiagramDataNameProvider.cs" />
     <Compile Include="CustomCode\Partials\AssociationConnector.cs" />

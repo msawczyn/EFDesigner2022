@@ -8,8 +8,11 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+
 using EnvDTE;
+
 using EnvDTE80;
+
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Modeling;
@@ -45,7 +48,11 @@ namespace Sawczyn.EFDesigner.EFModel
                   ? activeSolutionProjects.GetValue(0) as Project
                   : null;
 
-      
+      static EFModelDocData()
+      {
+         ModelDisplay.GetDiagramColors = GetDiagramColors;
+      }
+
       internal static void GenerateCode()
       {
          GenerateCode(null);
@@ -211,7 +218,6 @@ namespace Sawczyn.EFDesigner.EFModel
          StatusDisplay.RegisterDisplayHandler(ShowStatus);
          ChoiceDisplay.RegisterDisplayHandler(GetChoice);
          ModelDisplay.RegisterLayoutDiagramAction(Commands.LayoutDiagram);
-         ModelDisplay.GetDiagramColors = GetDiagramColors;
 
          ClassShape.OpenCodeFile = OpenFileFor;
          ClassShape.ExecCodeGeneration = GenerateCode;
@@ -299,11 +305,12 @@ namespace Sawczyn.EFDesigner.EFModel
             }
          }
 
-         using (Transaction tx = Store.TransactionManager.BeginTransaction("SetClassVisuals"))
+         using (Transaction tx = Store.TransactionManager.BeginTransaction("SetVisuals"))
          {
             foreach (ModelClass modelClass in Store.ElementDirectory.FindElements<ModelClass>())
                PresentationHelper.UpdateClassDisplay(modelClass);
 
+            VSColorTheme_OnThemeChanged(null);
             tx.Commit();
          }
 
@@ -329,46 +336,50 @@ namespace Sawczyn.EFDesigner.EFModel
             tx.Commit();
          }
 
+         EFModelDocView docView = (EFModelDocView)CurrentDocView;
+         EFModelExplorer modelExplorer = (EFModelExplorer)docView?.ModelExplorerWindow?.TreeContainer;
+         modelExplorer?.Show();
+
          SetDocDataDirty(0);
       }
 
-      private DiagramThemeColors GetDiagramColors()
+      private static DiagramThemeColors GetDiagramColors()
       {
-         DiagramThemeColors result = new DiagramThemeColors();
-
-         Color backgroundColor = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
-         Color fontColor = VSColorTheme.GetThemedColor(EnvironmentColors.VSBrandingTextColorKey);
-         result.Background = backgroundColor;
-         result.Text = fontColor;
-
-         return result;
+         return new DiagramThemeColors(VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundBrushKey));
       }
 
       private void VSColorTheme_OnThemeChanged(ThemeChangedEventArgs e)
       {
          DiagramThemeColors diagramColors = GetDiagramColors();
 
-         foreach (EFModelDiagram diagram in Store.DefaultPartitionForClass(EFModelDiagram.DomainClassId).ElementDirectory.AllElements.OfType<EFModelDiagram>())
-            diagram.SetThemeColors(diagramColors);
+         EFModelDocView docView = (EFModelDocView)CurrentDocView;
+         EFModelExplorer modelExplorer = (EFModelExplorer)docView?.ModelExplorerWindow.TreeContainer;
+         modelExplorer?.SetThemeColors(diagramColors);
+         modelExplorer?.Show();
 
-         foreach (GeneralizationConnector connector in Store.DefaultPartitionForClass(GeneralizationConnector.DomainClassId).ElementDirectory.AllElements.OfType<GeneralizationConnector>().ToArray())
-            connector.SetThemeColors(diagramColors);
+         if (Store != null)
+         {
+            foreach (GeneralizationConnector connector in Store.ElementDirectory.AllElements.OfType<GeneralizationConnector>().ToArray())
+               connector.SetThemeColors(diagramColors);
 
-         foreach (AssociationConnector connector in Store.DefaultPartitionForClass(AssociationConnectorBase.DomainClassId).ElementDirectory.AllElements.OfType<AssociationConnector>().ToArray())
-            connector.SetThemeColors(diagramColors);
+            foreach (AssociationConnector connector in Store.ElementDirectory.AllElements.OfType<AssociationConnector>().ToArray())
+               connector.SetThemeColors(diagramColors);
 
-         foreach (CommentConnector connector in Store.DefaultPartitionForClass(CommentConnector.DomainClassId).ElementDirectory.AllElements.OfType<CommentConnector>().ToArray())
-            connector.SetThemeColors(diagramColors);
+            foreach (CommentConnector connector in Store.ElementDirectory.AllElements.OfType<CommentConnector>().ToArray())
+               connector.SetThemeColors(diagramColors);
 
-         foreach (ClassShape classShape in Store.DefaultPartitionForClass(ClassShapeBase.DomainClassId).ElementDirectory.AllElements.OfType<ClassShape>().ToArray())
-            classShape.SetThemeColors(diagramColors);
+            foreach (ClassShape classShape in Store.ElementDirectory.AllElements.OfType<ClassShape>().ToArray())
+               classShape.SetThemeColors(diagramColors);
 
-         foreach (EnumShape enumShape in Store.DefaultPartitionForClass(EnumShapeBase.DomainClassId).ElementDirectory.AllElements.OfType<EnumShape>().ToArray())
-            enumShape.SetThemeColors(diagramColors);
+            foreach (EnumShape enumShape in Store.ElementDirectory.AllElements.OfType<EnumShape>().ToArray())
+               enumShape.SetThemeColors(diagramColors);
 
-         foreach (CommentBoxShape commentShape in Store.DefaultPartitionForClass(CommentBoxShapeBase.DomainClassId).ElementDirectory.AllElements.OfType<CommentBoxShape>().ToArray())
-            commentShape.SetThemeColors(diagramColors);
+            foreach (CommentBoxShape commentShape in Store.ElementDirectory.AllElements.OfType<CommentBoxShape>().ToArray())
+               commentShape.SetThemeColors(diagramColors);
 
+            foreach (EFModelDiagram diagram in Store.ElementDirectory.AllElements.OfType<EFModelDiagram>().ToArray())
+               diagram.SetThemeColors(diagramColors);
+         }
       }
 
       private void DisplayDiagram(ModelDiagramData diagramData)
@@ -415,17 +426,17 @@ namespace Sawczyn.EFDesigner.EFModel
 
             ValidationCategories allCategories = ValidationCategories.Menu | ValidationCategories.Open | ValidationCategories.Save | ValidationCategories.Custom | ValidationCategories.Load;
             ValidationController.Validate(modelElement, allCategories);
-            
+
             displaysWarningElement.RedrawItem();
          }
       }
 
       internal static DialogResult ShowQuestionBox(IServiceProvider serviceProvider, string question)
       {
-         return PackageUtility.ShowMessageBox(serviceProvider, 
-                                              question, 
-                                              OLEMSGBUTTON.OLEMSGBUTTON_YESNO, 
-                                              OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND, 
+         return PackageUtility.ShowMessageBox(serviceProvider,
+                                              question,
+                                              OLEMSGBUTTON.OLEMSGBUTTON_YESNO,
+                                              OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND,
                                               OLEMSGICON.OLEMSGICON_QUERY);
       }
 
@@ -511,29 +522,29 @@ namespace Sawczyn.EFDesigner.EFModel
                                                    },
                                                    new[]
                                                    {
-                                                      new PropertyAssignment(BidirectionalAssociation.SourcePropertyNameDomainPropertyId, selected[1].TargetPropertyName), 
-                                                      new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, selected[0].TargetPropertyName), 
-                                                     
-                                                      new PropertyAssignment(BidirectionalAssociation.SourceCustomAttributesDomainPropertyId, selected[1].TargetCustomAttributes), 
-                                                      new PropertyAssignment(Association.TargetCustomAttributesDomainPropertyId, selected[0].TargetCustomAttributes), 
+                                                      new PropertyAssignment(BidirectionalAssociation.SourcePropertyNameDomainPropertyId, selected[1].TargetPropertyName),
+                                                      new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, selected[0].TargetPropertyName),
 
-                                                      new PropertyAssignment(BidirectionalAssociation.SourceDisplayTextDomainPropertyId, selected[1].TargetDisplayText), 
-                                                      new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, selected[0].TargetDisplayText), 
+                                                      new PropertyAssignment(BidirectionalAssociation.SourceCustomAttributesDomainPropertyId, selected[1].TargetCustomAttributes),
+                                                      new PropertyAssignment(Association.TargetCustomAttributesDomainPropertyId, selected[0].TargetCustomAttributes),
 
-                                                      new PropertyAssignment(BidirectionalAssociation.SourceSummaryDomainPropertyId, selected[1].TargetSummary), 
+                                                      new PropertyAssignment(BidirectionalAssociation.SourceDisplayTextDomainPropertyId, selected[1].TargetDisplayText),
+                                                      new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, selected[0].TargetDisplayText),
+
+                                                      new PropertyAssignment(BidirectionalAssociation.SourceSummaryDomainPropertyId, selected[1].TargetSummary),
                                                       new PropertyAssignment(BidirectionalAssociation.SourceDescriptionDomainPropertyId, selected[1].TargetDescription),
 
-                                                      new PropertyAssignment(Association.TargetSummaryDomainPropertyId, selected[0].TargetSummary), 
-                                                      new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, selected[0].TargetDescription), 
+                                                      new PropertyAssignment(Association.TargetSummaryDomainPropertyId, selected[0].TargetSummary),
+                                                      new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, selected[0].TargetDescription),
 
-                                                      new PropertyAssignment(Association.SourceDeleteActionDomainPropertyId, selected[1].TargetDeleteAction), 
-                                                      new PropertyAssignment(Association.TargetDeleteActionDomainPropertyId, selected[0].TargetDeleteAction), 
+                                                      new PropertyAssignment(Association.SourceDeleteActionDomainPropertyId, selected[1].TargetDeleteAction),
+                                                      new PropertyAssignment(Association.TargetDeleteActionDomainPropertyId, selected[0].TargetDeleteAction),
 
-                                                      new PropertyAssignment(Association.SourceRoleDomainPropertyId, selected[1].TargetRole), 
-                                                      new PropertyAssignment(Association.TargetRoleDomainPropertyId, selected[0].TargetRole), 
+                                                      new PropertyAssignment(Association.SourceRoleDomainPropertyId, selected[1].TargetRole),
+                                                      new PropertyAssignment(Association.TargetRoleDomainPropertyId, selected[0].TargetRole),
 
-                                                      new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, selected[1].TargetMultiplicity), 
-                                                      new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, selected[0].TargetMultiplicity), 
+                                                      new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, selected[1].TargetMultiplicity),
+                                                      new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, selected[0].TargetMultiplicity),
                                                    });
             tx.Commit();
          }
@@ -556,23 +567,23 @@ namespace Sawczyn.EFDesigner.EFModel
                                                    },
                                                    new[]
                                                    {
-                                                      new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, selected.TargetPropertyName), 
-                                                     
-                                                      new PropertyAssignment(Association.TargetCustomAttributesDomainPropertyId, selected.TargetCustomAttributes), 
+                                                      new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, selected.TargetPropertyName),
 
-                                                      new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, selected.TargetDisplayText), 
+                                                      new PropertyAssignment(Association.TargetCustomAttributesDomainPropertyId, selected.TargetCustomAttributes),
 
-                                                      new PropertyAssignment(Association.TargetSummaryDomainPropertyId, selected.TargetSummary), 
-                                                      new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, selected.TargetDescription), 
+                                                      new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, selected.TargetDisplayText),
 
-                                                      new PropertyAssignment(Association.SourceDeleteActionDomainPropertyId, selected.SourceDeleteAction), 
-                                                      new PropertyAssignment(Association.TargetDeleteActionDomainPropertyId, selected.TargetDeleteAction), 
+                                                      new PropertyAssignment(Association.TargetSummaryDomainPropertyId, selected.TargetSummary),
+                                                      new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, selected.TargetDescription),
 
-                                                      new PropertyAssignment(Association.SourceRoleDomainPropertyId, selected.SourceRole), 
-                                                      new PropertyAssignment(Association.TargetRoleDomainPropertyId, selected.TargetRole), 
+                                                      new PropertyAssignment(Association.SourceDeleteActionDomainPropertyId, selected.SourceDeleteAction),
+                                                      new PropertyAssignment(Association.TargetDeleteActionDomainPropertyId, selected.TargetDeleteAction),
 
-                                                      new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, selected.SourceMultiplicity), 
-                                                      new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, selected.TargetMultiplicity), 
+                                                      new PropertyAssignment(Association.SourceRoleDomainPropertyId, selected.SourceRole),
+                                                      new PropertyAssignment(Association.TargetRoleDomainPropertyId, selected.TargetRole),
+
+                                                      new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, selected.SourceMultiplicity),
+                                                      new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, selected.TargetMultiplicity),
                                                    });
 
             // ReSharper disable once UnusedVariable
@@ -584,23 +595,23 @@ namespace Sawczyn.EFDesigner.EFModel
                                                    },
                                                    new[]
                                                    {
-                                                      new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, selected.SourcePropertyName), 
-                                                     
-                                                      new PropertyAssignment(Association.TargetCustomAttributesDomainPropertyId, selected.SourceCustomAttributes), 
+                                                      new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, selected.SourcePropertyName),
 
-                                                      new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, selected.SourceDisplayText), 
+                                                      new PropertyAssignment(Association.TargetCustomAttributesDomainPropertyId, selected.SourceCustomAttributes),
 
-                                                      new PropertyAssignment(Association.TargetSummaryDomainPropertyId, selected.SourceSummary), 
-                                                      new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, selected.SourceDescription), 
+                                                      new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, selected.SourceDisplayText),
 
-                                                      new PropertyAssignment(Association.SourceDeleteActionDomainPropertyId, selected.TargetDeleteAction), 
-                                                      new PropertyAssignment(Association.TargetDeleteActionDomainPropertyId, selected.SourceDeleteAction), 
+                                                      new PropertyAssignment(Association.TargetSummaryDomainPropertyId, selected.SourceSummary),
+                                                      new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, selected.SourceDescription),
 
-                                                      new PropertyAssignment(Association.SourceRoleDomainPropertyId, selected.TargetRole), 
-                                                      new PropertyAssignment(Association.TargetRoleDomainPropertyId, selected.SourceRole), 
+                                                      new PropertyAssignment(Association.SourceDeleteActionDomainPropertyId, selected.TargetDeleteAction),
+                                                      new PropertyAssignment(Association.TargetDeleteActionDomainPropertyId, selected.SourceDeleteAction),
 
-                                                      new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, selected.TargetMultiplicity), 
-                                                      new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, selected.SourceMultiplicity), 
+                                                      new PropertyAssignment(Association.SourceRoleDomainPropertyId, selected.TargetRole),
+                                                      new PropertyAssignment(Association.TargetRoleDomainPropertyId, selected.SourceRole),
+
+                                                      new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, selected.TargetMultiplicity),
+                                                      new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, selected.SourceMultiplicity),
                                                    });
 
             tx.Commit();

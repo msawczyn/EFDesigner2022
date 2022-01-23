@@ -452,7 +452,7 @@ namespace Sawczyn.EFDesigner.EFModel
 					string title = global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel.SingletonResourceManager.GetString("ClassShapeAttributesCompartmentTitle");
 					DslDiagrams::ElementListCompartmentDescription descriptor = new DslDiagrams::ElementListCompartmentDescription("AttributesCompartment", title, 
 						global::System.Drawing.Color.FromKnownColor(global::System.Drawing.KnownColor.LightGray), false, 
-						global::System.Drawing.Color.FromKnownColor(global::System.Drawing.KnownColor.IndianRed), false,
+						global::System.Drawing.Color.FromKnownColor(global::System.Drawing.KnownColor.Transparent), false,
 						null, null,
 						false);
 					compartmentDescriptions[localCompartmentsOffset+0] = descriptor;
@@ -461,7 +461,7 @@ namespace Sawczyn.EFDesigner.EFModel
 					string title = global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel.SingletonResourceManager.GetString("ClassShapeAssociationsCompartmentTitle");
 					DslDiagrams::ElementListCompartmentDescription descriptor = new DslDiagrams::ElementListCompartmentDescription("AssociationsCompartment", title, 
 						global::System.Drawing.Color.FromKnownColor(global::System.Drawing.KnownColor.LightGray), false, 
-						global::System.Drawing.Color.FromKnownColor(global::System.Drawing.KnownColor.White), false,
+						global::System.Drawing.Color.FromKnownColor(global::System.Drawing.KnownColor.Transparent), false,
 						null, null,
 						false);
 					compartmentDescriptions[localCompartmentsOffset+1] = descriptor;
@@ -470,7 +470,7 @@ namespace Sawczyn.EFDesigner.EFModel
 					string title = global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel.SingletonResourceManager.GetString("ClassShapeSourcesCompartmentTitle");
 					DslDiagrams::ElementListCompartmentDescription descriptor = new DslDiagrams::ElementListCompartmentDescription("SourcesCompartment", title, 
 						global::System.Drawing.Color.FromKnownColor(global::System.Drawing.KnownColor.LightGray), false, 
-						global::System.Drawing.Color.FromKnownColor(global::System.Drawing.KnownColor.White), false,
+						global::System.Drawing.Color.FromKnownColor(global::System.Drawing.KnownColor.Transparent), false,
 						null, null,
 						false);
 					compartmentDescriptions[localCompartmentsOffset+2] = descriptor;
@@ -2565,9 +2565,10 @@ namespace Sawczyn.EFDesigner.EFModel
 					string title = global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel.SingletonResourceManager.GetString("EnumShapeValuesCompartmentTitle");
 					DslDiagrams::ElementListCompartmentDescription descriptor = new DslDiagrams::ElementListCompartmentDescription("ValuesCompartment", title, 
 						global::System.Drawing.Color.FromKnownColor(global::System.Drawing.KnownColor.LightGray), false, 
-						global::System.Drawing.Color.FromKnownColor(global::System.Drawing.KnownColor.White), false,
+						global::System.Drawing.Color.FromKnownColor(global::System.Drawing.KnownColor.Transparent), false,
 						null, null,
 						false);
+					descriptor.ItemTextColor = global::System.Drawing.Color.FromKnownColor(global::System.Drawing.KnownColor.IndianRed);
 					compartmentDescriptions[localCompartmentsOffset+0] = descriptor;
 				}
 			}

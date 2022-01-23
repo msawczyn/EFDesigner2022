@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.Modeling.Diagrams;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
-   public abstract partial class AssociationConnector : IHasStore
+   public abstract partial class AssociationConnector : IHasStore, IThemeable
    {
       /// <summary>
       /// This method is called when a shape is inititially created, derived classes can
@@ -12,7 +12,6 @@ namespace Sawczyn.EFDesigner.EFModel
       public override void OnInitialize()
       {
          base.OnInitialize();
-     
          if (ModelDisplay.GetDiagramColors != null)
             SetThemeColors(ModelDisplay.GetDiagramColors());
       }
@@ -23,6 +22,7 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             Color = diagramColors.Background.LegibleTextColor();
             TextColor = diagramColors.Text;
+            Invalidate();
 
             tx.Commit();
          }
