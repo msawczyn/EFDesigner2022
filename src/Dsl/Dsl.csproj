@@ -142,6 +142,7 @@
     <Compile Include="CustomCode\Partials\AssociationConnector.cs" />
     <Compile Include="CustomCode\Domain Types\Namespaces.cs" />
     <Compile Include="CustomCode\Partials\CommentBoxShapeBase.cs" />
+    <Compile Include="CustomCode\Utilities\DiagramThemeColors.cs" />
     <Compile Include="CustomCode\Partials\EFModelDomainModel.cs" />
     <Compile Include="CustomCode\Partials\ModelDiagramData.cs" />
     <Compile Include="CustomCode\Rules\AssociationDeletingRules.cs" />

@@ -238,7 +238,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ValidationExtensionRegistrar.tt</DependentUpon>
     </Compile>
-    <Content Include="MefExtension\CommandExtensionVSCT1.vsct">
+    <Content Include="MefExtension\CommandExtensionVSCT.vsct">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CommandExtensionVSCT.tt</DependentUpon>
@@ -304,7 +304,7 @@
     </Content>
     <Content Include="MefExtension\CommandExtensionVSCT.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CommandExtensionVSCT1.vsct</LastGenOutput>
+      <LastGenOutput>CommandExtensionVSCT.vsct</LastGenOutput>
     </Content>
     <Content Include="MefExtension\ValidationExtensionEnablement.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -448,7 +448,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GeneratedVSCT.tt</DependentUpon>
       <Generator>VsctGenerator</Generator>
-      <LastGenOutput>GeneratedVSCT1.cs</LastGenOutput>
+      <LastGenOutput>GeneratedVSCT.cs</LastGenOutput>
     </Content>
     <None Include="ProjectItemTemplates\CSharp.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
