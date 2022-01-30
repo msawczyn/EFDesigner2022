@@ -20,15 +20,15 @@ namespace Sawczyn.EFDesigner.EFModel
 
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
-         using (Transaction tx = Store.TransactionManager.BeginTransaction("Set diagram colors"))
-         {
-            FillColor = diagramColors.Background;
-            TextColor = FillColor.LegibleTextColor();
+         //using (Transaction tx = Store.TransactionManager.BeginTransaction("Set diagram colors"))
+         //{
+         //   FillColor = diagramColors.Background;
+         //   TextColor = FillColor.LegibleTextColor();
 
-            Invalidate();
+         //   Invalidate();
 
-            tx.Commit();
-         }
+         //   tx.Commit();
+         //}
       }
 
       //Called once for each shape instance. 

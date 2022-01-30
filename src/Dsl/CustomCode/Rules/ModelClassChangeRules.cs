@@ -1,8 +1,11 @@
 ﻿using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
+using System.Drawing;
 using System.Linq;
 
 using Microsoft.VisualStudio.Modeling;
+using Microsoft.VisualStudio.Modeling.Diagrams;
 
 using Sawczyn.EFDesigner.EFModel.Extensions;
 
@@ -90,7 +93,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
                         break;
                      }
-                     
+
                      if (store.GetAll<ModelClass>()
                                    .Except(new[] { element })
                                    .Any(x => x.DbSetName == element.DbSetName))
@@ -145,6 +148,20 @@ namespace Sawczyn.EFDesigner.EFModel
 
                         break;
                      }
+
+                     foreach (ClassShape classShape in PresentationViewsSubject.GetPresentation(element).OfType<ClassShape>().Distinct().ToList())
+                     {
+                        PenSettings penSettings = classShape.StyleSet.GetOverriddenPenSettings(DiagramPens.ShapeOutline) ?? new PenSettings();
+                        penSettings.Color = Color.OrangeRed;
+                        penSettings.Width = 0.03f;
+                        penSettings.DashStyle = DashStyle.Dot;
+                        classShape.StyleSet.OverridePen(DiagramPens.ShapeOutline, penSettings);
+                     }
+                  }
+                  else
+                  {
+                     foreach (ClassShape classShape in PresentationViewsSubject.GetPresentation(element).OfType<ClassShape>().Distinct().ToList())
+                        classShape.StyleSet.ClearPenOverride(DiagramPens.ShapeOutline);
                   }
 
                   PresentationHelper.UpdateClassDisplay(element);
@@ -154,6 +171,39 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "IsAssociationClass":
                {
+                  if (element.IsAssociationClass)
+                  {
+                     foreach (ClassShape classShape in PresentationViewsSubject.GetPresentation(element).OfType<ClassShape>().Distinct().ToList())
+                     {
+                        PenSettings penSettings = classShape.StyleSet.GetOverriddenPenSettings(DiagramPens.ShapeOutline) ?? new PenSettings();
+                        penSettings.Color = Color.Sienna;
+                        penSettings.Width = 0.03f;
+                        classShape.StyleSet.OverridePen(DiagramPens.ShapeOutline, penSettings);
+
+                        BrushSettings backgroundBrush = classShape.StyleSet.GetOverriddenBrushSettings(DiagramBrushes.ShapeBackground) ?? new BrushSettings();
+                        backgroundBrush.Color = Color.Goldenrod;
+                        classShape.StyleSet.OverrideBrush(DiagramBrushes.ShapeBackground, backgroundBrush);
+
+                        FontSettings titleFont = classShape.StyleSet.GetOverriddenFontSettings(DiagramFonts.ShapeTitle) ?? new FontSettings();
+                        titleFont.Italic = true;
+                        classShape.StyleSet.OverrideFont(DiagramFonts.ShapeTitle, titleFont);
+
+                        if (ModelDisplay.GetDiagramColors != null)
+                           classShape.SetThemeColors(ModelDisplay.GetDiagramColors());
+                     }
+                  }
+                  else
+                  {
+                     foreach (ClassShape classShape in PresentationViewsSubject.GetPresentation(element).OfType<ClassShape>().Distinct().ToList())
+                     {
+                        classShape.StyleSet.ClearPenOverride(DiagramPens.ShapeOutline);
+                        classShape.StyleSet.ClearBrushOverride(DiagramBrushes.ShapeBackground);
+                        classShape.StyleSet.ClearFontOverride(DiagramFonts.ShapeTitle);
+
+                        if (ModelDisplay.GetDiagramColors != null)
+                           classShape.SetThemeColors(ModelDisplay.GetDiagramColors());
+                     }
+                  }
                   PresentationHelper.UpdateClassDisplay(element);
                   break;
                }
@@ -316,11 +366,24 @@ namespace Sawczyn.EFDesigner.EFModel
                         modelAttribute.IsIdentity = false;
 
                      element.DbSetName = string.Empty;
+
+                     foreach (ClassShape classShape in PresentationViewsSubject.GetPresentation(element).OfType<ClassShape>().Distinct().ToList())
+                     {
+                        PenSettings penSettings = classShape.StyleSet.GetOverriddenPenSettings(DiagramPens.ShapeOutline) ?? new PenSettings();
+                        penSettings.Color = Color.ForestGreen;
+                        penSettings.Width = 0.03f;
+                        penSettings.DashStyle = DashStyle.Dot;
+                        classShape.StyleSet.OverridePen(DiagramPens.ShapeOutline, penSettings);
+                     }
+
                   }
                   else
                   {
                      element.DbSetName = MakeDefaultTableAndSetName(element.Name);
                      element.TableName = MakeDefaultTableAndSetName(element.Name);
+
+                     foreach (ClassShape classShape in PresentationViewsSubject.GetPresentation(element).OfType<ClassShape>().Distinct().ToList())
+                        classShape.StyleSet.ClearPenOverride(DiagramPens.ShapeOutline);
                   }
 
                   // Remove any foreign keys in any incoming or outgoing associations

@@ -190,23 +190,10 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      /// <summary>
-      /// Shape instance initialization.
-      /// </summary>
-      public override void OnInitialize()
-      {
-         base.OnInitialize();
-         if (ModelDisplay.GetDiagramColors != null)
-            SetThemeColors(ModelDisplay.GetDiagramColors());
-      }
-
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
          using (Transaction tx = Store.TransactionManager.BeginTransaction("Set diagram colors"))
          {
-            TextColor = diagramColors.Text;
-            FillColor = diagramColors.Background;
-
             foreach (ListCompartment compartment in NestedChildShapes.OfType<ListCompartment>())
             {
                compartment.CompartmentFillColor = diagramColors.Background;
@@ -378,60 +365,6 @@ namespace Sawczyn.EFDesigner.EFModel
          }
 
          return Resources.Spacer;
-      }
-
-      /// <summary>
-      /// OnBeforePaint is called at the start of the ShapeElement's painting.
-      /// It provides an opportunity for developers to update and override resources
-      /// before they're used in painting.
-      /// </summary>
-      /// <remarks>
-      /// You can override existing resources by calling StyleSet.OverrideXXX and
-      /// changing the specific setting that you would like.
-      /// </remarks>
-      protected override void OnBeforePaint()
-      {
-         if (ModelElement is ModelClass element && (element.IsAbstract || element.IsDependentType || element.IsAssociationClass))
-         {
-            if (element.IsAbstract)
-            {
-               PenSettings penSettings = StyleSet.GetOverriddenPenSettings(DiagramPens.ShapeOutline) ?? new PenSettings();
-               penSettings.Color = Color.OrangeRed;
-               penSettings.Width = 0.03f;
-               penSettings.DashStyle = DashStyle.Dot;
-               StyleSet.OverridePen(DiagramPens.ShapeOutline, penSettings);
-            }
-            else if (element.IsDependentType)
-            {
-               PenSettings penSettings = StyleSet.GetOverriddenPenSettings(DiagramPens.ShapeOutline) ?? new PenSettings();
-               penSettings.Color = Color.ForestGreen;
-               penSettings.Width = 0.03f;
-               penSettings.DashStyle = DashStyle.Dot;
-               StyleSet.OverridePen(DiagramPens.ShapeOutline, penSettings);
-            }
-            else if (element.IsAssociationClass)
-            {
-               PenSettings penSettings = StyleSet.GetOverriddenPenSettings(DiagramPens.ShapeOutline) ?? new PenSettings();
-               penSettings.Color = Color.Sienna;
-               penSettings.Width = 0.03f;
-               StyleSet.OverridePen(DiagramPens.ShapeOutline, penSettings);
-
-               BrushSettings backgroundBrush = StyleSet.GetOverriddenBrushSettings(DiagramBrushes.ShapeBackground) ?? new BrushSettings();
-               backgroundBrush.Color = Color.Goldenrod;
-               StyleSet.OverrideBrush(DiagramBrushes.ShapeBackground, backgroundBrush);
-
-               FontSettings titleFont = StyleSet.GetOverriddenFontSettings(DiagramFonts.ShapeTitle) ?? new FontSettings();
-               titleFont.Italic = true;
-               StyleSet.OverrideFont(DiagramFonts.ShapeTitle, titleFont);
-            }
-         }
-         else
-         {
-            StyleSet.ClearPenOverride(DiagramPens.ShapeOutline);
-            StyleSet.ClearBrushOverride(DiagramBrushes.ShapeBackground);
-            StyleSet.ClearFontOverride(DiagramFonts.ShapeTitle);
-         }
-
       }
 
       /// <summary>

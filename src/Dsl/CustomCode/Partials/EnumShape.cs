@@ -36,9 +36,6 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          using (Transaction tx = Store.TransactionManager.BeginTransaction("Set diagram colors"))
          {
-            TextColor = diagramColors.Text;
-            FillColor = diagramColors.Background;
-
             foreach (ListCompartment compartment in NestedChildShapes.OfType<ListCompartment>())
             {
                compartment.CompartmentFillColor = diagramColors.Background;
