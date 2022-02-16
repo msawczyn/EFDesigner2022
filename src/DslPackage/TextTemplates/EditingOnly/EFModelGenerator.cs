@@ -60,7 +60,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
       protected void OutputChopped(List<string> segments)
       {
-         string[] segmentArray = segments?.ToArray() ?? new string[0];
+         string[] segmentArray = segments?.ToArray() ?? Array.Empty<string>();
 
          if (!segmentArray.Any())
             return;
@@ -91,7 +91,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
       protected void OutputChoppedNoTerminator(List<string> segments)
       {
-         string[] segmentArray = segments?.ToArray() ?? new string[0];
+         string[] segmentArray = segments?.ToArray() ?? Array.Empty<string>();
 
          if (!segmentArray.Any())
             return;
@@ -1165,6 +1165,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                string nullable = IsNullable(modelAttribute)
                                     ? "?"
                                     : string.Empty;
+               string @virtual = modelAttribute.Virtual && !modelAttribute.IsConcurrencyToken
+                                    ? "virtual "
+                                    : string.Empty;
 
                if (!modelAttribute.IsConcurrencyToken && !modelAttribute.AutoProperty)
                {
@@ -1219,10 +1222,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                if (modelAttribute.IsAbstract)
                   Output($"public abstract {modelAttribute.FQPrimitiveType}{nullable} {modelAttribute.Name} {{ get; {setterVisibility}set; }}");
                else if (modelAttribute.IsConcurrencyToken || modelAttribute.AutoProperty)
-                  Output($"public {modelAttribute.FQPrimitiveType}{nullable} {modelAttribute.Name} {{ get; {setterVisibility}set; }}");
+                  Output($"public {@virtual}{modelAttribute.FQPrimitiveType}{nullable} {modelAttribute.Name} {{ get; {setterVisibility}set; }}");
                else
                {
-                  Output($"public {modelAttribute.FQPrimitiveType}{nullable} {modelAttribute.Name}");
+                  Output($"public {@virtual}{modelAttribute.FQPrimitiveType}{nullable} {modelAttribute.Name}");
                   Output("{");
                   Output("get");
                   Output("{");

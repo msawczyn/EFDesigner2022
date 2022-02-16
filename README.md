@@ -67,11 +67,6 @@ That's it. Of course, if you customized any of the standard templates, you'll ha
 bump your changes up against the new templates. Not much has changed that didn't absolutely _need_ to be changed due to the VS2022 differences, but there
 may be a bugfix or two your customized templates don't have. But, hey ... if you've been customizing the templates, you know the drill, right?
 
-**Known issues**
-The designer's based on the Microsoft Modeling SDK, and [that SDK currently has a bug](https://developercommunity.visualstudio.com/t/DSL-Editor-context-menu-is-empty/1565770?space=8&q=dsl+context+menu+broken) preventing certain context menu items from appearing. Unfortunately, those
-are the menu items that allow you to add details like classes, enums, properties and the like. According to the response to the bug report, it has been fixed
-in Visual Studio 17.1 preview 2. We're crossing our fingers hoping that it makes it all the way through to 17.1 release version.
-
 ### Shout out and a big thanks
 <!-- <table border="0" cellspacing="0" cellpadding="0" style="border:none">
 <tr vstyle="center" style="border:none"><td>to</td><td><a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawczyn.github.io/EFDesigner/images/jetbrains-variant-2a.png"></a></td><td>for providing free development tools to support this project.</td></tr>
@@ -82,8 +77,8 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 
 4.1.2
    - Added ability to create association classes via drag and drop of an entity onto a bidirectional many-to-many association
-   - Added theme support
-   - Fixed problem where secondary diagrams couldn't be opened
+   - Restored ability to open secondary diagrams
+   - Compiler update to Visual Studio v17.1.0 fixes missing designer menu items
 
 4.0.1
    - Added validations preventing use of temporal tables in unsupported scenarios
