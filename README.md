@@ -75,6 +75,14 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 
 ### Change Log
 
+4.1.2
+   - Added ability to create association classes via drag and drop of an entity onto a bidirectional many-to-many association
+   - Restored ability to open secondary diagrams
+   - Compiler update to Visual Studio v17.1.0 fixes missing designer menu items
+
+4.0.1
+   - Added validations preventing use of temporal tables in unsupported scenarios
+
 4.0.0
    - VS2022 extension
    - Added support for EFCore6
