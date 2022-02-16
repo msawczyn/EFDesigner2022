@@ -272,18 +272,6 @@
     <Content Include="TextTemplates\EFModelGenerator.ttinclude">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Compile Include="TextTemplates\EditingOnly\EF6Designer.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EF6ModelGenerator.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFCore2ModelGenerator.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFCore3ModelGenerator.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFCore5ModelGenerator.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFCoreDesigner.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFCoreModelGenerator.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFDesigner.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFModelFileManager.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFModelGenerator.cs" />
-    <Compile Include="TextTemplates\EditingOnly\MultipleOutputHelper.cs" />
-    <Compile Include="TextTemplates\EditingOnly\VSIntegration.cs" />
     <Compile Include="VSPackage.Designer.cs" />
     <Content Include="Logo.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -383,7 +371,6 @@
     <Content Include="TextTemplates\VSIntegration.ttinclude">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="TextTemplates\EditingOnly\_ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dsl\Dsl.csproj">
@@ -487,7 +474,7 @@
       <Version>17.0.31902.203</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.TextTemplating.VSHost">
-      <Version>17.0.31902.203</Version>
+      <Version>17.0.32112.339</Version>
     </PackageReference>
     <PackageReference Include="QuikGraph" Version="2.3.0" />
     <PackageReference Include="QuikGraph.Graphviz" Version="2.3.1" />

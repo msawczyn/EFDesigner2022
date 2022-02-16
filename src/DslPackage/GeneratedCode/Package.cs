@@ -86,9 +86,9 @@ namespace Sawczyn.EFDesigner.EFModel
                "@EnumerationToolboxBitmap;Sawczyn.EFDesigner.EFModel.Dsl.dll", 
                0xff00ff,
                Index = 6)]
+   [VSShell::ProvideEditorLogicalView(typeof(EFModelEditorFactory), Constants.LogicalViewId, IsTrusted = true)]
    [VSShell::ProvideEditorFactory(typeof(EFModelEditorFactory), 103, TrustLevel = VSShellInterop::__VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
    [VSShell::ProvideEditorExtension(typeof(EFModelEditorFactory), "." + Constants.DesignerFileExtension, 50)]
-	[VSShell::ProvideEditorLogicalView(typeof(EFModelEditorFactory), "{7651A702-06E5-11D1-8EBD-00A0C90F26EA}")] // Designer logical view GUID i.e. VSConstants.LOGVIEWID_Designer
    [DslShell::ProvideRelatedFile("." + Constants.DesignerFileExtension, Constants.DefaultDiagramExtension,
       ProjectSystem = DslShell::ProvideRelatedFileAttribute.CSharpProjectGuid,
       FileOptions = DslShell::RelatedFileType.FileName)]

@@ -79,9 +79,9 @@ namespace <#= CodeGenerationUtilities.GetPackageNamespace(this.Dsl) #>
 
    }
 #>
+   [VSShell::ProvideEditorLogicalView(typeof(<#= dslName #>EditorFactory), Constants.LogicalViewId, IsTrusted = true)]
    [VSShell::ProvideEditorFactory(typeof(<#= dslName #>EditorFactory), 103, TrustLevel = VSShellInterop::__VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
    [VSShell::ProvideEditorExtension(typeof(<#= dslName #>EditorFactory), "." + Constants.DesignerFileExtension, 50)]
-	[VSShell::ProvideEditorLogicalView(typeof(<#= dslName #>EditorFactory), "{7651A702-06E5-11D1-8EBD-00A0C90F26EA}")] // Designer logical view GUID i.e. VSConstants.LOGVIEWID_Designer
    [DslShell::ProvideRelatedFile("." + Constants.DesignerFileExtension, Constants.DefaultDiagramExtension,
       ProjectSystem = DslShell::ProvideRelatedFileAttribute.CSharpProjectGuid,
       FileOptions = DslShell::RelatedFileType.FileName)]

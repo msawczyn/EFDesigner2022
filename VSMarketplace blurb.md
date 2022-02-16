@@ -52,6 +52,14 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
 
 **ChangeLog**
 
+**4.1.2**
+   - **[NEW]** Added ability to create association classes via drag and drop of an entity onto a bidirectional many-to-many association
+   - Restored ability to open secondary diagrams
+   - Compiler update to Visual Studio v17.1.0 fixes missing designer menu items
+
+**4.0.1**
+   - Added validations preventing use of temporal tables in unsupported scenarios
+
 **4.0.0**
    - **[NEW]** VS2022 extension
    - **[NEW]** Added support for EFCore6
