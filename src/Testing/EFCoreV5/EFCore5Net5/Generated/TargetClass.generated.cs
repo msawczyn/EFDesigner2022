@@ -33,7 +33,7 @@ namespace Testing
       /// </summary>
       public TargetClass(): base()
       {
-         Entity1 = new System.Collections.Generic.HashSet<global::Testing.Entity1>();
+         AssocClasses = new System.Collections.Generic.HashSet<global::Testing.AssocClass>();
          SourceClasses = new System.Collections.Generic.HashSet<global::Testing.SourceClass>();
 
          Init();
@@ -59,7 +59,7 @@ namespace Testing
       /// </summary>
       [System.ComponentModel.Description("Association class for SourceClasses")]
       [System.ComponentModel.DataAnnotations.Display(Name="Association object for SourceClasses")]
-      public virtual ICollection<global::Testing.Entity1> Entity1 { get; private set; }
+      public virtual ICollection<global::Testing.AssocClass> AssocClasses { get; private set; }
 
       public virtual ICollection<global::Testing.SourceClass> SourceClasses { get; private set; }
 

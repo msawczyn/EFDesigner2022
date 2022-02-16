@@ -109,22 +109,25 @@ namespace Sawczyn.EFDesigner.EFModel
       public override void OnDragOver(DiagramDragEventArgs diagramDragEventArgs)
       {
          base.OnDragOver(diagramDragEventArgs);
-         diagramDragEventArgs.Handled = false;
+
+         if (diagramDragEventArgs.Handled)
+            return;
 
          List<BidirectionalConnector> bidirectionalConnectorsUnderShape = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
+
+         foreach (BidirectionalConnector connector in bidirectionalConnectorsUnderShape)
+            Highlight(connector);
+
          bool isDroppingAssociationClass = bidirectionalConnectorsUnderShape?.Any() == true;
 
          if (isDroppingAssociationClass)
-         {
-            foreach (BidirectionalConnector connector in bidirectionalConnectorsUnderShape)
-               Highlight(connector);
-
-            diagramDragEventArgs.Effect = DragDropEffects.Copy;
-         }
+            diagramDragEventArgs.Effect = DragDropEffects.Link;
          else if (diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelEnum") is ModelEnum
-               || diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelClass") is ModelClass
-               || IsAcceptableDropItem(diagramDragEventArgs))
+          || diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelClass") is ModelClass
+          || IsAcceptableDropItem(diagramDragEventArgs))
             diagramDragEventArgs.Effect = DragDropEffects.Copy;
+         else
+            diagramDragEventArgs.Effect = DragDropEffects.None;
 
          diagramDragEventArgs.Handled = true;
       }

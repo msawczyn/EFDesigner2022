@@ -25,7 +25,7 @@ namespace Testing
    public partial class EFModel1 : DbContext
    {
       #region DbSets
-      public virtual Microsoft.EntityFrameworkCore.DbSet<global::Testing.Entity1> Entity1 { get; set; }
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::Testing.AssocClass> AssocClasses { get; set; }
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::Testing.EntityAbstract> EntityAbstract { get; set; }
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::Testing.EntityRelated> EntityRelated { get; set; }
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::Testing.SourceClass> SourceClasses { get; set; }
@@ -94,26 +94,26 @@ namespace Testing
          modelBuilder.Entity<global::Testing.SourceClass>().ToTable("SourceClasses").HasKey(t => t.Id);
          modelBuilder.Entity<global::Testing.SourceClass>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
          modelBuilder.Entity<global::Testing.SourceClass>().HasMany<global::Testing.TargetClass>(p => p.TargetClasses).WithMany(p => p.SourceClasses)
-            .UsingEntity<global::Testing.Entity1>(
+            .UsingEntity<global::Testing.AssocClass>(
                j => j
                   .HasOne(x => x.TargetClass)
-                  .WithMany(x => x.Entity1)
+                  .WithMany(x => x.AssocClasses)
                   .HasForeignKey(x => x.TargetClassesId),
                j => j
                   .HasOne(x => x.SourceClass)
-                  .WithMany(x => x.Entity1)
+                  .WithMany(x => x.AssocClasses)
                   .HasForeignKey(x => x.SourceClassesId),
                j =>
                {
-                  j.ToTable("Entity1");
+                  j.ToTable("AssocClasses");
                   j.HasKey(t => new { t.SourceClassesId, t.TargetClassesId });
                   j.Property(t => t.Id).IsRequired();
                   j.HasIndex(t => t.Id).IsUnique();
                });
-         modelBuilder.Entity<global::Testing.SourceClass>().HasMany<global::Testing.Entity1>(p => p.Entity1).WithOne(p => p.SourceClass);
+         modelBuilder.Entity<global::Testing.SourceClass>().HasMany<global::Testing.AssocClass>(p => p.AssocClasses).WithOne(p => p.SourceClass);
 
          modelBuilder.Entity<global::Testing.TargetClass>().Property(t => t.Test).HasMaxLength(255);
-         modelBuilder.Entity<global::Testing.TargetClass>().HasMany<global::Testing.Entity1>(p => p.Entity1).WithOne(p => p.TargetClass);
+         modelBuilder.Entity<global::Testing.TargetClass>().HasMany<global::Testing.AssocClass>(p => p.AssocClasses).WithOne(p => p.TargetClass);
 
          OnModelCreatedImpl(modelBuilder);
       }

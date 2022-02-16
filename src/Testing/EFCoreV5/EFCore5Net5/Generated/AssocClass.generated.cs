@@ -24,14 +24,14 @@ using System.Runtime.CompilerServices;
 
 namespace Testing
 {
-   public partial class Entity1
+   public partial class AssocClass
    {
       partial void Init();
 
       /// <summary>
       /// Default constructor. Protected due to required properties, but present because EF needs it.
       /// </summary>
-      protected Entity1()
+      protected AssocClass()
       {
          Init();
       }
@@ -39,20 +39,20 @@ namespace Testing
       /// <summary>
       /// Replaces default constructor, since it's protected. Caller assumes responsibility for setting all required values before saving.
       /// </summary>
-      public static Entity1 CreateEntity1Unsafe()
+      public static AssocClass CreateAssocClassUnsafe()
       {
-         return new Entity1();
+         return new AssocClass();
       }
 
       /// <summary>
       /// Public constructor with required data
       /// </summary>
       /// <param name="id">Unique identifier</param>
-      /// <param name="sourceclassesid">Foreign key for SourceClass.Entity1 &lt;--&gt; Entity1.SourceClass. </param>
-      /// <param name="targetclassesid">Foreign key for TargetClass.Entity1 &lt;--&gt; Entity1.TargetClass. </param>
+      /// <param name="sourceclassesid">Foreign key for SourceClass.AssocClasses &lt;--&gt; AssocClass.SourceClass. </param>
+      /// <param name="targetclassesid">Foreign key for TargetClass.AssocClasses &lt;--&gt; AssocClass.TargetClass. </param>
       /// <param name="targetclass">Association class for TargetClasses</param>
       /// <param name="sourceclass">Association class for SourceClasses</param>
-      public Entity1(long id, long sourceclassesid, long targetclassesid, global::Testing.TargetClass targetclass, global::Testing.SourceClass sourceclass)
+      public AssocClass(long id, long sourceclassesid, long targetclassesid, global::Testing.TargetClass targetclass, global::Testing.SourceClass sourceclass)
       {
          this.Id = id;
 
@@ -62,11 +62,11 @@ namespace Testing
 
          if (targetclass == null) throw new ArgumentNullException(nameof(targetclass));
          this.TargetClass = targetclass;
-         targetclass.Entity1.Add(this);
+         targetclass.AssocClasses.Add(this);
 
          if (sourceclass == null) throw new ArgumentNullException(nameof(sourceclass));
          this.SourceClass = sourceclass;
-         sourceclass.Entity1.Add(this);
+         sourceclass.AssocClasses.Add(this);
 
          Init();
       }
@@ -75,13 +75,13 @@ namespace Testing
       /// Static create function (for use in LINQ queries, etc.)
       /// </summary>
       /// <param name="id">Unique identifier</param>
-      /// <param name="sourceclassesid">Foreign key for SourceClass.Entity1 &lt;--&gt; Entity1.SourceClass. </param>
-      /// <param name="targetclassesid">Foreign key for TargetClass.Entity1 &lt;--&gt; Entity1.TargetClass. </param>
+      /// <param name="sourceclassesid">Foreign key for SourceClass.AssocClasses &lt;--&gt; AssocClass.SourceClass. </param>
+      /// <param name="targetclassesid">Foreign key for TargetClass.AssocClasses &lt;--&gt; AssocClass.TargetClass. </param>
       /// <param name="targetclass">Association class for TargetClasses</param>
       /// <param name="sourceclass">Association class for SourceClasses</param>
-      public static Entity1 Create(long id, long sourceclassesid, long targetclassesid, global::Testing.TargetClass targetclass, global::Testing.SourceClass sourceclass)
+      public static AssocClass Create(long id, long sourceclassesid, long targetclassesid, global::Testing.TargetClass targetclass, global::Testing.SourceClass sourceclass)
       {
-         return new Entity1(id, sourceclassesid, targetclassesid, targetclass, sourceclass);
+         return new AssocClass(id, sourceclassesid, targetclassesid, targetclass, sourceclass);
       }
 
       /*************************************************************************
@@ -98,20 +98,20 @@ namespace Testing
 
       /// <summary>
       /// Identity, Indexed, Required
-      /// Foreign key for SourceClass.Entity1 &lt;--&gt; Entity1.SourceClass. 
+      /// Foreign key for SourceClass.AssocClasses &lt;--&gt; AssocClass.SourceClass. 
       /// </summary>
       [Key]
       [Required]
-      [System.ComponentModel.Description("Foreign key for SourceClass.Entity1 <--> Entity1.SourceClass. ")]
+      [System.ComponentModel.Description("Foreign key for SourceClass.AssocClasses <--> AssocClass.SourceClass. ")]
       public long SourceClassesId { get; set; }
 
       /// <summary>
       /// Identity, Indexed, Required
-      /// Foreign key for TargetClass.Entity1 &lt;--&gt; Entity1.TargetClass. 
+      /// Foreign key for TargetClass.AssocClasses &lt;--&gt; AssocClass.TargetClass. 
       /// </summary>
       [Key]
       [Required]
-      [System.ComponentModel.Description("Foreign key for TargetClass.Entity1 <--> Entity1.TargetClass. ")]
+      [System.ComponentModel.Description("Foreign key for TargetClass.AssocClasses <--> AssocClass.TargetClass. ")]
       public long TargetClassesId { get; set; }
 
       /*************************************************************************
