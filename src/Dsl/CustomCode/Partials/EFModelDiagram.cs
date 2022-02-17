@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -12,11 +11,9 @@ using Microsoft.VisualStudio.Modeling.Diagrams.GraphObject;
 
 using Sawczyn.EFDesigner.EFModel.Extensions;
 
-using static System.Windows.Forms.AxHost;
-
 namespace Sawczyn.EFDesigner.EFModel
 {
-   public partial class EFModelDiagram : IHasStore
+   public partial class EFModelDiagram : IHasStore, IThemeable
    {
       public override void OnInitialize()
       {
@@ -32,6 +29,32 @@ namespace Sawczyn.EFDesigner.EFModel
          ShowGrid = modelRoot?.ShowGrid ?? true;
          GridColor = modelRoot?.GridColor ?? Color.Gainsboro;
          SnapToGrid = modelRoot?.SnapToGrid ?? true;
+
+         if (ModelDisplay.GetDiagramColors != null)
+            SetThemeColors(ModelDisplay.GetDiagramColors());
+      }
+
+      public void SetThemeColors(DiagramThemeColors diagramColors)
+      {
+         Transaction tx = Store.TransactionManager.InTransaction
+                             ? null
+                             : Store.TransactionManager.BeginTransaction("Set diagram colors");
+
+         try
+         {
+            FillColor = diagramColors.Background;
+            TextColor = diagramColors.Text;
+
+            Invalidate();
+         }
+         finally
+         {
+            if (tx != null)
+            {
+               tx.Commit();
+               tx.Dispose();
+            }
+         }
       }
 
       /// <summary>
@@ -86,22 +109,25 @@ namespace Sawczyn.EFDesigner.EFModel
       public override void OnDragOver(DiagramDragEventArgs diagramDragEventArgs)
       {
          base.OnDragOver(diagramDragEventArgs);
-         diagramDragEventArgs.Handled = false;
+
+         if (diagramDragEventArgs.Handled)
+            return;
 
          List<BidirectionalConnector> bidirectionalConnectorsUnderShape = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
+
+         foreach (BidirectionalConnector connector in bidirectionalConnectorsUnderShape)
+            Highlight(connector);
+
          bool isDroppingAssociationClass = bidirectionalConnectorsUnderShape?.Any() == true;
 
          if (isDroppingAssociationClass)
-         {
-            foreach (BidirectionalConnector connector in bidirectionalConnectorsUnderShape)
-               Highlight(connector);
-
-            diagramDragEventArgs.Effect = DragDropEffects.Copy;
-         }
+            diagramDragEventArgs.Effect = DragDropEffects.Link;
          else if (diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelEnum") is ModelEnum
-               || diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelClass") is ModelClass
-               || IsAcceptableDropItem(diagramDragEventArgs))
+          || diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelClass") is ModelClass
+          || IsAcceptableDropItem(diagramDragEventArgs))
             diagramDragEventArgs.Effect = DragDropEffects.Copy;
+         else
+            diagramDragEventArgs.Effect = DragDropEffects.None;
 
          diagramDragEventArgs.Handled = true;
       }
