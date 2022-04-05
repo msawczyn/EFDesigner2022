@@ -1561,6 +1561,18 @@
     <value>Is Property Access Mode Tracking</value>
     <comment>DisplayName for DomainProperty &apos;IsPropertyAccessModeTracking&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
   </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute/DatabaseDefaultValue.Description" xml:space="preserve">
+    <value>Default value at the database level if no value is specified</value>
+    <comment>Description for DomainProperty &apos;DatabaseDefaultValue&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute/DatabaseDefaultValue.DisplayName" xml:space="preserve">
+    <value>Database Default Value</value>
+    <comment>DisplayName for DomainProperty &apos;DatabaseDefaultValue&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute/DatabaseDefaultValue.Category" xml:space="preserve">
+    <value>Database</value>
+    <comment>Category for DomainProperty &apos;DatabaseDefaultValue&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
+  </data>
   <data name="Sawczyn.EFDesigner.EFModel.Comment.Description" xml:space="preserve">
     <value></value>
     <comment>Description for DomainClass &apos;Comment&apos;</comment>

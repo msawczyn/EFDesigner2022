@@ -36,6 +36,10 @@ namespace Sawczyn.EFDesigner.EFModel
             if (!modelAttribute.SupportsInitialValue)
                propertyDescriptors.Remove("InitialValue");
 
+            // database default takes precedence over coded initial values
+            if (!string.IsNullOrWhiteSpace(modelAttribute.DatabaseDefaultValue))
+               propertyDescriptors.Remove("InitialValue");
+
             // don't display IdentityType if IsIdentity is false
             if (!modelAttribute.IsIdentity)
                propertyDescriptors.Remove("IdentityType");

@@ -166,29 +166,34 @@
                }
                else
                {
-                  switch (modelAttribute.Type)
+                  if (string.IsNullOrWhiteSpace(modelAttribute.DatabaseDefaultValue))
                   {
-                     case "String":
-                        segments.Add($"HasDefaultValue(\"{modelAttribute.InitialValue.Trim(' ', '"')}\")");
+                     switch (modelAttribute.Type)
+                     {
+                        case "String":
+                           segments.Add($"HasDefaultValue(\"{modelAttribute.InitialValue.Trim(' ', '"')}\")");
 
-                        break;
+                           break;
 
-                     case "Char":
-                        segments.Add($"HasDefaultValue('{modelAttribute.InitialValue.Trim(' ', '\'')}')");
+                        case "Char":
+                           segments.Add($"HasDefaultValue('{modelAttribute.InitialValue.Trim(' ', '\'')}')");
 
-                        break;
+                           break;
 
-                     case "DateTime":
-                        if (modelAttribute.InitialValue == "DateTime.UtcNow")
-                           segments.Add("HasDefaultValueSql(\"CURRENT_TIMESTAMP\")");
+                        case "DateTime":
+                           if (modelAttribute.InitialValue == "DateTime.UtcNow")
+                              segments.Add("HasDefaultValueSql(\"CURRENT_TIMESTAMP\")");
 
-                        break;
+                           break;
 
-                     default:
-                        segments.Add($"HasDefaultValue({modelAttribute.InitialValue})");
+                        default:
+                           segments.Add($"HasDefaultValue({modelAttribute.InitialValue})");
 
-                        break;
+                           break;
+                     }
                   }
+                  else
+                     segments.Add($"HasDefaultValueSql(\"{modelAttribute.DatabaseDefaultValue}\")");
                }
             }
 

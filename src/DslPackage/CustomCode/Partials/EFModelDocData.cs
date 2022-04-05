@@ -38,15 +38,29 @@ namespace Sawczyn.EFDesigner.EFModel
       private IComponentModel _componentModel;
       //private IVsOutputWindowPane _outputWindow;
 
-      internal static DTE Dte => _dte ?? (_dte = Package.GetGlobalService(typeof(DTE)) as DTE);
+      internal static DTE Dte
+      {
+         get
+         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            return _dte ?? (_dte = Package.GetGlobalService(typeof(DTE)) as DTE);
+         }
+      }
+
       internal static DTE2 Dte2 => _dte2 ?? (_dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2);
       internal IComponentModel ComponentModel => _componentModel ?? (_componentModel = (IComponentModel)GetService(typeof(SComponentModel)));
       //internal IVsOutputWindowPane OutputWindow => _outputWindow ?? (_outputWindow = (IVsOutputWindowPane)GetService(typeof(SVsGeneralOutputWindowPane)));
 
-      internal static Project ActiveProject =>
-            Dte.ActiveSolutionProjects is Array activeSolutionProjects && activeSolutionProjects.Length > 0
-                  ? activeSolutionProjects.GetValue(0) as Project
-                  : null;
+      internal static Project ActiveProject
+      {
+         get
+         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            return Dte.ActiveSolutionProjects is Array activeSolutionProjects && activeSolutionProjects.Length > 0
+                      ? activeSolutionProjects.GetValue(0) as Project
+                      : null;
+         }
+      }
 
       static EFModelDocData()
       {
@@ -60,6 +74,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       internal static void GenerateCode(string filepath)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          ProjectItem modelProjectItem = Dte2.Solution.FindProjectItem(filepath ?? Dte2.ActiveDocument.FullName);
 
          if (Guid.Parse(modelProjectItem.Kind) == VSConstants.GUID_ItemType_PhysicalFile)
@@ -109,6 +124,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          try
          {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Project activeProject = ActiveProject;
 
             if (activeProject != null)
@@ -141,6 +157,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          try
          {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Project activeProject = ActiveProject;
 
             if (activeProject != null)
@@ -233,6 +250,7 @@ namespace Sawczyn.EFDesigner.EFModel
          VSColorTheme.ThemeChanged += VSColorTheme_OnThemeChanged;
 
          // set to the project's namespace if no namespace set
+         ThreadHelper.ThrowIfNotOnUIThread();
          if (string.IsNullOrEmpty(modelRoot.Namespace))
          {
             using (Transaction tx = Store.TransactionManager.BeginTransaction("SetDefaultNamespace"))
@@ -389,11 +407,14 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void CloseDiagram(EFModelDiagram diagram)
       {
-         DocViews.OfType<EFModelDocView>().FirstOrDefault(d => d.Diagram == diagram)?.Frame?.CloseFrame((uint)__FRAMECLOSE.FRAMECLOSE_SaveIfDirty);
+         ThreadHelper.ThrowIfNotOnUIThread();
+         DocViews.OfType<EFModelDocView>().FirstOrDefault(d => d.Diagram == diagram)?.Frame
+                ?.CloseFrame((uint)__FRAMECLOSE.FRAMECLOSE_SaveIfDirty);
       }
 
       private void RenameWindow(EFModelDiagram diagram)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          DocViews.OfType<EFModelDocView>().FirstOrDefault(d => d.Diagram == diagram)?.Frame
                 ?.SetProperty((int)__VSFPROPID.VSFPROPID_EditorCaption, $" [{diagram.Name}]");
       }
@@ -620,13 +641,16 @@ namespace Sawczyn.EFDesigner.EFModel
 
       protected override void CleanupOldDiagramFiles()
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          string diagramsFileName = FileName + this.DiagramExtension;
          if (diagramsFileName.EndsWith("x"))
          {
             string oldDiagramFileName = diagramsFileName.TrimEnd('x');
 
             if (File.Exists(oldDiagramFileName))
+            {
                Dte2.Solution.FindProjectItem(oldDiagramFileName)?.Delete();
+            }
          }
       }
    }

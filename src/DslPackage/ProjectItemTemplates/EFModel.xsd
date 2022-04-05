@@ -922,6 +922,12 @@
             <xsd:documentation>If true, ModelAttribute.PropertyAccessMode tracks ModelRoot.PropertyAccessModeDefault</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+        <!-- Property: DatabaseDefaultValue -->
+        <xsd:attribute name="databaseDefaultValue" type="xsd:string" >
+          <xsd:annotation>
+            <xsd:documentation>Default value at the database level if no value is specified</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

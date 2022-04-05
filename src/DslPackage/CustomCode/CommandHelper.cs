@@ -32,6 +32,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
 			// Get the file path
          // ReSharper disable once SuspiciousTypeConversion.Global
+         ThreadHelper.ThrowIfNotOnUIThread();
          ((IVsProject)hierarchy).GetMkDocument(itemid, out string itemFullPath);
 			return itemFullPath;
 		}
@@ -41,6 +42,7 @@ namespace Sawczyn.EFDesigner.EFModel
 			hierarchy = null;
 			itemid = VSConstants.VSITEMID_NIL;
 
+         ThreadHelper.ThrowIfNotOnUIThread();
          IVsMonitorSelection monitorSelection = Package.GetGlobalService(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
          IVsSolution solution = Package.GetGlobalService(typeof(SVsSolution)) as IVsSolution;
 			if (monitorSelection == null || solution == null)
@@ -53,6 +55,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
 			try
 			{
+            ThreadHelper.ThrowIfNotOnUIThread();
 				int hr = monitorSelection.GetCurrentSelection(out hierarchyPtr, out itemid, out IVsMultiItemSelect multiItemSelect, out selectionContainerPtr);
 
 				if (ErrorHandler.Failed(hr) || hierarchyPtr == IntPtr.Zero || itemid == VSConstants.VSITEMID_NIL)
@@ -71,12 +74,11 @@ namespace Sawczyn.EFDesigner.EFModel
 				hierarchy = Marshal.GetObjectForIUnknown(hierarchyPtr) as IVsHierarchy;
 				if (hierarchy == null) return false;
 
+            ThreadHelper.ThrowIfNotOnUIThread();
 				if (ErrorHandler.Failed(solution.GetGuidOfProject(hierarchy, out Guid _)))
-				{
-					return false; // hierarchy is not a project inside the Solution if it does not have a ProjectID Guid
-				}
+               return false; // hierarchy is not a project inside the Solution if it does not have a ProjectID Guid
 
-				// if we got this far then there is a single project item selected
+            // if we got this far then there is a single project item selected
 				return true;
 			}
 			finally
@@ -107,6 +109,7 @@ namespace Sawczyn.EFDesigner.EFModel
       // parameter must be EntityContainer file path
       public static void GenerateCode(string entityContainerFilepath)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          DTE Dte = Package.GetGlobalService(typeof(DTE)) as DTE;
          DTE2 Dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2;
 

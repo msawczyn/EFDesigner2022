@@ -115,8 +115,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
          List<BidirectionalConnector> bidirectionalConnectorsUnderShape = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
 
-         foreach (BidirectionalConnector connector in bidirectionalConnectorsUnderShape)
-            Highlight(connector);
+         //foreach (BidirectionalConnector connector in bidirectionalConnectorsUnderShape)
+         //   Highlight(connector);
 
          bool isDroppingAssociationClass = bidirectionalConnectorsUnderShape?.Any() == true;
 

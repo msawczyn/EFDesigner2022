@@ -185,22 +185,32 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                if (hostServiceProvider == null)
                   throw new ArgumentNullException(nameof(host));
 
+               Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
                dte = (DTE)hostServiceProvider.GetCOMService(typeof(DTE));
                templateProjectItem = dte.Solution.FindProjectItem(host.TemplateFile);
             }
 
             public override string DefaultProjectNamespace
             {
-               get { return templateProjectItem.ContainingProject.Properties.Item("DefaultNamespace").Value.ToString(); }
+               get
+               {
+                  Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+                  return templateProjectItem.ContainingProject.Properties.Item("DefaultNamespace").Value.ToString();
+               }
             }
 
             public override string OutputPath
             {
-               get { return Path.GetDirectoryName(templateProjectItem.ContainingProject.FullName); }
+               get
+               {
+                  Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+                  return Path.GetDirectoryName(templateProjectItem.ContainingProject.FullName);
+               }
             }
 
             private void CheckoutFileIfRequired(string fileName)
             {
+               Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
                EnvDTE.SourceControl sc = dte.SourceControl;
 
                if (sc != null && sc.IsItemUnderSCC(fileName) && !sc.IsItemCheckedOut(fileName))
@@ -223,6 +233,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             private Dictionary<ProjectItem, List<string>> GetCurrentState()
             {
+               Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
                Dictionary<ProjectItem, List<string>> result = new Dictionary<ProjectItem, List<string>>();
                Project currentProject = templateProjectItem.ContainingProject;
                string projectDirectory = Path.GetDirectoryName(currentProject.FullName);
@@ -256,6 +267,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                if (string.IsNullOrEmpty(filePath))
                   return templateProjectItem;
 
+               Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
                string projectDirectory = Path.GetDirectoryName(templateProjectItem.ContainingProject.FullName);
                string fileDirectory = Path.GetDirectoryName(filePath);
 
@@ -323,6 +335,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             public override void Process(bool split)
             {
+               Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
                if (templateProjectItem.ProjectItems == null)
                   return;
 
@@ -339,6 +352,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                List<string> allTargetFiles = target.Keys.SelectMany(k => target[k]).ToList();
 
                List<string> existingFiles = new List<string>();
+               Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
 
                foreach (ProjectItem parentItem in current.Keys.ToList())
                {

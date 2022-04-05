@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using EnvDTE;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TemplateWizard;
 
 namespace Sawczyn.EFDesigner.EFModel
@@ -24,6 +25,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       public void ProjectItemFinishedGenerating(ProjectItem projectItem)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          dte = dte ?? projectItem.DTE;
          string path = projectItem.FileNames[0];
 
@@ -48,6 +50,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          // The VSIX can't nest files, so we'll do that here
          // NOTE: Don't nest the .tt file -- it doesn't seem to like that, and bad things happen
+         ThreadHelper.ThrowIfNotOnUIThread();
          if (modelPath != null && dte != null)
          {
             ProjectItem modelItem = dte.Solution.FindProjectItem(modelPath);

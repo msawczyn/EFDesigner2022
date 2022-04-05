@@ -143,10 +143,14 @@ namespace Sawczyn.EFDesigner.EFModel
       /// </summary>
       protected void InitSearch()
       {
-         IVsWindowSearchHostFactory windowSearchHostFactory = ServiceProvider.GetService(typeof(SVsWindowSearchHostFactory)) as IVsWindowSearchHostFactory;
-         IVsWindowSearchHost windowSearchHost = windowSearchHostFactory.CreateWindowSearchHost(SearchControlHost);
-         windowSearchHost.SetupSearch(this);
-         windowSearchHost.Activate();
+         ThreadHelper.ThrowIfNotOnUIThread();
+
+         if (ServiceProvider.GetService(typeof(SVsWindowSearchHostFactory)) is IVsWindowSearchHostFactory windowSearchHostFactory)
+         {
+            IVsWindowSearchHost windowSearchHost = windowSearchHostFactory.CreateWindowSearchHost(SearchControlHost);
+            windowSearchHost.SetupSearch(this);
+            windowSearchHost.Activate();
+         }
       }
 
       /// <summary>Creates a new search task object. The task is cold-started - Start() needs to be called on the task object to begin the search.</summary>
@@ -230,6 +234,7 @@ namespace Sawczyn.EFDesigner.EFModel
             // note that this will be run from a background thread. Must context switch to the UI thread to manipulate the tree.
             // use ThreadHelper.Generic.BeginInvoke for that 
 
+            ThreadHelper.ThrowIfNotOnUIThread();
             TreeView treeView = modelExplorer.ObjectModelBrowser;
             List<string> searchTexts = SearchUtilities.ExtractSearchTokens(SearchQuery).Select(token => token.ParsedTokenText).ToList();
 
@@ -238,6 +243,7 @@ namespace Sawczyn.EFDesigner.EFModel
                ThreadHelper.Generic.BeginInvoke(() =>
                                                 {
                                                    // ReSharper disable once UnusedVariable
+                                                   ThreadHelper.ThrowIfNotOnUIThread();
                                                    using (WaitCursor w = new WaitCursor())
                                                    {
                                                       treeView.SelectedNode = null;
@@ -272,6 +278,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
          private void PerformSearch(TreeView treeView)
          {
+            ThreadHelper.ThrowIfNotOnUIThread();
             List<string> searchTexts = SearchUtilities.ExtractSearchTokens(SearchQuery).Select(token => token.ParsedTokenText).ToList();
 
             // if nothing to search for, everything's a hit
