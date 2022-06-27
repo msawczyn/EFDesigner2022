@@ -2,8 +2,9 @@
 using System.ComponentModel;
 using System.Globalization;
 
-namespace Sawczyn.EFDesigner.EFModel {
-   class MinLengthTypeConverter : TypeConverterBase
+namespace Sawczyn.EFDesigner.EFModel
+{
+   internal class MinLengthTypeConverter : TypeConverterBase
    {
       /// <summary>
       ///    Returns whether this converter can convert an object of the given type to the type of this converter, using
@@ -14,7 +15,7 @@ namespace Sawczyn.EFDesigner.EFModel {
       /// <param name="sourceType">A <see cref="T:System.Type" /> that represents the type you want to convert from. </param>
       public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
       {
-         return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+         return (sourceType == typeof(string)) || base.CanConvertFrom(context, sourceType);
       }
 
       /// <summary>Returns whether this converter can convert the object to the specified type, using the specified context.</summary>
@@ -23,7 +24,7 @@ namespace Sawczyn.EFDesigner.EFModel {
       /// <param name="destinationType">A <see cref="T:System.Type" /> that represents the type you want to convert to. </param>
       public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
       {
-         return destinationType == typeof(int) || base.CanConvertTo(context, destinationType);
+         return (destinationType == typeof(int)) || base.CanConvertTo(context, destinationType);
       }
 
       /// <summary>Converts the given object to the type of this converter, using the specified context and culture information.</summary>
@@ -43,8 +44,11 @@ namespace Sawczyn.EFDesigner.EFModel {
                return 0;
 
             if (int.TryParse(s, out int val))
-               return val > 0 ? val : 0;
+               return val > 0
+                         ? val
+                         : 0;
          }
+
          return 0;
       }
 
@@ -54,12 +58,17 @@ namespace Sawczyn.EFDesigner.EFModel {
       /// <param name="value">The <see cref="T:System.Object" /> to convert. </param>
       /// <param name="destinationType">The <see cref="T:System.Type" /> to convert the <paramref name="value" /> parameter to. </param>
       /// <returns>An <see cref="T:System.Object" /> that represents the converted value.</returns>
-      /// <exception cref="T:System.ArgumentNullException">The <paramref name="destinationType" /> parameter is <see langword="null" />. </exception>
+      /// <exception cref="T:System.ArgumentNullException">
+      ///    The <paramref name="destinationType" /> parameter is
+      ///    <see langword="null" />.
+      /// </exception>
       /// <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
       public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
       {
          if (value is Int32 i)
-            return i <= 0 ? string.Empty : i.ToString();
+            return i <= 0
+                      ? string.Empty
+                      : i.ToString();
 
          return base.ConvertTo(context, culture, value, destinationType);
       }
@@ -77,6 +86,5 @@ namespace Sawczyn.EFDesigner.EFModel {
       {
          return false;
       }
-
    }
 }

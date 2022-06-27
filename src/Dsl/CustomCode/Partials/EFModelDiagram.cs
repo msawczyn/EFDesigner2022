@@ -15,23 +15,21 @@ namespace Sawczyn.EFDesigner.EFModel
 {
    public partial class EFModelDiagram : IHasStore, IThemeable
    {
-      public override void OnInitialize()
+      public PointD MouseDownPosition;
+
+      /// <summary>
+      ///    When true, user is dropping a drag from an external (to the model) source
+      /// </summary>
+      public static bool IsDroppingExternal { get; private set; }
+
+      private bool ForceAddShape { get; set; }
+
+      private List<ModelElement> DisplayedElements
       {
-         base.OnInitialize();
-         ModelRoot modelRoot = Store.ModelRoot();
-
-         // because we can hide elements, line routing looks odd when it thinks it's jumping over lines
-         // that really aren't visible. Since replacing the routing algorithm is too hard (impossible?)
-         // let's just stop it from showing jumps at all. A change to the highlighting on mouseover
-         // makes it easier to see which lines are which in complex diagrams, so this doesn't hurt anything.
-         RouteJumpType = VGPageLineJumpCode.NoJumps;
-
-         ShowGrid = modelRoot?.ShowGrid ?? true;
-         GridColor = modelRoot?.GridColor ?? Color.Gainsboro;
-         SnapToGrid = modelRoot?.SnapToGrid ?? true;
-
-         if (ModelDisplay.GetDiagramColors != null)
-            SetThemeColors(ModelDisplay.GetDiagramColors());
+         get
+         {
+            return NestedChildShapes.Select(nestedShape => nestedShape.ModelElement).ToList();
+         }
       }
 
       public void SetThemeColors(DiagramThemeColors diagramColors)
@@ -57,99 +55,18 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      /// <summary>
-      /// Called during view fixup to ask the parent whether a shape should be created for the given child element.
-      /// </summary>
-      /// <remarks>
-      /// Always return true, since we assume there is only one diagram per model file for DSL scenarios.
-      /// </remarks>
-      protected override bool ShouldAddShapeForElement(ModelElement element)
+      private void AddElementsToActiveDiagram(List<ModelElement> newElements)
       {
-         ModelElement parent = null;
+         ModelElement[] modelElements = newElements.Where(e => e is ModelClass || e is ModelEnum).ToArray();
+         int elementCount = modelElements.Length;
 
-         // for attributes and enum values, the we should add the shape if its parent is on the diagram
-         if (element is ModelAttribute modelAttribute)
-            parent = modelAttribute.ModelClass;
-
-         if (element is ModelEnumValue enumValue)
-            parent = enumValue.Enum;
-
-         bool result =
-            ForceAddShape // we've made the decision somewhere else that this shape should be added 
-         || IsDroppingExternal // we're dropping a file from Solution Explorer or File Explorer
-         || base.ShouldAddShapeForElement(element) // the built-in rules say to do this
-         || DisplayedElements.Contains(element) // the serialized diagram has this element present (other rules should prevent duplication)
-         || (parent != null && DisplayedElements.Contains(parent)) // the element's parent is on this diagram
-         || (element is ElementLink link && link.LinkedElements.All(linkedElement => DisplayedElements.Contains(linkedElement))); // adding a link and both of the linkk's end nodes are in this diagram
-
-         return result;
+         for (int index = 0; index < modelElements.Length; index++)
+         {
+            ModelElement element = modelElements[index];
+            StatusDisplay.Show($"Adding node {index + 1} of {elementCount} to diagram");
+            AddExistingModelElement(this, element);
+         }
       }
-
-      /// <summary>
-      /// When true, user is dropping a drag from an external (to the model) source
-      /// </summary>
-      public static bool IsDroppingExternal { get; private set; }
-
-      private bool ForceAddShape { get; set; }
-
-      public void Highlight(ShapeElement shape)
-      {
-         ShapeElement highlightShape = DetermineHighlightShape(shape);
-         if (highlightShape != null)
-            ActiveDiagramView.DiagramClientView.HighlightedShapes.Add(new DiagramItem(highlightShape));
-      }
-
-      public void Unhighlight(ShapeElement shape)
-      {
-         ShapeElement highlightShape = DetermineHighlightShape(shape);
-         if (highlightShape != null)
-            ActiveDiagramView.DiagramClientView.HighlightedShapes.Remove(new DiagramItem(highlightShape));
-      }
-
-      public override void OnDragOver(DiagramDragEventArgs diagramDragEventArgs)
-      {
-         base.OnDragOver(diagramDragEventArgs);
-
-         if (diagramDragEventArgs.Handled)
-            return;
-
-         List<BidirectionalConnector> bidirectionalConnectorsUnderShape = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
-
-         //foreach (BidirectionalConnector connector in bidirectionalConnectorsUnderShape)
-         //   Highlight(connector);
-
-         bool isDroppingAssociationClass = bidirectionalConnectorsUnderShape?.Any() == true;
-
-         if (isDroppingAssociationClass)
-            diagramDragEventArgs.Effect = DragDropEffects.Link;
-         else if (diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelEnum") is ModelEnum
-          || diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelClass") is ModelClass
-          || IsAcceptableDropItem(diagramDragEventArgs))
-            diagramDragEventArgs.Effect = DragDropEffects.Copy;
-         else
-            diagramDragEventArgs.Effect = DragDropEffects.None;
-
-         diagramDragEventArgs.Handled = true;
-      }
-
-      /// <summary>
-      /// Used for dropping data originating outside of VStudio
-      /// </summary>
-      /// <param name="diagramDragEventArgs"></param>
-      /// <returns></returns>
-      private bool IsAcceptableDropItem(DiagramDragEventArgs diagramDragEventArgs)
-      {
-         IsDroppingExternal = (diagramDragEventArgs.Data.GetData("Text") is string filenames1
-                            && filenames1.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries) is string[] filenames2
-                            && filenames2.All(File.Exists))
-                           || (diagramDragEventArgs.Data.GetData("FileDrop") is string[] filenames3 && filenames3.All(File.Exists));
-
-         bool isDroppingAssociationClass = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition).Any() == true;
-
-         return IsDroppingExternal || isDroppingAssociationClass;
-      }
-
-      private List<ModelElement> DisplayedElements => NestedChildShapes.Select(nestedShape => nestedShape.ModelElement).ToList();
 
       public static ShapeElement AddExistingModelElement(EFModelDiagram diagram, ModelElement element)
       {
@@ -178,10 +95,61 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      public void DisableDiagramRules()
+      {
+         RuleManager ruleManager = Store.RuleManager;
+         ruleManager.DisableRule(typeof(FixUpAllDiagrams));
+         ruleManager.DisableRule(typeof(DecoratorPropertyChanged));
+         ruleManager.DisableRule(typeof(ConnectorRolePlayerChanged));
+         ruleManager.DisableRule(typeof(CompartmentItemAddRule));
+         ruleManager.DisableRule(typeof(CompartmentItemDeleteRule));
+         ruleManager.DisableRule(typeof(CompartmentItemRolePlayerChangeRule));
+         ruleManager.DisableRule(typeof(CompartmentItemRolePlayerPositionChangeRule));
+         ruleManager.DisableRule(typeof(CompartmentItemChangeRule));
+      }
+
+      public void EnableDiagramRules()
+      {
+         RuleManager ruleManager = Store.RuleManager;
+         ruleManager.EnableRule(typeof(FixUpAllDiagrams));
+         ruleManager.EnableRule(typeof(DecoratorPropertyChanged));
+         ruleManager.EnableRule(typeof(ConnectorRolePlayerChanged));
+         ruleManager.EnableRule(typeof(CompartmentItemAddRule));
+         ruleManager.EnableRule(typeof(CompartmentItemDeleteRule));
+         ruleManager.EnableRule(typeof(CompartmentItemRolePlayerChangeRule));
+         ruleManager.EnableRule(typeof(CompartmentItemRolePlayerPositionChangeRule));
+         ruleManager.EnableRule(typeof(CompartmentItemChangeRule));
+      }
+
+      public void Highlight(ShapeElement shape)
+      {
+         ShapeElement highlightShape = DetermineHighlightShape(shape);
+
+         if (highlightShape != null)
+            ActiveDiagramView.DiagramClientView.HighlightedShapes.Add(new DiagramItem(highlightShape));
+      }
+
+      /// <summary>
+      ///    Used for dropping data originating outside of VStudio
+      /// </summary>
+      /// <param name="diagramDragEventArgs"></param>
+      /// <returns></returns>
+      private bool IsAcceptableDropItem(DiagramDragEventArgs diagramDragEventArgs)
+      {
+         IsDroppingExternal = (diagramDragEventArgs.Data.GetData("Text") is string filenames1
+                            && filenames1.Split(new[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries) is string[] filenames2
+                            && filenames2.All(File.Exists))
+                           || (diagramDragEventArgs.Data.GetData("FileDrop") is string[] filenames3 && filenames3.All(File.Exists));
+
+         bool isDroppingAssociationClass = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition).Any() == true;
+
+         return IsDroppingExternal || isDroppingAssociationClass;
+      }
+
       public override void OnDragDrop(DiagramDragEventArgs diagramDragEventArgs)
       {
-         ModelElement element = (diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelClass") as ModelElement)
-                             ?? (diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelEnum") as ModelElement);
+         ModelElement element = diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelClass") as ModelElement
+                             ?? diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelEnum") as ModelElement;
 
          List<BidirectionalConnector> candidates = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
 
@@ -189,6 +157,7 @@ namespace Sawczyn.EFDesigner.EFModel
          if (candidates?.Any() == true)
          {
             MakeAssociationClass(candidates);
+
             try
             {
                base.OnDragDrop(diagramDragEventArgs);
@@ -248,7 +217,7 @@ namespace Sawczyn.EFDesigner.EFModel
             {
                foreach (BidirectionalConnector candidate in possibleConnectors)
                {
-                  BidirectionalAssociation association = ((BidirectionalAssociation)candidate.ModelElement);
+                  BidirectionalAssociation association = (BidirectionalAssociation)candidate.ModelElement;
 
                   if (BooleanQuestionDisplay.Show(Store, $"Make {modelClass.Name} an association class for {association.GetDisplayText()}?") == true)
                   {
@@ -297,7 +266,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   string[] filenames;
 
                   if (eventData.Data.GetData("Text") is string concatenatedFilenames)
-                     filenames = concatenatedFilenames.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                     filenames = concatenatedFilenames.Split(new[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
                   else if (eventData.Data.GetData("FileDrop") is string[] droppedFilenames)
                      filenames = droppedFilenames;
                   else
@@ -339,7 +308,7 @@ namespace Sawczyn.EFDesigner.EFModel
                EnableDiagramRules();
                Cursor.Current = prev;
 
-               MessageDisplay.Show(newElements == null || !newElements.Any()
+               MessageDisplay.Show((newElements == null) || !newElements.Any()
                                       ? "Import dropped files: no new elements added"
                                       : BuildMessage(newElements));
 
@@ -348,43 +317,57 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      private void AddElementsToActiveDiagram(List<ModelElement> newElements)
+      public override void OnDragOver(DiagramDragEventArgs diagramDragEventArgs)
       {
-         ModelElement[] modelElements = newElements.Where(e => e is ModelClass || e is ModelEnum).ToArray();
-         int elementCount = modelElements.Length;
+         base.OnDragOver(diagramDragEventArgs);
 
-         for (int index = 0; index < modelElements.Length; index++)
-         {
-            ModelElement element = modelElements[index];
-            StatusDisplay.Show($"Adding node {index + 1} of {elementCount} to diagram");
-            AddExistingModelElement(this, element);
-         }
+         if (diagramDragEventArgs.Handled)
+            return;
+
+         List<BidirectionalConnector> bidirectionalConnectorsUnderShape = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
+
+         //foreach (BidirectionalConnector connector in bidirectionalConnectorsUnderShape)
+         //   Highlight(connector);
+
+         bool isDroppingAssociationClass = bidirectionalConnectorsUnderShape?.Any() == true;
+
+         if (isDroppingAssociationClass)
+            diagramDragEventArgs.Effect = DragDropEffects.Link;
+         else if (diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelEnum") is ModelEnum
+               || diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelClass") is ModelClass
+               || IsAcceptableDropItem(diagramDragEventArgs))
+            diagramDragEventArgs.Effect = DragDropEffects.Copy;
+         else
+            diagramDragEventArgs.Effect = DragDropEffects.None;
+
+         diagramDragEventArgs.Handled = true;
       }
 
-      public void EnableDiagramRules()
+      public override void OnInitialize()
       {
-         RuleManager ruleManager = Store.RuleManager;
-         ruleManager.EnableRule(typeof(FixUpAllDiagrams));
-         ruleManager.EnableRule(typeof(DecoratorPropertyChanged));
-         ruleManager.EnableRule(typeof(ConnectorRolePlayerChanged));
-         ruleManager.EnableRule(typeof(CompartmentItemAddRule));
-         ruleManager.EnableRule(typeof(CompartmentItemDeleteRule));
-         ruleManager.EnableRule(typeof(CompartmentItemRolePlayerChangeRule));
-         ruleManager.EnableRule(typeof(CompartmentItemRolePlayerPositionChangeRule));
-         ruleManager.EnableRule(typeof(CompartmentItemChangeRule));
+         base.OnInitialize();
+         ModelRoot modelRoot = Store.ModelRoot();
+
+         // because we can hide elements, line routing looks odd when it thinks it's jumping over lines
+         // that really aren't visible. Since replacing the routing algorithm is too hard (impossible?)
+         // let's just stop it from showing jumps at all. A change to the highlighting on mouseover
+         // makes it easier to see which lines are which in complex diagrams, so this doesn't hurt anything.
+         RouteJumpType = VGPageLineJumpCode.NoJumps;
+
+         ShowGrid = modelRoot?.ShowGrid ?? true;
+         GridColor = modelRoot?.GridColor ?? Color.Gainsboro;
+         SnapToGrid = modelRoot?.SnapToGrid ?? true;
+
+         if (ModelDisplay.GetDiagramColors != null)
+            SetThemeColors(ModelDisplay.GetDiagramColors());
       }
 
-      public void DisableDiagramRules()
+      /// <summary>Called by the control's OnMouseDown().</summary>
+      /// <param name="e">A DiagramMouseEventArgs that contains event data.</param>
+      public override void OnMouseDown(DiagramMouseEventArgs e)
       {
-         RuleManager ruleManager = Store.RuleManager;
-         ruleManager.DisableRule(typeof(FixUpAllDiagrams));
-         ruleManager.DisableRule(typeof(DecoratorPropertyChanged));
-         ruleManager.DisableRule(typeof(ConnectorRolePlayerChanged));
-         ruleManager.DisableRule(typeof(CompartmentItemAddRule));
-         ruleManager.DisableRule(typeof(CompartmentItemDeleteRule));
-         ruleManager.DisableRule(typeof(CompartmentItemRolePlayerChangeRule));
-         ruleManager.DisableRule(typeof(CompartmentItemRolePlayerPositionChangeRule));
-         ruleManager.DisableRule(typeof(CompartmentItemChangeRule));
+         MouseDownPosition = e.MousePosition;
+         base.OnMouseDown(e);
       }
 
       /// <summary>Called by the control's OnMouseUp().</summary>
@@ -396,14 +379,40 @@ namespace Sawczyn.EFDesigner.EFModel
          base.OnMouseUp(e);
       }
 
-      /// <summary>Called by the control's OnMouseDown().</summary>
-      /// <param name="e">A DiagramMouseEventArgs that contains event data.</param>
-      public override void OnMouseDown(DiagramMouseEventArgs e)
+      /// <summary>
+      ///    Called during view fixup to ask the parent whether a shape should be created for the given child element.
+      /// </summary>
+      /// <remarks>
+      ///    Always return true, since we assume there is only one diagram per model file for DSL scenarios.
+      /// </remarks>
+      protected override bool ShouldAddShapeForElement(ModelElement element)
       {
-         MouseDownPosition = e.MousePosition;
-         base.OnMouseDown(e);
+         ModelElement parent = null;
+
+         // for attributes and enum values, the we should add the shape if its parent is on the diagram
+         if (element is ModelAttribute modelAttribute)
+            parent = modelAttribute.ModelClass;
+
+         if (element is ModelEnumValue enumValue)
+            parent = enumValue.Enum;
+
+         bool result =
+            ForceAddShape // we've made the decision somewhere else that this shape should be added 
+         || IsDroppingExternal // we're dropping a file from Solution Explorer or File Explorer
+         || base.ShouldAddShapeForElement(element) // the built-in rules say to do this
+         || DisplayedElements.Contains(element) // the serialized diagram has this element present (other rules should prevent duplication)
+         || ((parent != null) && DisplayedElements.Contains(parent)) // the element's parent is on this diagram
+         || (element is ElementLink link && link.LinkedElements.All(linkedElement => DisplayedElements.Contains(linkedElement))); // adding a link and both of the linkk's end nodes are in this diagram
+
+         return result;
       }
 
-      public PointD MouseDownPosition;
-  }
+      public void Unhighlight(ShapeElement shape)
+      {
+         ShapeElement highlightShape = DetermineHighlightShape(shape);
+
+         if (highlightShape != null)
+            ActiveDiagramView.DiagramClientView.HighlightedShapes.Remove(new DiagramItem(highlightShape));
+      }
+   }
 }

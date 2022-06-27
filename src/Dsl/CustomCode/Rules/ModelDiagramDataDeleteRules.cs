@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Microsoft.VisualStudio.Modeling;
+﻿using Microsoft.VisualStudio.Modeling;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
@@ -12,7 +6,7 @@ namespace Sawczyn.EFDesigner.EFModel
    internal class ModelDiagramDataDeleteRules : DeleteRule
    {
       /// <summary>
-      /// public virtual method for the client to have his own user-defined delete rule class
+      ///    public virtual method for the client to have his own user-defined delete rule class
       /// </summary>
       /// <param name="e"></param>
       public override void ElementDeleted(ElementDeletedEventArgs e)
@@ -26,6 +20,7 @@ namespace Sawczyn.EFDesigner.EFModel
             return;
 
          EFModelDiagram diagram = element.GetDiagram();
+
          if (diagram != null)
          {
             ModelDiagramData.CloseDiagram?.Invoke(diagram);

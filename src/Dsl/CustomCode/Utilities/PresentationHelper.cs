@@ -10,27 +10,12 @@ using Sawczyn.EFDesigner.EFModel.Extensions;
 namespace Sawczyn.EFDesigner.EFModel
 {
    /// <summary>
-   /// Methods to shortcut working with diagram views
+   ///    Methods to shortcut working with diagram views
    /// </summary>
    public static class PresentationHelper
    {
       /// <summary>
-      /// Redraws the association on every open diagram
-      /// </summary>
-      /// <param name="element"></param>
-      /// <param name="sourceDeleteAction"></param>
-      /// <param name="targetDeleteAction"></param>
-      public static void UpdateAssociationDisplay(Association element
-                                                , DeleteAction? sourceDeleteAction = null
-                                                , DeleteAction? targetDeleteAction = null)
-      {
-         // redraw on every diagram
-         foreach (AssociationConnector connector in PresentationViewsSubject.GetPresentation(element).OfType<AssociationConnector>().Distinct())
-            UpdateAssociationDisplay(connector, sourceDeleteAction, targetDeleteAction);
-      }
-
-      /// <summary>
-      /// Determine delete behavior on the principal end
+      ///    Determine delete behavior on the principal end
       /// </summary>
       /// <param name="association">Association to interrogate</param>
       /// <param name="sourceAction">Result of calculation for source side</param>
@@ -38,9 +23,10 @@ namespace Sawczyn.EFDesigner.EFModel
       private static void GetEffectiveDeleteAction(Association association, out DeleteAction? sourceAction, out DeleteAction? targetAction)
       {
          sourceAction = null;
+
          if (association.SourceRole == EndpointRole.Principal)
          {
-            if (association.SourceDeleteAction == DeleteAction.Cascade || association.SourceDeleteAction == DeleteAction.None)
+            if ((association.SourceDeleteAction == DeleteAction.Cascade) || (association.SourceDeleteAction == DeleteAction.None))
                sourceAction = association.SourceDeleteAction;
             else if (association.SourceMultiplicity == Multiplicity.One)
                sourceAction = DeleteAction.Cascade;
@@ -49,9 +35,10 @@ namespace Sawczyn.EFDesigner.EFModel
          }
 
          targetAction = null;
+
          if (association.TargetRole == EndpointRole.Principal)
          {
-            if (association.TargetDeleteAction == DeleteAction.Cascade || association.TargetDeleteAction == DeleteAction.None)
+            if ((association.TargetDeleteAction == DeleteAction.Cascade) || (association.TargetDeleteAction == DeleteAction.None))
                targetAction = association.TargetDeleteAction;
             else if (association.TargetMultiplicity == Multiplicity.One)
                targetAction = DeleteAction.Cascade;
@@ -61,14 +48,25 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Redraws the association on every open diagram
+      ///    Redraws the association on every open diagram
+      /// </summary>
+      /// <param name="element"></param>
+      /// <param name="sourceDeleteAction"></param>
+      /// <param name="targetDeleteAction"></param>
+      public static void UpdateAssociationDisplay(Association element, DeleteAction? sourceDeleteAction = null, DeleteAction? targetDeleteAction = null)
+      {
+         // redraw on every diagram
+         foreach (AssociationConnector connector in PresentationViewsSubject.GetPresentation(element).OfType<AssociationConnector>().Distinct())
+            UpdateAssociationDisplay(connector, sourceDeleteAction, targetDeleteAction);
+      }
+
+      /// <summary>
+      ///    Redraws the association on every open diagram
       /// </summary>
       /// <param name="connector"></param>
       /// <param name="sourceDeleteAction"></param>
       /// <param name="targetDeleteAction"></param>
-      public static void UpdateAssociationDisplay(AssociationConnector connector
-                                                , DeleteAction? sourceDeleteAction = null
-                                                , DeleteAction? targetDeleteAction = null)
+      public static void UpdateAssociationDisplay(AssociationConnector connector, DeleteAction? sourceDeleteAction = null, DeleteAction? targetDeleteAction = null)
       {
          if (!(connector?.ModelElement is Association element))
             return;
@@ -77,11 +75,11 @@ namespace Sawczyn.EFDesigner.EFModel
 
          GetEffectiveDeleteAction(element, out DeleteAction? calculatedSourceDeleteAction, out DeleteAction? calculatedTargetDeleteAction);
 
-         sourceDeleteAction = sourceDeleteAction != null && sourceDeleteAction != DeleteAction.Default 
-                                 ? sourceDeleteAction 
+         sourceDeleteAction = (sourceDeleteAction != null) && (sourceDeleteAction != DeleteAction.Default)
+                                 ? sourceDeleteAction
                                  : calculatedSourceDeleteAction;
 
-         targetDeleteAction = targetDeleteAction != null && targetDeleteAction != DeleteAction.Default
+         targetDeleteAction = (targetDeleteAction != null) && (targetDeleteAction != DeleteAction.Default)
                                  ? targetDeleteAction
                                  : calculatedTargetDeleteAction;
 
@@ -89,8 +87,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
          bool cascade = modelRoot.ShowCascadeDeletes
                      && persistent
-                     && (targetDeleteAction == DeleteAction.Cascade
-                      || sourceDeleteAction == DeleteAction.Cascade);
+                     && ((targetDeleteAction == DeleteAction.Cascade)
+                      || (sourceDeleteAction == DeleteAction.Cascade));
 
          Color lineColor = !persistent
                               ? Color.SlateGray
@@ -137,7 +135,7 @@ namespace Sawczyn.EFDesigner.EFModel
       //}
 
       /// <summary>
-      /// Redraws the class on every open diagram
+      ///    Redraws the class on every open diagram
       /// </summary>
       /// <param name="element"></param>
       public static void UpdateClassDisplay(ModelClass element)
@@ -148,13 +146,12 @@ namespace Sawczyn.EFDesigner.EFModel
          // ensure foreign key attributes have the proper setting to surface the right glyph
          foreach (var data in element.Store.ElementDirectory.AllElements
                                      .OfType<Association>()
-                                     .Where(a => a.Dependent == element && !string.IsNullOrEmpty(a.FKPropertyName))
+                                     .Where(a => (a.Dependent == element) && !string.IsNullOrEmpty(a.FKPropertyName))
                                      .SelectMany(association => association.FKPropertyName.Split(',')
                                                                            .Where(propertyName => element.Attributes.Any(attr => attr.Name == propertyName))
                                                                            .Select(propertyName => new
                                                                                                    {
-                                                                                                         Assoc = association
-                                                                                                       , Attr = element.Attributes.FirstOrDefault(attr => attr.Name == propertyName)
+                                                                                                      Assoc = association, Attr = element.Attributes.FirstOrDefault(attr => attr.Name == propertyName)
                                                                                                    })))
             data.Attr.IsForeignKeyFor = data.Assoc.Id;
 

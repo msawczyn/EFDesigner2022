@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+
 using Microsoft.VisualStudio.Modeling;
 
 namespace Sawczyn.EFDesigner.EFModel
@@ -14,11 +15,10 @@ namespace Sawczyn.EFDesigner.EFModel
       /// <param name="collection">The collection of model elements that contain the tracking property.</param>
       /// <param name="propertyId">The ID of the tracking property.</param>
       /// <param name="trackingPropertyId">The ID of the property that indicates whether the tracking property is tracking.</param>
-      internal static void UpdateTrackingCollectionProperty(
-         Store store,
-         IEnumerable collection,
-         Guid propertyId,
-         Guid trackingPropertyId)
+      internal static void UpdateTrackingCollectionProperty(Store store,
+                                                            IEnumerable collection,
+                                                            Guid propertyId,
+                                                            Guid trackingPropertyId)
       {
          DomainPropertyInfo propInfo = store.DomainDataDirectory.GetDomainProperty(propertyId);
          DomainPropertyInfo trackingPropInfo = store.DomainDataDirectory.GetDomainProperty(trackingPropertyId);
@@ -30,8 +30,7 @@ namespace Sawczyn.EFDesigner.EFModel
          // If the tracking property is currently tracking, then notify  
          // it that the tracked property has changed.  
          foreach (ModelElement element in collection.Cast<ModelElement>()
-                                                    .Where(element => element.GetDomainClass() == trackingPropInfo.DomainClass &&
-                                                                      (bool) trackingPropInfo.GetValue(element)))
+                                                    .Where(element => (element.GetDomainClass() == trackingPropInfo.DomainClass) && (bool)trackingPropInfo.GetValue(element)))
             propInfo.NotifyValueChange(element);
       }
    }
@@ -50,13 +49,10 @@ namespace Sawczyn.EFDesigner.EFModel
       /// <returns>True if the exception is critical.</returns>
       internal static bool IsCriticalException(Exception ex)
       {
-         if (ex is NullReferenceException ||
-             ex is StackOverflowException ||
-             ex is OutOfMemoryException ||
-             ex is ThreadAbortException)
+         if (ex is NullReferenceException || ex is StackOverflowException || ex is OutOfMemoryException || ex is ThreadAbortException)
             return true;
 
-         return ex.InnerException != null && IsCriticalException(ex.InnerException);
+         return (ex.InnerException != null) && IsCriticalException(ex.InnerException);
       }
    }
 }

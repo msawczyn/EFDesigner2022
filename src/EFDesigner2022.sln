@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31424.327
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dsl", "Dsl\Dsl.csproj", "{011226B9-C2B4-4655-9D72-99C6D7E94F85}"
 EndProject
@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solutio
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		..\changelog.txt = ..\changelog.txt
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
 		GlobalSuppressions.cs = GlobalSuppressions.cs
 		..\README.md = ..\README.md
 		..\UpdateTemplates.ps1 = ..\UpdateTemplates.ps1
@@ -25,7 +27,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solutio
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{AD98A5BD-E289-4888-B6C3-62FAD3A3D531}"
 	ProjectSection(SolutionItems) = preProject
-		..\docs\_config.yml = ..\docs\_config.yml
 		..\docs\Associations.md = ..\docs\Associations.md
 		Changelog.md = Changelog.md
 		..\docs\Comments.md = ..\docs\Comments.md
@@ -46,6 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{AD98A5BD-E
 		..\docs\Templates.md = ..\docs\Templates.md
 		..\docs\Using-the-designer.md = ..\docs\Using-the-designer.md
 		..\docs\Validations.md = ..\docs\Validations.md
+		..\docs\_config.yml = ..\docs\_config.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{89098F6A-F0C2-4707-B627-389BE97AED29}"
@@ -97,6 +99,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore2Parser", "Utilities\EFCore2Parser\EFCore2Parser.csproj", "{337B292E-B265-4492-B6EC-BD9DEA288376}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore5Parser", "Utilities\EFCore5Parser\EFCore5Parser.csproj", "{16134D13-C0E1-416A-B689-2CBD6DD1702C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore6Parser", "Utilities\EFCore6Parser\EFCore6Parser.csproj", "{A3985311-8995-4008-903D-61DFAAB982A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -162,6 +166,14 @@ Global
 		{16134D13-C0E1-416A-B689-2CBD6DD1702C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{16134D13-C0E1-416A-B689-2CBD6DD1702C}.Release|x86.ActiveCfg = Release|Any CPU
 		{16134D13-C0E1-416A-B689-2CBD6DD1702C}.Release|x86.Build.0 = Release|Any CPU
+		{A3985311-8995-4008-903D-61DFAAB982A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3985311-8995-4008-903D-61DFAAB982A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3985311-8995-4008-903D-61DFAAB982A4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A3985311-8995-4008-903D-61DFAAB982A4}.Debug|x86.Build.0 = Debug|Any CPU
+		{A3985311-8995-4008-903D-61DFAAB982A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3985311-8995-4008-903D-61DFAAB982A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3985311-8995-4008-903D-61DFAAB982A4}.Release|x86.ActiveCfg = Release|Any CPU
+		{A3985311-8995-4008-903D-61DFAAB982A4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -175,6 +187,7 @@ Global
 		{9E5A7A3A-E350-49A0-9A93-B8F04D847B01} = {B284D5B9-1693-45D8-A370-1A85C8ABBBB9}
 		{337B292E-B265-4492-B6EC-BD9DEA288376} = {B284D5B9-1693-45D8-A370-1A85C8ABBBB9}
 		{16134D13-C0E1-416A-B689-2CBD6DD1702C} = {B284D5B9-1693-45D8-A370-1A85C8ABBBB9}
+		{A3985311-8995-4008-903D-61DFAAB982A4} = {B284D5B9-1693-45D8-A370-1A85C8ABBBB9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2665A50D-AB97-45B8-9CAB-3D539A62AF98}

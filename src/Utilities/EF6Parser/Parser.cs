@@ -5,7 +5,6 @@ using System.Data.Entity;
 using System.Data.Entity.Core.Mapping;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -36,7 +35,7 @@ namespace EF6Parser
          if (dbContextTypeName != null)
          {
             log.Debug($"dbContextTypeName parameter is {dbContextTypeName}");
-            contextType = assembly.GetExportedTypes().FirstOrDefault(t => t.FullName == dbContextTypeName || t.Name == dbContextTypeName);
+            contextType = assembly.GetExportedTypes().FirstOrDefault(t => (t.FullName == dbContextTypeName) || (t.Name == dbContextTypeName));
             log.Info($"Using contextType = {contextType.FullName}");
          }
          else
@@ -47,12 +46,14 @@ namespace EF6Parser
             if (types.Count == 0)
             {
                log.Error($"No usable DBContext found in {assembly.FullName}");
+
                throw new ArgumentException("Couldn't find DbContext-derived class in assembly. Is it public?");
             }
 
             if (types.Count > 1)
             {
                log.Error($"Found more than one class derived from DbContext: {string.Join(", ", types.Select(t => t.FullName))}");
+
                throw new AmbiguousMatchException("Found more than one class derived from DbContext");
             }
 
@@ -60,7 +61,7 @@ namespace EF6Parser
             log.Info($"Using contextType = {contextType.FullName}");
          }
 
-         ConstructorInfo constructor = contextType.GetConstructor(new[] { typeof(string) });
+         ConstructorInfo constructor = contextType.GetConstructor(new[] {typeof(string)});
 
          // ReSharper disable once UnthrowableException
          if (constructor == null)
@@ -77,10 +78,10 @@ namespace EF6Parser
          }
          catch (InvalidOperationException e)
          {
-            dbContext = assembly.CreateInstance(contextType.FullName, false, BindingFlags.Default, null, new object[] { "App=EntityFramework" }, null, null) as DbContext
+            dbContext = assembly.CreateInstance(contextType.FullName, false, BindingFlags.Default, null, new object[] {"App=EntityFramework"}, null, null) as DbContext
                      ?? throw new Exception($"Failed to create an instance of {contextType.FullName}. "
-                                          + "Please ensure it has either a default constructor or a constructor with one string parameter (connection string or connection name)"
-                                          , e);
+                                          + "Please ensure it has either a default constructor or a constructor with one string parameter (connection string or connection name)",
+                                            e);
          }
 
          metadata = ((IObjectContextAdapter)dbContext).ObjectContext.MetadataWorkspace;
@@ -146,7 +147,7 @@ namespace EF6Parser
                association.TargetRole = AssociationRole.Principal;
                association.SourceRole = AssociationRole.Dependent;
             }
-            else if (principalType == null && dependentType == null)
+            else if ((principalType == null) && (dependentType == null))
             {
                association.SourceRole = AssociationRole.NotApplicable;
                association.TargetRole = AssociationRole.NotApplicable;
@@ -318,10 +319,10 @@ namespace EF6Parser
          // Entities
          ///////////////////////////////////////////
          List<ModelClass> modelClasses = oSpace.OfType<EntityType>()
-                                               .Select(e => ProcessEntity(e.FullName
-                                                                        , oSpace.OfType<EntityType>().SingleOrDefault(o => o.FullName == e.FullName)
-                                                                        , sSpace?.OfType<EntityType>().SingleOrDefault(s => s.FullName == "CodeFirstDatabaseSchema." + e.FullName.Split('.').Last())
-                                                                        , cSpace.OfType<EntityType>().SingleOrDefault(c => c.FullName == e.FullName)))
+                                               .Select(e => ProcessEntity(e.FullName,
+                                                                          oSpace.OfType<EntityType>().SingleOrDefault(o => o.FullName == e.FullName),
+                                                                          sSpace?.OfType<EntityType>().SingleOrDefault(s => s.FullName == "CodeFirstDatabaseSchema." + e.FullName.Split('.').Last()),
+                                                                          cSpace.OfType<EntityType>().SingleOrDefault(c => c.FullName == e.FullName)))
                                                .Where(x => x != null)
                                                .ToList();
 
@@ -331,10 +332,10 @@ namespace EF6Parser
          // Complex types
          ///////////////////////////////////////////
          modelClasses = oSpace.OfType<ComplexType>()
-                              .Select(e => ProcessComplexType(e.FullName
-                                                            , oSpace.OfType<EntityType>().SingleOrDefault(s => s.FullName == e.FullName)
-                                                            , sSpace?.OfType<EntityType>().SingleOrDefault(s => s.FullName == "CodeFirstDatabaseSchema." + e.FullName.Split('.').Last())
-                                                            , cSpace.OfType<EntityType>().SingleOrDefault(c => c.FullName == e.FullName)))
+                              .Select(e => ProcessComplexType(e.FullName,
+                                                              oSpace.OfType<EntityType>().SingleOrDefault(s => s.FullName == e.FullName),
+                                                              sSpace?.OfType<EntityType>().SingleOrDefault(s => s.FullName == "CodeFirstDatabaseSchema." + e.FullName.Split('.').Last()),
+                                                              cSpace.OfType<EntityType>().SingleOrDefault(c => c.FullName == e.FullName)))
                               .Where(x => x != null)
                               .ToList();
 
@@ -370,28 +371,28 @@ namespace EF6Parser
          string customAttributes = GetCustomAttributes(type);
 
          ModelClass result = new ModelClass
-         {
-            Name = oSpaceType.Name,
-            Namespace = oSpaceType.NamespaceName,
-            IsAbstract = oSpaceType.Abstract,
-            BaseClass = oSpaceType.BaseType?.Name,
-            IsDependentType = true,
-            CustomAttributes = customAttributes.Length > 2
+                             {
+                                Name = oSpaceType.Name,
+                                Namespace = oSpaceType.NamespaceName,
+                                IsAbstract = oSpaceType.Abstract,
+                                BaseClass = oSpaceType.BaseType?.Name,
+                                IsDependentType = true,
+                                CustomAttributes = customAttributes.Length > 2
                                                       ? customAttributes
                                                       : null,
-            CustomInterfaces = type.GetInterfaces().Any()
+                                CustomInterfaces = type.GetInterfaces().Any()
                                                       ? string.Join(",", type.GetInterfaces().Select(GetTypeFullName))
                                                       : null,
-            Properties = oSpaceType.DeclaredProperties
+                                Properties = oSpaceType.DeclaredProperties
                                                        .Select(x => x.Name)
-                                                       .Select(propertyName => ProcessProperty(oSpaceType
-                                                                                             , oSpaceType.DeclaredProperties.FirstOrDefault(q => q.Name == propertyName)
-                                                                                             , sSpaceType.DeclaredProperties.FirstOrDefault(q => q.Name == propertyName)
-                                                                                             , true))
+                                                       .Select(propertyName => ProcessProperty(oSpaceType,
+                                                                                               oSpaceType.DeclaredProperties.FirstOrDefault(q => q.Name == propertyName),
+                                                                                               sSpaceType.DeclaredProperties.FirstOrDefault(q => q.Name == propertyName),
+                                                                                               true))
                                                        .Where(x => x != null)
                                                        .ToList(),
-            TableName = null
-         };
+                                TableName = null
+                             };
 
          log.Debug("\n   " + JsonConvert.SerializeObject(result));
 
@@ -413,29 +414,29 @@ namespace EF6Parser
          string customAttributes = GetCustomAttributes(type);
 
          ModelClass result = new ModelClass
-         {
-            Name = oSpaceType.Name,
-            Namespace = oSpaceType.NamespaceName,
-            IsAbstract = oSpaceType.Abstract,
-            BaseClass = GetTypeFullName(oSpaceType.BaseType?.Name),
-            CustomInterfaces = type.GetInterfaces().Any()
+                             {
+                                Name = oSpaceType.Name,
+                                Namespace = oSpaceType.NamespaceName,
+                                IsAbstract = oSpaceType.Abstract,
+                                BaseClass = GetTypeFullName(oSpaceType.BaseType?.Name),
+                                CustomInterfaces = type.GetInterfaces().Any()
                                                       ? string.Join(",", type.GetInterfaces().Select(GetTypeFullName).Where(s => s != null))
                                                       : null,
-            IsDependentType = false,
-            CustomAttributes = customAttributes.Length > 2
+                                IsDependentType = false,
+                                CustomAttributes = customAttributes.Length > 2
                                                       ? customAttributes
                                                       : null,
-            Properties = oSpaceType.DeclaredProperties
+                                Properties = oSpaceType.DeclaredProperties
                                                        .Select(x => x.Name)
-                                                       .Select(propertyName => ProcessProperty(oSpaceType
-                                                                                             , oSpaceType.DeclaredProperties.FirstOrDefault(q => q.Name == propertyName)
-                                                                                             , sSpaceType?.DeclaredProperties?.FirstOrDefault(q => q.Name == propertyName)))
+                                                       .Select(propertyName => ProcessProperty(oSpaceType,
+                                                                                               oSpaceType.DeclaredProperties.FirstOrDefault(q => q.Name == propertyName),
+                                                                                               sSpaceType?.DeclaredProperties?.FirstOrDefault(q => q.Name == propertyName)))
                                                        .Where(x => x != null)
                                                        .ToList(),
-            UnidirectionalAssociations = GetUnidirectionalAssociations(cSpaceType ?? oSpaceType),
-            BidirectionalAssociations = GetBidirectionalAssociations(cSpaceType ?? oSpaceType),
-            TableName = GetTableName(type, dbContext)
-         };
+                                UnidirectionalAssociations = GetUnidirectionalAssociations(cSpaceType ?? oSpaceType),
+                                BidirectionalAssociations = GetBidirectionalAssociations(cSpaceType ?? oSpaceType),
+                                TableName = GetTableName(type, dbContext)
+                             };
 
          log.Debug("\n   " + JsonConvert.SerializeObject(result));
 
@@ -457,18 +458,18 @@ namespace EF6Parser
          string customAttributes = GetCustomAttributes(type);
 
          ModelEnum result = new ModelEnum
-         {
-            Name = enumType.Name,
-            Namespace = enumType.NamespaceName,
-            IsFlags = enumType.IsFlags,
-            ValueType = enumType.UnderlyingType.ClrEquivalentType.Name,
-            CustomAttributes = customAttributes.Length > 2
+                            {
+                               Name = enumType.Name,
+                               Namespace = enumType.NamespaceName,
+                               IsFlags = enumType.IsFlags,
+                               ValueType = enumType.UnderlyingType.ClrEquivalentType.Name,
+                               CustomAttributes = customAttributes.Length > 2
                                                      ? customAttributes
                                                      : null,
-            Values = enumType.Members
-                                                .Select(enumMember => new ModelEnumValue { Name = enumMember.Name, Value = enumMember.Value?.ToString() })
+                               Values = enumType.Members
+                                                .Select(enumMember => new ModelEnumValue {Name = enumMember.Name, Value = enumMember.Value?.ToString()})
                                                 .ToList()
-         };
+                            };
 
          log.Debug("\n   " + JsonConvert.SerializeObject(result));
 
@@ -486,23 +487,25 @@ namespace EF6Parser
          try
          {
             ModelProperty result = new ModelProperty
-            {
-               TypeName = oSpaceProperty.TypeUsage.EdmType.BuiltInTypeKind == BuiltInTypeKind.EnumType
+                                   {
+                                      TypeName = oSpaceProperty.TypeUsage.EdmType.BuiltInTypeKind == BuiltInTypeKind.EnumType
                                                     ? oSpaceProperty.TypeUsage.EdmType.FullName
                                                     : oSpaceProperty.TypeUsage.EdmType.Name,
-               Name = oSpaceProperty.Name,
-               IsIdentity = !isComplexType && parent.KeyProperties.Any(p => p.Name == oSpaceProperty.Name),
-               IsIdentityGenerated = sSpaceProperty?.IsStoreGeneratedIdentity == true,
-               Required = !(bool)oSpaceProperty.TypeUsage.Facets.First(facet => facet.Name == "Nullable").Value,
-               Indexed = bool.TryParse(oSpaceProperty.TypeUsage.Facets.FirstOrDefault(facet => facet.Name == "Indexed")?.Value?.ToString(), out bool indexed) && indexed
-                                    ,
-               MaxStringLength = sSpaceProperty != null && int.TryParse(sSpaceProperty.TypeUsage.Facets.FirstOrDefault(facet => facet.Name == "MaxLength")?.Value?.ToString(), out int maxLength) && maxLength < int.MaxValue / 2
+                                      Name = oSpaceProperty.Name,
+                                      IsIdentity = !isComplexType && parent.KeyProperties.Any(p => p.Name == oSpaceProperty.Name),
+                                      IsIdentityGenerated = sSpaceProperty?.IsStoreGeneratedIdentity == true,
+                                      Required = !(bool)oSpaceProperty.TypeUsage.Facets.First(facet => facet.Name == "Nullable").Value,
+                                      Indexed = bool.TryParse(oSpaceProperty.TypeUsage.Facets.FirstOrDefault(facet => facet.Name == "Indexed")?.Value?.ToString(), out bool indexed) && indexed,
+                                      MaxStringLength = (sSpaceProperty != null)
+                                                     && int.TryParse(sSpaceProperty.TypeUsage.Facets.FirstOrDefault(facet => facet.Name == "MaxLength")?.Value?.ToString(), out int maxLength)
+                                                     && (maxLength < int.MaxValue / 2)
                                                            ? maxLength
                                                            : 0,
-               MinStringLength = sSpaceProperty != null && int.TryParse(sSpaceProperty.TypeUsage.Facets.FirstOrDefault(facet => facet.Name == "MinLength")?.Value?.ToString(), out int minLength)
+                                      MinStringLength = (sSpaceProperty != null)
+                                                     && int.TryParse(sSpaceProperty.TypeUsage.Facets.FirstOrDefault(facet => facet.Name == "MinLength")?.Value?.ToString(), out int minLength)
                                                            ? minLength
                                                            : 0
-            };
+                                   };
 
             log.Debug("\n   " + JsonConvert.SerializeObject(result));
 

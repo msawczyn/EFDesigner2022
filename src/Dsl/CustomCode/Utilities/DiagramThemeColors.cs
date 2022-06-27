@@ -10,8 +10,31 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       public Color Background { get; }
-      public Color Text => Background.LegibleTextColor();
-      public Color HeaderBackground => Background.IsDark() ? Color.Gray : Color.LightGray;
-      public Color HeaderText => HeaderBackground.LegibleTextColor();
+
+      public Color Text
+      {
+         get
+         {
+            return Background.LegibleTextColor();
+         }
+      }
+
+      public Color HeaderBackground
+      {
+         get
+         {
+            return Background.IsDark()
+                      ? Color.Gray
+                      : Color.LightGray;
+         }
+      }
+
+      public Color HeaderText
+      {
+         get
+         {
+            return HeaderBackground.LegibleTextColor();
+         }
+      }
    }
 }

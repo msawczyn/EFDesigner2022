@@ -1,12 +1,12 @@
-﻿using Microsoft.VisualStudio.Modeling;
-using Microsoft.VisualStudio.Modeling.Diagrams;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
+
+using Microsoft.VisualStudio.Modeling;
+using Microsoft.VisualStudio.Modeling.Diagrams;
 
 using Sawczyn.EFDesigner.EFModel.Extensions;
 
@@ -16,171 +16,10 @@ namespace Sawczyn.EFDesigner.EFModel
    {
       internal static ClassShapeDragData ClassShapeDragData;
 
-      #region Glyphs
-
-      internal static readonly Dictionary<bool, Dictionary<SetterAccessModifier, Bitmap>> AttributeGlyphCache =
-         new Dictionary<bool, Dictionary<SetterAccessModifier, Bitmap>>
-         {
-            {true, new Dictionary<SetterAccessModifier, Bitmap>
-                   {
-                      { SetterAccessModifier.Public, Resources.Public },
-                      { SetterAccessModifier.Protected, Resources.Protected},
-                      { SetterAccessModifier.Internal, Resources.Internal}
-                   }},
-            {false, new Dictionary<SetterAccessModifier, Bitmap>
-                    {
-                       { SetterAccessModifier.Public, Resources.Calculated },
-                       { SetterAccessModifier.Protected, Resources.CalculatedProtected},
-                       { SetterAccessModifier.Internal, Resources.CalculatedInternal}
-                    }}
-         };
-
-      internal static readonly Dictionary<bool, Dictionary<SetterAccessModifier, Bitmap>> InvertedAttributeGlyphCache =
-         new Dictionary<bool, Dictionary<SetterAccessModifier, Bitmap>>
-         {
-            {true, new Dictionary<SetterAccessModifier, Bitmap>
-                   {
-                      { SetterAccessModifier.Public, Resources.Public_i },
-                      { SetterAccessModifier.Protected, Resources.Protected_i},
-                      { SetterAccessModifier.Internal, Resources.Internal_i}
-                   }},
-            {false, new Dictionary<SetterAccessModifier, Bitmap>
-                    {
-                       { SetterAccessModifier.Public, Resources.Calculated_i },
-                       { SetterAccessModifier.Protected, Resources.CalculatedProtected_i},
-                       { SetterAccessModifier.Internal, Resources.CalculatedInternal_i}
-                    }}
-         };
-
-      internal static readonly Dictionary<Multiplicity, Dictionary<Multiplicity, Bitmap>> AssociationGlyphCache =
-         new Dictionary<Multiplicity, Dictionary<Multiplicity, Bitmap>>
-         {
-            {Multiplicity.ZeroOne, new Dictionary<Multiplicity, Bitmap>
-                                   {
-                                      {Multiplicity.ZeroOne, Resources.Cardinality_0_0},
-                                      {Multiplicity.One, Resources.Cardinality_0_1},
-                                      {Multiplicity.ZeroMany, Resources.Cardinality_0_many},
-                                   }},
-            {Multiplicity.One, new Dictionary<Multiplicity, Bitmap>
-                               {
-                                  {Multiplicity.ZeroOne, Resources.Cardinality_1_0},
-                                  {Multiplicity.One, Resources.Cardinality_1_1},
-                                  {Multiplicity.ZeroMany, Resources.Cardinality_1_many},
-                               }},
-            {Multiplicity.ZeroMany, new Dictionary<Multiplicity, Bitmap>
-                                    {
-                                       {Multiplicity.ZeroOne, Resources.Cardinality_many_0},
-                                       {Multiplicity.One, Resources.Cardinality_many_1},
-                                       {Multiplicity.ZeroMany, Resources.Cardinality_many_many},
-                                    }},
-         };
-
-      internal static readonly Dictionary<Multiplicity, Dictionary<Multiplicity, Bitmap>> InvertedAssociationGlyphCache =
-         new Dictionary<Multiplicity, Dictionary<Multiplicity, Bitmap>>
-         {
-            {Multiplicity.ZeroOne, new Dictionary<Multiplicity, Bitmap>
-                                   {
-                                      {Multiplicity.ZeroOne, Resources.Cardinality_0_0_i},
-                                      {Multiplicity.One, Resources.Cardinality_0_1_i},
-                                      {Multiplicity.ZeroMany, Resources.Cardinality_0_many_i},
-                                   }},
-            {Multiplicity.One, new Dictionary<Multiplicity, Bitmap>
-                               {
-                                  {Multiplicity.ZeroOne, Resources.Cardinality_1_0_i},
-                                  {Multiplicity.One, Resources.Cardinality_1_1_i},
-                                  {Multiplicity.ZeroMany, Resources.Cardinality_1_many_i},
-                               }},
-            {Multiplicity.ZeroMany, new Dictionary<Multiplicity, Bitmap>
-                                    {
-                                       {Multiplicity.ZeroOne, Resources.Cardinality_many_0_i},
-                                       {Multiplicity.One, Resources.Cardinality_many_1_i},
-                                       {Multiplicity.ZeroMany, Resources.Cardinality_many_many_i},
-                                    }},
-         };
-
       /// <summary>
-      /// Maps names to images for class glyphs
+      ///    If non-null, calling this method will execute code generation for the model
       /// </summary>
-      internal static readonly ReadOnlyDictionary<string, Image> ClassGlyphCache =
-         new ReadOnlyDictionary<string, Image>(new Dictionary<string, Image>
-                                               {
-                                                  { nameof(Resources.EntityGlyph), Resources.EntityGlyph }
-                                                , { nameof(Resources.EntityGlyphVisible), Resources.EntityGlyphVisible }
-                                                , { nameof(Resources.SQL), Resources.SQL }
-                                                , { nameof(Resources.SQLVisible), Resources.SQLVisible }
-                                                , { nameof(Resources.AbstractEntityGlyph), Resources.AbstractEntityGlyph }
-                                                , { nameof(Resources.AbstractEntityGlyphVisible), Resources.AbstractEntityGlyphVisible }
-                                                , { nameof(Resources.AssociationClassGlyph), Resources.AssociationClassGlyph }
-                                                , { nameof(Resources.AssociationClassGlyphVisible), Resources.AssociationClassGlyphVisible }
-                                               });
-
-      internal static readonly ReadOnlyDictionary<string, Image> InvertedClassGlyphCache =
-         new ReadOnlyDictionary<string, Image>(new Dictionary<string, Image>
-                                               {
-                                                  { nameof(Resources.EntityGlyph), Resources.EntityGlyph_i }
-                                                , { nameof(Resources.EntityGlyphVisible), Resources.EntityGlyphVisible_i }
-                                                , { nameof(Resources.SQL), Resources.SQL_i }
-                                                , { nameof(Resources.SQLVisible), Resources.SQLVisible_i }
-                                                , { nameof(Resources.AbstractEntityGlyph), Resources.AbstractEntityGlyph_i }
-                                                , { nameof(Resources.AbstractEntityGlyphVisible), Resources.AbstractEntityGlyphVisible_i }
-                                                , { nameof(Resources.AssociationClassGlyph), Resources.AssociationClassGlyph_i }
-                                                , { nameof(Resources.AssociationClassGlyphVisible), Resources.AssociationClassGlyphVisible_i }
-                                               });
-
-      /// <summary>
-      /// Maps names to images for property glyphs
-      /// </summary>
-      internal static readonly ReadOnlyDictionary<string, Image> PropertyGlyphCache =
-         new ReadOnlyDictionary<string, Image>(new Dictionary<string, Image>
-                                               {
-                                                  {nameof(Resources.Warning), Resources.Warning}
-                                                , {nameof(Resources.ForeignKeyIdentity), Resources.ForeignKeyIdentity}
-                                                , {nameof(Resources.Identity), Resources.Identity}
-                                                , {nameof(Resources.ForeignKey), Resources.ForeignKey}
-                                                , {nameof(Resources.Spacer), Resources.Spacer}
-                                                , {$"[{true}][{SetterAccessModifier.Internal}]", AttributeGlyphCache[true][SetterAccessModifier.Internal]}
-                                                , {$"[{true}][{SetterAccessModifier.Protected}]", AttributeGlyphCache[true][SetterAccessModifier.Protected]}
-                                                , {$"[{true}][{SetterAccessModifier.Public}]", AttributeGlyphCache[true][SetterAccessModifier.Public]}
-                                                , {$"[{false}][{SetterAccessModifier.Internal}]", AttributeGlyphCache[false][SetterAccessModifier.Internal]}
-                                                , {$"[{false}][{SetterAccessModifier.Protected}]", AttributeGlyphCache[false][SetterAccessModifier.Protected]}
-                                                , {$"[{false}][{SetterAccessModifier.Public}]", AttributeGlyphCache[false][SetterAccessModifier.Public]}
-                                                , {$"[{Multiplicity.One}][{Multiplicity.One}]", AssociationGlyphCache[Multiplicity.One][Multiplicity.One]}
-                                                , {$"[{Multiplicity.ZeroMany}][{Multiplicity.One}]", AssociationGlyphCache[Multiplicity.ZeroMany][Multiplicity.One]}
-                                                , {$"[{Multiplicity.ZeroOne}][{Multiplicity.One}]", AssociationGlyphCache[Multiplicity.ZeroOne][Multiplicity.One]}
-                                                , {$"[{Multiplicity.One}][{Multiplicity.ZeroMany}]", AssociationGlyphCache[Multiplicity.One][Multiplicity.ZeroMany]}
-                                                , {$"[{Multiplicity.ZeroMany}][{Multiplicity.ZeroMany}]", AssociationGlyphCache[Multiplicity.ZeroMany][Multiplicity.ZeroMany]}
-                                                , {$"[{Multiplicity.ZeroOne}][{Multiplicity.ZeroMany}]", AssociationGlyphCache[Multiplicity.ZeroOne][Multiplicity.ZeroMany]}
-                                                , {$"[{Multiplicity.One}][{Multiplicity.ZeroOne}]", AssociationGlyphCache[Multiplicity.One][Multiplicity.ZeroOne]}
-                                                , {$"[{Multiplicity.ZeroMany}][{Multiplicity.ZeroOne}]", AssociationGlyphCache[Multiplicity.ZeroMany][Multiplicity.ZeroOne]}
-                                                , {$"[{Multiplicity.ZeroOne}][{Multiplicity.ZeroOne}]", AssociationGlyphCache[Multiplicity.ZeroOne][Multiplicity.ZeroOne]}
-                                               });
-
-      internal static readonly ReadOnlyDictionary<string, Image> InvertedPropertyGlyphCache =
-         new ReadOnlyDictionary<string, Image>(new Dictionary<string, Image>
-                                               {
-                                                  {nameof(Resources.Warning), Resources.Warning_i}
-                                                , {nameof(Resources.ForeignKeyIdentity), Resources.ForeignKeyIdentity_i}
-                                                , {nameof(Resources.Identity), Resources.Identity_i}
-                                                , {nameof(Resources.ForeignKey), Resources.ForeignKey_i}
-                                                , {nameof(Resources.Spacer), Resources.Spacer}
-                                                , {$"[{true}][{SetterAccessModifier.Internal}]", InvertedAttributeGlyphCache[true][SetterAccessModifier.Internal]}
-                                                , {$"[{true}][{SetterAccessModifier.Protected}]", InvertedAttributeGlyphCache[true][SetterAccessModifier.Protected]}
-                                                , {$"[{true}][{SetterAccessModifier.Public}]", InvertedAttributeGlyphCache[true][SetterAccessModifier.Public]}
-                                                , {$"[{false}][{SetterAccessModifier.Internal}]", InvertedAttributeGlyphCache[false][SetterAccessModifier.Internal]}
-                                                , {$"[{false}][{SetterAccessModifier.Protected}]", InvertedAttributeGlyphCache[false][SetterAccessModifier.Protected]}
-                                                , {$"[{false}][{SetterAccessModifier.Public}]", InvertedAttributeGlyphCache[false][SetterAccessModifier.Public]}
-                                                , {$"[{Multiplicity.One}][{Multiplicity.One}]", InvertedAssociationGlyphCache[Multiplicity.One][Multiplicity.One]}
-                                                , {$"[{Multiplicity.ZeroMany}][{Multiplicity.One}]", InvertedAssociationGlyphCache[Multiplicity.ZeroMany][Multiplicity.One]}
-                                                , {$"[{Multiplicity.ZeroOne}][{Multiplicity.One}]", InvertedAssociationGlyphCache[Multiplicity.ZeroOne][Multiplicity.One]}
-                                                , {$"[{Multiplicity.One}][{Multiplicity.ZeroMany}]", InvertedAssociationGlyphCache[Multiplicity.One][Multiplicity.ZeroMany]}
-                                                , {$"[{Multiplicity.ZeroMany}][{Multiplicity.ZeroMany}]", InvertedAssociationGlyphCache[Multiplicity.ZeroMany][Multiplicity.ZeroMany]}
-                                                , {$"[{Multiplicity.ZeroOne}][{Multiplicity.ZeroMany}]", InvertedAssociationGlyphCache[Multiplicity.ZeroOne][Multiplicity.ZeroMany]}
-                                                , {$"[{Multiplicity.One}][{Multiplicity.ZeroOne}]", InvertedAssociationGlyphCache[Multiplicity.One][Multiplicity.ZeroOne]}
-                                                , {$"[{Multiplicity.ZeroMany}][{Multiplicity.ZeroOne}]", InvertedAssociationGlyphCache[Multiplicity.ZeroMany][Multiplicity.ZeroOne]}
-                                                , {$"[{Multiplicity.ZeroOne}][{Multiplicity.ZeroOne}]", InvertedAssociationGlyphCache[Multiplicity.ZeroOne][Multiplicity.ZeroOne]}
-                                               });
-
-      #endregion
+      public static Action ExecCodeGeneration;
 
       internal static bool UseInverseGlyphs
       {
@@ -190,112 +29,15 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      public void SetThemeColors(DiagramThemeColors diagramColors)
-      {
-         using (Transaction tx = Store.TransactionManager.BeginTransaction("Set diagram colors"))
-         {
-            foreach (ListCompartment compartment in NestedChildShapes.OfType<ListCompartment>())
-            {
-               compartment.CompartmentFillColor = diagramColors.Background;
-               compartment.ItemTextColor = diagramColors.Text;
-               compartment.TitleFillColor = diagramColors.HeaderBackground;
-               compartment.TitleTextColor = diagramColors.HeaderText;
-
-               compartment.Invalidate();
-            }
-
-            Invalidate();
-            tx.Commit();
-         }
-      }
-
       /// <summary>
-      /// Initializes style set resources for this shape type
+      ///    Override to indicate that this shape has tool tips
       /// </summary>
-      /// <param name="classStyleSet">The style set for this shape class</param>
-      protected override void InitializeResources(StyleSet classStyleSet)
-      {
-         base.InitializeResources(classStyleSet);
-
-         AssociateValueWith(Store, ModelRoot.ShowInterfaceIndicatorsDomainPropertyId);
-      }
-
-      /// <summary>  
-      /// Override to indicate that this shape has tool tips  
-      /// </summary>  
       public override bool HasToolTip
       {
          get
          {
             return true;
          }
-      }
-
-      /// <summary>
-      /// Exposes NodeShape Collapse() function to DSL's context menu
-      /// </summary>
-      public void CollapseShape()
-      {
-         if (this.IsVisible())
-            SetIsExpandedValue(false);
-      }
-
-      /// <summary>
-      /// Exposes NodeShape Expand() function to DSL's context menu
-      /// </summary>
-      public void ExpandShape()
-      {
-         if (this.IsVisible())
-            SetIsExpandedValue(true);
-      }
-
-      /// <summary>  
-      /// Return the tooltip text for the specified item  
-      /// </summary>  
-      /// <param name="item">A DiagramItem for the selected shape. This could be the shape, or a nested child shape or field.</param>  
-      public override string GetToolTipText(DiagramItem item)
-      {
-
-         // Work out which shape is selected - is it this ClassShape, or  
-         // is it one of the comparment shapes it contains?  
-         if (item.Shape is ElementListCompartment compartment)
-         {
-            // It's a compartment shape.  
-            // Get a list of the elements that are represented by diagram item (should be only one)  
-            ModelAttribute modelAttribute = compartment.GetSubFieldRepresentedElements(item.Field, item.SubField)
-                                                       .OfType<ModelAttribute>()
-                                                       .FirstOrDefault();
-
-            if (modelAttribute != null && modelAttribute.IsForeignKeyFor != Guid.Empty)
-            {
-               Association association = modelAttribute.Store.GetAll<Association>().FirstOrDefault(x => x.Id == modelAttribute.IsForeignKeyFor);
-
-               if (association != null)
-                  return $"FK for [{association.GetDisplayText()}]";
-            }
-         }
-
-         // is this the interface lollipop?
-         if (item.Shape is DecoratorHostShape && item.Field?.Name == "Interface")
-            return ((ModelClass)ModelElement).CustomInterfaces;
-
-         return base.GetToolTipText(item);
-      }
-
-      /// <inheritdoc />
-      protected override CompartmentMapping[] GetCompartmentMappings(Type melType)
-      {
-         CompartmentMapping[] mappings = base.GetCompartmentMappings(melType);
-
-         // Each item in the each compartment will call the appropriate method to determine its icon.
-         // This happens any time the element's presentation element invalidates.
-         foreach (ElementListCompartmentMapping mapping in mappings.OfType<ElementListCompartmentMapping>().Where(mapping => mapping.ImageGetter == null))
-            mapping.ImageGetter = GetPropertyGlyph;
-
-         if (ModelDisplay.GetDiagramColors != null)
-            SetThemeColors(ModelDisplay.GetDiagramColors());
-
-         return mappings;
       }
 
       public static ReadOnlyDictionary<string, Image> ClassGlyphs
@@ -319,58 +61,67 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Determines which glyph to display for a property on the diagram only. Model explorer uses GetExplorerNodeGlyphName instead.
+      ///    Set when DocData is loaded. If non-null, calling this action will open the generated code file, if present
       /// </summary>
-      /// <param name="element"></param>
-      /// <returns></returns>
-      private static Image GetPropertyGlyph(ModelElement element)
+      public static Func<ModelClass, bool> OpenCodeFile { get; set; }
+
+      public void SetThemeColors(DiagramThemeColors diagramColors)
       {
-         ModelRoot modelRoot = element.Store.ModelRoot();
-
-         switch (element)
+         using (Transaction tx = Store.TransactionManager.BeginTransaction("Set diagram colors"))
          {
-            case BidirectionalAssociation bidirectionalAssociation:
-               if (modelRoot.ShowWarningsInDesigner && bidirectionalAssociation.GetHasWarningValue())
-                  return UseInverseGlyphs ? Resources.Warning_i : Resources.Warning;
+            foreach (ListCompartment compartment in NestedChildShapes.OfType<ListCompartment>())
+            {
+               compartment.CompartmentFillColor = diagramColors.Background;
+               compartment.ItemTextColor = diagramColors.Text;
+               compartment.TitleFillColor = diagramColors.HeaderBackground;
+               compartment.TitleTextColor = diagramColors.HeaderText;
 
-               return UseInverseGlyphs
-                         ? InvertedAssociationGlyphCache[bidirectionalAssociation.TargetMultiplicity][bidirectionalAssociation.SourceMultiplicity]
-                         : AssociationGlyphCache[bidirectionalAssociation.TargetMultiplicity][bidirectionalAssociation.SourceMultiplicity];
+               compartment.Invalidate();
+            }
 
-            case UnidirectionalAssociation unidirectionalAssociation:
-               if (modelRoot.ShowWarningsInDesigner && unidirectionalAssociation.GetHasWarningValue())
-                  return UseInverseGlyphs ? Resources.Warning_i : Resources.Warning;
-
-               return UseInverseGlyphs
-                         ? InvertedAssociationGlyphCache[unidirectionalAssociation.SourceMultiplicity][unidirectionalAssociation.TargetMultiplicity]
-                         : AssociationGlyphCache[unidirectionalAssociation.SourceMultiplicity][unidirectionalAssociation.TargetMultiplicity];
-
-            case ModelAttribute attribute:
-               if (modelRoot.ShowWarningsInDesigner && attribute.GetHasWarningValue())
-                  return UseInverseGlyphs ? Resources.Warning_i : Resources.Warning;
-
-               if (attribute.IsIdentity && attribute.IsForeignKeyFor != Guid.Empty)
-                  return UseInverseGlyphs ? Resources.ForeignKeyIdentity_i : Resources.ForeignKeyIdentity;
-
-               if (attribute.IsIdentity)
-                  return UseInverseGlyphs ? Resources.Identity_i : Resources.Identity;
-
-               // ReSharper disable once ConvertIfStatementToReturnStatement
-               if (attribute.IsForeignKeyFor != Guid.Empty)
-                  return UseInverseGlyphs ? Resources.ForeignKey_i : Resources.ForeignKey;
-
-               return UseInverseGlyphs
-                         ? InvertedAttributeGlyphCache[attribute.Persistent][attribute.SetterVisibility]
-                         : AttributeGlyphCache[attribute.Persistent][attribute.SetterVisibility];
+            Invalidate();
+            tx.Commit();
          }
-
-         return Resources.Spacer;
       }
 
       /// <summary>
-      /// Provides the well-known name of the resource image for the Model Explorer. Note that these are not directly the resource names in
-      /// Dsl::Resources.resx, but rather a) for diagrams, a key to a dictionary containing the glyphs
-      /// or b) for the model explorer, the names of the glyphs registered with its image list
+      ///    Exposes NodeShape Collapse() function to DSL's context menu
+      /// </summary>
+      public void CollapseShape()
+      {
+         if (this.IsVisible())
+            SetIsExpandedValue(false);
+      }
+
+      /// <summary>
+      ///    Exposes NodeShape Expand() function to DSL's context menu
+      /// </summary>
+      public void ExpandShape()
+      {
+         if (this.IsVisible())
+            SetIsExpandedValue(true);
+      }
+
+      /// <inheritdoc />
+      protected override CompartmentMapping[] GetCompartmentMappings(Type melType)
+      {
+         CompartmentMapping[] mappings = base.GetCompartmentMappings(melType);
+
+         // Each item in the each compartment will call the appropriate method to determine its icon.
+         // This happens any time the element's presentation element invalidates.
+         foreach (ElementListCompartmentMapping mapping in mappings.OfType<ElementListCompartmentMapping>().Where(mapping => mapping.ImageGetter == null))
+            mapping.ImageGetter = GetPropertyGlyph;
+
+         if (ModelDisplay.GetDiagramColors != null)
+            SetThemeColors(ModelDisplay.GetDiagramColors());
+
+         return mappings;
+      }
+
+      /// <summary>
+      ///    Provides the well-known name of the resource image for the Model Explorer. Note that these are not directly the resource names in
+      ///    Dsl::Resources.resx, but rather a) for diagrams, a key to a dictionary containing the glyphs
+      ///    or b) for the model explorer, the names of the glyphs registered with its image list
       /// </summary>
       /// <param name="element">ModelElement the explorer node is representing</param>
       /// <returns>Well-known name of the resource image for the Model Explorer</returns>
@@ -392,7 +143,7 @@ namespace Sawczyn.EFDesigner.EFModel
                break;
 
             case ModelAttribute attribute:
-               if (attribute.IsIdentity && attribute.IsForeignKeyFor != Guid.Empty)
+               if (attribute.IsIdentity && (attribute.IsForeignKeyFor != Guid.Empty))
                   result = nameof(Resources.ForeignKeyIdentity);
                else if (attribute.IsIdentity)
                   result = nameof(Resources.Identity);
@@ -405,13 +156,21 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case ModelClass modelClass:
                if (modelClass.IsAssociationClass)
-                  result = modelClass.IsVisible() ? nameof(Resources.AssociationClassGlyphVisible) : nameof(Resources.AssociationClassGlyph);
+                  result = modelClass.IsVisible()
+                              ? nameof(Resources.AssociationClassGlyphVisible)
+                              : nameof(Resources.AssociationClassGlyph);
                else if (modelClass.IsQueryType)
-                  result = modelClass.IsVisible() ? nameof(Resources.SQLVisible) : nameof(Resources.SQL);
+                  result = modelClass.IsVisible()
+                              ? nameof(Resources.SQLVisible)
+                              : nameof(Resources.SQL);
                else if (modelClass.IsAbstract)
-                  result = modelClass.IsVisible() ? nameof(Resources.AbstractEntityGlyphVisible) : nameof(Resources.AbstractEntityGlyph);
+                  result = modelClass.IsVisible()
+                              ? nameof(Resources.AbstractEntityGlyphVisible)
+                              : nameof(Resources.AbstractEntityGlyph);
                else
-                  result = modelClass.IsVisible() ? nameof(Resources.EntityGlyphVisible) : nameof(Resources.EntityGlyph);
+                  result = modelClass.IsVisible()
+                              ? nameof(Resources.EntityGlyphVisible)
+                              : nameof(Resources.EntityGlyph);
 
                break;
          }
@@ -419,7 +178,326 @@ namespace Sawczyn.EFDesigner.EFModel
          return result;
       }
 
-      #region ModelAttribute Drag/drop 
+      /// <summary>
+      ///    Determines which glyph to display for a property on the diagram only. Model explorer uses GetExplorerNodeGlyphName instead.
+      /// </summary>
+      /// <param name="element"></param>
+      /// <returns></returns>
+      private static Image GetPropertyGlyph(ModelElement element)
+      {
+         ModelRoot modelRoot = element.Store.ModelRoot();
+
+         switch (element)
+         {
+            case BidirectionalAssociation bidirectionalAssociation:
+               if (modelRoot.ShowWarningsInDesigner && bidirectionalAssociation.GetHasWarningValue())
+                  return UseInverseGlyphs
+                            ? Resources.Warning_i
+                            : Resources.Warning;
+
+               return UseInverseGlyphs
+                         ? InvertedAssociationGlyphCache[bidirectionalAssociation.TargetMultiplicity][bidirectionalAssociation.SourceMultiplicity]
+                         : AssociationGlyphCache[bidirectionalAssociation.TargetMultiplicity][bidirectionalAssociation.SourceMultiplicity];
+
+            case UnidirectionalAssociation unidirectionalAssociation:
+               if (modelRoot.ShowWarningsInDesigner && unidirectionalAssociation.GetHasWarningValue())
+                  return UseInverseGlyphs
+                            ? Resources.Warning_i
+                            : Resources.Warning;
+
+               return UseInverseGlyphs
+                         ? InvertedAssociationGlyphCache[unidirectionalAssociation.SourceMultiplicity][unidirectionalAssociation.TargetMultiplicity]
+                         : AssociationGlyphCache[unidirectionalAssociation.SourceMultiplicity][unidirectionalAssociation.TargetMultiplicity];
+
+            case ModelAttribute attribute:
+               if (modelRoot.ShowWarningsInDesigner && attribute.GetHasWarningValue())
+                  return UseInverseGlyphs
+                            ? Resources.Warning_i
+                            : Resources.Warning;
+
+               if (attribute.IsIdentity && (attribute.IsForeignKeyFor != Guid.Empty))
+                  return UseInverseGlyphs
+                            ? Resources.ForeignKeyIdentity_i
+                            : Resources.ForeignKeyIdentity;
+
+               if (attribute.IsIdentity)
+                  return UseInverseGlyphs
+                            ? Resources.Identity_i
+                            : Resources.Identity;
+
+               // ReSharper disable once ConvertIfStatementToReturnStatement
+               if (attribute.IsForeignKeyFor != Guid.Empty)
+                  return UseInverseGlyphs
+                            ? Resources.ForeignKey_i
+                            : Resources.ForeignKey;
+
+               return UseInverseGlyphs
+                         ? InvertedAttributeGlyphCache[attribute.Persistent][attribute.SetterVisibility]
+                         : AttributeGlyphCache[attribute.Persistent][attribute.SetterVisibility];
+         }
+
+         return Resources.Spacer;
+      }
+
+      /// <summary>
+      ///    Return the tooltip text for the specified item
+      /// </summary>
+      /// <param name="item">A DiagramItem for the selected shape. This could be the shape, or a nested child shape or field.</param>
+      public override string GetToolTipText(DiagramItem item)
+      {
+         // Work out which shape is selected - is it this ClassShape, or  
+         // is it one of the comparment shapes it contains?  
+         if (item.Shape is ElementListCompartment compartment)
+         {
+            // It's a compartment shape.  
+            // Get a list of the elements that are represented by diagram item (should be only one)  
+            ModelAttribute modelAttribute = compartment.GetSubFieldRepresentedElements(item.Field, item.SubField)
+                                                       .OfType<ModelAttribute>()
+                                                       .FirstOrDefault();
+
+            if ((modelAttribute != null) && (modelAttribute.IsForeignKeyFor != Guid.Empty))
+            {
+               Association association = modelAttribute.Store.GetAll<Association>().FirstOrDefault(x => x.Id == modelAttribute.IsForeignKeyFor);
+
+               if (association != null)
+                  return $"FK for [{association.GetDisplayText()}]";
+            }
+         }
+
+         // is this the interface lollipop?
+         if (item.Shape is DecoratorHostShape && (item.Field?.Name == "Interface"))
+            return ((ModelClass)ModelElement).CustomInterfaces;
+
+         return base.GetToolTipText(item);
+      }
+
+      /// <summary>
+      ///    Initializes style set resources for this shape type
+      /// </summary>
+      /// <param name="classStyleSet">The style set for this shape class</param>
+      protected override void InitializeResources(StyleSet classStyleSet)
+      {
+         base.InitializeResources(classStyleSet);
+
+         AssociateValueWith(Store, ModelRoot.ShowInterfaceIndicatorsDomainPropertyId);
+      }
+
+      /// <summary>Called by the control's OnDoubleClick()</summary>
+      /// <param name="e">A DiagramPointEventArgs that contains event data.</param>
+      public override void OnDoubleClick(DiagramPointEventArgs e)
+      {
+         base.OnDoubleClick(e);
+
+         // Allow MEF Extension to mark the event as Handled
+         if (e.Handled)
+            return;
+
+         if (OpenCodeFile != null)
+         {
+            ModelClass modelClass = (ModelClass)ModelElement;
+
+            if (OpenCodeFile(modelClass))
+               return;
+
+            if (!modelClass.GenerateCode)
+            {
+               ErrorDisplay.Show(Store, $"{modelClass.Name} has its GenerateCode property set to false. No file available to open.");
+
+               return;
+            }
+
+            if ((ExecCodeGeneration != null)
+             && (BooleanQuestionDisplay.Show(Store, $"Can't open generated file for {modelClass.Name}. It may not have been generated yet. Do you want to generate the code now?") == true))
+            {
+               ExecCodeGeneration();
+
+               if (OpenCodeFile(modelClass))
+                  return;
+            }
+
+            ErrorDisplay.Show(Store, $"Can't open generated file for {modelClass.Name}");
+         }
+      }
+
+#region Glyphs
+
+      internal static readonly Dictionary<bool, Dictionary<SetterAccessModifier, Bitmap>> AttributeGlyphCache =
+         new Dictionary<bool, Dictionary<SetterAccessModifier, Bitmap>>
+         {
+            {
+               true,
+               new Dictionary<SetterAccessModifier, Bitmap>
+               {
+                  {SetterAccessModifier.Public, Resources.Public}, {SetterAccessModifier.Protected, Resources.Protected}, {SetterAccessModifier.Internal, Resources.Internal}
+               }
+            },
+            {
+               false,
+               new Dictionary<SetterAccessModifier, Bitmap>
+               {
+                  {SetterAccessModifier.Public, Resources.Calculated}, {SetterAccessModifier.Protected, Resources.CalculatedProtected}, {SetterAccessModifier.Internal, Resources.CalculatedInternal}
+               }
+            }
+         };
+
+      internal static readonly Dictionary<bool, Dictionary<SetterAccessModifier, Bitmap>> InvertedAttributeGlyphCache =
+         new Dictionary<bool, Dictionary<SetterAccessModifier, Bitmap>>
+         {
+            {
+               true,
+               new Dictionary<SetterAccessModifier, Bitmap>
+               {
+                  {SetterAccessModifier.Public, Resources.Public_i}, {SetterAccessModifier.Protected, Resources.Protected_i}, {SetterAccessModifier.Internal, Resources.Internal_i}
+               }
+            },
+            {
+               false,
+               new Dictionary<SetterAccessModifier, Bitmap>
+               {
+                  {SetterAccessModifier.Public, Resources.Calculated_i},
+                  {SetterAccessModifier.Protected, Resources.CalculatedProtected_i},
+                  {SetterAccessModifier.Internal, Resources.CalculatedInternal_i}
+               }
+            }
+         };
+
+      internal static readonly Dictionary<Multiplicity, Dictionary<Multiplicity, Bitmap>> AssociationGlyphCache =
+         new Dictionary<Multiplicity, Dictionary<Multiplicity, Bitmap>>
+         {
+            {
+               Multiplicity.ZeroOne,
+               new Dictionary<Multiplicity, Bitmap>
+               {
+                  {Multiplicity.ZeroOne, Resources.Cardinality_0_0}, {Multiplicity.One, Resources.Cardinality_0_1}, {Multiplicity.ZeroMany, Resources.Cardinality_0_many}
+               }
+            },
+            {
+               Multiplicity.One,
+               new Dictionary<Multiplicity, Bitmap>
+               {
+                  {Multiplicity.ZeroOne, Resources.Cardinality_1_0}, {Multiplicity.One, Resources.Cardinality_1_1}, {Multiplicity.ZeroMany, Resources.Cardinality_1_many}
+               }
+            },
+            {
+               Multiplicity.ZeroMany,
+               new Dictionary<Multiplicity, Bitmap>
+               {
+                  {Multiplicity.ZeroOne, Resources.Cardinality_many_0}, {Multiplicity.One, Resources.Cardinality_many_1}, {Multiplicity.ZeroMany, Resources.Cardinality_many_many}
+               }
+            }
+         };
+
+      internal static readonly Dictionary<Multiplicity, Dictionary<Multiplicity, Bitmap>> InvertedAssociationGlyphCache =
+         new Dictionary<Multiplicity, Dictionary<Multiplicity, Bitmap>>
+         {
+            {
+               Multiplicity.ZeroOne,
+               new Dictionary<Multiplicity, Bitmap>
+               {
+                  {Multiplicity.ZeroOne, Resources.Cardinality_0_0_i}, {Multiplicity.One, Resources.Cardinality_0_1_i}, {Multiplicity.ZeroMany, Resources.Cardinality_0_many_i}
+               }
+            },
+            {
+               Multiplicity.One,
+               new Dictionary<Multiplicity, Bitmap>
+               {
+                  {Multiplicity.ZeroOne, Resources.Cardinality_1_0_i}, {Multiplicity.One, Resources.Cardinality_1_1_i}, {Multiplicity.ZeroMany, Resources.Cardinality_1_many_i}
+               }
+            },
+            {
+               Multiplicity.ZeroMany,
+               new Dictionary<Multiplicity, Bitmap>
+               {
+                  {Multiplicity.ZeroOne, Resources.Cardinality_many_0_i}, {Multiplicity.One, Resources.Cardinality_many_1_i}, {Multiplicity.ZeroMany, Resources.Cardinality_many_many_i}
+               }
+            }
+         };
+
+      /// <summary>
+      ///    Maps names to images for class glyphs
+      /// </summary>
+      internal static readonly ReadOnlyDictionary<string, Image> ClassGlyphCache =
+         new ReadOnlyDictionary<string, Image>(new Dictionary<string, Image>
+                                               {
+                                                  {nameof(Resources.EntityGlyph), Resources.EntityGlyph},
+                                                  {nameof(Resources.EntityGlyphVisible), Resources.EntityGlyphVisible},
+                                                  {nameof(Resources.SQL), Resources.SQL},
+                                                  {nameof(Resources.SQLVisible), Resources.SQLVisible},
+                                                  {nameof(Resources.AbstractEntityGlyph), Resources.AbstractEntityGlyph},
+                                                  {nameof(Resources.AbstractEntityGlyphVisible), Resources.AbstractEntityGlyphVisible},
+                                                  {nameof(Resources.AssociationClassGlyph), Resources.AssociationClassGlyph},
+                                                  {nameof(Resources.AssociationClassGlyphVisible), Resources.AssociationClassGlyphVisible}
+                                               });
+
+      internal static readonly ReadOnlyDictionary<string, Image> InvertedClassGlyphCache =
+         new ReadOnlyDictionary<string, Image>(new Dictionary<string, Image>
+                                               {
+                                                  {nameof(Resources.EntityGlyph), Resources.EntityGlyph_i},
+                                                  {nameof(Resources.EntityGlyphVisible), Resources.EntityGlyphVisible_i},
+                                                  {nameof(Resources.SQL), Resources.SQL_i},
+                                                  {nameof(Resources.SQLVisible), Resources.SQLVisible_i},
+                                                  {nameof(Resources.AbstractEntityGlyph), Resources.AbstractEntityGlyph_i},
+                                                  {nameof(Resources.AbstractEntityGlyphVisible), Resources.AbstractEntityGlyphVisible_i},
+                                                  {nameof(Resources.AssociationClassGlyph), Resources.AssociationClassGlyph_i},
+                                                  {nameof(Resources.AssociationClassGlyphVisible), Resources.AssociationClassGlyphVisible_i}
+                                               });
+
+      /// <summary>
+      ///    Maps names to images for property glyphs
+      /// </summary>
+      internal static readonly ReadOnlyDictionary<string, Image> PropertyGlyphCache =
+         new ReadOnlyDictionary<string, Image>(new Dictionary<string, Image>
+                                               {
+                                                  {nameof(Resources.Warning), Resources.Warning},
+                                                  {nameof(Resources.ForeignKeyIdentity), Resources.ForeignKeyIdentity},
+                                                  {nameof(Resources.Identity), Resources.Identity},
+                                                  {nameof(Resources.ForeignKey), Resources.ForeignKey},
+                                                  {nameof(Resources.Spacer), Resources.Spacer},
+                                                  {$"[{true}][{SetterAccessModifier.Internal}]", AttributeGlyphCache[true][SetterAccessModifier.Internal]},
+                                                  {$"[{true}][{SetterAccessModifier.Protected}]", AttributeGlyphCache[true][SetterAccessModifier.Protected]},
+                                                  {$"[{true}][{SetterAccessModifier.Public}]", AttributeGlyphCache[true][SetterAccessModifier.Public]},
+                                                  {$"[{false}][{SetterAccessModifier.Internal}]", AttributeGlyphCache[false][SetterAccessModifier.Internal]},
+                                                  {$"[{false}][{SetterAccessModifier.Protected}]", AttributeGlyphCache[false][SetterAccessModifier.Protected]},
+                                                  {$"[{false}][{SetterAccessModifier.Public}]", AttributeGlyphCache[false][SetterAccessModifier.Public]},
+                                                  {$"[{Multiplicity.One}][{Multiplicity.One}]", AssociationGlyphCache[Multiplicity.One][Multiplicity.One]},
+                                                  {$"[{Multiplicity.ZeroMany}][{Multiplicity.One}]", AssociationGlyphCache[Multiplicity.ZeroMany][Multiplicity.One]},
+                                                  {$"[{Multiplicity.ZeroOne}][{Multiplicity.One}]", AssociationGlyphCache[Multiplicity.ZeroOne][Multiplicity.One]},
+                                                  {$"[{Multiplicity.One}][{Multiplicity.ZeroMany}]", AssociationGlyphCache[Multiplicity.One][Multiplicity.ZeroMany]},
+                                                  {$"[{Multiplicity.ZeroMany}][{Multiplicity.ZeroMany}]", AssociationGlyphCache[Multiplicity.ZeroMany][Multiplicity.ZeroMany]},
+                                                  {$"[{Multiplicity.ZeroOne}][{Multiplicity.ZeroMany}]", AssociationGlyphCache[Multiplicity.ZeroOne][Multiplicity.ZeroMany]},
+                                                  {$"[{Multiplicity.One}][{Multiplicity.ZeroOne}]", AssociationGlyphCache[Multiplicity.One][Multiplicity.ZeroOne]},
+                                                  {$"[{Multiplicity.ZeroMany}][{Multiplicity.ZeroOne}]", AssociationGlyphCache[Multiplicity.ZeroMany][Multiplicity.ZeroOne]},
+                                                  {$"[{Multiplicity.ZeroOne}][{Multiplicity.ZeroOne}]", AssociationGlyphCache[Multiplicity.ZeroOne][Multiplicity.ZeroOne]}
+                                               });
+
+      internal static readonly ReadOnlyDictionary<string, Image> InvertedPropertyGlyphCache =
+         new ReadOnlyDictionary<string, Image>(new Dictionary<string, Image>
+                                               {
+                                                  {nameof(Resources.Warning), Resources.Warning_i},
+                                                  {nameof(Resources.ForeignKeyIdentity), Resources.ForeignKeyIdentity_i},
+                                                  {nameof(Resources.Identity), Resources.Identity_i},
+                                                  {nameof(Resources.ForeignKey), Resources.ForeignKey_i},
+                                                  {nameof(Resources.Spacer), Resources.Spacer},
+                                                  {$"[{true}][{SetterAccessModifier.Internal}]", InvertedAttributeGlyphCache[true][SetterAccessModifier.Internal]},
+                                                  {$"[{true}][{SetterAccessModifier.Protected}]", InvertedAttributeGlyphCache[true][SetterAccessModifier.Protected]},
+                                                  {$"[{true}][{SetterAccessModifier.Public}]", InvertedAttributeGlyphCache[true][SetterAccessModifier.Public]},
+                                                  {$"[{false}][{SetterAccessModifier.Internal}]", InvertedAttributeGlyphCache[false][SetterAccessModifier.Internal]},
+                                                  {$"[{false}][{SetterAccessModifier.Protected}]", InvertedAttributeGlyphCache[false][SetterAccessModifier.Protected]},
+                                                  {$"[{false}][{SetterAccessModifier.Public}]", InvertedAttributeGlyphCache[false][SetterAccessModifier.Public]},
+                                                  {$"[{Multiplicity.One}][{Multiplicity.One}]", InvertedAssociationGlyphCache[Multiplicity.One][Multiplicity.One]},
+                                                  {$"[{Multiplicity.ZeroMany}][{Multiplicity.One}]", InvertedAssociationGlyphCache[Multiplicity.ZeroMany][Multiplicity.One]},
+                                                  {$"[{Multiplicity.ZeroOne}][{Multiplicity.One}]", InvertedAssociationGlyphCache[Multiplicity.ZeroOne][Multiplicity.One]},
+                                                  {$"[{Multiplicity.One}][{Multiplicity.ZeroMany}]", InvertedAssociationGlyphCache[Multiplicity.One][Multiplicity.ZeroMany]},
+                                                  {$"[{Multiplicity.ZeroMany}][{Multiplicity.ZeroMany}]", InvertedAssociationGlyphCache[Multiplicity.ZeroMany][Multiplicity.ZeroMany]},
+                                                  {$"[{Multiplicity.ZeroOne}][{Multiplicity.ZeroMany}]", InvertedAssociationGlyphCache[Multiplicity.ZeroOne][Multiplicity.ZeroMany]},
+                                                  {$"[{Multiplicity.One}][{Multiplicity.ZeroOne}]", InvertedAssociationGlyphCache[Multiplicity.One][Multiplicity.ZeroOne]},
+                                                  {$"[{Multiplicity.ZeroMany}][{Multiplicity.ZeroOne}]", InvertedAssociationGlyphCache[Multiplicity.ZeroMany][Multiplicity.ZeroOne]},
+                                                  {$"[{Multiplicity.ZeroOne}][{Multiplicity.ZeroOne}]", InvertedAssociationGlyphCache[Multiplicity.ZeroOne][Multiplicity.ZeroOne]}
+                                               });
+
+#endregion
+
+#region ModelAttribute Drag/drop
 
       /// <summary>
       ///    Model attribute that is being dragged, if any
@@ -454,7 +532,7 @@ namespace Sawczyn.EFDesigner.EFModel
       /// <param name="e"></param>
       private void Compartment_MouseMove(object sender, DiagramMouseEventArgs e)
       {
-         if (dragStartModelAttribute != null && dragStartModelAttribute != e.HitDiagramItem.RepresentedElements.OfType<ModelAttribute>().FirstOrDefault())
+         if ((dragStartModelAttribute != null) && (dragStartModelAttribute != e.HitDiagramItem.RepresentedElements.OfType<ModelAttribute>().FirstOrDefault()))
          {
             e.DiagramClientView.ActiveMouseAction = new CompartmentDragMouseAction<ClassShape>(dragStartModelAttribute, this, dragItemBounds);
             dragStartModelAttribute = null;
@@ -488,13 +566,13 @@ namespace Sawczyn.EFDesigner.EFModel
          // Current or "to" item:
          ModelAttribute dragToElement = e.HitDiagramItem.RepresentedElements.OfType<ModelAttribute>().FirstOrDefault();
 
-         if (dragFromElement != null && dragToElement != null)
+         if ((dragFromElement != null) && (dragToElement != null))
          {
             // Find the common parent model element, and the relationship links:
             ElementLink parentToLink = GetEmbeddingLink(dragToElement);
             ElementLink parentFromLink = GetEmbeddingLink(dragFromElement);
 
-            if (parentToLink != parentFromLink && parentFromLink != null && parentToLink != null)
+            if ((parentToLink != parentFromLink) && (parentFromLink != null) && (parentToLink != null))
             {
                // Get the static relationship and role (= end of relationship):
                DomainRelationshipInfo relationshipFrom = parentFromLink.GetDomainRelationship();
@@ -510,7 +588,7 @@ namespace Sawczyn.EFDesigner.EFModel
                DomainRoleInfo parentToRole = relationshipTo.DomainRoles[0];
 
                // Mouse went down and up in same parent and same compartment:
-               if (parentFrom != null && parentToLink.LinkedElements[0] is ModelClass parentTo && parentTo == parentFrom && relationshipTo == relationshipFrom)
+               if ((parentFrom != null) && parentToLink.LinkedElements[0] is ModelClass parentTo && (parentTo == parentFrom) && (relationshipTo == relationshipFrom))
                {
                   // Find index of target position:
                   int newIndex = parentToRole.GetElementLinks(parentTo).IndexOf(parentToLink);
@@ -554,10 +632,13 @@ namespace Sawczyn.EFDesigner.EFModel
       /// </summary>
       /// <param name="child"></param>
       /// <returns></returns>
-      private ElementLink GetEmbeddingLink(ModelAttribute child) => child.GetDomainClass()
+      private ElementLink GetEmbeddingLink(ModelAttribute child)
+      {
+         return child.GetDomainClass()
                      .AllEmbeddedByDomainRoles
                      .SelectMany(role => role.OppositeDomainRole.GetElementLinks(child))
                      .FirstOrDefault();
+      }
 
       /// <summary>Called by the control's OnMouseDown().</summary>
       /// <param name="e">A DiagramMouseEventArgs that contains event data.</param>
@@ -570,7 +651,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Gets the cursor that is displayed when the mouse pointer is over the ShapeElement.
+      ///    Gets the cursor that is displayed when the mouse pointer is over the ShapeElement.
       /// </summary>
       /// <param name="currentCursor"></param>
       /// <param name="diagramClientView"></param>
@@ -593,52 +674,6 @@ namespace Sawczyn.EFDesigner.EFModel
          dragStartModelAttribute = null;
       }
 
-      #endregion
-
-      /// <summary>
-      /// Set when DocData is loaded. If non-null, calling this action will open the generated code file, if present
-      /// </summary>
-      public static Func<ModelClass, bool> OpenCodeFile { get; set; }
-
-      /// <summary>
-      /// If non-null, calling this method will execute code generation for the model
-      /// </summary>
-      public static Action ExecCodeGeneration;
-
-      /// <summary>Called by the control's OnDoubleClick()</summary>
-      /// <param name="e">A DiagramPointEventArgs that contains event data.</param>
-      public override void OnDoubleClick(DiagramPointEventArgs e)
-      {
-         base.OnDoubleClick(e);
-
-         // Allow MEF Extension to mark the event as Handled
-         if (e.Handled)
-            return;
-
-         if (OpenCodeFile != null)
-         {
-            ModelClass modelClass = (ModelClass)ModelElement;
-
-            if (OpenCodeFile(modelClass))
-               return;
-
-            if (!modelClass.GenerateCode)
-            {
-               ErrorDisplay.Show(Store, $"{modelClass.Name} has its GenerateCode property set to false. No file available to open.");
-
-               return;
-            }
-
-            if (ExecCodeGeneration != null && BooleanQuestionDisplay.Show(Store, $"Can't open generated file for {modelClass.Name}. It may not have been generated yet. Do you want to generate the code now?") == true)
-            {
-               ExecCodeGeneration();
-
-               if (OpenCodeFile(modelClass))
-                  return;
-            }
-
-            ErrorDisplay.Show(Store, $"Can't open generated file for {modelClass.Name}");
-         }
-      }
+#endregion
    }
 }

@@ -3,9 +3,15 @@ using Microsoft.VisualStudio.Modeling.Diagrams;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
-   public partial class GeneralizationConnector: IHasStore, IThemeable
+   public partial class GeneralizationConnector : IHasStore, IThemeable
    {
-      public override bool HasToolTip => true;
+      public override bool HasToolTip
+      {
+         get
+         {
+            return true;
+         }
+      }
 
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
@@ -35,16 +41,19 @@ namespace Sawczyn.EFDesigner.EFModel
 
          // black (luminosity == 0) will be changed to luminosity 40, which doesn't show up.
          // so if it's black we're highlighting, return 130, since that looks ok.
-         return baseCalculation == 40 ? 130 : baseCalculation;
+         return baseCalculation == 40
+                   ? 130
+                   : baseCalculation;
       }
 
       /// <summary>
-      /// This method is called when a shape is inititially created, derived classes can
-      /// override to perform shape instance initialization.  This method is always called within a transaction.
+      ///    This method is called when a shape is inititially created, derived classes can
+      ///    override to perform shape instance initialization.  This method is always called within a transaction.
       /// </summary>
       public override void OnInitialize()
       {
          base.OnInitialize();
+
          if (ModelDisplay.GetDiagramColors != null)
             SetThemeColors(ModelDisplay.GetDiagramColors());
       }

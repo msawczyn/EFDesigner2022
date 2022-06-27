@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 
+using Mexedge.VisualStudio.Modeling;
+
 using Microsoft.VisualStudio.Modeling;
 using Microsoft.VisualStudio.Modeling.Diagrams;
 
@@ -13,7 +15,7 @@ namespace Sawczyn.EFDesigner.EFModel
          base.OnSelectionChanged(e);
 
          // select element in tree
-         if (PrimarySelection != null && PrimarySelection is ModelElement element)
+         if ((PrimarySelection != null) && PrimarySelection is ModelElement element)
          {
             using (Transaction t = element.Store.TransactionManager.BeginTransaction("TreeSelectionChanged"))
             {
@@ -24,7 +26,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   case ModelDiagramData modelDiagramData:
                      // user selected a diagram. Open it.
                      EFModelDocData docData = (EFModelDocData)TreeContainer.ModelingDocData;
-                     docData.OpenView(Constants.LogicalView, new Mexedge.VisualStudio.Modeling.ViewContext(modelDiagramData.Name, typeof(EFModelDiagram), docData.RootElement));
+                     docData.OpenView(Constants.LogicalView, new ViewContext(modelDiagramData.Name, typeof(EFModelDiagram), docData.RootElement));
 
                      break;
 
@@ -44,8 +46,8 @@ namespace Sawczyn.EFDesigner.EFModel
                      foreach (NavigationProperty navigationProperty in modelClass.LocalNavigationProperties())
                      {
                         ModelClass other = navigationProperty.AssociationObject.Source == modelClass
-                                                 ? navigationProperty.AssociationObject.Target
-                                                 : navigationProperty.AssociationObject.Source;
+                                              ? navigationProperty.AssociationObject.Target
+                                              : navigationProperty.AssociationObject.Source;
 
                         // should never happen
                         if (other == null)
@@ -54,12 +56,13 @@ namespace Sawczyn.EFDesigner.EFModel
                         ShapeElement shapeElement = PresentationViewsSubject.GetPresentation(other)
                                                                             .OfType<ShapeElement>()
                                                                             .FirstOrDefault(s => s.Diagram == diagram);
-                        
-                        if (shapeElement != null && shapeElement.IsVisible)
+
+                        if ((shapeElement != null) && shapeElement.IsVisible)
                         {
                            ShapeElement connectorElement = PresentationViewsSubject.GetPresentation(navigationProperty.AssociationObject)
                                                                                    .OfType<AssociationConnector>()
                                                                                    .FirstOrDefault(s => s.Diagram == diagram);
+
                            connectorElement?.Show();
                         }
                      }
@@ -68,8 +71,8 @@ namespace Sawczyn.EFDesigner.EFModel
                      // ReSharper disable once LoopCanBePartlyConvertedToQuery
                      foreach (Generalization generalization in modelClass.Store.ElementDirectory.AllElements
                                                                          .OfType<Generalization>()
-                                                                         .Where(g => g.Superclass == modelClass 
-                                                                                  || g.Subclass == modelClass))
+                                                                         .Where(g => (g.Superclass == modelClass)
+                                                                                  || (g.Subclass == modelClass)))
                      {
                         ModelClass other = generalization.Superclass == modelClass
                                               ? generalization.Subclass
@@ -82,12 +85,13 @@ namespace Sawczyn.EFDesigner.EFModel
                         ShapeElement shapeElement = PresentationViewsSubject.GetPresentation(other)
                                                                             .OfType<ShapeElement>()
                                                                             .FirstOrDefault(s => s.Diagram == diagram);
-                        
-                        if (shapeElement != null && shapeElement.IsVisible)
+
+                        if ((shapeElement != null) && shapeElement.IsVisible)
                         {
                            ShapeElement connectorElement = PresentationViewsSubject.GetPresentation(generalization)
                                                                                    .OfType<GeneralizationConnector>()
                                                                                    .FirstOrDefault(s => s.Diagram == diagram);
+
                            connectorElement?.Show();
                         }
                      }
@@ -116,6 +120,5 @@ namespace Sawczyn.EFDesigner.EFModel
             }
          }
       }
-
    }
 }

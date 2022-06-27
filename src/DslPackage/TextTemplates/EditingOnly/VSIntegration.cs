@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 
 using EnvDTE;
+
 using Microsoft.VisualStudio.Shell;
 
 namespace Sawczyn.EFDesigner.EFModel.EditingOnly
@@ -13,7 +14,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    [SuppressMessage("ReSharper", "UnusedMember.Global")]
    public partial class GeneratedTextTransformation
    {
-      #region Template
+#region Template
 
       // EFDesigner v4.1.2.0
       // Copyright (c) 2017-2022 Michael Sawczyn
@@ -28,12 +29,14 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
        * Interactions with Visual Studio
        */
 
-      public IEnumerable<EnvDTE.Project> GetAllProjects()
+      public IEnumerable<Project> GetAllProjects()
       {
          ThreadHelper.ThrowIfNotOnUIThread();
+
          foreach (Project project in GetSolution().Projects.OfType<Project>())
          {
             ThreadHelper.ThrowIfNotOnUIThread();
+
             if (project.Kind == EnvDTE.Constants.vsProjectKindSolutionItems)
             {
                foreach (Project p in RecurseSolutionFolder(project))
@@ -46,7 +49,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
       public Project GetCurrentProject()
       {
-         Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+         ThreadHelper.ThrowIfNotOnUIThread();
          DTE dte = GetDTE();
 
          ProjectItem projectItem = dte.Solution.FindProjectItem(Host.TemplateFile);
@@ -71,9 +74,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          throw new InvalidOperationException("Error in GetCurrentProject(). Unable to find project.");
       }
 
-      private EnvDTE.ProjectItem GetDirectoryItem(string target)
+      private ProjectItem GetDirectoryItem(string target)
       {
-         Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+         ThreadHelper.ThrowIfNotOnUIThread();
          DTE dte = GetDTE();
          Array projects = dte?.ActiveSolutionProjects as Array;
          Project currentProject = projects?.GetValue(0) as Project;
@@ -85,7 +88,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             Directory.CreateDirectory(Path.Combine(rootDirectory, target));
 
             Queue<string> paths = new Queue<string>(target.Split('\\'));
-            EnvDTE.ProjectItems currentItemList = currentProject.ProjectItems;
+            ProjectItems currentItemList = currentProject.ProjectItems;
             bool found = false;
 
             while (paths.Any())
@@ -122,14 +125,14 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          return targetProjectItem;
       }
 
-      public EnvDTE.DTE GetDTE()
+      public DTE GetDTE()
       {
          IServiceProvider serviceProvider = (IServiceProvider)Host;
 
          if (serviceProvider == null)
             throw new Exception("Host property returned unexpected value (null)");
 
-         Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+         ThreadHelper.ThrowIfNotOnUIThread();
          DTE dte = (DTE)serviceProvider.GetService(typeof(DTE));
 
          if (dte == null)
@@ -140,7 +143,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
       private string GetProjectPath(Project project)
       {
-         Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+         ThreadHelper.ThrowIfNotOnUIThread();
          string fullProjectName = project.FullName;
 
          if (string.IsNullOrWhiteSpace(fullProjectName))
@@ -150,7 +153,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          {
             FileInfo info = new FileInfo(fullProjectName);
 
-            return info.Directory != null ? info.Directory.FullName : string.Empty;
+            return info.Directory != null
+                      ? info.Directory.FullName
+                      : string.Empty;
          }
          catch
          {
@@ -160,17 +165,21 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          }
       }
 
-      public EnvDTE.Solution GetSolution()
+      public Solution GetSolution()
       {
-         Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+         ThreadHelper.ThrowIfNotOnUIThread();
+
          return GetDTE().Solution;
       }
 
       private IEnumerable<Project> RecurseSolutionFolder(Project project)
       {
-         Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+         ThreadHelper.ThrowIfNotOnUIThread();
+
          if (project.ProjectItems == null)
             yield break;
+
+         ThreadHelper.ThrowIfNotOnUIThread();
 
          foreach (Project subProject in project.ProjectItems
                                                .Cast<ProjectItem>()
@@ -187,8 +196,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          }
       }
 
-      #endregion Template
+#endregion Template
    }
 }
-
-

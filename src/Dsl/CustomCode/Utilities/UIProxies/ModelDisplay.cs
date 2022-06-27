@@ -1,19 +1,20 @@
 ﻿using System;
+
 using Sawczyn.EFDesigner.EFModel;
 
 namespace Sawczyn.EFDesigner
 {
    /// <summary>
-   /// This helps keep UI interaction out of our DSL project proper. DslPackage calls the various methods to register handlers at the UI level.
+   ///    This helps keep UI interaction out of our DSL project proper. DslPackage calls the various methods to register handlers at the UI level.
    /// </summary>
    public static class ModelDisplay
    {
       public static Func<DiagramThemeColors> GetDiagramColors;
 
+      private static LayoutDiagramAction LayoutDiagramMethod;
+
       // executes autolayout on the diagram passed in
       public delegate void LayoutDiagramAction(EFModelDiagram diagram);
-
-      private static LayoutDiagramAction LayoutDiagramMethod;
 
       public static void LayoutDiagram(EFModelDiagram diagram)
       {
@@ -34,6 +35,5 @@ namespace Sawczyn.EFDesigner
       {
          LayoutDiagramMethod = method;
       }
-
    }
 }

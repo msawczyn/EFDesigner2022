@@ -16,6 +16,7 @@ namespace Sawczyn.EFDesigner.EFModel
          base.ElementPropertyChanged(e);
 
          ModelEnum element = (ModelEnum)e.ModelElement;
+
          if (element.IsDeleted)
             return;
 
@@ -77,10 +78,11 @@ namespace Sawczyn.EFDesigner.EFModel
             case "ValueType":
 
                EnumValueType newValueType = (EnumValueType)e.NewValue;
+
                List<ModelAttribute> modelAttributes = store.ElementDirectory
                                                            .AllElements
                                                            .OfType<ModelAttribute>()
-                                                           .Where(a => a.Type == element.Name && a.IsIdentity)
+                                                           .Where(a => (a.Type == element.Name) && a.IsIdentity)
                                                            .ToList();
 
                if (modelAttributes.Any())

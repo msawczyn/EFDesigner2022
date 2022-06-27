@@ -1,5 +1,4 @@
-﻿using System;
-using System.CodeDom.Compiler;
+﻿using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -78,62 +77,64 @@ namespace Sawczyn.EFDesigner.EFModel
                switch (element.EntityFrameworkVersion)
                {
                   case EFVersion.EFCore:
-                  {
-                     if (element.IsEFCore5Plus)
                      {
-                        if (element.InheritanceStrategy == CodeStrategy.TablePerConcreteType)
-                           element.InheritanceStrategy = CodeStrategy.TablePerType;
-                     }
-                     else
-                     {
-                        element.InheritanceStrategy = CodeStrategy.TablePerHierarchy;
-                        store.ElementDirectory.AllElements.OfType<ModelClass>().Where(c => c.IsPropertyBag).ToList().ForEach(c => c.IsPropertyBag = false);
-
-                        switch (element.PropertyAccessModeDefault)
+                        if (element.IsEFCore5Plus)
                         {
-                           case PropertyAccessMode.PreferField:
-                           case PropertyAccessMode.PreferFieldDuringConstruction:
-                           case PropertyAccessMode.PreferProperty:
-                              element.PropertyAccessModeDefault = PropertyAccessMode.FieldDuringConstruction;
-
-                              store.ElementDirectory.AllElements.OfType<ModelAttribute>()
-                                   .Where(a => !a.IsPropertyAccessModeTracking
-                                            && (a.PropertyAccessMode == PropertyAccessMode.PreferField
-                                             || a.PropertyAccessMode == PropertyAccessMode.PreferProperty
-                                             || a.PropertyAccessMode == PropertyAccessMode.PreferFieldDuringConstruction))
-                                   .ToList()
-                                   .ForEach(a => a.PropertyAccessMode = PropertyAccessMode.FieldDuringConstruction);
-
-                              break;
+                           if (element.InheritanceStrategy == CodeStrategy.TablePerConcreteType)
+                              element.InheritanceStrategy = CodeStrategy.TablePerType;
                         }
-                     }
+                        else
+                        {
+                           element.InheritanceStrategy = CodeStrategy.TablePerHierarchy;
+                           store.ElementDirectory.AllElements.OfType<ModelClass>().Where(c => c.IsPropertyBag).ToList().ForEach(c => c.IsPropertyBag = false);
 
-                     break;
-                  }
+                           switch (element.PropertyAccessModeDefault)
+                           {
+                              case PropertyAccessMode.PreferField:
+                              case PropertyAccessMode.PreferFieldDuringConstruction:
+                              case PropertyAccessMode.PreferProperty:
+                                 element.PropertyAccessModeDefault = PropertyAccessMode.FieldDuringConstruction;
+
+                                 store.ElementDirectory.AllElements.OfType<ModelAttribute>()
+                                      .Where(a => !a.IsPropertyAccessModeTracking
+                                               && ((a.PropertyAccessMode == PropertyAccessMode.PreferField)
+                                                || (a.PropertyAccessMode == PropertyAccessMode.PreferProperty)
+                                                || (a.PropertyAccessMode == PropertyAccessMode.PreferFieldDuringConstruction)))
+                                      .ToList()
+                                      .ForEach(a => a.PropertyAccessMode = PropertyAccessMode.FieldDuringConstruction);
+
+                                 break;
+                           }
+                        }
+
+                        break;
+                     }
 
                   case EFVersion.EF6:
-                  {
-                     store.ElementDirectory.AllElements.OfType<ModelClass>().Where(c => c.IsPropertyBag).ToList().ForEach(c => c.IsPropertyBag = false);
-
-                     List<Association> associations = store.ElementDirectory
-                                                           .AllElements
-                                                           .OfType<Association>()
-                                                           .Where(a => !string.IsNullOrEmpty(a.FKPropertyName) && a.SourceMultiplicity != Multiplicity.ZeroMany && a.TargetMultiplicity != Multiplicity.ZeroMany)
-                                                           .ToList();
-
-                     string message = $"This will remove declared foreign key properties from {associations.Count} one-to-one association{(associations.Count == 1 ? "" : "s")}. Are you sure?";
-
-                     if (associations.Any() && BooleanQuestionDisplay.Show(store, message) == true)
                      {
-                        foreach (Association association in associations)
-                        {
-                           association.FKPropertyName = null;
-                           AssociationChangedRules.FixupForeignKeys(association);
-                        }
-                     }
+                        store.ElementDirectory.AllElements.OfType<ModelClass>().Where(c => c.IsPropertyBag).ToList().ForEach(c => c.IsPropertyBag = false);
 
-                     break;
-                  }
+                        List<Association> associations = store.ElementDirectory
+                                                              .AllElements
+                                                              .OfType<Association>()
+                                                              .Where(a => !string.IsNullOrEmpty(a.FKPropertyName)
+                                                                       && (a.SourceMultiplicity != Multiplicity.ZeroMany)
+                                                                       && (a.TargetMultiplicity != Multiplicity.ZeroMany))
+                                                              .ToList();
+
+                        string message = $"This will remove declared foreign key properties from {associations.Count} one-to-one association{(associations.Count == 1 ? "" : "s")}. Are you sure?";
+
+                        if (associations.Any() && (BooleanQuestionDisplay.Show(store, message) == true))
+                        {
+                           foreach (Association association in associations)
+                           {
+                              association.FKPropertyName = null;
+                              AssociationChangedRules.FixupForeignKeys(association);
+                           }
+                        }
+
+                        break;
+                     }
                }
 
                ModelRoot.ExecuteValidator?.Invoke();
@@ -142,10 +143,10 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "EntityOutputDirectory":
 
-               if (string.IsNullOrEmpty(element.EnumOutputDirectory) || element.EnumOutputDirectory == (string)e.OldValue)
+               if (string.IsNullOrEmpty(element.EnumOutputDirectory) || (element.EnumOutputDirectory == (string)e.OldValue))
                   element.EnumOutputDirectory = (string)e.NewValue;
 
-               if (string.IsNullOrEmpty(element.StructOutputDirectory) || element.StructOutputDirectory == (string)e.OldValue)
+               if (string.IsNullOrEmpty(element.StructOutputDirectory) || (element.StructOutputDirectory == (string)e.OldValue))
                   element.StructOutputDirectory = (string)e.NewValue;
 
                break;
@@ -161,7 +162,7 @@ namespace Sawczyn.EFDesigner.EFModel
                if (!element.ExposeForeignKeys)
                {
                   foreach (Association association in element.Store.GetAll<Association>()
-                                                             .Where(a => (a.SourceRole == EndpointRole.Dependent || a.TargetRole == EndpointRole.Dependent)
+                                                             .Where(a => ((a.SourceRole == EndpointRole.Dependent) || (a.TargetRole == EndpointRole.Dependent))
                                                                       && !string.IsNullOrWhiteSpace(a.FKPropertyName)))
                   {
                      association.FKPropertyName = null;
@@ -193,7 +194,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
                if (element.EntityFrameworkVersion == EFVersion.EFCore)
                {
-                  if (element.IsEFCore5Plus && element.InheritanceStrategy == CodeStrategy.TablePerConcreteType)
+                  if (element.IsEFCore5Plus && (element.InheritanceStrategy == CodeStrategy.TablePerConcreteType))
                      element.InheritanceStrategy = CodeStrategy.TablePerType;
 
                   if (!element.IsEFCore5Plus)
@@ -204,6 +205,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "Namespace":
                errorMessages.Add(CommonRules.ValidateNamespace((string)e.NewValue, CodeGenerator.IsValidLanguageIndependentIdentifier));
+
                break;
 
             case "PluralizeDbSetNames":
@@ -215,6 +217,7 @@ namespace Sawczyn.EFDesigner.EFModel
                         modelClass.DbSetName = modelClass.GetDefaultDbSetName((bool)e.NewValue);
                   }
                }
+
                break;
 
             case "PluralizeTableNames":
@@ -226,6 +229,7 @@ namespace Sawczyn.EFDesigner.EFModel
                         modelClass.TableName = modelClass.GetDefaultTableName((bool)e.NewValue);
                   }
                }
+
                break;
 
             case "ShowCascadeDeletes":

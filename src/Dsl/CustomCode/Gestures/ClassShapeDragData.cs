@@ -11,12 +11,10 @@ namespace Sawczyn.EFDesigner.EFModel
 {
    internal class ClassShapeDragData
    {
-      private readonly RectangleD initialBoundingBox;
       private readonly double cursorXOffset;
       private readonly double cursorYOffset;
+      private readonly RectangleD initialBoundingBox;
       private readonly List<BidirectionalConnector> priorHighlightedConnectors = new List<BidirectionalConnector>();
-
-      public ClassShape ClassShape { get; }
 
       public ClassShapeDragData([NotNull] ClassShape classShape, PointD startingMousePosition)
       {
@@ -26,6 +24,8 @@ namespace Sawczyn.EFDesigner.EFModel
          cursorYOffset = startingMousePosition.Y - classShape.AbsoluteBoundingBox.Top;
          initialBoundingBox = classShape.AbsoluteBoundingBox;
       }
+
+      public ClassShape ClassShape { get; }
 
       private RectangleD BoundingBoxWithMouseAt(PointD mousePosition)
       {
@@ -53,20 +53,21 @@ namespace Sawczyn.EFDesigner.EFModel
 
          List<BidirectionalConnector> connectors = ClassShape.Store.ElementDirectory.AllElements
                                                              .OfType<BidirectionalConnector>()
-                                                             .Where(c => ((BidirectionalAssociation)c.ModelElement).SourceMultiplicity == Multiplicity.ZeroMany
-                                                                      && ((BidirectionalAssociation)c.ModelElement).TargetMultiplicity == Multiplicity.ZeroMany
+                                                             .Where(c => (((BidirectionalAssociation)c.ModelElement).SourceMultiplicity == Multiplicity.ZeroMany)
+                                                                      && (((BidirectionalAssociation)c.ModelElement).TargetMultiplicity == Multiplicity.ZeroMany)
                                                                       && !connectionObjectsWithAssociationClass.Contains(((BidirectionalAssociation)c.ModelElement).Id)
-                                                                      && c.Diagram.Id == ClassShape.Diagram.Id
+                                                                      && (c.Diagram.Id == ClassShape.Diagram.Id)
                                                                       && c.AbsoluteBoundingBox.IntersectsWith(boundingBox))
                                                              .ToList();
 
          Debug.WriteLine($"{connectors.Count} potential drop target(s)");
+
          return connectors;
       }
 
       internal void HighlightActionableClassShapes(PointD mousePosition)
       {
-         EFModelDiagram diagram = ((EFModelDiagram)ClassShape.Diagram);
+         EFModelDiagram diagram = (EFModelDiagram)ClassShape.Diagram;
          diagram.Unhighlight(ClassShape);
 
          foreach (BidirectionalConnector connector in priorHighlightedConnectors)

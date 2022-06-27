@@ -21,6 +21,7 @@ namespace Sawczyn.EFDesigner.EFModel
             return;
 
          ModelDiagramData.OpenDiagram?.Invoke(element);
+
          if (element.GetDiagram() == null)
             element.SetDiagram(store.GetAll<EFModelDiagram>().FirstOrDefault(d => d.Name == store.ModelRoot().GetFileName()));
       }

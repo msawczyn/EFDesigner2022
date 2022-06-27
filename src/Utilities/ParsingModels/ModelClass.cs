@@ -9,7 +9,15 @@ namespace ParsingModels
          Properties = new List<ModelProperty>();
       }
 
-      public string FullName => string.IsNullOrWhiteSpace(Namespace) ? $"global::{Name}" : $"global::{Namespace}.{Name}";
+      public string FullName
+      {
+         get
+         {
+            return string.IsNullOrWhiteSpace(Namespace)
+                      ? $"global::{Name}"
+                      : $"global::{Namespace}.{Name}";
+         }
+      }
 
       public string Name { get; set; }
       public string Namespace { get; set; }

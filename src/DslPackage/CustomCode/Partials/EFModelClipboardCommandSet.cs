@@ -1,14 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
-using System.Windows.Input;
 
 using Microsoft.VisualStudio.Modeling;
 using Microsoft.VisualStudio.Modeling.Diagrams;
 
 using Sawczyn.EFDesigner.EFModel.Extensions;
-
-using Cursor = System.Windows.Forms.Cursor;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
@@ -19,7 +15,7 @@ namespace Sawczyn.EFDesigner.EFModel
          if (TargetElement is ModelRoot
           && CurrentModelingDocView is EFModelDocView efModelDocView
           && efModelDocView.Diagram is EFModelDiagram currentDiagram
-          && currentDiagram.Store != null
+          && (currentDiagram.Store != null)
           && modelElements.Any())
          {
             Store store = efModelDocView.Diagram.Store;

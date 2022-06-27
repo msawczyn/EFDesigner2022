@@ -7,15 +7,15 @@ using Microsoft.VisualStudio.Modeling.Design;
 namespace Sawczyn.EFDesigner.EFModel
 {
    /// <summary>
-   /// Encapsulates values of the current Output Location settings in the ModelRoot
+   ///    Encapsulates values of the current Output Location settings in the ModelRoot
    /// </summary>
    [Serializable]
-   public class OutputLocations: IHasStore
+   public class OutputLocations : IHasStore
    {
       private readonly ModelRoot modelRoot;
 
       /// <summary>
-      /// Constructor
+      ///    Constructor
       /// </summary>
       /// <param name="modelRoot">DomainClass ModelRoot</param>
       public OutputLocations(ModelRoot modelRoot)
@@ -24,14 +24,9 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Exposes the Store object.  Store is a complete model.  Stores contain both the domain data  and the model data for all the domain models in a model.
+      ///    Output location value for the generated DbContext-derived object
       /// </summary>
-      [Browsable(false)]
-      public Store Store => modelRoot?.Store;
 
-      /// <summary>
-      /// Output location value for the generated DbContext-derived object
-      /// </summary>
       // ReSharper disable once UnusedMember.Global
       [TypeConverter(typeof(ProjectDirectoryTypeConverter))]
       [DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelRoot/ContextOutputDirectory.DisplayName", typeof(EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
@@ -54,7 +49,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Output location value for the generated entity classes
+      ///    Output location value for the generated entity classes
       /// </summary>
       [TypeConverter(typeof(ProjectDirectoryTypeConverter))]
       [DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelRoot/EntityOutputDirectory.DisplayName", typeof(EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
@@ -72,7 +67,7 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             using (Transaction t = modelRoot.Store.TransactionManager.BeginTransaction())
             {
-               modelRoot.EntityOutputDirectory = string.IsNullOrWhiteSpace(value) || value == modelRoot.EntityOutputDirectory
+               modelRoot.EntityOutputDirectory = string.IsNullOrWhiteSpace(value) || (value == modelRoot.EntityOutputDirectory)
                                                     ? null
                                                     : value;
 
@@ -82,7 +77,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Output location value for the generated enumerations
+      ///    Output location value for the generated enumerations
       /// </summary>
       [TypeConverter(typeof(ProjectDirectoryTypeConverter))]
       [DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelRoot/EnumOutputDirectory.DisplayName", typeof(EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
@@ -100,7 +95,7 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             using (Transaction t = modelRoot.Store.TransactionManager.BeginTransaction())
             {
-               modelRoot.EnumOutputDirectory = string.IsNullOrWhiteSpace(value) || value == modelRoot.EnumOutputDirectory
+               modelRoot.EnumOutputDirectory = string.IsNullOrWhiteSpace(value) || (value == modelRoot.EnumOutputDirectory)
                                                   ? null
                                                   : value;
 
@@ -110,7 +105,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Output location value for the generated non-persistent objects
+      ///    Output location value for the generated non-persistent objects
       /// </summary>
       [TypeConverter(typeof(ProjectDirectoryTypeConverter))]
       [DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelRoot/StructOutputDirectory.DisplayName", typeof(EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
@@ -128,12 +123,24 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             using (Transaction t = modelRoot.Store.TransactionManager.BeginTransaction())
             {
-               modelRoot.StructOutputDirectory = string.IsNullOrWhiteSpace(value) || value == modelRoot.StructOutputDirectory
+               modelRoot.StructOutputDirectory = string.IsNullOrWhiteSpace(value) || (value == modelRoot.StructOutputDirectory)
                                                     ? null
                                                     : value;
 
                t.Commit();
             }
+         }
+      }
+
+      /// <summary>
+      ///    Exposes the Store object.  Store is a complete model.  Stores contain both the domain data  and the model data for all the domain models in a model.
+      /// </summary>
+      [Browsable(false)]
+      public Store Store
+      {
+         get
+         {
+            return modelRoot?.Store;
          }
       }
 

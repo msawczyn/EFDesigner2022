@@ -23,6 +23,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          lblClassName.Text = element.Name;
          txtCode.Lines = element.Values.Select(x => x.ToString()).ToArray();
+
          // ReSharper disable once VirtualMemberCallInConstructor
          Text = "Add values as code";
          label1.Text = "Enum name";

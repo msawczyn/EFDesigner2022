@@ -9,7 +9,6 @@ using Microsoft.VisualStudio.Modeling;
 
 namespace Mexedge.VisualStudio.Modeling
 {
-
    public sealed class ViewContext : IXmlSerializable
    {
       public ViewContext(string diagramName)

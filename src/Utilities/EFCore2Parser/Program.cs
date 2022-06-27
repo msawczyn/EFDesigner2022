@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -24,6 +25,31 @@ namespace EFCore2Parser
       public const int AMBIGUOUS_REQUEST = 6;
       private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+      private static List<string> Usage
+      {
+         get
+         {
+            return new List<string>(new[]
+                                    {
+                                       $"Usage: {typeof(Program).Assembly.GetName().Name} InputFileName OutputFileName [FullyQualifiedClassName]",
+                                       "where",
+                                       "   (required) InputFileName           - path of assembly containing EF6 DbContext to parse",
+                                       "   (required) OutputFileName          - path to create JSON file of results",
+                                       "   (optional) FullyQualifiedClassName - fully-qualified name of DbContext class to process, if more than one available.",
+                                       "                                        DbContext class must have a constructor that accepts one parameter of type DbContextOptions<>",
+                                       "Result codes:",
+                                       "   0   Success",
+                                       "   1   Bad argument count",
+                                       "   2   Cannot load assembly",
+                                       "   3   Cannot write output file",
+                                       "   4   Cannot create DbContext",
+                                       "   5   Cannot find appropriate constructor",
+                                       "   6   Ambiguous request",
+                                       ""
+                                    });
+         }
+      }
+
       private static Assembly Context_Resolving(AssemblyLoadContext context, AssemblyName assemblyName)
       {
          // avoid loading *.resources dlls, because of: https://github.com/dotnet/coreclr/issues/8416
@@ -39,7 +65,7 @@ namespace EFCore2Parser
          // try known directories
          string found = context.Assemblies.Select(x => Path.Combine(Path.GetDirectoryName(x.Location), $"{assemblyName.Name}.dll")).Distinct().FirstOrDefault(File.Exists);
 
-         if (found != null) 
+         if (found != null)
             return context.LoadFromAssemblyPath(found);
 
          // try the current directory
@@ -51,32 +77,9 @@ namespace EFCore2Parser
          // try gac
          found = Directory.GetFileSystemEntries(Environment.ExpandEnvironmentVariables("%windir%\\Microsoft.NET\\assembly"), $"{assemblyName.Name}.dll", SearchOption.AllDirectories).FirstOrDefault();
 
-         return found == null ? null : context.LoadFromAssemblyPath(found);
-      }
-
-      private static List<string> Usage
-      {
-         get
-         {
-            return new List<string>(new[]
-                                    {
-                                       $"Usage: {typeof(Program).Assembly.GetName().Name} InputFileName OutputFileName [FullyQualifiedClassName]"
-                                     , "where"
-                                     , "   (required) InputFileName           - path of assembly containing EF6 DbContext to parse"
-                                     , "   (required) OutputFileName          - path to create JSON file of results"
-                                     , "   (optional) FullyQualifiedClassName - fully-qualified name of DbContext class to process, if more than one available."
-                                     , "                                        DbContext class must have a constructor that accepts one parameter of type DbContextOptions<>"
-                                     , "Result codes:"
-                                     , "   0   Success"
-                                     , "   1   Bad argument count"
-                                     , "   2   Cannot load assembly"
-                                     , "   3   Cannot write output file"
-                                     , "   4   Cannot create DbContext"
-                                     , "   5   Cannot find appropriate constructor"
-                                     , "   6   Ambiguous request"
-                                     , ""
-                                    });
-         }
+         return found == null
+                   ? null
+                   : context.LoadFromAssemblyPath(found);
       }
 
       private static void Exit(int returnCode, Exception ex = null)
@@ -107,7 +110,7 @@ namespace EFCore2Parser
 
       private static int Main(string[] args)
       {
-         if (args.Length < 2 || args.Length > 3)
+         if ((args.Length < 2) || (args.Length > 3))
          {
             Usage.ForEach(x => Console.Error.WriteLine(x));
             log.Error($"Expecting 2 or 3 arguments - found {args.Length}");
@@ -116,17 +119,19 @@ namespace EFCore2Parser
 
          try
          {
-            string inputPath = args[0];
-            string outputPath = args[1];
+            string inputPath = args[0].Replace("\n", @"\n");
+            string outputPath = args[1].Replace("\n", @"\n");
 
-            GlobalContext.Properties["LogPath"] = Path.ChangeExtension(outputPath, "").TrimEnd('.');
+            GlobalContext.Properties["LogPath"] = Path.ChangeExtension(outputPath, "log");
             ILoggerRepository logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(logRepository, GetLogStream());
 
             log.Info($"Starting {Assembly.GetEntryAssembly().Location}");
-            log.Info($"Log file at {GlobalContext.Properties["LogPath"]}.log");
+            log.Info($"Log file at {GlobalContext.Properties["LogPath"]}");
 
-            string contextClassName = args.Length == 3 ? args[2] : null;
+            string contextClassName = args.Length == 3
+                                         ? args[2]
+                                         : null;
 
             using (StreamWriter output = new StreamWriter(outputPath))
             {
@@ -162,6 +167,7 @@ namespace EFCore2Parser
 
                      do
                      {
+                        Debug.WriteLine(e.Message);
                         log.Error(e.Message);
                         e = e.InnerException;
                      } while (e != null);
@@ -193,7 +199,7 @@ namespace EFCore2Parser
 
       private static Assembly TryLoadFrom(string inputPath)
       {
-         AssemblyLoadContext context = new AssemblyLoadContext("EFCore5Parser");
+         AssemblyLoadContext context = new AssemblyLoadContext("EFCore2Parser");
          context.Resolving += Context_Resolving;
 
          try

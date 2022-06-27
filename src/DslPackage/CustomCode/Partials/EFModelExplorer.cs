@@ -27,27 +27,319 @@ namespace Sawczyn.EFDesigner.EFModel
          ObjectModelBrowser.Invalidate();
       }
 
-      #region Context Menu 
+      private void AddedHandler(object sender, ElementAddedEventArgs e)
+      {
+         UpdateRoleGroupNode(e.ModelElement);
+      }
+
+      private void ChangedHandler(object sender, ElementPropertyChangedEventArgs e)
+      {
+         if (FindNodeForElement(e.ModelElement) is EFModelElementTreeNode treeNode)
+            treeNode.Update();
+      }
+
+      /// <summary>Extension point for supplying user defined TreeNode.</summary>
+      /// <param name="modelElement">model element to be represented by the to be created ModelElementTreeNode in the tree view</param>
+      /// <returns></returns>
+      public override ModelElementTreeNode CreateModelElementTreeNode(ModelElement modelElement)
+      {
+         if (modelElement == null)
+            throw new ArgumentNullException(nameof(modelElement));
+
+         EFModelElementTreeNode modelElementTreeNode = new EFModelElementTreeNode(modelElement);
+
+         if (ObjectModelBrowser.ImageList != null)
+            modelElementTreeNode.DefaultImageIndex = 0;
+
+         modelElementTreeNode.UpdateNodeImage();
+
+         return modelElementTreeNode;
+      }
+
+      public override RoleGroupTreeNode CreateRoleGroupTreeNode(DomainRoleInfo targetRoleInfo)
+      {
+         if (targetRoleInfo == null)
+            throw new ArgumentNullException(nameof(targetRoleInfo));
+
+         Type representedType = targetRoleInfo.LinkPropertyInfo.PropertyType;
+
+         if (!nodeEventHandlersAdded.Contains(representedType))
+         {
+            DomainClassInfo domainClassInfo = ModelingDocData.Store.DomainDataDirectory.FindDomainClass(representedType);
+            ModelingDocData.Store.EventManagerDirectory.ElementAdded.Add(domainClassInfo, new EventHandler<ElementAddedEventArgs>(AddedHandler));
+            ModelingDocData.Store.EventManagerDirectory.ElementDeleted.Add(domainClassInfo, new EventHandler<ElementDeletedEventArgs>(DeletedHandler));
+            ModelingDocData.Store.EventManagerDirectory.ElementPropertyChanged.Add(domainClassInfo, new EventHandler<ElementPropertyChangedEventArgs>(ChangedHandler));
+            nodeEventHandlersAdded.Add(representedType);
+         }
+
+         RoleGroupTreeNode roleGroupTreeNode = new EFModelRoleGroupTreeNode(targetRoleInfo);
+
+         if (ObjectModelBrowser.ImageList != null)
+            roleGroupTreeNode.DefaultImageIndex = 1;
+
+         return roleGroupTreeNode;
+      }
+
+      private void DeletedHandler(object sender, ElementDeletedEventArgs e)
+      {
+         UpdateRoleGroupNode(e.ModelElement);
+      }
+
+      partial void Init()
+      {
+         // this sets up the images for use in the model explorer. They don't come out of Dsl::Resources.resx directly, but are named the same
+         // See EFModelElementTreeNode.GetExplorerNodeImageName (below) for how this happens.
+         List<KeyValuePair<string, Image>> glyphs = ClassShape.PropertyGlyphCache.Union(ClassShape.ClassGlyphCache).ToList();
+         glyphs.AddRange(ClassShape.InvertedPropertyGlyphCache.Select(kv => new KeyValuePair<string, Image>(kv.Key + "_i", kv.Value)));
+         glyphs.AddRange(ClassShape.InvertedClassGlyphCache.Select(kv => new KeyValuePair<string, Image>(kv.Key + "_i", kv.Value)));
+
+         foreach (KeyValuePair<string, Image> image in glyphs)
+            ObjectModelBrowser.ImageList.Images.Add(image.Key, image.Value);
+
+         ObjectModelBrowser.ImageList.Images.Add(nameof(Resources.Enumerator_16x), Resources.Enumerator_16x);
+         ObjectModelBrowser.ImageList.Images.Add(nameof(Resources.Enumerator_16xVisible), Resources.Enumerator_16xVisible);
+         ObjectModelBrowser.ImageList.Images.Add(nameof(Resources.Enumerator_16x_i), Resources.Enumerator_16x_i);
+         ObjectModelBrowser.ImageList.Images.Add(nameof(Resources.Enumerator_16xVisible_i), Resources.Enumerator_16xVisible_i);
+
+         // shoehorn the search widget into the list
+         SuspendLayout();
+
+         Controls.Remove(ObjectModelBrowser);
+         Control label = Controls[0];
+
+         Controls.Add(SearchControlHost = new ElementHost
+                                          {
+                                             Location = new Point(3, label.Height),
+                                             Name = "SearchControlHost",
+                                             Size = new Size(Width, 25),
+                                             Dock = DockStyle.Top,
+                                             Padding = new Padding(0, 3, 0, 0),
+                                             TabIndex = 1,
+                                             Text = string.Empty,
+                                             Child = null
+                                          });
+
+         SearchControlHost.BringToFront();
+
+         ObjectModelBrowser.TabIndex = 2;
+         ObjectModelBrowser.Location = new Point(3, label.Height);
+         Controls.Add(ObjectModelBrowser);
+         ObjectModelBrowser.BringToFront();
+
+         SetThemeColors(ModelDisplay.GetDiagramColors());
+         ResumeLayout(false);
+         PerformLayout();
+
+         ObjectModelBrowser.NodeMouseDoubleClick += ObjectModelBrowser_OnNodeMouseDoubleClick;
+         ObjectModelBrowser.ItemDrag += ObjectModelBrowser_OnItemDrag;
+
+         InitSearch();
+      }
 
       /// <summary>
-      /// Adds command handlers for commands that appear in the context menu.  Base implementation
-      /// will only add command handlers if a handler is not already registered, to allow derived
-      /// classes to override handling of a particular command.  For this reason, derived classes
-      /// should add commands first before calling the base class.
+      ///    Method to insert the incoming node into the TreeNodeCollection. This allows the derived class to change the sorting behavior.
+      ///    N.B. This should really be protected, and is only intended as an override point. Do not call it directly, but rather call
+      ///    InsertNode()
+      /// </summary>
+      /// <param name="siblingNodes"></param>
+      /// <param name="node"></param>
+      public override void InsertTreeNode(TreeNodeCollection siblingNodes, ExplorerTreeNode node)
+      {
+         base.InsertTreeNode(siblingNodes, node);
+
+         // sorting Diagrams first. Normally would be alpha ordering
+         EFModelRoleGroupTreeNode diagramNode = siblingNodes.OfType<EFModelRoleGroupTreeNode>().FirstOrDefault(n => n.Text.StartsWith("Diagrams"));
+
+         if ((diagramNode != null) && (siblingNodes.IndexOf(diagramNode) != 0))
+         {
+            diagramNode.Remove();
+            siblingNodes.Insert(0, diagramNode);
+         }
+
+         if (node.Parent is EFModelRoleGroupTreeNode roleNode)
+            roleNode.Text = roleNode.GetNodeText(); // not roleNode.UpdateNodeText() - too expensive
+      }
+
+      private void ObjectModelBrowser_OnItemDrag(object sender, ItemDragEventArgs e)
+      {
+         if (e.Item is ExplorerTreeNode elementNode && (elementNode.RepresentedElement != null))
+            DoDragDrop(elementNode.RepresentedElement, DragDropEffects.Copy);
+      }
+
+      private void ObjectModelBrowser_OnNodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+      {
+         if (e.Node is ExplorerTreeNode elementNode && (elementNode.RepresentedElement != null))
+         {
+            ModelElement element = elementNode.RepresentedElement;
+
+            if (ModelingDocData is EFModelDocData docData)
+            {
+               Diagram diagram = docData.CurrentDocView?.CurrentDiagram;
+
+               if ((diagram != null) && diagram is EFModelDiagram efModelDiagram && !element.LocateInActiveDiagram(true))
+                  EFModelDiagram.AddExistingModelElement(efModelDiagram, element);
+            }
+         }
+      }
+
+      /// <summary>Virtual method to process the menu Delete operation</summary>
+      protected override void ProcessOnMenuDeleteCommand()
+      {
+         TreeNode diagramRoot = ObjectModelBrowser.SelectedNode?.Parent;
+
+         switch (SelectedElement)
+         {
+            case ModelDiagramData diagramData:
+               {
+                  if (BooleanQuestionDisplay.Show(diagramData.Store, $"About to permanently delete diagram named {diagramData.Name} - are you sure?") == true)
+                  {
+                     base.ProcessOnMenuDeleteCommand();
+                     ObjectModelBrowser.SelectedNode = null;
+                  }
+
+                  break;
+               }
+
+            case ModelEnum modelEnum:
+               {
+                  string fullName = modelEnum.FullName.Split('.').Last();
+
+                  if (!ModelEnum.IsUsed(modelEnum)
+                   || (BooleanQuestionDisplay.Show(modelEnum.Store, $"{fullName} is used as an entity property. Deleting the enumeration will remove those properties. Are you sure?") == true))
+                  {
+                     base.ProcessOnMenuDeleteCommand();
+                     ObjectModelBrowser.SelectedNode = null;
+                  }
+
+                  break;
+               }
+
+            default:
+               base.ProcessOnMenuDeleteCommand();
+               ObjectModelBrowser.SelectedNode = null;
+
+               break;
+         }
+
+         diagramRoot?.Expand();
+      }
+
+      private void UpdateRoleGroupNode(ModelElement element)
+      {
+         ExplorerTreeNode elementNode = FindNodeForElement(element);
+
+         if (elementNode?.Parent is EFModelRoleGroupTreeNode roleNode)
+         {
+            roleNode.Text = roleNode.GetNodeText(); // not roleNode.UpdateNodeText() - too expensive
+            Invalidate();
+         }
+      }
+
+      public class EFModelElementTreeNode : ModelElementTreeNode
+      {
+         /// <summary>Obsolete Constructor</summary>
+         /// <param name="container">ignored - retained for backwards compatibility only</param>
+         /// <param name="modelElement">ModelElement represented by this node</param>
+         [Obsolete("Use alternate constructor; 'container' parameter is no longer required")]
+
+         // ReSharper disable once UnusedMember.Global
+         public EFModelElementTreeNode(ModelExplorerTreeContainer container, ModelElement modelElement) : base(container, modelElement) { }
+
+         /// <summary>Initialize a new instance of ModelElementTreeNode</summary>
+         /// <param name="modelElement">ModelElement represented by this node</param>
+         public EFModelElementTreeNode(ModelElement modelElement) : base(modelElement)
+         {
+            UpdateNodeImage();
+         }
+
+         /// <summary>Suppply the text for the node</summary>
+         /// <returns>The text for the node</returns>
+         protected override string ProvideNodeText()
+         {
+            if (ModelElement is ModelAttribute attribute)
+               return attribute.ToDisplayString();
+
+            return base.ProvideNodeText();
+         }
+
+         /// <summary>
+         ///    Force an update of the node's visual representation, i.e. text and icon
+         /// </summary>
+         public override void Update()
+         {
+            base.Update();
+            UpdateNodeImage();
+         }
+
+         public void UpdateNodeImage()
+         {
+            // we're using the images determined by the shape class to keep the explorer and diagram glyphs in sync
+            // available images are determined in EFModelExplorer.Init()
+            string suffix = ClassShape.UseInverseGlyphs
+                               ? "_i"
+                               : string.Empty;
+
+            if (RepresentedElement is ModelAttribute modelAttribute)
+               ThreadHelper.Generic.BeginInvoke(() => { SelectedImageKey = ImageKey = ClassShape.GetExplorerNodeGlyphName(modelAttribute) + suffix; });
+            else if (RepresentedElement is ModelClass modelClass)
+               ThreadHelper.Generic.BeginInvoke(() => { SelectedImageKey = ImageKey = ClassShape.GetExplorerNodeGlyphName(modelClass) + suffix; });
+            else if (RepresentedElement is ModelEnum modelEnum)
+               ThreadHelper.Generic.BeginInvoke(() => { SelectedImageKey = ImageKey = EnumShape.GetExplorerNodeGlyphName(modelEnum) + suffix; });
+         }
+      }
+
+      public class EFModelRoleGroupTreeNode : RoleGroupTreeNode
+      {
+         private readonly string displayTextBase;
+
+         /// <summary>Constructor</summary>
+         /// <param name="metaRole">Role represented by this node</param>
+         public EFModelRoleGroupTreeNode(DomainRoleInfo metaRole) : base(metaRole)
+         {
+            string propertyDisplayName = metaRole.OppositeDomainRole.PropertyDisplayName;
+
+            displayTextBase = !string.IsNullOrEmpty(propertyDisplayName)
+                                 ? propertyDisplayName
+                                 : metaRole.OppositeDomainRole.PropertyName;
+         }
+
+         internal string GetNodeText()
+         {
+            return ProvideNodeText();
+         }
+
+         /// <summary>Suppply the text for the node</summary>
+         /// <returns>The text for the node</returns>
+         protected override string ProvideNodeText()
+         {
+            return $"{displayTextBase} ({Nodes.Cast<ExplorerTreeNode>().Count(n => !n.RepresentedElement.IsDeleted)})";
+         }
+      }
+
+#region Context Menu
+
+      /// <summary>
+      ///    Adds command handlers for commands that appear in the context menu.  Base implementation
+      ///    will only add command handlers if a handler is not already registered, to allow derived
+      ///    classes to override handling of a particular command.  For this reason, derived classes
+      ///    should add commands first before calling the base class.
       /// </summary>
       /// <param name="menuCommandService">IMenuCommandService to which commands should be added.</param>
       public override void AddCommandHandlers(IMenuCommandService menuCommandService)
       {
          DynamicStatusMenuCommand gotoCodeCommand =
             new DynamicStatusMenuCommand(OnStatusGoToCode, OnMenuGoToCode, new CommandID(EFModelCommandSet.guidMenuExplorerCmdSet, EFModelCommandSet.cmdidGoToCode));
+
          menuCommandService.AddCommand(gotoCodeCommand);
 
          DynamicStatusMenuCommand expandCommand =
             new DynamicStatusMenuCommand(OnStatusExpandAll, OnMenuExpandAll, new CommandID(EFModelCommandSet.guidMenuExplorerCmdSet, EFModelCommandSet.cmdidExpandAll));
+
          menuCommandService.AddCommand(expandCommand);
 
          DynamicStatusMenuCommand collapseCommand =
             new DynamicStatusMenuCommand(OnStatusCollapseAll, OnMenuCollapseAll, new CommandID(EFModelCommandSet.guidMenuExplorerCmdSet, EFModelCommandSet.cmdidCollapseAll));
+
          menuCommandService.AddCommand(collapseCommand);
 
          base.AddCommandHandlers(menuCommandService);
@@ -69,6 +361,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void OnMenuGoToCode(object sender, EventArgs e)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
+
          if (ObjectModelBrowser.SelectedNode is EFModelElementTreeNode elementNode)
          {
             switch (elementNode.RepresentedElement)
@@ -130,9 +424,9 @@ namespace Sawczyn.EFDesigner.EFModel
             ObjectModelBrowser.CollapseAll();
       }
 
-      #endregion Context Menu
+#endregion Context Menu
 
-      #region Search
+#region Search
 
       private ElementHost SearchControlHost;
 
@@ -202,28 +496,49 @@ namespace Sawczyn.EFDesigner.EFModel
 
       /// <summary>Determines whether the search should be enabled for the window. </summary>
       /// <returns>True if search should be enabled, otherwise false.</returns>
-      public bool SearchEnabled => true;
+      public bool SearchEnabled
+      {
+         get
+         {
+            return true;
+         }
+      }
 
       /// <summary>Gets the GUID of the search provider. For a tool window search provider, if the category is not returned the tool window guid will be used by default.</summary>
       /// <returns>The GUID.</returns>
-      public Guid Category => Guid.Empty;
+      public Guid Category
+      {
+         get
+         {
+            return Guid.Empty;
+         }
+      }
 
       /// <summary>Returns an interface that can be used to enumerate search filters. </summary>
       /// <returns>The search filters.</returns>
-      public IVsEnumWindowSearchFilters SearchFiltersEnum => null;
+      public IVsEnumWindowSearchFilters SearchFiltersEnum
+      {
+         get
+         {
+            return null;
+         }
+      }
 
       /// <summary>Allows the window search host to obtain overridable search options.</summary>
       /// <returns>The search options.</returns>
-      public IVsEnumWindowSearchOptions SearchOptionsEnum => null;
+      public IVsEnumWindowSearchOptions SearchOptionsEnum
+      {
+         get
+         {
+            return null;
+         }
+      }
 
       internal class ModelExplorerSearchTask : VsSearchTask
       {
          private readonly EFModelExplorer modelExplorer;
 
-         public ModelExplorerSearchTask(EFModelExplorer modelExplorer
-                                      , uint dwCookie
-                                      , IVsSearchQuery pSearchQuery
-                                      , IVsSearchCallback pSearchCallback)
+         public ModelExplorerSearchTask(EFModelExplorer modelExplorer, uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback)
             : base(dwCookie, pSearchQuery, pSearchCallback)
          {
             this.modelExplorer = modelExplorer;
@@ -244,6 +559,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                 {
                                                    // ReSharper disable once UnusedVariable
                                                    ThreadHelper.ThrowIfNotOnUIThread();
+
                                                    using (WaitCursor w = new WaitCursor())
                                                    {
                                                       treeView.SelectedNode = null;
@@ -270,7 +586,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                 });
             }
 
-            SearchResults = (uint)treeView.GetAllNodes().Count(n => n is ExplorerTreeNode explorerNode && explorerNode.RepresentedElement != null);
+            SearchResults = (uint)treeView.GetAllNodes().Count(n => n is ExplorerTreeNode explorerNode && (explorerNode.RepresentedElement != null));
 
             // Call to base will report completion
             base.OnStartSearch();
@@ -310,7 +626,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                           .Where(groupNode => groupNode.Parent is ExplorerTreeNode elementNode
                                                                                            && (elementNode.RepresentedElement is ModelClass
                                                                                             || elementNode.RepresentedElement is ModelEnum)
-                                                                                           && groupNode.Nodes.Count == 0)
+                                                                                           && (groupNode.Nodes.Count == 0))
                                                                           .ToList();
 
             foreach (EFModelRoleGroupTreeNode emptyChildGroupNode in emptyChildGroupNodes)
@@ -322,7 +638,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                         .OfType<ExplorerTreeNode>()
                                                         .Where(elementNode => (elementNode.RepresentedElement is ModelClass
                                                                             || elementNode.RepresentedElement is ModelEnum)
-                                                                           && elementNode.Nodes.Count == 0)
+                                                                           && (elementNode.Nodes.Count == 0))
                                                         .ToList();
 
             foreach (ExplorerTreeNode node in classNodes.Where(node => searchTexts.All(t => node.Text.IndexOf(t, StringComparison.CurrentCultureIgnoreCase) == -1)))
@@ -340,7 +656,6 @@ namespace Sawczyn.EFDesigner.EFModel
             treeView.ExpandAll();
 
             treeView.EndUpdate();
-
          }
 
          /// <summary>
@@ -354,298 +669,14 @@ namespace Sawczyn.EFDesigner.EFModel
                EFModelRoleGroupTreeNode groupNode = node.Parent as EFModelRoleGroupTreeNode;
                elementNode.Remove();
 
-               if (groupNode.Nodes.Count == 0 && (elementNode.RepresentedElement is ModelAttribute
-                                               || elementNode.RepresentedElement is ModelEnumValue))
+               if ((groupNode.Nodes.Count == 0)
+                && (elementNode.RepresentedElement is ModelAttribute
+                 || elementNode.RepresentedElement is ModelEnumValue))
                   groupNode.Remove();
             }
          }
       }
 
-      #endregion Search
-
-      public override RoleGroupTreeNode CreateRoleGroupTreeNode(DomainRoleInfo targetRoleInfo)
-      {
-         if (targetRoleInfo == null)
-            throw new ArgumentNullException(nameof(targetRoleInfo));
-
-         Type representedType = targetRoleInfo.LinkPropertyInfo.PropertyType;
-
-         if (!nodeEventHandlersAdded.Contains(representedType))
-         {
-            DomainClassInfo domainClassInfo = ModelingDocData.Store.DomainDataDirectory.FindDomainClass(representedType);
-            ModelingDocData.Store.EventManagerDirectory.ElementAdded.Add(domainClassInfo, new EventHandler<ElementAddedEventArgs>(AddedHandler));
-            ModelingDocData.Store.EventManagerDirectory.ElementDeleted.Add(domainClassInfo, new EventHandler<ElementDeletedEventArgs>(DeletedHandler));
-            ModelingDocData.Store.EventManagerDirectory.ElementPropertyChanged.Add(domainClassInfo, new EventHandler<ElementPropertyChangedEventArgs>(ChangedHandler));
-            nodeEventHandlersAdded.Add(representedType);
-         }
-
-         RoleGroupTreeNode roleGroupTreeNode = new EFModelRoleGroupTreeNode(targetRoleInfo);
-
-         if (ObjectModelBrowser.ImageList != null)
-            roleGroupTreeNode.DefaultImageIndex = 1;
-
-         return roleGroupTreeNode;
-      }
-
-      private void ChangedHandler(object sender, ElementPropertyChangedEventArgs e)
-      {
-         if (FindNodeForElement(e.ModelElement) is EFModelElementTreeNode treeNode)
-            treeNode.Update();
-      }
-
-      private void AddedHandler(object sender, ElementAddedEventArgs e)
-      {
-         UpdateRoleGroupNode(e.ModelElement);
-      }
-
-      private void DeletedHandler(object sender, ElementDeletedEventArgs e)
-      {
-         UpdateRoleGroupNode(e.ModelElement);
-      }
-
-      partial void Init()
-      {
-         // this sets up the images for use in the model explorer. They don't come out of Dsl::Resources.resx directly, but are named the same
-         // See EFModelElementTreeNode.GetExplorerNodeImageName (below) for how this happens.
-         List<KeyValuePair<string, Image>> glyphs = ClassShape.PropertyGlyphCache.Union(ClassShape.ClassGlyphCache).ToList();
-         glyphs.AddRange(ClassShape.InvertedPropertyGlyphCache.Select(kv => new KeyValuePair<string, Image>(kv.Key + "_i", kv.Value)));
-         glyphs.AddRange(ClassShape.InvertedClassGlyphCache.Select(kv => new KeyValuePair<string, Image>(kv.Key + "_i", kv.Value)));
-
-         foreach (KeyValuePair<string, Image> image in glyphs)
-            ObjectModelBrowser.ImageList.Images.Add(image.Key, image.Value);
-         ObjectModelBrowser.ImageList.Images.Add(nameof(Resources.Enumerator_16x), Resources.Enumerator_16x);
-         ObjectModelBrowser.ImageList.Images.Add(nameof(Resources.Enumerator_16xVisible), Resources.Enumerator_16xVisible);
-         ObjectModelBrowser.ImageList.Images.Add(nameof(Resources.Enumerator_16x_i), Resources.Enumerator_16x_i);
-         ObjectModelBrowser.ImageList.Images.Add(nameof(Resources.Enumerator_16xVisible_i), Resources.Enumerator_16xVisible_i);
-
-         // shoehorn the search widget into the list
-         SuspendLayout();
-
-         Controls.Remove(ObjectModelBrowser);
-         Control label = Controls[0];
-
-         Controls.Add(SearchControlHost = new ElementHost
-                                          {
-                                             Location = new Point(3, label.Height)
-                                           , Name = "SearchControlHost"
-                                           , Size = new Size(Width, 25)
-                                           , Dock = DockStyle.Top
-                                           , Padding = new Padding(0, 3, 0, 0)
-                                           , TabIndex = 1
-                                           , Text = string.Empty
-                                           , Child = null
-                                          });
-
-         SearchControlHost.BringToFront();
-
-         ObjectModelBrowser.TabIndex = 2;
-         ObjectModelBrowser.Location = new Point(3, label.Height);
-         Controls.Add(ObjectModelBrowser);
-         ObjectModelBrowser.BringToFront();
-
-         SetThemeColors(ModelDisplay.GetDiagramColors());
-         ResumeLayout(false);
-         PerformLayout();
-
-         ObjectModelBrowser.NodeMouseDoubleClick += ObjectModelBrowser_OnNodeMouseDoubleClick;
-         ObjectModelBrowser.ItemDrag += ObjectModelBrowser_OnItemDrag;
-
-         InitSearch();
-      }
-
-      /// <summary>
-      ///    Method to insert the incoming node into the TreeNodeCollection. This allows the derived class to change the sorting behavior.
-      ///    N.B. This should really be protected, and is only intended as an override point. Do not call it directly, but rather call
-      ///    InsertNode()
-      /// </summary>
-      /// <param name="siblingNodes"></param>
-      /// <param name="node"></param>
-      public override void InsertTreeNode(TreeNodeCollection siblingNodes, ExplorerTreeNode node)
-      {
-         base.InsertTreeNode(siblingNodes, node);
-
-         // sorting Diagrams first. Normally would be alpha ordering
-         EFModelRoleGroupTreeNode diagramNode = siblingNodes.OfType<EFModelRoleGroupTreeNode>().FirstOrDefault(n => n.Text.StartsWith("Diagrams"));
-
-         if (diagramNode != null && siblingNodes.IndexOf(diagramNode) != 0)
-         {
-            diagramNode.Remove();
-            siblingNodes.Insert(0, diagramNode);
-         }
-
-         if (node.Parent is EFModelRoleGroupTreeNode roleNode)
-            roleNode.Text = roleNode.GetNodeText(); // not roleNode.UpdateNodeText() - too expensive
-      }
-
-      private void ObjectModelBrowser_OnItemDrag(object sender, ItemDragEventArgs e)
-      {
-         if (e.Item is ExplorerTreeNode elementNode && elementNode.RepresentedElement != null)
-            DoDragDrop(elementNode.RepresentedElement, DragDropEffects.Copy);
-      }
-
-      private void ObjectModelBrowser_OnNodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
-      {
-         if (e.Node is ExplorerTreeNode elementNode && elementNode.RepresentedElement != null)
-         {
-            ModelElement element = elementNode.RepresentedElement;
-
-            if (ModelingDocData is EFModelDocData docData)
-            {
-               Diagram diagram = docData.CurrentDocView?.CurrentDiagram;
-
-               if (diagram != null && diagram is EFModelDiagram efModelDiagram && !element.LocateInActiveDiagram(true))
-                  EFModelDiagram.AddExistingModelElement(efModelDiagram, element);
-            }
-         }
-      }
-
-      /// <summary>Virtual method to process the menu Delete operation</summary>
-      protected override void ProcessOnMenuDeleteCommand()
-      {
-         TreeNode diagramRoot = ObjectModelBrowser.SelectedNode?.Parent;
-
-         switch (SelectedElement)
-         {
-            case ModelDiagramData diagramData:
-               {
-                  if (BooleanQuestionDisplay.Show(diagramData.Store, $"About to permanently delete diagram named {diagramData.Name} - are you sure?") == true)
-                  {
-                     base.ProcessOnMenuDeleteCommand();
-                     ObjectModelBrowser.SelectedNode = null;
-                  }
-
-                  break;
-               }
-
-            case ModelEnum modelEnum:
-               {
-                  string fullName = modelEnum.FullName.Split('.').Last();
-
-                  if (!ModelEnum.IsUsed(modelEnum)
-                   || BooleanQuestionDisplay.Show(modelEnum.Store, $"{fullName} is used as an entity property. Deleting the enumeration will remove those properties. Are you sure?") == true)
-                  {
-                     base.ProcessOnMenuDeleteCommand();
-                     ObjectModelBrowser.SelectedNode = null;
-                  }
-
-                  break;
-               }
-
-            default:
-               base.ProcessOnMenuDeleteCommand();
-               ObjectModelBrowser.SelectedNode = null;
-
-               break;
-         }
-
-         diagramRoot?.Expand();
-      }
-
-      private void UpdateRoleGroupNode(ModelElement element)
-      {
-         ExplorerTreeNode elementNode = FindNodeForElement(element);
-
-         if (elementNode?.Parent is EFModelRoleGroupTreeNode roleNode)
-         {
-            roleNode.Text = roleNode.GetNodeText(); // not roleNode.UpdateNodeText() - too expensive
-            Invalidate();
-         }
-      }
-
-      /// <summary>Extension point for supplying user defined TreeNode.</summary>
-      /// <param name="modelElement">model element to be represented by the to be created ModelElementTreeNode in the tree view</param>
-      /// <returns></returns>
-      public override ModelElementTreeNode CreateModelElementTreeNode(ModelElement modelElement)
-      {
-         if (modelElement == null)
-            throw new ArgumentNullException(nameof(modelElement));
-
-         EFModelElementTreeNode modelElementTreeNode = new EFModelElementTreeNode(modelElement);
-
-         if (ObjectModelBrowser.ImageList != null)
-            modelElementTreeNode.DefaultImageIndex = 0;
-
-         modelElementTreeNode.UpdateNodeImage();
-
-         return modelElementTreeNode;
-      }
-
-      public class EFModelRoleGroupTreeNode : RoleGroupTreeNode
-      {
-         private readonly string displayTextBase;
-
-         /// <summary>Constructor</summary>
-         /// <param name="metaRole">Role represented by this node</param>
-         public EFModelRoleGroupTreeNode(DomainRoleInfo metaRole) : base(metaRole)
-         {
-            string propertyDisplayName = metaRole.OppositeDomainRole.PropertyDisplayName;
-
-            displayTextBase = !string.IsNullOrEmpty(propertyDisplayName)
-                                 ? propertyDisplayName
-                                 : metaRole.OppositeDomainRole.PropertyName;
-         }
-
-         internal string GetNodeText()
-         {
-            return ProvideNodeText();
-         }
-
-         /// <summary>Suppply the text for the node</summary>
-         /// <returns>The text for the node</returns>
-         protected override string ProvideNodeText()
-         {
-            return $"{displayTextBase} ({Nodes.Cast<ExplorerTreeNode>().Count(n => !n.RepresentedElement.IsDeleted)})";
-         }
-      }
-
-      public class EFModelElementTreeNode : ModelElementTreeNode
-      {
-         /// <summary>Obsolete Constructor</summary>
-         /// <param name="container">ignored - retained for backwards compatibility only</param>
-         /// <param name="modelElement">ModelElement represented by this node</param>
-         [Obsolete("Use alternate constructor; 'container' parameter is no longer required")]
-         // ReSharper disable once UnusedMember.Global
-         public EFModelElementTreeNode(ModelExplorerTreeContainer container, ModelElement modelElement) : base(container, modelElement) { }
-
-         /// <summary>Initialize a new instance of ModelElementTreeNode</summary>
-         /// <param name="modelElement">ModelElement represented by this node</param>
-         public EFModelElementTreeNode(ModelElement modelElement) : base(modelElement)
-         {
-            UpdateNodeImage();
-         }
-
-         /// <summary>Suppply the text for the node</summary>
-         /// <returns>The text for the node</returns>
-         protected override string ProvideNodeText()
-         {
-            if (ModelElement is ModelAttribute attribute)
-               return attribute.ToDisplayString();
-
-            return base.ProvideNodeText();
-         }
-
-         /// <summary>
-         ///    Force an update of the node's visual representation, i.e. text and icon
-         /// </summary>
-         public override void Update()
-         {
-            base.Update();
-            UpdateNodeImage();
-         }
-
-         public void UpdateNodeImage()
-         {
-            // we're using the images determined by the shape class to keep the explorer and diagram glyphs in sync
-            // available images are determined in EFModelExplorer.Init()
-            string suffix = ClassShape.UseInverseGlyphs ? "_i" : string.Empty;
-
-            if (RepresentedElement is ModelAttribute modelAttribute)
-               ThreadHelper.Generic.BeginInvoke(() => { SelectedImageKey = ImageKey = ClassShape.GetExplorerNodeGlyphName(modelAttribute) + suffix; });
-            else if (RepresentedElement is ModelClass modelClass)
-               ThreadHelper.Generic.BeginInvoke(() => { SelectedImageKey = ImageKey = ClassShape.GetExplorerNodeGlyphName(modelClass) + suffix; });
-            else if (RepresentedElement is ModelEnum modelEnum)
-               ThreadHelper.Generic.BeginInvoke(() => { SelectedImageKey = ImageKey = EnumShape.GetExplorerNodeGlyphName(modelEnum) + suffix; });
-         }
-      }
+#endregion Search
    }
 }

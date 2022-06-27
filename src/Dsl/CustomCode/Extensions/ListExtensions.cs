@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sawczyn.EFDesigner.EFModel.Extensions
 {
    /// <summary>
-   /// Extension methods for System.Collections.Generic.IEnumerable{T}
+   ///    Extension methods for System.Collections.Generic.IEnumerable{T}
    /// </summary>
    public static class ListExtensions
    {
       /// <summary>
-      /// Reconciles two collections based on a comparison method, indicating what should be added to or removed from the target collection in order to satisfy the reconciliation
+      ///    Reconciles two collections based on a comparison method, indicating what should be added to or removed from the target collection in order to satisfy the reconciliation
       /// </summary>
       /// <typeparam name="T">Type of element contained in targetCollection</typeparam>
       /// <typeparam name="U">Type of element contained in sourceCollection</typeparam>
@@ -29,8 +27,8 @@ namespace Sawczyn.EFDesigner.EFModel.Extensions
          foreach (U source in sourceCollection)
          {
             T keeper = targets.FirstOrDefault(target => comparer(target, source));
-           
-            if (keeper != null) 
+
+            if (keeper != null)
                keep.Add(keeper);
             else
                add.Add(source);

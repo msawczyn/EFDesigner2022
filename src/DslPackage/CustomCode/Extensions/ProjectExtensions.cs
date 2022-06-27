@@ -1,6 +1,7 @@
 ﻿using System;
 
 using EnvDTE;
+
 using Microsoft.VisualStudio.Shell;
 
 namespace Sawczyn.EFDesigner.EFModel
@@ -13,6 +14,7 @@ namespace Sawczyn.EFDesigner.EFModel
             throw new ArgumentNullException(nameof(project));
 
          ThreadHelper.ThrowIfNotOnUIThread();
+
          return project.Properties.Item("TargetFramework")?.Value?.ToString();
       }
    }

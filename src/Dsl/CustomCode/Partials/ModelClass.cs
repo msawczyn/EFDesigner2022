@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using Microsoft.VisualStudio.Modeling;
@@ -19,25 +20,7 @@ namespace Sawczyn.EFDesigner.EFModel
    public partial class ModelClass : IModelElementWithCompartments, IDisplaysWarning, IHasStore
    {
       /// <summary>
-      /// True if this is a normal entity type (not aggregated and not keyless), false otherwise
-      /// </summary>
-      [Browsable(false)]
-      public bool IsEntity() => !IsDependentType && !IsKeylessType();
-
-      /// <summary>
-      /// True if this is a dependent (aggregated) entity type, false otherwise
-      /// </summary>
-      [Browsable(false)]
-      public bool IsDependent() => IsDependentType;
-
-      /// <summary>
-      /// True if this is a keyless entity type (backed by a query or a view), false otherwise
-      /// </summary>
-      [Browsable(false)]
-      public bool IsKeyless() => IsKeylessType();
-
-      /// <summary>
-      /// The default namespace for this entity, based on its kind
+      ///    The default namespace for this entity, based on its kind
       /// </summary>
       [Browsable(false)]
       public string DefaultNamespace
@@ -55,7 +38,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Namespace for generated code. Takes overrides into account.
+      ///    Namespace for generated code. Takes overrides into account.
       /// </summary>
       [Browsable(false)]
       public string EffectiveNamespace
@@ -67,7 +50,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Where in the project code would normally be generated, based on the entity type
+      ///    Where in the project code would normally be generated, based on the entity type
       /// </summary>
       [Browsable(false)]
       public string DefaultOutputDirectory
@@ -85,7 +68,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Output directory for generated code. Takes overrides into account.
+      ///    Output directory for generated code. Takes overrides into account.
       /// </summary>
       [Browsable(false)]
       public string EffectiveOutputDirectory
@@ -97,37 +80,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Human readable text for displaying this object
-      /// </summary>
-      /// <returns></returns>
-      public string GetDisplayText() => Name;
-
-      /// <summary>
-      /// Name of the DbSet for this class unless overridden
-      /// </summary>
-      /// <param name="shouldPluralize">If true, the DbSet should be a plural form of the class name</param>
-      /// <returns></returns>
-      public string GetDefaultDbSetName(bool shouldPluralize)
-      {
-         return ModelRoot.PluralizationService?.IsSingular(Name) == true && shouldPluralize
-                                ? ModelRoot.PluralizationService.Pluralize(Name)
-                                : Name;
-      }
-
-      /// <summary>
-      /// Name of the table for this class unless overridden
-      /// </summary>
-      /// <param name="shouldPluralize">If true, the table should be a plural form of the class name</param>
-      /// <returns></returns>
-      public string GetDefaultTableName(bool shouldPluralize)
-      {
-         return ModelRoot.PluralizationService?.IsSingular(Name) == true && shouldPluralize
-                   ? ModelRoot.PluralizationService.Pluralize(Name)
-                   : Name;
-      }
-
-      /// <summary>
-      /// All custom interfaces in the class, including those inherited from base classes
+      ///    All custom interfaces in the class, including those inherited from base classes
       /// </summary>
       public IEnumerable<string> AllCustomInterfaces
       {
@@ -135,9 +88,10 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             List<string> interfaces = new List<string>();
             ModelClass modelClass = this;
+
             while (modelClass != null)
             {
-               interfaces.AddRange(modelClass.CustomInterfaces.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+               interfaces.AddRange(modelClass.CustomInterfaces.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries));
                modelClass = modelClass.Superclass;
             }
 
@@ -146,21 +100,23 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// All attributes in the class, including those inherited from base classes
+      ///    All attributes in the class, including those inherited from base classes
       /// </summary>
       public IEnumerable<ModelAttribute> AllAttributes
       {
          get
          {
             List<ModelAttribute> result = Attributes.ToList();
+
             if (Superclass != null)
                result.AddRange(Superclass.AllAttributes);
+
             return result;
          }
       }
 
       /// <summary>
-      /// Collection of all ModelClass classes making up the inheritance for this ModelClass
+      ///    Collection of all ModelClass classes making up the inheritance for this ModelClass
       /// </summary>
       public List<ModelClass> AllSuperclasses
       {
@@ -180,7 +136,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Collection of all ModelClass classes where this ModelClass is in its inheritance chain
+      ///    Collection of all ModelClass classes where this ModelClass is in its inheritance chain
       /// </summary>
       public List<ModelClass> AllSubclasses
       {
@@ -196,7 +152,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Names of all properties in the class, taking into account inheritance
+      ///    Names of all properties in the class, taking into account inheritance
       /// </summary>
       public IEnumerable<string> AllPropertyNames
       {
@@ -211,7 +167,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// All required attributes defined in this class
+      ///    All required attributes defined in this class
       /// </summary>
       public IEnumerable<ModelAttribute> RequiredAttributes
       {
@@ -222,7 +178,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// All required attributes in the inheritance chain
+      ///    All required attributes in the inheritance chain
       /// </summary>
       public IEnumerable<ModelAttribute> AllRequiredAttributes
       {
@@ -233,7 +189,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// All identity attributes defined in this class
+      ///    All identity attributes defined in this class
       /// </summary>
       public IEnumerable<ModelAttribute> IdentityAttributes
       {
@@ -244,7 +200,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// All identity attributes in the inheritance chain
+      ///    All identity attributes in the inheritance chain
       /// </summary>
       public IEnumerable<ModelAttribute> AllIdentityAttributes
       {
@@ -255,7 +211,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Names of identity attributes defined in this class
+      ///    Names of identity attributes defined in this class
       /// </summary>
       public IEnumerable<string> IdentityAttributeNames
       {
@@ -266,7 +222,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Names of all identity attributes in the inheritance chain
+      ///    Names of all identity attributes in the inheritance chain
       /// </summary>
       public IEnumerable<string> AllIdentityAttributeNames
       {
@@ -277,7 +233,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Class name with namespace
+      ///    Class name with namespace
       /// </summary>
       public string FullName
       {
@@ -292,71 +248,8 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      #region Warning display
-
-      // set as methods to avoid issues around serialization
-
-      private bool hasWarning;
-
       /// <summary>
-      /// Determines if this class has warnings being displayed.
-      /// </summary>
-      /// <returns>True if this class has warnings visible, false otherwise</returns>
-      public bool GetHasWarningValue() => hasWarning;
-
-      /// <summary>
-      /// Clears visible warnings.
-      /// </summary>
-      public void ResetWarning() => hasWarning = false;
-
-      /// <summary>
-      /// Redraws this class.
-      /// </summary>
-      public void RedrawItem()
-      {
-         this.Redraw();
-      }
-
-      /// <summary>
-      /// If true, diagram should show an interface lollipop on the class if it has a custom interface
-      /// </summary>
-      protected bool GetShouldShowInterfaceGlyphValue()
-      {
-         return ModelRoot.ShowInterfaceIndicators && !string.IsNullOrEmpty(CustomInterfaces);
-      }
-
-      /// <summary>
-      /// Gets the glyph type value for the diagram. This determines the visibilities of the class shape decorators
-      /// </summary>
-      /// <returns>The type of glyph that should be displayed</returns>
-      protected string GetGlyphTypeValue()
-      {
-         if (ModelRoot.ShowWarningsInDesigner && GetHasWarningValue())
-            return "WarningGlyph";
-
-         if (IsAssociationClass)
-            return "AssociationClassGlyph";
-
-         if (IsQueryType)
-            return "SQLGlyph";
-
-         if (!GenerateCode)
-            return "NoGenGlyph";
-
-         if (IsPropertyBag)
-            return "DictionaryGlyph";
-
-         // ReSharper disable once ConvertIfStatementToReturnStatement
-         if (IsAbstract)
-            return "AbstractEntityGlyph";
-
-         return "EntityGlyph";
-      }
-
-      #endregion
-
-      /// <summary>
-      /// Concurrency type, taking into account the model's default concurrency and any override defined in this class
+      ///    Concurrency type, taking into account the model's default concurrency and any override defined in this class
       /// </summary>
       public ConcurrencyOverride EffectiveConcurrency
       {
@@ -365,36 +258,14 @@ namespace Sawczyn.EFDesigner.EFModel
             if (Concurrency != ConcurrencyOverride.Default)
                return Concurrency;
 
-            return ModelRoot?.ConcurrencyDefault == EFModel.Concurrency.None ? ConcurrencyOverride.None : ConcurrencyOverride.Optimistic;
+            return ModelRoot?.ConcurrencyDefault == EFModel.Concurrency.None
+                      ? ConcurrencyOverride.None
+                      : ConcurrencyOverride.Optimistic;
          }
       }
 
       /// <summary>
-      ///    Calls the pre-reset method on the associated property value handler for each
-      ///    tracking property of this model element.
-      /// </summary>
-      public virtual void PreResetIsTrackingProperties()
-      {
-         IsDatabaseSchemaTrackingPropertyHandler.Instance.PreResetValue(this);
-         IsNamespaceTrackingPropertyHandler.Instance.PreResetValue(this);
-         IsOutputDirectoryTrackingPropertyHandler.Instance.PreResetValue(this);
-         // same with other tracking properties as they get added
-      }
-
-      /// <summary>
-      ///    Calls the reset method on the associated property value handler for each
-      ///    tracking property of this model element.
-      /// </summary>
-      internal virtual void ResetIsTrackingProperties()
-      {
-         IsDatabaseSchemaTrackingPropertyHandler.Instance.ResetValue(this);
-         IsNamespaceTrackingPropertyHandler.Instance.ResetValue(this);
-         IsOutputDirectoryTrackingPropertyHandler.Instance.ResetValue(this);
-         // same with other tracking properties as they get added
-      }
-
-      /// <summary>
-      /// All navigation properties including those in superclasses
+      ///    All navigation properties including those in superclasses
       /// </summary>
       /// <param name="except">Associations to remove from the result</param>
       /// <returns>All navigation properties including those in superclasses, except those listed in the parameter</returns>
@@ -409,115 +280,13 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// All navigation properties defined in this class
-      /// </summary>
-      /// <param name="except">Associations to remove from the result</param>
-      /// <returns>All navigation properties defined in this class, except those listed in the parameter</returns>
-      public IEnumerable<NavigationProperty> LocalNavigationProperties(params Association[] except)
-      {
-         List<NavigationProperty> sourceProperties = Association.GetLinksToTargets(this)
-                                                                .Except(except)
-                                                                .Select(NavigationProperty.LinkToTarget)
-                                                                .ToList();
-
-         List<NavigationProperty> targetProperties = Association.GetLinksToSources(this)
-                                                                .Except(except)
-                                                                .OfType<BidirectionalAssociation>()
-                                                                .Select(NavigationProperty.LinkToSource)
-                                                                .ToList();
-
-         targetProperties.AddRange(Association.GetLinksToSources(this)
-                                              .Except(except)
-                                              .OfType<UnidirectionalAssociation>()
-                                              .Select(NavigationProperty.LinkToSource));
-         int suffix = 0;
-         foreach (NavigationProperty navigationProperty in targetProperties.Where(x => x.PropertyName == null))
-         {
-            navigationProperty.PropertyName = $"_{navigationProperty.ClassType.Name.ToLower()}{suffix++}";
-            navigationProperty.ConstructorParameterOnly = true;
-         }
-
-         return sourceProperties.Concat(targetProperties);
-      }
-
-      /// <summary>
-      /// required navigation (1.. cardinality) properties in this class
+      ///    All the required navigation (1.. cardinality) properties in both this and base classes.
       /// </summary>
       /// <param name="except">Associations to remove from the result.</param>
       /// <returns>All required associations found, except for those in the [except] parameter</returns>
-      public IEnumerable<NavigationProperty> RequiredNavigationProperties(params Association[] except) => LocalNavigationProperties(except).Where(x => x.Required).ToList();
-
-      /// <summary>
-      /// All the required navigation (1.. cardinality) properties in both this and base classes.
-      /// </summary>
-      /// <param name="except">Associations to remove from the result.</param>
-      /// <returns>All required associations found, except for those in the [except] parameter</returns>
-      public IEnumerable<NavigationProperty> AllRequiredNavigationProperties(params Association[] except) => AllNavigationProperties(except).Where(x => x.Required).ToList();
-
-      /// <summary>
-      /// Finds the association named by the value specified in the parameter
-      /// </summary>
-      /// <param name="identifier">Association property name to find.</param>
-      /// <returns>The object representing the association, if found</returns>
-      public NavigationProperty FindAssociationNamed(string identifier) => AllNavigationProperties().FirstOrDefault(x => x.PropertyName == identifier);
-
-      /// <summary>
-      /// Finds the attribute named by the value specified in the parameter 
-      /// </summary>
-      /// <param name="identifier">Attribute name to find.</param>
-      /// <returns>The object representing the attribute, if found</returns>
-      public ModelAttribute FindAttributeNamed(string identifier) => AllAttributes.FirstOrDefault(x => x.Name == identifier);
-
-      /// <summary>
-      /// Determines whether the generated code will have an association property with the name specified in the parameter
-      /// </summary>
-      /// <param name="identifier">Property name to find.</param>
-      /// <returns>
-      ///   <c>true</c> if the class will have this property; otherwise, <c>false</c>.
-      /// </returns>
-      public bool HasAssociationNamed(string identifier) => FindAssociationNamed(identifier) != null;
-
-      /// <summary>
-      /// Determines whether the generated code will have a scalar property with the name specified in the parameter
-      /// </summary>
-      /// <param name="identifier">Property name to find.</param>
-      /// <returns>
-      ///   <c>true</c> if the class will have this property; otherwise, <c>false</c>.
-      /// </returns>
-      public bool HasAttributeNamed(string identifier) => FindAttributeNamed(identifier) != null;
-
-      /// <summary>
-      /// Determines whether the generated code will have any property with the name specified in the parameter
-      /// </summary>
-      /// <param name="identifier">Property name to find.</param>
-      /// <returns>
-      ///   <c>true</c> if the class will have this property; otherwise, <c>false</c>.
-      /// </returns>
-      public bool HasPropertyNamed(string identifier) => HasAssociationNamed(identifier) || HasAttributeNamed(identifier);
-
-      /// <summary>
-      /// Gets the name of the superclass, if any.
-      /// </summary>
-      /// <returns></returns>
-      private string GetBaseClassValue() => Superclass?.Name;
-
-      internal bool IsKeylessType() => IsQueryType || IsDatabaseView;
-
-      /// <summary>
-      /// Sets the superclass to the class with the supplied name, if it exists. Sets to null if can't be found.
-      /// </summary>
-      /// <param name="newValue">Simple name (not FQN) of class to use as superclass.</param>
-      private void SetBaseClassValue(string newValue)
+      public IEnumerable<NavigationProperty> AllRequiredNavigationProperties(params Association[] except)
       {
-         ModelClass baseClass = Store.ElementDirectory.FindElements<ModelClass>().FirstOrDefault(x => x.Name == newValue);
-         Superclass?.Subclasses?.Remove(this);
-         baseClass?.Subclasses?.Add(this);
-      }
-
-      internal void MoveAttribute(ModelAttribute attribute, ModelClass destination)
-      {
-         MergeDisconnect(attribute);
-         destination.MergeRelate(attribute, null);
+         return AllNavigationProperties(except).Where(x => x.Required).ToList();
       }
 
       internal bool CanBecomeAssociationClass()
@@ -531,7 +300,7 @@ namespace Sawczyn.EFDesigner.EFModel
              && !IsDependentType
              && !IsPropertyBag
              && !IsQueryType
-             && Superclass == null
+             && (Superclass == null)
              && !Subclasses.Any()
              && string.IsNullOrEmpty(ViewName);
       }
@@ -547,44 +316,38 @@ namespace Sawczyn.EFDesigner.EFModel
 
             // ReSharper disable once UnusedVariable
             BidirectionalAssociation element1 =
-               new BidirectionalAssociation(Store
-                                          , new[]
+               new BidirectionalAssociation(Store,
+                                            new[] {new RoleAssignment(Association.SourceDomainRoleId, bidirectionalAssociation.Source), new RoleAssignment(Association.TargetDomainRoleId, this)},
+                                            new[]
                                             {
-                                               new RoleAssignment(Association.SourceDomainRoleId, bidirectionalAssociation.Source)
-                                             , new RoleAssignment(Association.TargetDomainRoleId, this)
-                                            }
-                                          , new[]
-                                            {
-                                             //  new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, $"{bidirectionalAssociation.TargetPropertyName}_{Name}")
-                                             //, new PropertyAssignment(BidirectionalAssociation.SourcePropertyNameDomainPropertyId, $"{bidirectionalAssociation.SourcePropertyName}")
-                                              new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, $"Association object for {bidirectionalAssociation.TargetPropertyName}")
-                                             , new PropertyAssignment(BidirectionalAssociation.SourceDisplayTextDomainPropertyId, $"Association object for {bidirectionalAssociation.SourcePropertyName}")
-                                             , new PropertyAssignment(Association.TargetSummaryDomainPropertyId, $"Association class for {bidirectionalAssociation.TargetPropertyName}")
-                                             , new PropertyAssignment(BidirectionalAssociation.SourceSummaryDomainPropertyId, $"Association class for {bidirectionalAssociation.SourcePropertyName}")
-                                             , new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, Multiplicity.One)
-                                             , new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, Multiplicity.ZeroMany)
-                                             , new PropertyAssignment(Association.FKPropertyNameDomainPropertyId, $"{bidirectionalAssociation.SourcePropertyName}Id")
+                                               //  new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, $"{bidirectionalAssociation.TargetPropertyName}_{Name}")
+                                               //, new PropertyAssignment(BidirectionalAssociation.SourcePropertyNameDomainPropertyId, $"{bidirectionalAssociation.SourcePropertyName}")
+                                               new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, $"Association object for {bidirectionalAssociation.TargetPropertyName}"),
+                                               new PropertyAssignment(BidirectionalAssociation.SourceDisplayTextDomainPropertyId,
+                                                                      $"Association object for {bidirectionalAssociation.SourcePropertyName}"),
+                                               new PropertyAssignment(Association.TargetSummaryDomainPropertyId, $"Association class for {bidirectionalAssociation.TargetPropertyName}"),
+                                               new PropertyAssignment(BidirectionalAssociation.SourceSummaryDomainPropertyId, $"Association class for {bidirectionalAssociation.SourcePropertyName}"),
+                                               new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, Multiplicity.One),
+                                               new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, Multiplicity.ZeroMany),
+                                               new PropertyAssignment(Association.FKPropertyNameDomainPropertyId, $"{bidirectionalAssociation.SourcePropertyName}Id")
                                             });
 
             // ReSharper disable once UnusedVariable
             BidirectionalAssociation element2 =
-               new BidirectionalAssociation(Store
-                                          , new[]
+               new BidirectionalAssociation(Store,
+                                            new[] {new RoleAssignment(Association.SourceDomainRoleId, bidirectionalAssociation.Target), new RoleAssignment(Association.TargetDomainRoleId, this)},
+                                            new[]
                                             {
-                                               new RoleAssignment(Association.SourceDomainRoleId, bidirectionalAssociation.Target)
-                                             , new RoleAssignment(Association.TargetDomainRoleId, this)
-                                            }
-                                          , new[]
-                                            {
-                                             //  new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, $"{bidirectionalAssociation.SourcePropertyName}_{Name}")
-                                             //, new PropertyAssignment(BidirectionalAssociation.SourcePropertyNameDomainPropertyId, $"{bidirectionalAssociation.TargetPropertyName}")
-                                              new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, $"Association object for {bidirectionalAssociation.SourcePropertyName}")
-                                             , new PropertyAssignment(BidirectionalAssociation.SourceDisplayTextDomainPropertyId, $"Association object for {bidirectionalAssociation.TargetPropertyName}")
-                                             , new PropertyAssignment(Association.TargetSummaryDomainPropertyId, $"Association class for {bidirectionalAssociation.SourcePropertyName}")
-                                             , new PropertyAssignment(BidirectionalAssociation.SourceSummaryDomainPropertyId, $"Association class for {bidirectionalAssociation.TargetPropertyName}")
-                                             , new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, Multiplicity.One)
-                                             , new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, Multiplicity.ZeroMany)
-                                             , new PropertyAssignment(Association.FKPropertyNameDomainPropertyId, $"{bidirectionalAssociation.TargetPropertyName}Id")
+                                               //  new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, $"{bidirectionalAssociation.SourcePropertyName}_{Name}")
+                                               //, new PropertyAssignment(BidirectionalAssociation.SourcePropertyNameDomainPropertyId, $"{bidirectionalAssociation.TargetPropertyName}")
+                                               new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, $"Association object for {bidirectionalAssociation.SourcePropertyName}"),
+                                               new PropertyAssignment(BidirectionalAssociation.SourceDisplayTextDomainPropertyId,
+                                                                      $"Association object for {bidirectionalAssociation.TargetPropertyName}"),
+                                               new PropertyAssignment(Association.TargetSummaryDomainPropertyId, $"Association class for {bidirectionalAssociation.SourcePropertyName}"),
+                                               new PropertyAssignment(BidirectionalAssociation.SourceSummaryDomainPropertyId, $"Association class for {bidirectionalAssociation.TargetPropertyName}"),
+                                               new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, Multiplicity.One),
+                                               new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, Multiplicity.ZeroMany),
+                                               new PropertyAssignment(Association.FKPropertyNameDomainPropertyId, $"{bidirectionalAssociation.TargetPropertyName}Id")
                                             });
 
             // set some properties in the association class
@@ -623,14 +386,301 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      #region Validations
+      /// <summary>
+      ///    Finds the association named by the value specified in the parameter
+      /// </summary>
+      /// <param name="identifier">Association property name to find.</param>
+      /// <returns>The object representing the association, if found</returns>
+      public NavigationProperty FindAssociationNamed(string identifier)
+      {
+         return AllNavigationProperties().FirstOrDefault(x => x.PropertyName == identifier);
+      }
+
+      /// <summary>
+      ///    Finds the attribute named by the value specified in the parameter
+      /// </summary>
+      /// <param name="identifier">Attribute name to find.</param>
+      /// <returns>The object representing the attribute, if found</returns>
+      public ModelAttribute FindAttributeNamed(string identifier)
+      {
+         return AllAttributes.FirstOrDefault(x => x.Name == identifier);
+      }
+
+      /// <summary>
+      ///    Gets the name of the superclass, if any.
+      /// </summary>
+      /// <returns></returns>
+      private string GetBaseClassValue()
+      {
+         return Superclass?.Name;
+      }
+
+      /// <summary>
+      ///    Name of the DbSet for this class unless overridden
+      /// </summary>
+      /// <param name="shouldPluralize">If true, the DbSet should be a plural form of the class name</param>
+      /// <returns></returns>
+      public string GetDefaultDbSetName(bool shouldPluralize)
+      {
+         return (ModelRoot.PluralizationService?.IsSingular(Name) == true) && shouldPluralize
+                   ? ModelRoot.PluralizationService.Pluralize(Name)
+                   : Name;
+      }
+
+      /// <summary>
+      ///    Name of the table for this class unless overridden
+      /// </summary>
+      /// <param name="shouldPluralize">If true, the table should be a plural form of the class name</param>
+      /// <returns></returns>
+      public string GetDefaultTableName(bool shouldPluralize)
+      {
+         return (ModelRoot.PluralizationService?.IsSingular(Name) == true) && shouldPluralize
+                   ? ModelRoot.PluralizationService.Pluralize(Name)
+                   : Name;
+      }
+
+      /// <summary>
+      ///    Human readable text for displaying this object
+      /// </summary>
+      /// <returns></returns>
+      public string GetDisplayText()
+      {
+         return Name;
+      }
+
+      /// <summary>
+      ///    Determines whether the generated code will have an association property with the name specified in the parameter
+      /// </summary>
+      /// <param name="identifier">Property name to find.</param>
+      /// <returns>
+      ///    <c>true</c> if the class will have this property; otherwise, <c>false</c>.
+      /// </returns>
+      public bool HasAssociationNamed(string identifier)
+      {
+         return FindAssociationNamed(identifier) != null;
+      }
+
+      /// <summary>
+      ///    Determines whether the generated code will have a scalar property with the name specified in the parameter
+      /// </summary>
+      /// <param name="identifier">Property name to find.</param>
+      /// <returns>
+      ///    <c>true</c> if the class will have this property; otherwise, <c>false</c>.
+      /// </returns>
+      public bool HasAttributeNamed(string identifier)
+      {
+         return FindAttributeNamed(identifier) != null;
+      }
+
+      /// <summary>
+      ///    Determines whether the generated code will have any property with the name specified in the parameter
+      /// </summary>
+      /// <param name="identifier">Property name to find.</param>
+      /// <returns>
+      ///    <c>true</c> if the class will have this property; otherwise, <c>false</c>.
+      /// </returns>
+      public bool HasPropertyNamed(string identifier)
+      {
+         return HasAssociationNamed(identifier) || HasAttributeNamed(identifier);
+      }
+
+      /// <summary>
+      ///    True if this is a dependent (aggregated) entity type, false otherwise
+      /// </summary>
+      [Browsable(false)]
+      public bool IsDependent()
+      {
+         return IsDependentType;
+      }
+
+      /// <summary>
+      ///    True if this is a normal entity type (not aggregated and not keyless), false otherwise
+      /// </summary>
+      [Browsable(false)]
+      public bool IsEntity()
+      {
+         return !IsDependentType && !IsKeylessType();
+      }
+
+      /// <summary>
+      ///    True if this is a keyless entity type (backed by a query or a view), false otherwise
+      /// </summary>
+      [Browsable(false)]
+      public bool IsKeyless()
+      {
+         return IsKeylessType();
+      }
+
+      internal bool IsKeylessType()
+      {
+         return IsQueryType || IsDatabaseView;
+      }
+
+      /// <summary>
+      ///    All navigation properties defined in this class
+      /// </summary>
+      /// <param name="except">Associations to remove from the result</param>
+      /// <returns>All navigation properties defined in this class, except those listed in the parameter</returns>
+      public IEnumerable<NavigationProperty> LocalNavigationProperties(params Association[] except)
+      {
+         List<NavigationProperty> sourceProperties = Association.GetLinksToTargets(this)
+                                                                .Except(except)
+                                                                .Select(NavigationProperty.LinkToTarget)
+                                                                .ToList();
+
+         List<NavigationProperty> targetProperties = Association.GetLinksToSources(this)
+                                                                .Except(except)
+                                                                .OfType<BidirectionalAssociation>()
+                                                                .Select(NavigationProperty.LinkToSource)
+                                                                .ToList();
+
+         targetProperties.AddRange(Association.GetLinksToSources(this)
+                                              .Except(except)
+                                              .OfType<UnidirectionalAssociation>()
+                                              .Select(NavigationProperty.LinkToSource));
+
+         int suffix = 0;
+
+         foreach (NavigationProperty navigationProperty in targetProperties.Where(x => x.PropertyName == null))
+         {
+            navigationProperty.PropertyName = $"_{navigationProperty.ClassType.Name.ToLower()}{suffix++}";
+            navigationProperty.ConstructorParameterOnly = true;
+         }
+
+         return sourceProperties.Concat(targetProperties);
+      }
+
+      internal void MoveAttribute(ModelAttribute attribute, ModelClass destination)
+      {
+         MergeDisconnect(attribute);
+         destination.MergeRelate(attribute, null);
+      }
+
+      /// <summary>
+      ///    Calls the pre-reset method on the associated property value handler for each
+      ///    tracking property of this model element.
+      /// </summary>
+      public virtual void PreResetIsTrackingProperties()
+      {
+         IsDatabaseSchemaTrackingPropertyHandler.Instance.PreResetValue(this);
+         IsNamespaceTrackingPropertyHandler.Instance.PreResetValue(this);
+         IsOutputDirectoryTrackingPropertyHandler.Instance.PreResetValue(this);
+
+         // same with other tracking properties as they get added
+      }
+
+      /// <summary>
+      ///    required navigation (1.. cardinality) properties in this class
+      /// </summary>
+      /// <param name="except">Associations to remove from the result.</param>
+      /// <returns>All required associations found, except for those in the [except] parameter</returns>
+      public IEnumerable<NavigationProperty> RequiredNavigationProperties(params Association[] except)
+      {
+         return LocalNavigationProperties(except).Where(x => x.Required).ToList();
+      }
+
+      /// <summary>
+      ///    Calls the reset method on the associated property value handler for each
+      ///    tracking property of this model element.
+      /// </summary>
+      internal virtual void ResetIsTrackingProperties()
+      {
+         IsDatabaseSchemaTrackingPropertyHandler.Instance.ResetValue(this);
+         IsNamespaceTrackingPropertyHandler.Instance.ResetValue(this);
+         IsOutputDirectoryTrackingPropertyHandler.Instance.ResetValue(this);
+
+         // same with other tracking properties as they get added
+      }
+
+      /// <summary>
+      ///    Sets the superclass to the class with the supplied name, if it exists. Sets to null if can't be found.
+      /// </summary>
+      /// <param name="newValue">Simple name (not FQN) of class to use as superclass.</param>
+      private void SetBaseClassValue(string newValue)
+      {
+         ModelClass baseClass = Store.ElementDirectory.FindElements<ModelClass>().FirstOrDefault(x => x.Name == newValue);
+         Superclass?.Subclasses?.Remove(this);
+         baseClass?.Subclasses?.Add(this);
+      }
+
+#region Warning display
+
+      // set as methods to avoid issues around serialization
+
+      private bool hasWarning;
+
+      /// <summary>
+      ///    Determines if this class has warnings being displayed.
+      /// </summary>
+      /// <returns>True if this class has warnings visible, false otherwise</returns>
+      public bool GetHasWarningValue()
+      {
+         return hasWarning;
+      }
+
+      /// <summary>
+      ///    Clears visible warnings.
+      /// </summary>
+      public void ResetWarning()
+      {
+         hasWarning = false;
+      }
+
+      /// <summary>
+      ///    Redraws this class.
+      /// </summary>
+      public void RedrawItem()
+      {
+         this.Redraw();
+      }
+
+      /// <summary>
+      ///    If true, diagram should show an interface lollipop on the class if it has a custom interface
+      /// </summary>
+      protected bool GetShouldShowInterfaceGlyphValue()
+      {
+         return ModelRoot.ShowInterfaceIndicators && !string.IsNullOrEmpty(CustomInterfaces);
+      }
+
+      /// <summary>
+      ///    Gets the glyph type value for the diagram. This determines the visibilities of the class shape decorators
+      /// </summary>
+      /// <returns>The type of glyph that should be displayed</returns>
+      protected string GetGlyphTypeValue()
+      {
+         if (ModelRoot.ShowWarningsInDesigner && GetHasWarningValue())
+            return "WarningGlyph";
+
+         if (IsAssociationClass)
+            return "AssociationClassGlyph";
+
+         if (IsQueryType)
+            return "SQLGlyph";
+
+         if (!GenerateCode)
+            return "NoGenGlyph";
+
+         if (IsPropertyBag)
+            return "DictionaryGlyph";
+
+         // ReSharper disable once ConvertIfStatementToReturnStatement
+         if (IsAbstract)
+            return "AbstractEntityGlyph";
+
+         return "EntityGlyph";
+      }
+
+#endregion
+
+#region Validations
 
       [ValidationMethod(ValidationCategories.Open | ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void ClassShouldHaveAttributes(ValidationContext context)
       {
-         if (ModelRoot == null) return;
+         if (ModelRoot == null)
+            return;
 
          if (!Attributes.Any() && !LocalNavigationProperties().Any())
          {
@@ -640,42 +690,49 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      [ValidationMethod(/*ValidationCategories.Open | */ValidationCategories.Menu)]
+      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Menu)]
       [UsedImplicitly]
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void OwnedTypeCannotHaveABaseClass(ValidationContext context)
       {
-         if (ModelRoot == null) return;
-         if (IsDependentType && Superclass != null)
+         if (ModelRoot == null)
+            return;
+
+         if (IsDependentType && (Superclass != null))
             context.LogError($"Can't make {Name} a dependent class since it has a base class", "MCEOwnedHasBaseClass", this);
       }
 
-      [ValidationMethod(/*ValidationCategories.Open | */ValidationCategories.Menu)]
+      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Menu)]
       [UsedImplicitly]
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void OwnedTypeCannotHaveASubclass(ValidationContext context)
       {
-         if (ModelRoot == null) return;
+         if (ModelRoot == null)
+            return;
+
          if (IsDependentType && Subclasses.Any())
             context.LogError($"Can't make {Name} a dependent class since it has subclass(es) {string.Join(", ", Subclasses.Select(s => s.Name))}", "MCEOwnedHasSubclass", this);
       }
 
-      [ValidationMethod(/*ValidationCategories.Open | */ValidationCategories.Menu)]
+      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Menu)]
       [UsedImplicitly]
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void OwnedTypeCannotBeAbstract(ValidationContext context)
       {
-         if (ModelRoot == null) return;
+         if (ModelRoot == null)
+            return;
+
          if (IsDependentType && IsAbstract)
             context.LogError($"Can't make {Name} a dependent class since it's abstract", "MCEOwnedIsAbstract", this);
       }
 
-      [ValidationMethod(/*ValidationCategories.Open | */ValidationCategories.Menu)]
+      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Menu)]
       [UsedImplicitly]
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void OwnedTypeCannotBePrincipal(ValidationContext context)
       {
-         if (ModelRoot == null) return;
+         if (ModelRoot == null)
+            return;
 
          List<Association> principalAssociations = ModelRoot.Store.GetAll<Association>().Where(a => a.Principal == this).ToList();
 
@@ -686,34 +743,37 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      [ValidationMethod(/*ValidationCategories.Open | */ValidationCategories.Menu)]
+      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Menu)]
       [UsedImplicitly]
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void OwnedTypeCannotBeInBidirectionalAssociation(ValidationContext context)
       {
-         if (ModelRoot == null) return;
+         if (ModelRoot == null)
+            return;
 
-         if (IsDependentType && !ModelRoot.IsEFCore5Plus && ModelRoot.Store.GetAll<BidirectionalAssociation>().Any(a => a.Source == this || a.Target == this))
+         if (IsDependentType && !ModelRoot.IsEFCore5Plus && ModelRoot.Store.GetAll<BidirectionalAssociation>().Any(a => (a.Source == this) || (a.Target == this)))
             context.LogError($"Can't make {Name} a dependent class since it's part of a bidirectional association", "MCEOwnedInBidirectional", this);
       }
 
-      [ValidationMethod(/*ValidationCategories.Open | */ValidationCategories.Save | ValidationCategories.Menu)]
+      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void AttributesCannotBeNamedSameAsEnclosingClass(ValidationContext context)
       {
-         if (ModelRoot == null) return;
+         if (ModelRoot == null)
+            return;
 
          if (HasPropertyNamed(Name))
             context.LogError($"{Name}: Properties can't be named the same as the enclosing class", "MCESameName", this);
       }
 
-      [ValidationMethod(/*ValidationCategories.Open | */ValidationCategories.Save | ValidationCategories.Menu)]
+      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void PersistentClassesMustHaveIdentity(ValidationContext context)
       {
-         if (ModelRoot == null) return;
+         if (ModelRoot == null)
+            return;
 
          if (!IsDependentType && !IsDatabaseView && !IsQueryType && !AllIdentityAttributes.Any())
             context.LogError($"{Name}: Class has no identity property in inheritance chain", "MCENoIdentity", this);
@@ -721,14 +781,16 @@ namespace Sawczyn.EFDesigner.EFModel
 
       [ValidationMethod(ValidationCategories.Open | ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void DerivedClassesShouldNotHaveIdentity(ValidationContext context)
       {
-         if (ModelRoot == null) return;
+         if (ModelRoot == null)
+            return;
 
          if (Attributes.Any(x => x.IsIdentity))
          {
             ModelClass modelClass = Superclass;
+
             while (modelClass != null)
             {
                if (modelClass.Attributes.Any(x => x.IsIdentity))
@@ -736,6 +798,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   context.LogWarning($"{modelClass.Name}: Identity attribute(s) in derived class {Name} become a composite key", "MCWDerivedIdentity", this);
                   hasWarning = true;
                   RedrawItem();
+
                   return;
                }
 
@@ -746,13 +809,15 @@ namespace Sawczyn.EFDesigner.EFModel
 
       [ValidationMethod(ValidationCategories.Open | ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void SummaryDescriptionIsEmpty(ValidationContext context)
       {
-         if (ModelRoot == null) return;
+         if (ModelRoot == null)
+            return;
 
          ModelRoot modelRoot = Store.ElementDirectory.FindElements<ModelRoot>().FirstOrDefault();
-         if (modelRoot?.WarnOnMissingDocumentation == true && string.IsNullOrWhiteSpace(Summary))
+
+         if ((modelRoot?.WarnOnMissingDocumentation == true) && string.IsNullOrWhiteSpace(Summary))
          {
             context.LogWarning($"Class {Name} should be documented", "AWMissingSummary", this);
             hasWarning = true;
@@ -760,9 +825,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      #endregion Validations
+#endregion Validations
 
-      #region DatabaseSchema tracking property
+#region DatabaseSchema tracking property
 
       private string databaseSchemaStorage;
 
@@ -809,11 +874,27 @@ namespace Sawczyn.EFDesigner.EFModel
          protected override void OnValueChanged(ModelClass element, bool oldValue, bool newValue)
          {
             base.OnValueChanged(element, oldValue, newValue);
+
             if (!element.Store.InUndoRedoOrRollback && newValue)
             {
                DomainPropertyInfo propInfo = element.Store.DomainDataDirectory.GetDomainProperty(DatabaseSchemaDomainPropertyId);
                propInfo.NotifyValueChange(element);
             }
+         }
+
+         /// <summary>
+         ///    Method to set IsDatabaseSchemaTracking to false so that this instance of this tracking property is not
+         ///    storage-based.
+         /// </summary>
+         /// <param name="element">
+         ///    The element on which to reset the property
+         ///    value.
+         /// </param>
+         internal void PreResetValue(ModelClass element)
+         {
+            // of the DatabaseSchema property is retrieved from storage.  
+            // Force the IsDatabaseSchemaTracking property to false so that the value  
+            element.isDatabaseSchemaTrackingPropertyStorage = false;
          }
 
          /// <summary>Performs the reset operation for the IsDatabaseSchemaTracking property for a model element.</summary>
@@ -834,27 +915,14 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if (calculatedValue != null && element.DatabaseSchema == (string)calculatedValue)
+            if ((calculatedValue != null) && (element.DatabaseSchema == (string)calculatedValue))
                element.isDatabaseSchemaTrackingPropertyStorage = true;
          }
-
-         /// <summary>
-         ///    Method to set IsDatabaseSchemaTracking to false so that this instance of this tracking property is not
-         ///    storage-based.
-         /// </summary>
-         /// <param name="element">
-         ///    The element on which to reset the property
-         ///    value.
-         /// </param>
-         internal void PreResetValue(ModelClass element) =>
-            // Force the IsDatabaseSchemaTracking property to false so that the value  
-            // of the DatabaseSchema property is retrieved from storage.  
-            element.isDatabaseSchemaTrackingPropertyStorage = false;
       }
 
-      #endregion DatabaseSchema tracking property
+#endregion DatabaseSchema tracking property
 
-      #region DefaultConstructorVisibility tracking property
+#region DefaultConstructorVisibility tracking property
 
       private TypeAccessModifierExt defaultConstructorVisibilityStorage;
 
@@ -901,11 +969,26 @@ namespace Sawczyn.EFDesigner.EFModel
          protected override void OnValueChanged(ModelClass element, bool oldValue, bool newValue)
          {
             base.OnValueChanged(element, oldValue, newValue);
+
             if (!element.Store.InUndoRedoOrRollback && newValue)
             {
                DomainPropertyInfo propInfo = element.Store.DomainDataDirectory.GetDomainProperty(DefaultConstructorVisibilityDomainPropertyId);
                propInfo.NotifyValueChange(element);
             }
+         }
+
+         /// <summary>
+         ///    Method to set IsDefaultConstructorVisibilityTracking to false so that this instance of this tracking property is not
+         ///    storage-based.
+         /// </summary>
+         /// <param name="element">
+         ///    The element on which to reset the property value.
+         /// </param>
+         internal void PreResetValue(ModelClass element)
+         {
+            // of the DefaultConstructorVisibility property is retrieved from storage.  
+            // Force the IsDefaultConstructorVisibilityTracking property to false so that the value  
+            element.isDefaultConstructorVisibilityTrackingPropertyStorage = false;
          }
 
          /// <summary>Performs the reset operation for the IsDefaultConstructorVisibilityTracking property for a model element.</summary>
@@ -926,26 +1009,14 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if (calculatedValue != null && element.DefaultConstructorVisibility == (TypeAccessModifierExt)calculatedValue)
+            if ((calculatedValue != null) && (element.DefaultConstructorVisibility == (TypeAccessModifierExt)calculatedValue))
                element.isDefaultConstructorVisibilityTrackingPropertyStorage = true;
          }
-
-         /// <summary>
-         ///    Method to set IsDefaultConstructorVisibilityTracking to false so that this instance of this tracking property is not
-         ///    storage-based.
-         /// </summary>
-         /// <param name="element">
-         ///    The element on which to reset the property value.
-         /// </param>
-         internal void PreResetValue(ModelClass element) =>
-            // Force the IsDefaultConstructorVisibilityTracking property to false so that the value  
-            // of the DefaultConstructorVisibility property is retrieved from storage.  
-            element.isDefaultConstructorVisibilityTrackingPropertyStorage = false;
       }
 
-      #endregion
+#endregion
 
-      #region Namespace tracking property
+#region Namespace tracking property
 
       private string namespaceStorage;
 
@@ -975,7 +1046,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void SetNamespaceValue(string value)
       {
-         namespaceStorage = string.IsNullOrWhiteSpace(value) || value == DefaultNamespace ? null : value;
+         namespaceStorage = string.IsNullOrWhiteSpace(value) || (value == DefaultNamespace)
+                               ? null
+                               : value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
             IsNamespaceTracking = namespaceStorage == null;
@@ -992,18 +1065,12 @@ namespace Sawczyn.EFDesigner.EFModel
          protected override void OnValueChanged(ModelClass element, bool oldValue, bool newValue)
          {
             base.OnValueChanged(element, oldValue, newValue);
+
             if (!element.Store.InUndoRedoOrRollback && newValue)
             {
                DomainPropertyInfo propInfo = element.Store.DomainDataDirectory.GetDomainProperty(NamespaceDomainPropertyId);
                propInfo.NotifyValueChange(element);
             }
-         }
-
-         /// <summary>Performs the reset operation for the IsNamespaceTracking property for a model element.</summary>
-         /// <param name="element">The model element that has the property to reset.</param>
-         internal void ResetValue(ModelClass element)
-         {
-            element.isNamespaceTrackingPropertyStorage = string.IsNullOrWhiteSpace(element.namespaceStorage);
          }
 
          /// <summary>
@@ -1014,15 +1081,24 @@ namespace Sawczyn.EFDesigner.EFModel
          ///    The element on which to reset the property
          ///    value.
          /// </param>
-         internal void PreResetValue(ModelClass element) =>
-            // Force the IsNamespaceTracking property to false so that the value  
+         internal void PreResetValue(ModelClass element)
+         {
             // of the Namespace property is retrieved from storage.  
+            // Force the IsNamespaceTracking property to false so that the value  
             element.isNamespaceTrackingPropertyStorage = false;
+         }
+
+         /// <summary>Performs the reset operation for the IsNamespaceTracking property for a model element.</summary>
+         /// <param name="element">The model element that has the property to reset.</param>
+         internal void ResetValue(ModelClass element)
+         {
+            element.isNamespaceTrackingPropertyStorage = string.IsNullOrWhiteSpace(element.namespaceStorage);
+         }
       }
 
-      #endregion Namespace tracking property
+#endregion Namespace tracking property
 
-      #region OutputDirectory tracking property
+#region OutputDirectory tracking property
 
       private string outputDirectoryStorage;
 
@@ -1052,10 +1128,12 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void SetOutputDirectoryValue(string value)
       {
-         outputDirectoryStorage = string.IsNullOrWhiteSpace(value) || value == DefaultOutputDirectory ? null : value;
+         outputDirectoryStorage = string.IsNullOrWhiteSpace(value) || (value == DefaultOutputDirectory)
+                                     ? null
+                                     : value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
-            IsOutputDirectoryTracking = (outputDirectoryStorage == null);
+            IsOutputDirectoryTracking = outputDirectoryStorage == null;
       }
 
       internal sealed partial class IsOutputDirectoryTrackingPropertyHandler
@@ -1069,11 +1147,26 @@ namespace Sawczyn.EFDesigner.EFModel
          protected override void OnValueChanged(ModelClass element, bool oldValue, bool newValue)
          {
             base.OnValueChanged(element, oldValue, newValue);
+
             if (!element.Store.InUndoRedoOrRollback && newValue)
             {
                DomainPropertyInfo propInfo = element.Store.DomainDataDirectory.GetDomainProperty(OutputDirectoryDomainPropertyId);
                propInfo.NotifyValueChange(element);
             }
+         }
+
+         /// <summary>
+         ///    Method to set IsOutputDirectoryTracking to false so that this instance of this tracking property is not
+         ///    storage-based.
+         /// </summary>
+         /// <param name="element">
+         ///    The element on which to reset the property value.
+         /// </param>
+         internal void PreResetValue(ModelClass element)
+         {
+            // of the OutputDirectory property is retrieved from storage.  
+            // Force the IsOutputDirectoryTracking property to false so that the value  
+            element.isOutputDirectoryTrackingPropertyStorage = false;
          }
 
          /// <summary>Performs the reset operation for the IsOutputDirectoryTracking property for a model element.</summary>
@@ -1085,7 +1178,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
             try
             {
-               calculatedValue = element.IsDependentType ? modelRoot?.StructOutputDirectory : element.ModelRoot?.EntityOutputDirectory;
+               calculatedValue = element.IsDependentType
+                                    ? modelRoot?.StructOutputDirectory
+                                    : element.ModelRoot?.EntityOutputDirectory;
             }
             catch (NullReferenceException) { }
             catch (Exception e)
@@ -1094,29 +1189,17 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if (calculatedValue != null && element.OutputDirectory == (string)calculatedValue)
+            if ((calculatedValue != null) && (element.OutputDirectory == (string)calculatedValue))
                element.isOutputDirectoryTrackingPropertyStorage = true;
          }
-
-         /// <summary>
-         ///    Method to set IsOutputDirectoryTracking to false so that this instance of this tracking property is not
-         ///    storage-based.
-         /// </summary>
-         /// <param name="element">
-         ///    The element on which to reset the property value.
-         /// </param>
-         internal void PreResetValue(ModelClass element) =>
-            // Force the IsOutputDirectoryTracking property to false so that the value  
-            // of the OutputDirectory property is retrieved from storage.  
-            element.isOutputDirectoryTrackingPropertyStorage = false;
       }
 
-      #endregion OutputDirectory tracking property
+#endregion OutputDirectory tracking property
 
-      #region IsImplementNotify tracking property
+#region IsImplementNotify tracking property
 
       /// <summary>
-      /// Updates tracking properties when the IsImplementNotify value changes
+      ///    Updates tracking properties when the IsImplementNotify value changes
       /// </summary>
       /// <param name="oldValue">Prior value</param>
       /// <param name="newValue">Current value</param>
@@ -1126,10 +1209,12 @@ namespace Sawczyn.EFDesigner.EFModel
                                                          Attributes,
                                                          ModelAttribute.ImplementNotifyDomainPropertyId,
                                                          ModelAttribute.IsImplementNotifyTrackingDomainPropertyId);
+
          TrackingHelper.UpdateTrackingCollectionProperty(Store,
                                                          Store.GetAll<Association>().Where(a => a.Source?.FullName == FullName),
                                                          Association.TargetImplementNotifyDomainPropertyId,
                                                          Association.IsTargetImplementNotifyTrackingDomainPropertyId);
+
          TrackingHelper.UpdateTrackingCollectionProperty(Store,
                                                          Store.GetAll<BidirectionalAssociation>().Where(a => a.Target?.FullName == FullName),
                                                          BidirectionalAssociation.SourceImplementNotifyDomainPropertyId,
@@ -1147,9 +1232,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      #endregion IsImplementNotify tracking property
+#endregion IsImplementNotify tracking property
 
-      #region AutoPropertyDefault tracking property
+#region AutoPropertyDefault tracking property
 
       // this property is both a tracking property (dependent on ModelRoot.AutoPropertyDefault)
       // and a tracked property (ModelAttribute.AutoProperty, Association.TargetAutoProperty and BidirectionalAssociation.SourceAutoProperty depends on it)
@@ -1189,11 +1274,11 @@ namespace Sawczyn.EFDesigner.EFModel
          autoPropertyDefaultStorage = value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
-            IsAutoPropertyDefaultTracking = (autoPropertyDefaultStorage == (ModelRoot?.AutoPropertyDefault ?? true));
+            IsAutoPropertyDefaultTracking = autoPropertyDefaultStorage == (ModelRoot?.AutoPropertyDefault ?? true);
       }
 
       /// <summary>
-      /// Updates tracking properties when the AutoPropertyDefault value changes
+      ///    Updates tracking properties when the AutoPropertyDefault value changes
       /// </summary>
       /// <param name="oldValue">Prior value</param>
       /// <param name="newValue">Current value</param>
@@ -1203,10 +1288,12 @@ namespace Sawczyn.EFDesigner.EFModel
                                                          Attributes,
                                                          ModelAttribute.AutoPropertyDomainPropertyId,
                                                          ModelAttribute.IsAutoPropertyTrackingDomainPropertyId);
+
          TrackingHelper.UpdateTrackingCollectionProperty(Store,
                                                          Store.GetAll<Association>().Where(a => a.Source?.FullName == FullName),
                                                          Association.TargetAutoPropertyDomainPropertyId,
                                                          Association.IsTargetAutoPropertyTrackingDomainPropertyId);
+
          TrackingHelper.UpdateTrackingCollectionProperty(Store,
                                                          Store.GetAll<BidirectionalAssociation>().Where(a => a.Target?.FullName == FullName),
                                                          BidirectionalAssociation.SourceAutoPropertyDomainPropertyId,
@@ -1224,6 +1311,6 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      #endregion AutoPropertyDefault tracking property
+#endregion AutoPropertyDefault tracking property
    }
 }

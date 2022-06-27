@@ -1,9 +1,10 @@
-﻿using Microsoft.VisualStudio.Modeling;
-using Microsoft.VisualStudio.Modeling.Validation;
-using System;
-using System.Diagnostics;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Xml;
+
+using Microsoft.VisualStudio.Modeling;
+using Microsoft.VisualStudio.Modeling.Validation;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
@@ -17,33 +18,37 @@ namespace Sawczyn.EFDesigner.EFModel
       ///    Reader for the file being read. The reader is positioned at the open tag of the root element being
       ///    read.
       /// </param>
-      protected override void CheckVersion(SerializationContext serializationContext, XmlReader reader)
-      {
-      }
+      protected override void CheckVersion(SerializationContext serializationContext, XmlReader reader) { }
 
       /// <summary>
-      /// Loads a ModelRoot instance from a stream.
+      ///    Loads a ModelRoot instance from a stream.
       /// </summary>
       /// <param name="serializationResult">Stores serialization result from the load operation.</param>
       /// <param name="partition">Partition in which the new ModelRoot instance will be created.</param>
       /// <param name="location">Source location associated with stream from which the ModelRoot instance is to be loaded. Usually a file path, but can be any string, including null.</param>
       /// <param name="schemaResolver">
-      /// An ISchemaResolver that allows the serializer to do schema validation on the root element (and everything inside it).
-      /// If null is passed, schema validation will not be performed.
+      ///    An ISchemaResolver that allows the serializer to do schema validation on the root element (and everything inside it).
+      ///    If null is passed, schema validation will not be performed.
       /// </param>
       /// <param name="validationController">
-      /// A ValidationController that will be used to do load-time validation (validations with validation category "Load"). If null
-      /// is passed, load-time validation will not be performed.
+      ///    A ValidationController that will be used to do load-time validation (validations with validation category "Load"). If null
+      ///    is passed, load-time validation will not be performed.
       /// </param>
       /// <param name="serializerLocator">
-      /// An ISerializerLocator that will be used to locate any additional domain model types required to load the model. Can be null.
+      ///    An ISerializerLocator that will be used to locate any additional domain model types required to load the model. Can be null.
       /// </param>
       /// <param name="stream">The Stream from which the ModelRoot will be deserialized.</param>
       /// <returns>The loaded ModelRoot instance.</returns>
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Generated code")]
-      public override ModelRoot LoadModel(SerializationResult serializationResult, Partition partition, string location, ISchemaResolver schemaResolver, ValidationController validationController, ISerializerLocator serializerLocator, Stream stream)
+      [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Generated code")]
+      public override ModelRoot LoadModel(SerializationResult serializationResult,
+                                          Partition partition,
+                                          string location,
+                                          ISchemaResolver schemaResolver,
+                                          ValidationController validationController,
+                                          ISerializerLocator serializerLocator,
+                                          Stream stream)
       {
-         #region Check Parameters
+#region Check Parameters
 
          if (serializationResult == null)
             throw new ArgumentNullException(nameof(serializationResult));
@@ -54,7 +59,7 @@ namespace Sawczyn.EFDesigner.EFModel
          if (stream == null)
             throw new ArgumentNullException(nameof(stream));
 
-         #endregion
+#endregion
 
          // Prior to v1.2.6.3, the XML format was a bit different.
          // To maintain backward compatability, we're going to check the format and morph it if needed.
@@ -67,6 +72,7 @@ namespace Sawczyn.EFDesigner.EFModel
             throw new FileFormatException();
 
          workingStream.Seek(0, SeekOrigin.Begin);
+
          return base.LoadModel(serializationResult, partition, location, schemaResolver, validationController, serializerLocator, workingStream);
       }
    }

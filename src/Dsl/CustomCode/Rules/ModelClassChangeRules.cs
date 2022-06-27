@@ -1,7 +1,7 @@
 ﻿using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 
 using Microsoft.VisualStudio.Modeling;
@@ -56,11 +56,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      }
 
                      if (element.Superclass.IsAssociationClass)
-                     {
                         errorMessages.Add($"Can't give {element.Name} that base class since {element.Superclass.Name} is an association class");
-
-                        break;
-                     }
                   }
 
                   break;
@@ -86,8 +82,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      if (string.IsNullOrEmpty(element.DbSetName))
                         element.DbSetName = MakeDefaultTableAndSetName(element.Name);
 
-                     if (current.Name.ToLowerInvariant() != "paste" &&
-                         (string.IsNullOrWhiteSpace(element.DbSetName) || !CodeGenerator.IsValidLanguageIndependentIdentifier(element.DbSetName)))
+                     if ((current.Name.ToLowerInvariant() != "paste") && (string.IsNullOrWhiteSpace(element.DbSetName) || !CodeGenerator.IsValidLanguageIndependentIdentifier(element.DbSetName)))
                      {
                         errorMessages.Add($"DbSet name '{element.DbSetName}' isn't a valid .NET identifier.");
 
@@ -95,12 +90,10 @@ namespace Sawczyn.EFDesigner.EFModel
                      }
 
                      if (store.GetAll<ModelClass>()
-                                   .Except(new[] { element })
-                                   .Any(x => x.DbSetName == element.DbSetName))
+                              .Except(new[] {element})
+                              .Any(x => x.DbSetName == element.DbSetName))
                      {
                         errorMessages.Add($"DbSet name '{element.DbSetName}' already in use");
-
-                        break;
                      }
                   }
 
@@ -112,6 +105,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   if (element.ImplementNotify)
                   {
                      List<string> nameList = element.Attributes.Where(x => x.AutoProperty).Select(x => x.Name).ToList();
+
                      if (nameList.Any())
                      {
                         string names = nameList.Count > 1
@@ -204,7 +198,9 @@ namespace Sawczyn.EFDesigner.EFModel
                            classShape.SetThemeColors(ModelDisplay.GetDiagramColors());
                      }
                   }
+
                   PresentationHelper.UpdateClassDisplay(element);
+
                   break;
                }
 
@@ -244,6 +240,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      //else
                      //   VerifyKeylessType();
                   }
+
                   break;
                }
 
@@ -280,6 +277,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      }
 
                      string subclasses = string.Join(", ", store.GetAll<Generalization>().Where(g => g.Superclass == element).Select(g => g.Subclass.Name));
+
                      if (!string.IsNullOrEmpty(subclasses))
                      {
                         errorMessages.Add($"Can't make {element.Name} a dependent class since it has subclass(es) {subclasses}");
@@ -304,7 +302,7 @@ namespace Sawczyn.EFDesigner.EFModel
                         break;
                      }
 
-                     List<UnidirectionalAssociation> entityTargets = store.GetAll<UnidirectionalAssociation>().Where(a => a.Source == element && !a.Target.IsDependentType).ToList();
+                     List<UnidirectionalAssociation> entityTargets = store.GetAll<UnidirectionalAssociation>().Where(a => (a.Source == element) && !a.Target.IsDependentType).ToList();
 
                      if (entityTargets.Any())
                      {
@@ -314,7 +312,8 @@ namespace Sawczyn.EFDesigner.EFModel
                         break;
                      }
 
-                     List<BidirectionalAssociation> bidirectionalAssociations = store.GetAll<BidirectionalAssociation>().Where(a => a.Source == element || a.Target == element).ToList();
+                     List<BidirectionalAssociation> bidirectionalAssociations = store.GetAll<BidirectionalAssociation>().Where(a => (a.Source == element) || (a.Target == element)).ToList();
+
                      if (bidirectionalAssociations.Any())
                      {
                         if (!modelRoot.IsEFCore5Plus)
@@ -325,8 +324,8 @@ namespace Sawczyn.EFDesigner.EFModel
                            break;
                         }
 
-                        bidirectionalAssociations = bidirectionalAssociations.Where(a => (a.Source == element && a.TargetMultiplicity != Multiplicity.One)
-                                                                                      || (a.Target == element && a.SourceMultiplicity != Multiplicity.One))
+                        bidirectionalAssociations = bidirectionalAssociations.Where(a => ((a.Source == element) && (a.TargetMultiplicity != Multiplicity.One))
+                                                                                      || ((a.Target == element) && (a.SourceMultiplicity != Multiplicity.One)))
                                                                              .ToList();
 
                         if (bidirectionalAssociations.Any())
@@ -336,12 +335,11 @@ namespace Sawczyn.EFDesigner.EFModel
 
                            break;
                         }
-
                      }
 
-                     if (element.ModelRoot.EntityFrameworkVersion == EFVersion.EF6 || element.ModelRoot.GetEntityFrameworkPackageVersionNum() < 2.2)
+                     if ((element.ModelRoot.EntityFrameworkVersion == EFVersion.EF6) || (element.ModelRoot.GetEntityFrameworkPackageVersionNum() < 2.2))
                      {
-                        if (store.GetAll<Association>().Any(a => a.Target == element && a.TargetMultiplicity == Multiplicity.ZeroMany))
+                        if (store.GetAll<Association>().Any(a => (a.Target == element) && (a.TargetMultiplicity == Multiplicity.ZeroMany)))
                         {
                            errorMessages.Add($"Can't make {element.Name} a dependent class since it's the target of a 0..* association");
 
@@ -375,7 +373,6 @@ namespace Sawczyn.EFDesigner.EFModel
                         penSettings.DashStyle = DashStyle.Dot;
                         classShape.StyleSet.OverridePen(DiagramPens.ShapeOutline, penSettings);
                      }
-
                   }
                   else
                   {
@@ -404,7 +401,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      break;
                   }
 
-                  if (element.Superclass != null && !element.Superclass.IsPropertyBag)
+                  if ((element.Superclass != null) && !element.Superclass.IsPropertyBag)
                      element.Superclass.IsPropertyBag = true;
 
                   if (element.Subclasses.Any())
@@ -414,6 +411,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   }
 
                   PresentationHelper.UpdateClassDisplay(element);
+
                   break;
                }
 
@@ -424,12 +422,14 @@ namespace Sawczyn.EFDesigner.EFModel
                      if (element.IsAssociationClass)
                      {
                         errorMessages.Add($"Can't make {element.Name} a query type since it's an association class");
+
                         break;
                      }
 
                      if (element.IsDependentType)
                      {
                         errorMessages.Add($"Can't make {element.Name} a query type since it's a dependent class");
+
                         break;
                      }
 
@@ -451,7 +451,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
                   if (string.IsNullOrWhiteSpace(element.Name) || !CodeGenerator.IsValidLanguageIndependentIdentifier(element.Name))
                      errorMessages.Add("Name must be a valid .NET identifier");
-                  else if (store.GetAll<ModelClass>().Except(new[] { element }).Any(x => x.FullName == element.FullName))
+                  else if (store.GetAll<ModelClass>().Except(new[] {element}).Any(x => x.FullName == element.FullName))
                      errorMessages.Add($"Class name '{element.FullName}' already in use by another class");
                   else if (store.GetAll<ModelEnum>().Any(x => x.FullName == element.FullName))
                      errorMessages.Add($"Class name '{element.FullName}' already in use by an enum");
@@ -480,7 +480,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "Summary":
                {
-                  if (string.IsNullOrEmpty(element.TableComment) || element.TableComment == (string)e.OldValue)
+                  if (string.IsNullOrEmpty(element.TableComment) || (element.TableComment == (string)e.OldValue))
                      element.TableComment = element.Summary;
 
                   break;
@@ -503,7 +503,7 @@ namespace Sawczyn.EFDesigner.EFModel
                            element.TableName = MakeDefaultTableAndSetName(element.Name);
 
                         if (store.GetAll<ModelClass>()
-                                 .Except(new[] { element })
+                                 .Except(new[] {element})
                                  .Any(x => x.TableName == newTableName))
                            errorMessages.Add($"Table name '{newTableName}' already in use");
                      }
@@ -529,9 +529,9 @@ namespace Sawczyn.EFDesigner.EFModel
                            element.TableName = MakeDefaultTableAndSetName(element.Name);
 
                         List<ModelClass> classesUsingTableName = store.GetAll<ModelClass>()
-                              .Except(new[] { element })
-                                                             .Where(x => x.TableName == newViewName)
-                                                             .ToList();
+                                                                      .Except(new[] {element})
+                                                                      .Where(x => x.TableName == newViewName)
+                                                                      .ToList();
 
                         if (classesUsingTableName.Any())
                            errorMessages.Add($"View name '{newViewName}' already in use in {classesUsingTableName.First().Name}");
@@ -563,8 +563,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
             // Only support a subset of navigation mapping capabilities, specifically:
             //    - They may never act as the principal end of a relationship.
-            string badAssociations = string.Join(", "
-                                               , store.ElementDirectory.AllElements
+            string badAssociations = string.Join(", ",
+                                                 store.ElementDirectory.AllElements
                                                       .OfType<Association>()
                                                       .Where(a => a.Principal == element)
                                                       .Select(a => a.GetDisplayText()));
@@ -573,30 +573,36 @@ namespace Sawczyn.EFDesigner.EFModel
                errorMessages.Add($"{element.Name} can't be mapped to a Sql query since it is the principal end of association(s) {badAssociations}.");
 
             //    - They may not have navigations to owned entities 
-            badAssociations = string.Join(", "
-                                        , store.ElementDirectory.AllElements
+            badAssociations = string.Join(", ",
+                                          store.ElementDirectory.AllElements
                                                .OfType<Association>()
-                                               .Where(a => (a is UnidirectionalAssociation && a.Source == element && a.Target.IsDependentType) || (a is BidirectionalAssociation b && b.Source == element && b.Target.IsDependentType) || (a is BidirectionalAssociation c && c.Target == element && c.Source.IsDependentType))
+                                               .Where(a => (a is UnidirectionalAssociation && (a.Source == element) && a.Target.IsDependentType)
+                                                        || (a is BidirectionalAssociation b && (b.Source == element) && b.Target.IsDependentType)
+                                                        || (a is BidirectionalAssociation c && (c.Target == element) && c.Source.IsDependentType))
                                                .Select(a => a.GetDisplayText()));
 
             if (!string.IsNullOrEmpty(badAssociations))
                errorMessages.Add($"{element.Name} can't be mapped to a Sql query since it has association(s) to dependent type(s) in {badAssociations}.");
 
             //    - Entities cannot contain navigation properties to query types.
-            badAssociations = string.Join(", "
-                                        , store.ElementDirectory.AllElements
+            badAssociations = string.Join(", ",
+                                          store.ElementDirectory.AllElements
                                                .OfType<Association>()
-                                               .Where(a => (a is UnidirectionalAssociation && a.Source == element && a.Target.IsQueryType) || (a is BidirectionalAssociation b && b.Source == element && b.Target.IsQueryType) || (a is BidirectionalAssociation c && c.Target == element && c.Source.IsQueryType))
+                                               .Where(a => (a is UnidirectionalAssociation && (a.Source == element) && a.Target.IsQueryType)
+                                                        || (a is BidirectionalAssociation b && (b.Source == element) && b.Target.IsQueryType)
+                                                        || (a is BidirectionalAssociation c && (c.Target == element) && c.Source.IsQueryType))
                                                .Select(a => a.GetDisplayText()));
 
             if (!string.IsNullOrEmpty(badAssociations))
                errorMessages.Add($"{element.Name} can't be mapped to a Sql query since it has association to sql-mapped type(s) in {badAssociations}.");
 
             //    - They can only contain reference navigation properties pointing to regular entities.
-            badAssociations = string.Join(", "
-                                        , store.ElementDirectory.AllElements
+            badAssociations = string.Join(", ",
+                                          store.ElementDirectory.AllElements
                                                .OfType<Association>()
-                                               .Where(a => (a is UnidirectionalAssociation && a.Source == element && a.TargetMultiplicity == Multiplicity.ZeroMany) || (a is BidirectionalAssociation b && b.Source == element && b.TargetMultiplicity == Multiplicity.ZeroMany) || (a is BidirectionalAssociation c && c.Target == element && c.SourceMultiplicity == Multiplicity.ZeroMany))
+                                               .Where(a => (a is UnidirectionalAssociation && (a.Source == element) && (a.TargetMultiplicity == Multiplicity.ZeroMany))
+                                                        || (a is BidirectionalAssociation b && (b.Source == element) && (b.TargetMultiplicity == Multiplicity.ZeroMany))
+                                                        || (a is BidirectionalAssociation c && (c.Target == element) && (c.SourceMultiplicity == Multiplicity.ZeroMany)))
                                                .Select(a => a.GetDisplayText()));
 
             if (!string.IsNullOrEmpty(badAssociations))
@@ -615,8 +621,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
             // Only support a subset of navigation mapping capabilities, specifically:
             //    - They may never act as the principal end of a relationship.
-            string badAssociations = string.Join(", "
-                                               , store.ElementDirectory.AllElements
+            string badAssociations = string.Join(", ",
+                                                 store.ElementDirectory.AllElements
                                                       .OfType<Association>()
                                                       .Where(a => a.Principal == element)
                                                       .Select(a => a.GetDisplayText()));
@@ -625,30 +631,36 @@ namespace Sawczyn.EFDesigner.EFModel
                errorMessages.Add($"{element.Name} can't be mapped to a Sql query since it is the principal end of association(s) {badAssociations}.");
 
             //    - They may not have navigations to owned entities 
-            badAssociations = string.Join(", "
-                                        , store.ElementDirectory.AllElements
+            badAssociations = string.Join(", ",
+                                          store.ElementDirectory.AllElements
                                                .OfType<Association>()
-                                               .Where(a => (a is UnidirectionalAssociation && a.Source == element && a.Target.IsDependentType) || (a is BidirectionalAssociation b && b.Source == element && b.Target.IsDependentType) || (a is BidirectionalAssociation c && c.Target == element && c.Source.IsDependentType))
+                                               .Where(a => (a is UnidirectionalAssociation && (a.Source == element) && a.Target.IsDependentType)
+                                                        || (a is BidirectionalAssociation b && (b.Source == element) && b.Target.IsDependentType)
+                                                        || (a is BidirectionalAssociation c && (c.Target == element) && c.Source.IsDependentType))
                                                .Select(a => a.GetDisplayText()));
 
             if (!string.IsNullOrEmpty(badAssociations))
                errorMessages.Add($"{element.Name} can't be mapped to a Sql query since it has association(s) to dependent type(s) in {badAssociations}.");
 
             //    - Entities cannot contain navigation properties to query types.
-            badAssociations = string.Join(", "
-                                        , store.ElementDirectory.AllElements
+            badAssociations = string.Join(", ",
+                                          store.ElementDirectory.AllElements
                                                .OfType<Association>()
-                                               .Where(a => (a is UnidirectionalAssociation && a.Source == element && a.Target.IsQueryType) || (a is BidirectionalAssociation b && b.Source == element && b.Target.IsQueryType) || (a is BidirectionalAssociation c && c.Target == element && c.Source.IsQueryType))
+                                               .Where(a => (a is UnidirectionalAssociation && (a.Source == element) && a.Target.IsQueryType)
+                                                        || (a is BidirectionalAssociation b && (b.Source == element) && b.Target.IsQueryType)
+                                                        || (a is BidirectionalAssociation c && (c.Target == element) && c.Source.IsQueryType))
                                                .Select(a => a.GetDisplayText()));
 
             if (!string.IsNullOrEmpty(badAssociations))
                errorMessages.Add($"{element.Name} can't be mapped to a Sql query since it has association to sql-mapped type(s) in {badAssociations}.");
 
             //    - They can only contain reference navigation properties pointing to regular entities.
-            badAssociations = string.Join(", "
-                                        , store.ElementDirectory.AllElements
+            badAssociations = string.Join(", ",
+                                          store.ElementDirectory.AllElements
                                                .OfType<Association>()
-                                               .Where(a => (a is UnidirectionalAssociation && a.Source == element && a.TargetMultiplicity == Multiplicity.ZeroMany) || (a is BidirectionalAssociation b && b.Source == element && b.TargetMultiplicity == Multiplicity.ZeroMany) || (a is BidirectionalAssociation c && c.Target == element && c.SourceMultiplicity == Multiplicity.ZeroMany))
+                                               .Where(a => (a is UnidirectionalAssociation && (a.Source == element) && (a.TargetMultiplicity == Multiplicity.ZeroMany))
+                                                        || (a is BidirectionalAssociation b && (b.Source == element) && (b.TargetMultiplicity == Multiplicity.ZeroMany))
+                                                        || (a is BidirectionalAssociation c && (c.Target == element) && (c.SourceMultiplicity == Multiplicity.ZeroMany)))
                                                .Select(a => a.GetDisplayText()));
 
             if (!string.IsNullOrEmpty(badAssociations))

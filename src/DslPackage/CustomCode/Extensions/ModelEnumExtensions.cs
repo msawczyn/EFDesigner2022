@@ -7,6 +7,7 @@ namespace Sawczyn.EFDesigner.EFModel
       public static string GetRelativeFileName(this ModelEnum modelEnum)
       {
          string outputDirectory = modelEnum.OutputDirectory ?? modelEnum.ModelRoot.EnumOutputDirectory;
+
          return Path.Combine(outputDirectory, $"{modelEnum.Name}.{modelEnum.ModelRoot.FileNameMarker}.cs");
       }
    }

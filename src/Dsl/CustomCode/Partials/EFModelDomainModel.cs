@@ -15,7 +15,7 @@ namespace Sawczyn.EFDesigner.EFModel
          [DebuggerStepThrough]
          get
          {
-            return auxResourceManager 
+            return auxResourceManager
                 ?? (auxResourceManager = new ResourceManager("Sawczyn.EFDesigner.EFModel.Resources", typeof(EFModelDomainModel).Assembly));
          }
       }

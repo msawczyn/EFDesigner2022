@@ -1,7 +1,7 @@
 ﻿namespace Sawczyn.EFDesigner.EFModel
 {
    /// <summary>
-   /// Tag interface indicating diagram items for this element are compartments in a parent element
+   ///    Tag interface indicating diagram items for this element are compartments in a parent element
    /// </summary>
    public interface IModelElementInCompartment
    {

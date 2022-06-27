@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 using Microsoft.VisualStudio.Modeling;
 
@@ -8,7 +7,7 @@ using Sawczyn.EFDesigner.EFModel.Extensions;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
-   class IdentityAttributeTypeTypeConverter: TypeConverterBase
+   internal class IdentityAttributeTypeTypeConverter : TypeConverterBase
    {
       /// <summary>
       ///    Returns a collection of standard values for the data type this type converter is designed for when provided
@@ -53,6 +52,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          // standard values are required for EF6 or EFCore before v5
          ModelRoot modelRoot = GetStore(context.Instance).ModelRoot();
+
          return !modelRoot.IsEFCore5Plus;
       }
 

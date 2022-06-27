@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
    <PropertyGroup>
-      <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+      <TargetFrameworks>netstandard2.0;netstandard2.1;net5.0;net6.0</TargetFrameworks>
       <SignAssembly>true</SignAssembly>
       <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
       <DelaySign>false</DelaySign>
@@ -11,6 +11,12 @@
 
    <ItemGroup>
      <Compile Include="..\..\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
+   </ItemGroup>
+
+   <ItemGroup>
+     <PackageReference Include="Microsoft.VisualStudio.RpcContracts" Version="17.2.31" />
+     <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.2.32" />
+     <PackageReference Include="StreamJsonRpc" Version="2.11.35" />
    </ItemGroup>
 
 </Project>

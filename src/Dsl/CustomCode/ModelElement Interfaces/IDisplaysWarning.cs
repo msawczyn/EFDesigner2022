@@ -4,9 +4,8 @@
    {
       bool GetHasWarningValue();
 
-      void ResetWarning();
-
       void RedrawItem();
 
+      void ResetWarning();
    }
 }

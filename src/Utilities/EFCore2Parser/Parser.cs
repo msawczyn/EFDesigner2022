@@ -19,7 +19,7 @@ using ParsingModels;
 
 namespace EFCore2Parser
 {
-   public class Parser: ParserBase
+   public class Parser : ParserBase
    {
       private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
       private readonly DbContext dbContext;
@@ -33,7 +33,7 @@ namespace EFCore2Parser
          if (dbContextTypeName != null)
          {
             log.Debug($"dbContextTypeName parameter is {dbContextTypeName}");
-            contextType = assembly.GetExportedTypes().FirstOrDefault(t => t.FullName == dbContextTypeName || t.Name == dbContextTypeName);
+            contextType = assembly.GetExportedTypes().FirstOrDefault(t => (t.FullName == dbContextTypeName) || (t.Name == dbContextTypeName));
             log.Info($"Using contextType = {contextType.FullName}");
          }
          else
@@ -45,12 +45,14 @@ namespace EFCore2Parser
             if (types.Count == 0)
             {
                log.Error($"No usable DBContext found in {assembly.FullName}");
+
                throw new ArgumentException("Couldn't find DbContext-derived class in assembly. Is it public?");
             }
 
             if (types.Count > 1)
             {
                log.Error($"Found more than one class derived from DbContext: {string.Join(", ", types.Select(t => t.FullName))}");
+
                throw new AmbiguousMatchException("Found more than one class derived from DbContext");
             }
 
@@ -71,119 +73,15 @@ namespace EFCore2Parser
                                                                                                      .BuildServiceProvider())
                                                   .Options;
 
-         ConstructorInfo constructor = contextType.GetConstructor(new[] { optionsType });
+         ConstructorInfo constructor = contextType.GetConstructor(new[] {optionsType});
 
          // ReSharper disable once UnthrowableException
          if (constructor == null)
             throw new MissingMethodException($"Can't find appropriate constructor - {contextType.Name}.{contextType.Name}(DbContextOptions<{contextType.Name}>)");
 
-         dbContext = assembly.CreateInstance(contextType.FullName, true, BindingFlags.Default, null, new object[] { options }, null, null) as DbContext;
+         dbContext = assembly.CreateInstance(contextType.FullName, true, BindingFlags.Default, null, new object[] {options}, null, null) as DbContext;
          model = dbContext.Model;
       }
-
-      #region Associations
-
-      private List<ModelUnidirectionalAssociation> GetUnidirectionalAssociations(IEntityType entityType)
-      {
-         List<ModelUnidirectionalAssociation> result = new List<ModelUnidirectionalAssociation>();
-
-         foreach (INavigation navigationProperty in entityType.GetDeclaredNavigations().Where(n => n.FindInverse() == null))
-         {
-            ModelUnidirectionalAssociation association = new ModelUnidirectionalAssociation();
-
-            association.SourceClassName = navigationProperty.DeclaringType.ClrType.Name;
-            association.SourceClassNamespace = navigationProperty.DeclaringType.ClrType.Namespace;
-
-            Type targetType = navigationProperty.GetTargetType().ClrType.Unwrap();
-            association.TargetClassName = targetType.Name;
-            association.TargetClassNamespace = targetType.Namespace;
-
-            // the property in the source class (referencing the target class)
-            association.TargetPropertyTypeName = navigationProperty.PropertyInfo.PropertyType.Unwrap().Name;
-            association.TargetPropertyName = navigationProperty.Name;
-            association.TargetMultiplicity = ConvertMultiplicity(navigationProperty.GetTargetMultiplicity());
-
-            // the property in the target class (referencing the source class)
-            association.SourceMultiplicity = ConvertMultiplicity(navigationProperty.GetSourceMultiplicity());
-
-            if (navigationProperty.ForeignKey != null)
-            {
-               List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
-                                                           .Where(p => !p.IsShadowProperty)
-                                                           .Select(p => p.Name)
-                                                           .ToList();
-
-               association.ForeignKey = fkPropertyDeclarations.Any()
-                                           ? string.Join(",", fkPropertyDeclarations)
-                                           : null;
-            }
-
-            // unfortunately, EFCore doesn't serialize documentation like EF6 did
-
-            //association.TargetSummary = navigationProperty.ToEndMember.Documentation?.Summary;
-            //association.TargetDescription = navigationProperty.ToEndMember.Documentation?.LongDescription;
-            //association.SourceSummary = navigationProperty.FromEndMember.Documentation?.Summary;
-            //association.SourceDescription = navigationProperty.FromEndMember.Documentation?.LongDescription;
-
-            result.Add(association);
-         }
-
-         return result;
-      }
-
-      private List<ModelBidirectionalAssociation> GetBidirectionalAssociations(IEntityType entityType)
-      {
-         List<ModelBidirectionalAssociation> result = new List<ModelBidirectionalAssociation>();
-
-         foreach (INavigation navigationProperty in entityType.GetDeclaredNavigations().Where(n => n.FindInverse() != null))
-         {
-            ModelBidirectionalAssociation association = new ModelBidirectionalAssociation();
-
-            Type sourceType = navigationProperty.GetSourceType().ClrType.Unwrap();
-            association.SourceClassName = sourceType.Name;
-            association.SourceClassNamespace = sourceType.Namespace;
-
-            Type targetType = navigationProperty.GetTargetType().ClrType.Unwrap();
-            association.TargetClassName = targetType.Name;
-            association.TargetClassNamespace = targetType.Namespace;
-
-            INavigation inverse = navigationProperty.FindInverse();
-
-            // the property in the source class (referencing the target class)
-            association.TargetPropertyTypeName = navigationProperty.PropertyInfo.PropertyType.Unwrap().Name;
-            association.TargetPropertyName = navigationProperty.Name;
-            association.TargetMultiplicity = ConvertMultiplicity(navigationProperty.GetTargetMultiplicity());
-
-            //association.TargetSummary = navigationProperty.ToEndMember.Documentation?.Summary;
-            //association.TargetDescription = navigationProperty.ToEndMember.Documentation?.LongDescription;
-
-            // the property in the target class (referencing the source class)
-            association.SourcePropertyTypeName = inverse.PropertyInfo.PropertyType.Unwrap().Name;
-            association.SourcePropertyName = inverse.Name;
-            association.SourceMultiplicity = ConvertMultiplicity(navigationProperty.GetSourceMultiplicity());
-
-            //association.SourceSummary = navigationProperty.FromEndMember.Documentation?.Summary;
-            //association.SourceDescription = navigationProperty.FromEndMember.Documentation?.LongDescription;
-
-            if (navigationProperty.ForeignKey != null)
-            {
-               List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
-                                                                       .Where(p => !p.IsShadowProperty)
-                                                                       .Select(p => p.Name)
-                                                                       .ToList();
-
-               association.ForeignKey = fkPropertyDeclarations.Any()
-                                           ? string.Join(",", fkPropertyDeclarations)
-                                           : null;
-            }
-
-            result.Add(association);
-         }
-
-         return result;
-      }
-
-      #endregion
 
       public string Process()
       {
@@ -259,7 +157,7 @@ namespace EFCore2Parser
                                          : null;
 
             result.Values = Enum.GetNames(enumType)
-                                .Select(name => new ModelEnumValue { Name = name, Value = Convert.ChangeType(Enum.Parse(enumType, name), underlyingType).ToString() })
+                                .Select(name => new ModelEnumValue {Name = name, Value = Convert.ChangeType(Enum.Parse(enumType, name), underlyingType).ToString()})
                                 .ToList();
 
             modelRoot.Enumerations.Add(result);
@@ -278,18 +176,21 @@ namespace EFCore2Parser
             ProcessEnum(propertyData.ClrType, modelRoot);
 
          // If it is NULLABLE, then get the underlying type. eg if "Nullable<int>" then this will return just "int"
-         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+         if (type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(Nullable<>)))
             type = type.GetGenericArguments()[0];
 
-         result.TypeName = type.IsEnum ? type.FullName : type.Name;
+         result.TypeName = type.IsEnum
+                              ? type.FullName
+                              : type.Name;
+
          result.Name = propertyData.Name;
          result.IsIdentity = propertyData.IsKey();
-         result.IsIdentityGenerated = result.IsIdentity && propertyData.ValueGenerated == ValueGenerated.OnAdd;
+         result.IsIdentityGenerated = result.IsIdentity && (propertyData.ValueGenerated == ValueGenerated.OnAdd);
 
          result.Required = !propertyData.IsNullable;
          result.Indexed = propertyData.IsIndex();
 
-         CustomAttributeData maxLengthAttribute = attributes.FirstOrDefault(a => a.AttributeType.Name == "MaxLength" || a.AttributeType.Name == "StringLength");
+         CustomAttributeData maxLengthAttribute = attributes.FirstOrDefault(a => (a.AttributeType.Name == "MaxLength") || (a.AttributeType.Name == "StringLength"));
          result.MaxStringLength = (int?)maxLengthAttribute?.ConstructorArguments.First().Value ?? 0;
 
          if (maxLengthAttribute != null)
@@ -320,7 +221,109 @@ namespace EFCore2Parser
 
          return result;
       }
+
+#region Associations
+
+      private List<ModelUnidirectionalAssociation> GetUnidirectionalAssociations(IEntityType entityType)
+      {
+         List<ModelUnidirectionalAssociation> result = new List<ModelUnidirectionalAssociation>();
+
+         foreach (INavigation navigationProperty in entityType.GetDeclaredNavigations().Where(n => n.FindInverse() == null))
+         {
+            ModelUnidirectionalAssociation association = new ModelUnidirectionalAssociation();
+
+            association.SourceClassName = navigationProperty.DeclaringType.ClrType.Name;
+            association.SourceClassNamespace = navigationProperty.DeclaringType.ClrType.Namespace;
+
+            Type targetType = navigationProperty.GetTargetType().ClrType.Unwrap();
+            association.TargetClassName = targetType.Name;
+            association.TargetClassNamespace = targetType.Namespace;
+
+            // the property in the source class (referencing the target class)
+            association.TargetPropertyTypeName = navigationProperty.PropertyInfo.PropertyType.Unwrap().Name;
+            association.TargetPropertyName = navigationProperty.Name;
+            association.TargetMultiplicity = ConvertMultiplicity(navigationProperty.GetTargetMultiplicity());
+
+            // the property in the target class (referencing the source class)
+            association.SourceMultiplicity = ConvertMultiplicity(navigationProperty.GetSourceMultiplicity());
+
+            if (navigationProperty.ForeignKey != null)
+            {
+               List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
+                                                                       .Where(p => !p.IsShadowProperty)
+                                                                       .Select(p => p.Name)
+                                                                       .ToList();
+
+               association.ForeignKey = fkPropertyDeclarations.Any()
+                                           ? string.Join(",", fkPropertyDeclarations)
+                                           : null;
+            }
+
+            // unfortunately, EFCore doesn't serialize documentation like EF6 did
+
+            //association.TargetSummary = navigationProperty.ToEndMember.Documentation?.Summary;
+            //association.TargetDescription = navigationProperty.ToEndMember.Documentation?.LongDescription;
+            //association.SourceSummary = navigationProperty.FromEndMember.Documentation?.Summary;
+            //association.SourceDescription = navigationProperty.FromEndMember.Documentation?.LongDescription;
+
+            result.Add(association);
+         }
+
+         return result;
+      }
+
+      private List<ModelBidirectionalAssociation> GetBidirectionalAssociations(IEntityType entityType)
+      {
+         List<ModelBidirectionalAssociation> result = new List<ModelBidirectionalAssociation>();
+
+         foreach (INavigation navigationProperty in entityType.GetDeclaredNavigations().Where(n => n.FindInverse() != null))
+         {
+            ModelBidirectionalAssociation association = new ModelBidirectionalAssociation();
+
+            Type sourceType = navigationProperty.GetSourceType().ClrType.Unwrap();
+            association.SourceClassName = sourceType.Name;
+            association.SourceClassNamespace = sourceType.Namespace;
+
+            Type targetType = navigationProperty.GetTargetType().ClrType.Unwrap();
+            association.TargetClassName = targetType.Name;
+            association.TargetClassNamespace = targetType.Namespace;
+
+            INavigation inverse = navigationProperty.FindInverse();
+
+            // the property in the source class (referencing the target class)
+            association.TargetPropertyTypeName = navigationProperty.PropertyInfo.PropertyType.Unwrap().Name;
+            association.TargetPropertyName = navigationProperty.Name;
+            association.TargetMultiplicity = ConvertMultiplicity(navigationProperty.GetTargetMultiplicity());
+
+            //association.TargetSummary = navigationProperty.ToEndMember.Documentation?.Summary;
+            //association.TargetDescription = navigationProperty.ToEndMember.Documentation?.LongDescription;
+
+            // the property in the target class (referencing the source class)
+            association.SourcePropertyTypeName = inverse.PropertyInfo.PropertyType.Unwrap().Name;
+            association.SourcePropertyName = inverse.Name;
+            association.SourceMultiplicity = ConvertMultiplicity(navigationProperty.GetSourceMultiplicity());
+
+            //association.SourceSummary = navigationProperty.FromEndMember.Documentation?.Summary;
+            //association.SourceDescription = navigationProperty.FromEndMember.Documentation?.LongDescription;
+
+            if (navigationProperty.ForeignKey != null)
+            {
+               List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
+                                                                       .Where(p => !p.IsShadowProperty)
+                                                                       .Select(p => p.Name)
+                                                                       .ToList();
+
+               association.ForeignKey = fkPropertyDeclarations.Any()
+                                           ? string.Join(",", fkPropertyDeclarations)
+                                           : null;
+            }
+
+            result.Add(association);
+         }
+
+         return result;
+      }
+
+#endregion
    }
-
-
 }

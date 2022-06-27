@@ -1,20 +1,26 @@
 ﻿using System.Drawing;
+
 using Microsoft.VisualStudio.Modeling;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
-   public abstract partial class ClassShapeBase: IHasStore
+   public abstract partial class ClassShapeBase : IHasStore
    {
       private static string GetDisplayPropertyFromModelClassForAssociationsCompartment(ModelElement element)
       {
          Association association = (Association)element;
          ModelClass target = association.Target;
-         
+
          // ReSharper disable once ConvertIfStatementToReturnStatement
          if (!string.IsNullOrEmpty(association.TargetPropertyName))
             return $"{association.TargetPropertyName} : {target.Name}";
 
          return target.Name;
+      }
+
+      private static string GetDisplayPropertyFromModelClassForAttributesCompartment(ModelElement element)
+      {
+         return ((ModelAttribute)element).ToDisplayString();
       }
 
       private static string GetDisplayPropertyFromModelClassForSourcesCompartment(ModelElement element)
@@ -29,9 +35,17 @@ namespace Sawczyn.EFDesigner.EFModel
          return source.Name;
       }
 
-      private static string GetDisplayPropertyFromModelClassForAttributesCompartment(ModelElement element)
+      private bool GetVisibleValue()
       {
-         return ((ModelAttribute)element).ToDisplayString();
+         return IsVisible;
+      }
+
+      private void SetVisibleValue(bool newValue)
+      {
+         if (newValue)
+            Show();
+         else
+            Hide();
       }
 
       internal sealed partial class FillColorPropertyHandler
@@ -44,22 +58,9 @@ namespace Sawczyn.EFDesigner.EFModel
                return;
 
             // set text color to contrasting color based on new fill color, if it's currently black or white
-            if (element.TextColor == Color.Black || element.TextColor == Color.White)
+            if ((element.TextColor == Color.Black) || (element.TextColor == Color.White))
                element.TextColor = newValue.LegibleTextColor();
          }
-      }
-
-      private bool GetVisibleValue()
-      {
-         return IsVisible;
-      }
-
-      private void SetVisibleValue(bool newValue)
-      {
-         if (newValue)
-            Show();
-         else
-            Hide();
       }
    }
 }

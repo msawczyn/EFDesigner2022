@@ -15,15 +15,15 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
       public ITextTemplatingEngineHost Host { get; set; }
 
+      public void ClearIndent() { }
+
       public string PopIndent() { return string.Empty; }
 
       public void PushIndent(string indent) { }
 
-      public void ClearIndent() { }
-
       public void WriteLine(string textToAppend) { }
 
-      #region Template
+#region Template
 
       // EFDesigner v4.1.2.0
       // Copyright (c) 2017-2022 Michael Sawczyn
@@ -48,19 +48,24 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          switch ((int)modelRoot.GetEntityFrameworkPackageVersionNum())
          {
             case 2:
-               generator = new EFCore2ModelGenerator(this); break;
+               generator = new EFCore2ModelGenerator(this);
+
+               break;
 
             case 3:
-               generator = new EFCore3ModelGenerator(this); break;
+               generator = new EFCore3ModelGenerator(this);
+
+               break;
 
             default:
-               generator = new EFCore5ModelGenerator(this); break;
+               generator = new EFCore5ModelGenerator(this);
+
+               break;
          }
 
          generator.Generate(manager);
       }
-      #endregion Template
+
+#endregion Template
    }
 }
-
-

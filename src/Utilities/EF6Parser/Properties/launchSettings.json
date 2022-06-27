@@ -1,8 +1,8 @@
 {
-  "profiles": {
-    "EF6Parser": {
-      "commandName": "Project",
-      "commandLineArgs": "\"C:\\Code\\DSLReference2022\\ClassLibrary_4.6.1_6.1.3\\bin\\Debug\\ClassLibrary_4.6.1_6.1.3.dll\" c:\\temp\\parsertest.json"
-    }
-  }
-}
+      "profiles": {
+            "EF6Parser": {
+                  "commandName": "Project"
+                  , "commandLineArgs": "C:\\Code\\_Clients\\AWH\\PointPro\\Prognostics\\Server\\Prognostics.Data\\bin\\Debug\\net6.0\\Prognostics.Data.dll c:\\temp\\parsertest.txt"
+               }
+         }
+   }

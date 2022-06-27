@@ -46,8 +46,7 @@ namespace Sawczyn.EFDesigner.EFModel
             }
          }
 
-         if (modelRoot.ConcurrencyDefault == Concurrency.Optimistic &&
-             !element.AllAttributes.Any(x => x.IsConcurrencyToken))
+         if ((modelRoot.ConcurrencyDefault == Concurrency.Optimistic) && !element.AllAttributes.Any(x => x.IsConcurrencyToken))
          {
             ModelAttribute concurrencyToken = new ModelAttribute(element.Partition)
                                               {

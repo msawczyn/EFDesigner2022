@@ -3,12 +3,23 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+
 using Microsoft.VisualStudio.Modeling;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
    public class CollectionTypeTypeConverter : TypeConverterBase
    {
+      public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+      {
+         return (sourceType == typeof(string)) || base.CanConvertFrom(context, sourceType);
+      }
+
+      public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+      {
+         return value?.ToString();
+      }
+
       /// <summary>
       ///    Returns a collection of standard values for the data type this type converter is designed for when provided
       ///    with a format context.
@@ -28,7 +39,7 @@ namespace Sawczyn.EFDesigner.EFModel
          // "context.Instance"  returns the element(s) that are currently selected i.e. whose values are being shown in the property grid.   
          // Note that the user could have selected multiple objects, in which case context.Instance will be an array.  
          Store store = GetStore(context.Instance);
-         List<string> values = new List<string>(new[] { "HashSet", "LinkedList", "List", "SortedSet", "Collection", "ObservableCollection", "BindingList" });
+         List<string> values = new List<string>(new[] {"HashSet", "LinkedList", "List", "SortedSet", "Collection", "ObservableCollection", "BindingList"});
          values.AddRange(store.ElementDirectory.FindElements<Association>().Select(x => x.CollectionClass));
 
          return new StandardValuesCollection(values.OrderBy(x => x).Distinct().ToList());
@@ -62,16 +73,6 @@ namespace Sawczyn.EFDesigner.EFModel
       public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
       {
          return true;
-      }
-
-      public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-      {
-         return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
-      }
-
-      public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-      {
-         return value?.ToString();
       }
    }
 }

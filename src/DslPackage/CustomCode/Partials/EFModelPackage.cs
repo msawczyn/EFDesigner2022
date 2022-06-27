@@ -20,7 +20,10 @@ namespace Sawczyn.EFDesigner.EFModel
 
       public static OptionsPage Options
       {
-         get => (OptionsPage)Instance.GetDialogPage(typeof(OptionsPage));
+         get
+         {
+            return (OptionsPage)Instance.GetDialogPage(typeof(OptionsPage));
+         }
       }
 
       protected override Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)

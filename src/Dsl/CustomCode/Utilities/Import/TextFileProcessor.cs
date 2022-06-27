@@ -20,17 +20,8 @@ namespace Sawczyn.EFDesigner.EFModel
 {
    public class TextFileProcessor : IFileProcessor
    {
-      private List<string> KnownInterfaces;
-
-
-      // ReSharper disable FieldCanBeMadeReadOnly.Local
-#pragma warning disable IDE0044 // Add readonly modifier
-      private List<string> KnownClasses;
-      private List<string> KnownEnums;
-#pragma warning restore IDE0044 // Add readonly modifier
-      // ReSharper restore FieldCanBeMadeReadOnly.Local
-
       private readonly Store Store;
+      private List<string> KnownInterfaces;
 
       public TextFileProcessor(Store store)
       {
@@ -41,7 +32,92 @@ namespace Sawczyn.EFDesigner.EFModel
          KnownClasses = new List<string>();
       }
 
-      private List<string> HarvestInterfaces(string filename)
+      public bool Process(string inputFile, out List<ModelElement> newElements)
+      {
+         if (string.IsNullOrEmpty(inputFile))
+            throw new ArgumentNullException(nameof(inputFile));
+
+         newElements = new List<ModelElement>();
+
+         // did the user drop an intermediate file (one created by one of the parsers)? If so, process it and return the results
+         AssemblyProcessor assemblyProcessor = new AssemblyProcessor(Store);
+
+         if (assemblyProcessor.TryProcessIntermediateFile(inputFile, newElements))
+            return true;
+
+         try
+         {
+            // read the file
+            string fileContents = File.ReadAllText(inputFile);
+
+            // parse the contents
+            SyntaxTree tree = CSharpSyntaxTree.ParseText(fileContents);
+
+            if (tree.GetRoot() is CompilationUnitSyntax root)
+            {
+               List<ClassDeclarationSyntax> classDecls = root.DescendantNodes().OfType<ClassDeclarationSyntax>()
+                                                             .Where(classDecl => (classDecl.BaseList == null) || (classDecl.BaseList.Types.FirstOrDefault()?.ToString() != "DbContext")).ToList();
+
+               List<EnumDeclarationSyntax> enumDecls = root.DescendantNodes().OfType<EnumDeclarationSyntax>().ToList();
+
+               if (!classDecls.Any() && !enumDecls.Any())
+               {
+                  WarningDisplay.Show($"Couldn't find any classes or enums to add to the model in {inputFile}");
+
+                  return false;
+               }
+
+               // keep this order: enums, classes, class properties
+
+               newElements.AddRange(enumDecls.Select(d => ProcessEnum(d)).Where(e => e != null));
+
+               List<ModelClass> processedClasses = new List<ModelClass>();
+               List<ClassDeclarationSyntax> badClasses = new List<ClassDeclarationSyntax>();
+
+               foreach (ClassDeclarationSyntax classDecl in classDecls)
+               {
+                  ModelClass modelClass = ProcessClass(classDecl, newElements);
+
+                  if (modelClass == null)
+                     badClasses.Add(classDecl);
+                  else
+                     processedClasses.Add(modelClass);
+               }
+
+               // process last so all classes and enums are already in the model
+               foreach (ClassDeclarationSyntax classDecl in classDecls.Except(badClasses))
+                  ProcessProperties(classDecl);
+
+               // now that all the properties are in, go through the classes again and ensure identities are present based on convention
+               // ReSharper disable once LoopCanBePartlyConvertedToQuery
+               foreach (ModelClass modelClass in processedClasses.Where(c => !c.AllIdentityAttributes.Any()))
+               {
+                  // no identity attribute. Only look in current class for attributes that could be identity by convention
+                  List<ModelAttribute> identitiesByConvention = modelClass.Attributes.Where(a => (a.Name == "Id") || (a.Name == $"{modelClass.Name}Id")).ToList();
+
+                  // if both 'Id' and '[ClassName]Id' are present, don't do anything since we don't know which to make the identity
+                  if (identitiesByConvention.Count == 1)
+                  {
+                     using (Transaction transaction = Store.TransactionManager.BeginTransaction("Add identity"))
+                     {
+                        identitiesByConvention[0].IsIdentity = true;
+                        transaction.Commit();
+                     }
+                  }
+               }
+            }
+         }
+         catch
+         {
+            ErrorDisplay.Show(Store, "Error interpreting " + inputFile);
+
+            return false;
+         }
+
+         return true;
+      }
+
+      private List<string> HarvestClasses(string filename)
       {
          if (!string.IsNullOrEmpty(filename))
          {
@@ -51,7 +127,8 @@ namespace Sawczyn.EFDesigner.EFModel
             if (tree.GetRoot() is CompilationUnitSyntax root)
             {
                return root.DescendantNodes()
-                          .OfType<InterfaceDeclarationSyntax>()
+                          .OfType<ClassDeclarationSyntax>()
+                          .Where(decl => (decl.BaseList == null) || (decl.BaseList.Types.FirstOrDefault()?.ToString() != "DbContext"))
                           .Select(decl => decl.Identifier.Text)
                           .ToList();
             }
@@ -79,7 +156,7 @@ namespace Sawczyn.EFDesigner.EFModel
          return new List<string>();
       }
 
-      private List<string> HarvestClasses(string filename)
+      private List<string> HarvestInterfaces(string filename)
       {
          if (!string.IsNullOrEmpty(filename))
          {
@@ -89,9 +166,7 @@ namespace Sawczyn.EFDesigner.EFModel
             if (tree.GetRoot() is CompilationUnitSyntax root)
             {
                return root.DescendantNodes()
-                          .OfType<ClassDeclarationSyntax>()
-                          .Where(decl => decl.BaseList == null ||
-                                         decl.BaseList.Types.FirstOrDefault()?.ToString() != "DbContext")
+                          .OfType<InterfaceDeclarationSyntax>()
                           .Select(decl => decl.Identifier.Text)
                           .ToList();
             }
@@ -100,86 +175,361 @@ namespace Sawczyn.EFDesigner.EFModel
          return new List<string>();
       }
 
-      public bool Process(string inputFile, out List<ModelElement> newElements)
+      public void LoadCache(List<string> textFileList)
       {
-         if (string.IsNullOrEmpty(inputFile))
-            throw new ArgumentNullException(nameof(inputFile));
+         foreach (string textFile in textFileList)
+            LoadCache(textFile);
 
-         newElements = new List<ModelElement>();
+         KnownInterfaces = KnownInterfaces.Distinct().ToList();
+      }
 
-         // did the user drop an intermediate file (one created by one of the parsers)? If so, process it and return the results
-         AssemblyProcessor assemblyProcessor = new AssemblyProcessor(Store);
-         if (assemblyProcessor.TryProcessIntermediateFile(inputFile, newElements))
-            return true;
+      public void LoadCache(string textFile)
+      {
+         KnownInterfaces.AddRange(HarvestInterfaces(textFile).Union(new List<string>(new[] {"INotifyPropertyChanged"})));
+         KnownEnums.AddRange(HarvestEnums(textFile));
+         KnownClasses.AddRange(HarvestClasses(textFile));
+      }
+
+      private void ProcessAssociation([NotNull] ModelClass source, [NotNull] ModelClass target, [NotNull] PropertyDeclarationSyntax propertyDecl, bool toMany = false)
+      {
+         if (source == null)
+            throw new ArgumentNullException(nameof(source));
+
+         if (target == null)
+            throw new ArgumentNullException(nameof(target));
+
+         if (propertyDecl == null)
+            throw new ArgumentNullException(nameof(propertyDecl));
+
+         using (Transaction tx = Store.TransactionManager.BeginTransaction("processing associations"))
+         {
+            string propertyName = propertyDecl.Identifier.ToString();
+
+            // since we don't have enough information from the code, we'll create unidirectional associations
+            // cardinality 1 on the source end, 0..1 or 0..* on the target, depending on the parameter
+
+            XMLDocumentation xmlDocumentation = new XMLDocumentation(propertyDecl);
+
+            // if the association doesn't yet exist, create it
+            if (!Store.ElementDirectory
+                      .AllElements
+                      .OfType<UnidirectionalAssociation>()
+                      .Any(a => (a.Source == source) && (a.Target == target) && (a.TargetPropertyName == propertyName)))
+            {
+               // if there's a unidirectional going the other direction, we'll whack that one and make a bidirectional
+               // otherwise, proceed as planned
+               UnidirectionalAssociation compliment = Store.ElementDirectory
+                                                           .AllElements
+                                                           .OfType<UnidirectionalAssociation>()
+                                                           .FirstOrDefault(a => (a.Source == target) && (a.Target == source));
+
+               if (compliment == null)
+               {
+                  UnidirectionalAssociation element =
+                     new UnidirectionalAssociation(Store,
+                                                   new[]
+                                                   {
+                                                      new RoleAssignment(UnidirectionalAssociation.UnidirectionalSourceDomainRoleId, source),
+                                                      new RoleAssignment(UnidirectionalAssociation.UnidirectionalTargetDomainRoleId, target)
+                                                   },
+                                                   new[]
+                                                   {
+                                                      new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, Multiplicity.One),
+                                                      new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId,
+                                                                             toMany
+                                                                                ? Multiplicity.ZeroMany
+                                                                                : Multiplicity.ZeroOne),
+                                                      new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, propertyName),
+                                                      new PropertyAssignment(Association.TargetSummaryDomainPropertyId, xmlDocumentation.Summary),
+                                                      new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, xmlDocumentation.Description)
+                                                   });
+
+                  AssociationChangedRules.SetEndpointRoles(element);
+               }
+               else
+               {
+                  compliment.Delete();
+
+                  BidirectionalAssociation element =
+                     new BidirectionalAssociation(Store,
+                                                  new[]
+                                                  {
+                                                     new RoleAssignment(BidirectionalAssociation.BidirectionalSourceDomainRoleId, source),
+                                                     new RoleAssignment(BidirectionalAssociation.BidirectionalTargetDomainRoleId, target)
+                                                  },
+                                                  new[]
+                                                  {
+                                                     new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, compliment.TargetMultiplicity),
+                                                     new PropertyAssignment(BidirectionalAssociation.SourcePropertyNameDomainPropertyId, compliment.TargetPropertyName),
+                                                     new PropertyAssignment(BidirectionalAssociation.SourceSummaryDomainPropertyId, compliment.TargetSummary),
+                                                     new PropertyAssignment(BidirectionalAssociation.SourceDescriptionDomainPropertyId, compliment.TargetDescription),
+                                                     new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId,
+                                                                            toMany
+                                                                               ? Multiplicity.ZeroMany
+                                                                               : Multiplicity.ZeroOne),
+                                                     new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, propertyName),
+                                                     new PropertyAssignment(Association.TargetSummaryDomainPropertyId, xmlDocumentation.Summary),
+                                                     new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, xmlDocumentation.Description)
+                                                  });
+
+                  AssociationChangedRules.SetEndpointRoles(element);
+               }
+            }
+
+            tx.Commit();
+         }
+      }
+
+      private ModelClass ProcessClass([NotNull] ClassDeclarationSyntax classDecl, List<ModelElement> newElements, NamespaceDeclarationSyntax namespaceDecl = null)
+      {
+         ModelClass result;
+
+         if (classDecl == null)
+            throw new ArgumentNullException(nameof(classDecl));
+
+         ModelRoot modelRoot = Store.ModelRoot();
+         string className = classDecl.Identifier.Text.Split(':').LastOrDefault();
+
+         if (!ValidateInput())
+            return null;
+
+         Transaction tx = Store.TransactionManager.CurrentTransaction == null
+                             ? Store.TransactionManager.BeginTransaction()
+                             : null;
+
+         List<string> customInterfaces = new List<string>();
 
          try
          {
-            // read the file
-            string fileContents = File.ReadAllText(inputFile);
+            result = Store.GetAll<ModelClass>().FirstOrDefault(c => c.Name == className);
 
-            // parse the contents
-            SyntaxTree tree = CSharpSyntaxTree.ParseText(fileContents);
-
-            if (tree.GetRoot() is CompilationUnitSyntax root)
+            if (result == null)
             {
-               List<ClassDeclarationSyntax> classDecls = root.DescendantNodes().OfType<ClassDeclarationSyntax>().Where(classDecl => classDecl.BaseList == null || classDecl.BaseList.Types.FirstOrDefault()?.ToString() != "DbContext").ToList();
-               List<EnumDeclarationSyntax> enumDecls = root.DescendantNodes().OfType<EnumDeclarationSyntax>().ToList();
+               result = new ModelClass(Store,
+                                       new PropertyAssignment(ModelClass.NameDomainPropertyId, className),
+                                       new PropertyAssignment(ModelClass.NamespaceDomainPropertyId, namespaceDecl?.Name.ToString() ?? modelRoot.Namespace),
+                                       new PropertyAssignment(ModelClass.IsAbstractDomainPropertyId, classDecl.DescendantNodes().Any(n => n.IsKind(SyntaxKind.AbstractKeyword))));
 
-               if (!classDecls.Any() && !enumDecls.Any())
-               {
-                  WarningDisplay.Show($"Couldn't find any classes or enums to add to the model in {inputFile}");
-
-                  return false;
-               }
-
-               // keep this order: enums, classes, class properties
-
-               newElements.AddRange(enumDecls.Select(d => ProcessEnum(d)).Where(e=> e != null));
-
-               List<ModelClass> processedClasses = new List<ModelClass>();
-               List<ClassDeclarationSyntax> badClasses = new List<ClassDeclarationSyntax>();
-
-               foreach (ClassDeclarationSyntax classDecl in classDecls)
-               {
-                  ModelClass modelClass = ProcessClass(classDecl, newElements);
-
-                  if (modelClass == null)
-                     badClasses.Add(classDecl);
-                  else
-                     processedClasses.Add(modelClass);
-               }
-
-               // process last so all classes and enums are already in the model
-               foreach (ClassDeclarationSyntax classDecl in classDecls.Except(badClasses))
-                  ProcessProperties(classDecl);
-
-               // now that all the properties are in, go through the classes again and ensure identities are present based on convention
-               // ReSharper disable once LoopCanBePartlyConvertedToQuery
-               foreach (ModelClass modelClass in processedClasses.Where(c => !c.AllIdentityAttributes.Any()))
-               {
-                  // no identity attribute. Only look in current class for attributes that could be identity by convention
-                  List<ModelAttribute> identitiesByConvention = modelClass.Attributes.Where(a => a.Name == "Id" || a.Name == $"{modelClass.Name}Id").ToList();
-
-                  // if both 'Id' and '[ClassName]Id' are present, don't do anything since we don't know which to make the identity
-                  if (identitiesByConvention.Count == 1)
-                  {
-                     using (Transaction transaction = Store.TransactionManager.BeginTransaction("Add identity"))
-                     {
-                        identitiesByConvention[0].IsIdentity = true;
-                        transaction.Commit();
-                     }
-                  }
-               }
+               newElements.Add(result);
+               modelRoot.Classes.Add(result);
             }
+
+            ModelClass superClass = FindSuperClass();
+
+            if (superClass != null)
+               result.Superclass = superClass;
+
+            if (result.CustomInterfaces != null)
+            {
+               customInterfaces.AddRange(result.CustomInterfaces
+                                               .Split(',')
+                                               .Where(i => !string.IsNullOrEmpty(i))
+                                               .Select(i => i.Trim()));
+            }
+
+            if (customInterfaces.Contains("INotifyPropertyChanged"))
+            {
+               result.ImplementNotify = true;
+               customInterfaces.Remove("INotifyPropertyChanged");
+            }
+
+            if ((result.Superclass != null) && customInterfaces.Contains(result.Superclass.Name))
+               customInterfaces.Remove(result.Superclass.Name);
+
+            result.CustomInterfaces = customInterfaces.Any()
+                                         ? string.Join(",", customInterfaces.Distinct())
+                                         : null;
+
+            AttributeSyntax tableAttribute = classDecl.GetAttribute("Table");
+
+            if (tableAttribute != null)
+            {
+               result.TableName = tableAttribute.GetAttributeArguments().First().Expression.ToString().Trim('"');
+
+               string schemaName = tableAttribute.GetNamedArgumentValue("Schema");
+
+               if (schemaName != null)
+                  result.DatabaseSchema = schemaName;
+            }
+
+            XMLDocumentation xmlDocumentation = new XMLDocumentation(classDecl);
+            result.Summary = xmlDocumentation.Summary;
+            result.Description = xmlDocumentation.Description;
+            tx?.Commit();
          }
          catch
          {
-            ErrorDisplay.Show(Store, "Error interpreting " + inputFile);
+            tx?.Rollback();
 
-            return false;
+            throw;
          }
 
-         return true;
+         return result;
+
+         ModelClass FindSuperClass()
+         {
+            ModelClass superClass = null;
+
+            // Base classes and interfaces
+            // Check these first. If we need to add new models, we want the base class already in the store
+            IEnumerable<BaseTypeSyntax> baseTypes = classDecl.BaseList?.Types ?? Enumerable.Empty<BaseTypeSyntax>();
+
+            foreach (string baseName in baseTypes.Select(type => type.ToString().Split(':').Last()))
+            {
+               // Do we know this is an interface?
+               if (KnownInterfaces.Contains(baseName) || (superClass != null) || (result.Superclass != null))
+               {
+                  customInterfaces.Add(baseName);
+
+                  if (!KnownInterfaces.Contains(baseName))
+                     KnownInterfaces.Add(baseName);
+
+                  continue;
+               }
+
+               // is it inheritance or an interface?
+               superClass = modelRoot.Classes.FirstOrDefault(c => c.Name == baseName);
+
+               // if it's not in the model, we just don't know. Ask the user
+               if ((superClass == null) && (KnownClasses.Contains(baseName) || (BooleanQuestionDisplay.Show(Store, $"For class {className}, is {baseName} the base class?") == true)))
+               {
+                  string[] nameparts = baseName.Split('.');
+
+                  superClass = nameparts.Length == 1
+                                  ? new ModelClass(Store, new PropertyAssignment(ModelClass.NameDomainPropertyId, nameparts.Last()))
+                                  : new ModelClass(Store,
+                                                   new PropertyAssignment(ModelClass.NameDomainPropertyId, nameparts.Last()),
+                                                   new PropertyAssignment(ModelClass.NamespaceDomainPropertyId, string.Join(".", nameparts.Take(nameparts.Length - 1))));
+
+                  modelRoot.Classes.Add(superClass);
+               }
+               else
+               {
+                  customInterfaces.Add(baseName);
+                  KnownInterfaces.Add(baseName);
+               }
+            }
+
+            return superClass;
+         }
+
+         bool ValidateInput()
+         {
+            if (className == null)
+            {
+               ErrorDisplay.Show(Store, "Can't find class name");
+
+               return false;
+            }
+
+            if ((namespaceDecl == null) && classDecl.Parent is NamespaceDeclarationSyntax classDeclParent)
+               namespaceDecl = classDeclParent;
+
+            if (Store.GetAll<ModelEnum>().Any(c => c.Name == className))
+            {
+               ErrorDisplay.Show(Store, $"'{className}' already exists in model as an Enum.");
+
+               return false;
+            }
+
+            if (classDecl.TypeParameterList != null)
+            {
+               ErrorDisplay.Show(Store, $"Can't add generic class '{className}'.");
+
+               return false;
+            }
+
+            return true;
+         }
+      }
+
+      private ModelEnum ProcessEnum([NotNull] EnumDeclarationSyntax enumDecl, NamespaceDeclarationSyntax namespaceDecl = null)
+      {
+         if (enumDecl == null)
+            throw new ArgumentNullException(nameof(enumDecl));
+
+         ModelRoot modelRoot = Store.ModelRoot();
+         string enumName = enumDecl.Identifier.Text;
+
+         if ((namespaceDecl == null) && enumDecl.Parent is NamespaceDeclarationSyntax enumDeclParent)
+            namespaceDecl = enumDeclParent;
+
+         string namespaceName = namespaceDecl?.Name.ToString() ?? modelRoot.Namespace;
+
+         if (Store.GetAll<ModelClass>().Any(c => c.Name == enumName) || Store.GetAll<ModelEnum>().Any(c => c.Name == enumName))
+         {
+            ErrorDisplay.Show(Store, $"'{enumName}' already exists in model.");
+
+            // ReSharper disable once ExpressionIsAlwaysNull
+            return null;
+         }
+
+         ModelEnum result;
+
+         using (Transaction tx = Store.TransactionManager.BeginTransaction("processing enumerations"))
+         {
+            result = new ModelEnum(Store,
+                                   new PropertyAssignment(ModelEnum.NameDomainPropertyId, enumName),
+                                   new PropertyAssignment(ModelEnum.NamespaceDomainPropertyId, namespaceName),
+                                   new PropertyAssignment(ModelEnum.IsFlagsDomainPropertyId, enumDecl.HasAttribute("Flags")));
+
+            SimpleBaseTypeSyntax baseTypeSyntax = enumDecl.DescendantNodes().OfType<SimpleBaseTypeSyntax>().FirstOrDefault();
+
+            if (baseTypeSyntax != null)
+            {
+               switch (baseTypeSyntax.Type.ToString())
+               {
+                  case "Int16":
+                  case "short":
+                     result.ValueType = EnumValueType.Int16;
+
+                     break;
+
+                  case "Int32":
+                  case "int":
+                     result.ValueType = EnumValueType.Int32;
+
+                     break;
+
+                  case "Int64":
+                  case "long":
+                     result.ValueType = EnumValueType.Int64;
+
+                     break;
+
+                  default:
+                     WarningDisplay.Show($"Could not resolve value type for '{enumName}'. The enum will default to an Int32 value type.");
+
+                     break;
+               }
+            }
+
+            XMLDocumentation xmlDocumentation;
+
+            foreach (EnumMemberDeclarationSyntax enumValueDecl in enumDecl.DescendantNodes().OfType<EnumMemberDeclarationSyntax>())
+            {
+               ModelEnumValue enumValue = new ModelEnumValue(Store, new PropertyAssignment(ModelEnumValue.NameDomainPropertyId, enumValueDecl.Identifier.ToString()));
+               EqualsValueClauseSyntax valueDecl = enumValueDecl.DescendantNodes().OfType<EqualsValueClauseSyntax>().FirstOrDefault();
+
+               if (valueDecl != null)
+                  enumValue.Value = valueDecl.Value.ToString();
+
+               xmlDocumentation = new XMLDocumentation(enumValueDecl);
+               enumValue.Summary = xmlDocumentation.Summary;
+               enumValue.Description = xmlDocumentation.Description;
+
+               result.Values.Add(enumValue);
+            }
+
+            xmlDocumentation = new XMLDocumentation(enumDecl);
+            result.Summary = xmlDocumentation.Summary;
+            result.Description = xmlDocumentation.Description;
+
+            modelRoot.Enums.Add(result);
+            tx.Commit();
+         }
+
+         return result;
       }
 
       private void ProcessProperties([NotNull] ClassDeclarationSyntax classDecl)
@@ -218,12 +568,7 @@ namespace Sawczyn.EFDesigner.EFModel
                // TODO: is this really a good assumption? Review later
                if (propertyDecl.ChildNodes().OfType<GenericNameSyntax>().Any())
                {
-                  ProcessAsList(propertyDecl
-                              , className
-                              , propertyName
-                              , propertyType
-                              , modelRoot
-                              , modelClass);
+                  ProcessAsList(propertyDecl, className, propertyName, propertyType, modelRoot, modelClass);
 
                   continue;
                }
@@ -232,6 +577,7 @@ namespace Sawczyn.EFDesigner.EFModel
                if (target != null)
                {
                   ProcessAssociation(modelClass, target, propertyDecl);
+
                   continue;
                }
 
@@ -247,11 +593,11 @@ namespace Sawczyn.EFDesigner.EFModel
                   // ReSharper disable once UseObjectOrCollectionInitializer
                   ModelAttribute modelAttribute = new ModelAttribute(Store, new PropertyAssignment(ModelAttribute.NameDomainPropertyId, propertyName))
                                                   {
-                                                     Type = ModelAttribute.ToCLRType(propertyDecl.Type.ToString()).Trim('?')
-                                                   , Required = propertyDecl.HasAttribute("RequiredAttribute") || !propertyShowsNullable
-                                                   , Indexed = propertyDecl.HasAttribute("IndexedAttribute")
-                                                   , IsIdentity = propertyDecl.HasAttribute("KeyAttribute")
-                                                   , Virtual = propertyDecl.DescendantTokens().Any(t => t.IsKind(SyntaxKind.VirtualKeyword))
+                                                     Type = ModelAttribute.ToCLRType(propertyDecl.Type.ToString()).Trim('?'),
+                                                     Required = propertyDecl.HasAttribute("RequiredAttribute") || !propertyShowsNullable,
+                                                     Indexed = propertyDecl.HasAttribute("IndexedAttribute"),
+                                                     IsIdentity = propertyDecl.HasAttribute("KeyAttribute"),
+                                                     Virtual = propertyDecl.DescendantTokens().Any(t => t.IsKind(SyntaxKind.VirtualKeyword))
                                                   };
 
                   if (modelAttribute.Type.ToLower() == "string")
@@ -367,352 +713,12 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      private void ProcessAssociation([NotNull] ModelClass source, [NotNull] ModelClass target, [NotNull] PropertyDeclarationSyntax propertyDecl, bool toMany = false)
-      {
-         if (source == null)
-            throw new ArgumentNullException(nameof(source));
-
-         if (target == null)
-            throw new ArgumentNullException(nameof(target));
-
-         if (propertyDecl == null)
-            throw new ArgumentNullException(nameof(propertyDecl));
-
-         using (Transaction tx = Store.TransactionManager.BeginTransaction("processing associations"))
-         {
-            string propertyName = propertyDecl.Identifier.ToString();
-
-            // since we don't have enough information from the code, we'll create unidirectional associations
-            // cardinality 1 on the source end, 0..1 or 0..* on the target, depending on the parameter
-
-            XMLDocumentation xmlDocumentation = new XMLDocumentation(propertyDecl);
-
-            // if the association doesn't yet exist, create it
-            if (!Store.ElementDirectory
-                      .AllElements
-                      .OfType<UnidirectionalAssociation>()
-                      .Any(a => a.Source == source &&
-                                a.Target == target &&
-                                a.TargetPropertyName == propertyName))
-            {
-               // if there's a unidirectional going the other direction, we'll whack that one and make a bidirectional
-               // otherwise, proceed as planned
-               UnidirectionalAssociation compliment = Store.ElementDirectory
-                                                           .AllElements
-                                                           .OfType<UnidirectionalAssociation>()
-                                                           .FirstOrDefault(a => a.Source == target &&
-                                                                                a.Target == source);
-
-               if (compliment == null)
-               {
-                  UnidirectionalAssociation element =
-                     new UnidirectionalAssociation(Store,
-                                                   new[]
-                                                   {
-                                                      new RoleAssignment(UnidirectionalAssociation.UnidirectionalSourceDomainRoleId, source),
-                                                      new RoleAssignment(UnidirectionalAssociation.UnidirectionalTargetDomainRoleId, target)
-                                                   },
-                                                   new[]
-                                                   {
-                                                      new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, Multiplicity.One),
-
-                                                      new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, toMany ? Multiplicity.ZeroMany : Multiplicity.ZeroOne),
-                                                      new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, propertyName),
-                                                      new PropertyAssignment(Association.TargetSummaryDomainPropertyId, xmlDocumentation.Summary),
-                                                      new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, xmlDocumentation.Description)
-                                                   });
-                  AssociationChangedRules.SetEndpointRoles(element);
-               }
-               else
-               {
-                  compliment.Delete();
-
-                  BidirectionalAssociation element =
-                     new BidirectionalAssociation(Store,
-                                                  new[]
-                                                  {
-                                                     new RoleAssignment(BidirectionalAssociation.BidirectionalSourceDomainRoleId, source),
-                                                     new RoleAssignment(BidirectionalAssociation.BidirectionalTargetDomainRoleId, target)
-                                                  },
-                                                  new[]
-                                                  {
-                                                     new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, compliment.TargetMultiplicity),
-                                                     new PropertyAssignment(BidirectionalAssociation.SourcePropertyNameDomainPropertyId, compliment.TargetPropertyName),
-                                                     new PropertyAssignment(BidirectionalAssociation.SourceSummaryDomainPropertyId, compliment.TargetSummary),
-                                                     new PropertyAssignment(BidirectionalAssociation.SourceDescriptionDomainPropertyId, compliment.TargetDescription),
-
-                                                     new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, toMany ? Multiplicity.ZeroMany : Multiplicity.ZeroOne),
-                                                     new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, propertyName),
-                                                     new PropertyAssignment(Association.TargetSummaryDomainPropertyId, xmlDocumentation.Summary),
-                                                     new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, xmlDocumentation.Description)
-                                                  });
-                  AssociationChangedRules.SetEndpointRoles(element);
-               }
-            }
-
-            tx.Commit();
-         }
-      }
-
-      private ModelEnum ProcessEnum([NotNull] EnumDeclarationSyntax enumDecl, NamespaceDeclarationSyntax namespaceDecl = null)
-      {
-         if (enumDecl == null)
-            throw new ArgumentNullException(nameof(enumDecl));
-
-         ModelRoot modelRoot = Store.ModelRoot();
-         string enumName = enumDecl.Identifier.Text;
-
-         if (namespaceDecl == null && enumDecl.Parent is NamespaceDeclarationSyntax enumDeclParent)
-            namespaceDecl = enumDeclParent;
-
-         string namespaceName = namespaceDecl?.Name.ToString() ?? modelRoot.Namespace;
-
-         if (Store.GetAll<ModelClass>().Any(c => c.Name == enumName) || Store.GetAll<ModelEnum>().Any(c => c.Name == enumName))
-         {
-            ErrorDisplay.Show(Store, $"'{enumName}' already exists in model.");
-
-            // ReSharper disable once ExpressionIsAlwaysNull
-            return null;
-         }
-
-         ModelEnum result;
-
-         using (Transaction tx = Store.TransactionManager.BeginTransaction("processing enumerations"))
-         {
-            result = new ModelEnum(Store
-                                 , new PropertyAssignment(ModelEnum.NameDomainPropertyId, enumName)
-                                 , new PropertyAssignment(ModelEnum.NamespaceDomainPropertyId, namespaceName)
-                                 , new PropertyAssignment(ModelEnum.IsFlagsDomainPropertyId, enumDecl.HasAttribute("Flags")));
-            
-            SimpleBaseTypeSyntax baseTypeSyntax = enumDecl.DescendantNodes().OfType<SimpleBaseTypeSyntax>().FirstOrDefault();
-
-            if (baseTypeSyntax != null)
-            {
-               switch (baseTypeSyntax.Type.ToString())
-               {
-                  case "Int16":
-                  case "short":
-                     result.ValueType = EnumValueType.Int16;
-
-                     break;
-                  case "Int32":
-                  case "int":
-                     result.ValueType = EnumValueType.Int32;
-
-                     break;
-                  case "Int64":
-                  case "long":
-                     result.ValueType = EnumValueType.Int64;
-
-                     break;
-                  default:
-                     WarningDisplay.Show($"Could not resolve value type for '{enumName}'. The enum will default to an Int32 value type.");
-
-                     break;
-               }
-            }
-
-            XMLDocumentation xmlDocumentation;
-
-            foreach (EnumMemberDeclarationSyntax enumValueDecl in enumDecl.DescendantNodes().OfType<EnumMemberDeclarationSyntax>())
-            {
-               ModelEnumValue enumValue = new ModelEnumValue(Store, new PropertyAssignment(ModelEnumValue.NameDomainPropertyId, enumValueDecl.Identifier.ToString()));
-               EqualsValueClauseSyntax valueDecl = enumValueDecl.DescendantNodes().OfType<EqualsValueClauseSyntax>().FirstOrDefault();
-
-               if (valueDecl != null)
-                  enumValue.Value = valueDecl.Value.ToString();
-
-               xmlDocumentation = new XMLDocumentation(enumValueDecl);
-               enumValue.Summary = xmlDocumentation.Summary;
-               enumValue.Description = xmlDocumentation.Description;
-
-               result.Values.Add(enumValue);
-            }
-
-            xmlDocumentation = new XMLDocumentation(enumDecl);
-            result.Summary = xmlDocumentation.Summary;
-            result.Description = xmlDocumentation.Description;
-
-            modelRoot.Enums.Add(result);
-            tx.Commit();
-         }
-
-         return result;
-      }
-
-      private ModelClass ProcessClass([NotNull] ClassDeclarationSyntax classDecl, List<ModelElement> newElements, NamespaceDeclarationSyntax namespaceDecl = null)
-      {
-         ModelClass result;
-
-         if (classDecl == null)
-            throw new ArgumentNullException(nameof(classDecl));
-
-         ModelRoot modelRoot = Store.ModelRoot();
-         string className = classDecl.Identifier.Text.Split(':').LastOrDefault();
-
-         if (!ValidateInput())
-            return null;
-
-         Transaction tx = Store.TransactionManager.CurrentTransaction == null
-                             ? Store.TransactionManager.BeginTransaction()
-                             : null;
-
-         List<string> customInterfaces = new List<string>();
-         try
-         {
-            result = Store.GetAll<ModelClass>().FirstOrDefault(c => c.Name == className);
-
-            if (result == null)
-            {
-               result = new ModelClass(Store
-                                     , new PropertyAssignment(ModelClass.NameDomainPropertyId, className)
-                                     , new PropertyAssignment(ModelClass.NamespaceDomainPropertyId, namespaceDecl?.Name.ToString() ?? modelRoot.Namespace)
-                                     , new PropertyAssignment(ModelClass.IsAbstractDomainPropertyId, classDecl.DescendantNodes().Any(n => n.IsKind(SyntaxKind.AbstractKeyword))));
-
-               newElements.Add(result);
-               modelRoot.Classes.Add(result);
-            }
-
-            ModelClass superClass = FindSuperClass();
-
-            if (superClass != null)
-               result.Superclass = superClass;
-
-            if (result.CustomInterfaces != null)
-            {
-               customInterfaces.AddRange(result.CustomInterfaces
-                                               .Split(',')
-                                               .Where(i => !string.IsNullOrEmpty(i))
-                                               .Select(i => i.Trim()));
-            }
-
-            if (customInterfaces.Contains("INotifyPropertyChanged"))
-            {
-               result.ImplementNotify = true;
-               customInterfaces.Remove("INotifyPropertyChanged");
-            }
-
-            if (result.Superclass != null && customInterfaces.Contains(result.Superclass.Name))
-               customInterfaces.Remove(result.Superclass.Name);
-
-            result.CustomInterfaces = customInterfaces.Any()
-                                         ? string.Join(",", customInterfaces.Distinct())
-                                         : null;
-
-            AttributeSyntax tableAttribute = classDecl.GetAttribute("Table");
-
-            if (tableAttribute != null)
-            {
-               result.TableName = tableAttribute.GetAttributeArguments().First().Expression.ToString().Trim('"');
-
-               string schemaName = tableAttribute.GetNamedArgumentValue("Schema");
-               if (schemaName != null)
-                  result.DatabaseSchema = schemaName;
-            }
-
-            XMLDocumentation xmlDocumentation = new XMLDocumentation(classDecl);
-            result.Summary = xmlDocumentation.Summary;
-            result.Description = xmlDocumentation.Description;
-            tx?.Commit();
-         }
-         catch
-         {
-            tx?.Rollback();
-            throw;
-         }
-
-         return result;
-
-         ModelClass FindSuperClass()
-         {
-            ModelClass superClass = null;
-
-            // Base classes and interfaces
-            // Check these first. If we need to add new models, we want the base class already in the store
-            IEnumerable<BaseTypeSyntax> baseTypes = (classDecl.BaseList?.Types ?? Enumerable.Empty<BaseTypeSyntax>());
-
-            foreach (string baseName in baseTypes.Select(type => type.ToString().Split(':').Last()))
-            {
-               // Do we know this is an interface?
-               if (KnownInterfaces.Contains(baseName) || superClass != null || result.Superclass != null)
-               {
-                  customInterfaces.Add(baseName);
-
-                  if (!KnownInterfaces.Contains(baseName))
-                     KnownInterfaces.Add(baseName);
-
-                  continue;
-               }
-
-               // is it inheritance or an interface?
-               superClass = modelRoot.Classes.FirstOrDefault(c => c.Name == baseName);
-
-               // if it's not in the model, we just don't know. Ask the user
-               if (superClass == null && (KnownClasses.Contains(baseName) || BooleanQuestionDisplay.Show(Store, $"For class {className}, is {baseName} the base class?") == true))
-               {
-                  string[] nameparts = baseName.Split('.');
-
-                  superClass = nameparts.Length == 1
-                                  ? new ModelClass(Store, new PropertyAssignment(ModelClass.NameDomainPropertyId, nameparts.Last()))
-                                  : new ModelClass(Store
-                                                 , new PropertyAssignment(ModelClass.NameDomainPropertyId, nameparts.Last())
-                                                 , new PropertyAssignment(ModelClass.NamespaceDomainPropertyId, string.Join(".", nameparts.Take(nameparts.Length - 1))));
-
-                  modelRoot.Classes.Add(superClass);
-               }
-               else
-               {
-                  customInterfaces.Add(baseName);
-                  KnownInterfaces.Add(baseName);
-               }
-            }
-
-            return superClass;
-         }
-
-         bool ValidateInput()
-         {
-            if (className == null)
-            {
-               ErrorDisplay.Show(Store, "Can't find class name");
-
-               return false;
-            }
-
-            if (namespaceDecl == null && classDecl.Parent is NamespaceDeclarationSyntax classDeclParent)
-               namespaceDecl = classDeclParent;
-
-            if (Store.GetAll<ModelEnum>().Any(c => c.Name == className))
-            {
-               ErrorDisplay.Show(Store, $"'{className}' already exists in model as an Enum.");
-
-               return false;
-            }
-
-            if (classDecl.TypeParameterList != null)
-            {
-               ErrorDisplay.Show(Store, $"Can't add generic class '{className}'.");
-
-               return false;
-            }
-
-            return true;
-         }
-      }
-
-      public void LoadCache(List<string> textFileList)
-      {
-         foreach (string textFile in textFileList)
-            LoadCache(textFile);
-
-         KnownInterfaces = KnownInterfaces.Distinct().ToList();
-      }
-
-      public void LoadCache(string textFile)
-      {
-         KnownInterfaces.AddRange(HarvestInterfaces(textFile).Union(new List<string>(new[] { "INotifyPropertyChanged" })));
-         KnownEnums.AddRange(HarvestEnums(textFile));
-         KnownClasses.AddRange(HarvestClasses(textFile));
-      }
+      // ReSharper disable FieldCanBeMadeReadOnly.Local
+#pragma warning disable IDE0044 // Add readonly modifier
+      private List<string> KnownClasses;
+      private List<string> KnownEnums;
+#pragma warning restore IDE0044 // Add readonly modifier
+
+      // ReSharper restore FieldCanBeMadeReadOnly.Local
    }
 }
