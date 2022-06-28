@@ -361,8 +361,6 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void OnMenuGoToCode(object sender, EventArgs e)
       {
-         ThreadHelper.ThrowIfNotOnUIThread();
-
          if (ObjectModelBrowser.SelectedNode is EFModelElementTreeNode elementNode)
          {
             switch (elementNode.RepresentedElement)
@@ -437,8 +435,6 @@ namespace Sawczyn.EFDesigner.EFModel
       /// </summary>
       protected void InitSearch()
       {
-         ThreadHelper.ThrowIfNotOnUIThread();
-
          if (ServiceProvider.GetService(typeof(SVsWindowSearchHostFactory)) is IVsWindowSearchHostFactory windowSearchHostFactory)
          {
             IVsWindowSearchHost windowSearchHost = windowSearchHostFactory.CreateWindowSearchHost(SearchControlHost);
@@ -549,7 +545,6 @@ namespace Sawczyn.EFDesigner.EFModel
             // note that this will be run from a background thread. Must context switch to the UI thread to manipulate the tree.
             // use ThreadHelper.Generic.BeginInvoke for that 
 
-            ThreadHelper.ThrowIfNotOnUIThread();
             TreeView treeView = modelExplorer.ObjectModelBrowser;
             List<string> searchTexts = SearchUtilities.ExtractSearchTokens(SearchQuery).Select(token => token.ParsedTokenText).ToList();
 
@@ -558,7 +553,6 @@ namespace Sawczyn.EFDesigner.EFModel
                ThreadHelper.Generic.BeginInvoke(() =>
                                                 {
                                                    // ReSharper disable once UnusedVariable
-                                                   ThreadHelper.ThrowIfNotOnUIThread();
 
                                                    using (WaitCursor w = new WaitCursor())
                                                    {
@@ -594,7 +588,6 @@ namespace Sawczyn.EFDesigner.EFModel
 
          private void PerformSearch(TreeView treeView)
          {
-            ThreadHelper.ThrowIfNotOnUIThread();
             List<string> searchTexts = SearchUtilities.ExtractSearchTokens(SearchQuery).Select(token => token.ParsedTokenText).ToList();
 
             // if nothing to search for, everything's a hit

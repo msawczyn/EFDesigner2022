@@ -705,7 +705,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                int constructorCount = (int)Math.Pow(2, requiredNavigationProperties.Count);
 
                for (int mask = 0; mask < constructorCount; mask++)
-                  WriteConstructorsWithRequiredProprties(modelClass, remarks, requiredNavigationProperties, mask);
+                  WriteConstructorsWithRequiredProperties(modelClass, remarks, requiredNavigationProperties, mask);
 
                if (!modelClass.IsAbstract)
                {
@@ -748,7 +748,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                Output($@"/// <param name=""{requiredNavigationProperty.PropertyName.ToLower()}"">{string.Join(" ", GenerateCommentBody(requiredNavigationProperty.Summary))}</param>");
          }
 
-         private void WriteConstructorsWithRequiredProprties(ModelClass modelClass, List<string> remarks, IEnumerable<NavigationProperty> requiredNavigationProperties, int mask)
+         private void WriteConstructorsWithRequiredProperties(ModelClass modelClass, List<string> remarks, IEnumerable<NavigationProperty> requiredNavigationProperties, int mask)
          {
             string visibility = modelClass.IsAbstract
                                    ? "protected"

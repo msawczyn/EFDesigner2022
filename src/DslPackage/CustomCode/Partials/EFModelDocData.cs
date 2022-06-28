@@ -52,8 +52,6 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
             return _dte ?? (_dte = Package.GetGlobalService(typeof(DTE)) as DTE);
          }
       }
@@ -80,8 +78,6 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
             return Dte.ActiveSolutionProjects is Array activeSolutionProjects && (activeSolutionProjects.Length > 0)
                       ? activeSolutionProjects.GetValue(0) as Project
                       : null;
@@ -127,7 +123,6 @@ namespace Sawczyn.EFDesigner.EFModel
 
       protected override void CleanupOldDiagramFiles()
       {
-         ThreadHelper.ThrowIfNotOnUIThread();
          string diagramsFileName = FileName + DiagramExtension;
 
          if (diagramsFileName.EndsWith("x"))
@@ -143,8 +138,6 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void CloseDiagram(EFModelDiagram diagram)
       {
-         ThreadHelper.ThrowIfNotOnUIThread();
-
          DocViews.OfType<EFModelDocView>().FirstOrDefault(d => d.Diagram == diagram)?.Frame
                 ?.CloseFrame((uint)__FRAMECLOSE.FRAMECLOSE_SaveIfDirty);
       }
@@ -156,13 +149,11 @@ namespace Sawczyn.EFDesigner.EFModel
 
       internal static void GenerateCode()
       {
-         ThreadHelper.ThrowIfNotOnUIThread();
          GenerateCode(null);
       }
 
       internal static void GenerateCode(string filepath)
       {
-         ThreadHelper.ThrowIfNotOnUIThread();
          ProjectItem modelProjectItem = Dte2.Solution.FindProjectItem(filepath ?? Dte2.ActiveDocument.FullName);
 
          if (Guid.Parse(modelProjectItem.Kind) == VSConstants.GUID_ItemType_PhysicalFile)
@@ -293,7 +284,6 @@ namespace Sawczyn.EFDesigner.EFModel
          VSColorTheme.ThemeChanged += VSColorTheme_OnThemeChanged;
 
          // set to the project's namespace if no namespace set
-         ThreadHelper.ThrowIfNotOnUIThread();
 
          if (string.IsNullOrEmpty(modelRoot.Namespace))
          {
@@ -435,7 +425,6 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          try
          {
-            ThreadHelper.ThrowIfNotOnUIThread();
             Project activeProject = ActiveProject;
 
             if (activeProject != null)
@@ -469,7 +458,6 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          try
          {
-            ThreadHelper.ThrowIfNotOnUIThread();
             Project activeProject = ActiveProject;
 
             if (activeProject != null)
@@ -498,8 +486,6 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void RenameWindow(EFModelDiagram diagram)
       {
-         ThreadHelper.ThrowIfNotOnUIThread();
-
          DocViews.OfType<EFModelDocView>().FirstOrDefault(d => d.Diagram == diagram)?.Frame
                 ?.SetProperty((int)__VSFPROPID.VSFPROPID_EditorCaption, $" [{diagram.Name}]");
       }

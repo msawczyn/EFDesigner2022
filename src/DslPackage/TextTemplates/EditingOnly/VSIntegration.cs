@@ -6,8 +6,6 @@ using System.Linq;
 
 using EnvDTE;
 
-using Microsoft.VisualStudio.Shell;
-
 namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 {
    [SuppressMessage("ReSharper", "UnusedMember.Local")]
@@ -31,12 +29,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
       public IEnumerable<Project> GetAllProjects()
       {
-         ThreadHelper.ThrowIfNotOnUIThread();
-
          foreach (Project project in GetSolution().Projects.OfType<Project>())
          {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
             if (project.Kind == EnvDTE.Constants.vsProjectKindSolutionItems)
             {
                foreach (Project p in RecurseSolutionFolder(project))
@@ -49,7 +43,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
       public Project GetCurrentProject()
       {
-         ThreadHelper.ThrowIfNotOnUIThread();
          DTE dte = GetDTE();
 
          ProjectItem projectItem = dte.Solution.FindProjectItem(Host.TemplateFile);
@@ -76,7 +69,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
       private ProjectItem GetDirectoryItem(string target)
       {
-         ThreadHelper.ThrowIfNotOnUIThread();
          DTE dte = GetDTE();
          Array projects = dte?.ActiveSolutionProjects as Array;
          Project currentProject = projects?.GetValue(0) as Project;
@@ -132,7 +124,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          if (serviceProvider == null)
             throw new Exception("Host property returned unexpected value (null)");
 
-         ThreadHelper.ThrowIfNotOnUIThread();
          DTE dte = (DTE)serviceProvider.GetService(typeof(DTE));
 
          if (dte == null)
@@ -143,7 +134,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
       private string GetProjectPath(Project project)
       {
-         ThreadHelper.ThrowIfNotOnUIThread();
          string fullProjectName = project.FullName;
 
          if (string.IsNullOrWhiteSpace(fullProjectName))
@@ -167,19 +157,13 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
       public Solution GetSolution()
       {
-         ThreadHelper.ThrowIfNotOnUIThread();
-
          return GetDTE().Solution;
       }
 
       private IEnumerable<Project> RecurseSolutionFolder(Project project)
       {
-         ThreadHelper.ThrowIfNotOnUIThread();
-
          if (project.ProjectItems == null)
             yield break;
-
-         ThreadHelper.ThrowIfNotOnUIThread();
 
          foreach (Project subProject in project.ProjectItems
                                                .Cast<ProjectItem>()

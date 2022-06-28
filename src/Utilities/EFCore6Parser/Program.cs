@@ -63,7 +63,13 @@ namespace EFCore6Parser
             return context.LoadFromAssemblyName(new AssemblyName(library.Name));
 
          // try known directories
-         string found = context.Assemblies.Select(x => Path.Combine(AppContext.BaseDirectory, $"{assemblyName.Name}.dll")).Distinct().FirstOrDefault(File.Exists);
+         if (File.Exists(Path.Combine(AppContext.BaseDirectory, $"{assemblyName.Name}.dll")))
+            return context.LoadFromAssemblyPath(Path.Combine(AppContext.BaseDirectory, $"{assemblyName.Name}.dll"));
+
+         string found = context.Assemblies
+                               .Select(x => Path.Combine(Path.GetDirectoryName(x.Location), $"{x.GetName()}.dll"))
+                               .Distinct()
+                               .FirstOrDefault(File.Exists);
 
          if (found != null)
             return context.LoadFromAssemblyPath(found);
