@@ -65,7 +65,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                 .Where(nav => nav.AssociationObject.Dependent == element.ModelClass)
                                                                 .Select(nav => nav.AssociationObject)
                                                                 .Where(a => !string.IsNullOrWhiteSpace(a.FKPropertyName)
-                                                                         && a.FKPropertyName.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(n => n.Trim() == element.Name)))
+                                                                         && a.FKPropertyName.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).Any(n => n.Trim() == element.Name)))
                      {
                         foreach (ModelAttribute attribute in association.GetFKAutoIdentityErrors())
                            errorMessages.Add($"{association.Source.Name} <=> {association.Target.Name}: FK property {attribute.Name} in {association.Dependent.FullName} is an auto-generated identity. Migration will fail.");
@@ -73,7 +73,6 @@ namespace Sawczyn.EFDesigner.EFModel
                   }
                   else
                      element.IdentityType = IdentityType.None;
-
                }
 
                break;
@@ -151,7 +150,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      {
                         if (!modelRoot.IsEFCore5Plus)
                            errorMessages.Add($"{modelClass.Name}.{element.Name}: Can't make {element.Name} an identity because {modelClass.Name} is a dependent type and can't have an identity property.");
-                     }             
+                     }
                      else
                      {
                         if (!modelRoot.IsValidIdentityAttributeType(element.Type))
@@ -191,7 +190,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      element.MinLength = 0;
                   else if (minLengthValue < 0)
                      errorMessages.Add($"{modelClass.Name}.{element.Name}: MinLength must be zero or a positive number");
-                  else if (element.MaxLength > 0 && minLengthValue > element.MaxLength)
+                  else if ((element.MaxLength > 0) && (minLengthValue > element.MaxLength))
                      errorMessages.Add($"{modelClass.Name}.{element.Name}: MinLength cannot be greater than MaxLength");
                }
 
@@ -205,7 +204,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   {
                      int? maxLengthValue = (int?)e.NewValue;
 
-                     if (maxLengthValue > 0 && element.MinLength > maxLengthValue)
+                     if ((maxLengthValue > 0) && (element.MinLength > maxLengthValue))
                         errorMessages.Add($"{modelClass.Name}.{element.Name}: MinLength cannot be greater than MaxLength");
                   }
                }
@@ -217,7 +216,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   if (string.IsNullOrEmpty(element.Name) || !CodeGenerator.IsValidLanguageIndependentIdentifier(element.Name))
                      errorMessages.Add($"{modelClass.Name}: Property name '{element.Name}' isn't a valid .NET identifier");
 
-                  if (modelClass.AllAttributes.Except(new[] { element }).Any(x => x.Name == element.Name)
+                  if (modelClass.AllAttributes.Except(new[] {element}).Any(x => x.Name == element.Name)
                    || modelClass.AllNavigationProperties().Any(p => p.PropertyName == element.Name))
                      errorMessages.Add($"{modelClass.Name}: Property name '{element.Name}' already in use");
                }
@@ -243,7 +242,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "ReadOnly":
                {
-                  if (!element.Persistent || element.SetterVisibility != SetterAccessModifier.Public)
+                  if (!element.Persistent || (element.SetterVisibility != SetterAccessModifier.Public))
                      element.ReadOnly = false;
                }
 
@@ -281,7 +280,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                   .Where(nav => nav.AssociationObject.Dependent == element.ModelClass)
                                   .Select(nav => nav.AssociationObject)
                                   .Where(a => !string.IsNullOrWhiteSpace(a.FKPropertyName)
-                                           && a.FKPropertyName.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(n => n.Trim() == element.Name));
+                                           && a.FKPropertyName.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).Any(n => n.Trim() == element.Name));
 
                         foreach (Association association in participatingAssociations)
                            AssociationChangedRules.FixupForeignKeys(association);

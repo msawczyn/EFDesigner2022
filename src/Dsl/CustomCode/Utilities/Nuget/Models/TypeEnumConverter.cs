@@ -2,7 +2,8 @@
 
 using Newtonsoft.Json;
 
-namespace Sawczyn.EFDesigner.EFModel.Nuget {
+namespace Sawczyn.EFDesigner.EFModel.Nuget
+{
    internal class TypeEnumConverter : JsonConverter
    {
       public static readonly TypeEnumConverter Singleton = new TypeEnumConverter();
@@ -14,7 +15,8 @@ namespace Sawczyn.EFDesigner.EFModel.Nuget {
 
       public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
       {
-         if (reader.TokenType == JsonToken.Null) return null;
+         if (reader.TokenType == JsonToken.Null)
+            return null;
 
          string value = serializer.Deserialize<string>(reader);
 

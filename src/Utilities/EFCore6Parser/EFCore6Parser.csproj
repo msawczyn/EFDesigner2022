@@ -1,0 +1,75 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+   <PropertyGroup>
+      <OutputType>Exe</OutputType>
+      <TargetFrameworks>net6.0</TargetFrameworks>
+      <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+      <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+      <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+      <DefineConstants>DEBUG;TRACE</DefineConstants>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)'=='Release'">
+      <DefineConstants />
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
+     <NoWarn>1701;1702;IL3002</NoWarn>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+     <NoWarn>1701;1702;IL3002</NoWarn>
+   </PropertyGroup>
+
+   <ItemGroup>
+     <Compile Include="..\..\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
+   </ItemGroup>
+
+   <ItemGroup>
+      <PackageReference Include="log4net" Version="2.0.13" />
+      <PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="6.0.0" />
+      <PackageReference Include="Microsoft.VisualStudio.RpcContracts" Version="17.2.31" />
+      <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.2.32" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.6" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="6.0.6" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.6" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.6" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.6" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.6" />
+      <PackageReference Include="StreamJsonRpc" Version="2.11.35" />
+      <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
+   </ItemGroup>
+
+   <ItemGroup>
+      <ProjectReference Include="..\ParsingModels\ParsingModels.csproj" />
+   </ItemGroup>
+
+   <ItemGroup>
+      <Compile Update="Resources.Designer.cs">
+         <DependentUpon>Resources.resx</DependentUpon>
+         <DesignTime>True</DesignTime>
+         <AutoGen>True</AutoGen>
+      </Compile>
+   </ItemGroup>
+
+   <ItemGroup>
+      <EmbeddedResource Update="Resources.resx">
+         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+         <Generator>ResXFileCodeGenerator</Generator>
+      </EmbeddedResource>
+   </ItemGroup>
+
+   <ItemGroup>
+     <None Update="App.config">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+   </ItemGroup>
+
+</Project>

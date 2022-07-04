@@ -10,6 +10,60 @@ namespace ParsingModels
    {
       protected static readonly Regex TypeNameRegex = new Regex(@"([^`]+)`\d\[(\[[^\]]+\])(,(\[[^\]]+\]))*\]", RegexOptions.Compiled);
 
+      protected static readonly List<string> IgnoreAttributes = new List<string>(new[]
+                                                                                 {
+                                                                                    "System.SerializableAttribute",
+                                                                                    "System.Runtime.InteropServices.ComVisibleAttribute",
+                                                                                    "__DynamicallyInvokableAttribute",
+                                                                                    "System.Reflection.DefaultMemberAttribute",
+                                                                                    "System.Runtime.Versioning.NonVersionableAttribute",
+                                                                                    "System.FlagsAttribute",
+                                                                                    "TableAttribute(",
+                                                                                    "IsReadOnlyAttribute(",
+                                                                                    "NullableAttribute(",
+                                                                                    "NullableContextAttribute("
+                                                                                 });
+
+      protected static Multiplicity ConvertMultiplicity(RelationshipMultiplicity relationshipMultiplicity)
+      {
+         Multiplicity multiplicity = Multiplicity.ZeroOne;
+
+         switch (relationshipMultiplicity)
+         {
+            case RelationshipMultiplicity.ZeroOrOne:
+               multiplicity = Multiplicity.ZeroOne;
+
+               break;
+
+            case RelationshipMultiplicity.One:
+               multiplicity = Multiplicity.One;
+
+               break;
+
+            case RelationshipMultiplicity.Many:
+               multiplicity = Multiplicity.ZeroMany;
+
+               break;
+         }
+
+         return multiplicity;
+      }
+
+      protected static string GetCustomAttributes(Type type)
+      {
+         return type == null
+                   ? string.Empty
+                   : GetCustomAttributes(type.CustomAttributes);
+      }
+
+      protected static string GetCustomAttributes(IEnumerable<CustomAttributeData> customAttributeData)
+      {
+         List<string> customAttributes = customAttributeData.Select(a => a.ToString()).ToList();
+         customAttributes.RemoveAll(s => IgnoreAttributes.Select(s.Contains).Any());
+
+         return string.Join("", customAttributes);
+      }
+
       protected static string GetTypeFullName(Type type)
       {
          return GetTypeFullName(type?.FullName);
@@ -39,59 +93,5 @@ namespace ParsingModels
 
          return fullName;
       }
-
-      protected static string GetCustomAttributes(Type type)
-      {
-         return type == null
-                   ? string.Empty
-                   : GetCustomAttributes(type.CustomAttributes);
-      }
-
-      protected static readonly List<string> IgnoreAttributes = new List<string>(new[]
-                                                                                 {
-                                                                                    "System.SerializableAttribute"
-                                                                                  , "System.Runtime.InteropServices.ComVisibleAttribute"
-                                                                                  , "__DynamicallyInvokableAttribute"
-                                                                                  , "System.Reflection.DefaultMemberAttribute"
-                                                                                  , "System.Runtime.Versioning.NonVersionableAttribute"
-                                                                                  , "System.FlagsAttribute"
-                                                                                  , "TableAttribute("
-                                                                                  , "IsReadOnlyAttribute("
-                                                                                  , "NullableAttribute("
-                                                                                  , "NullableContextAttribute("
-                                                                                 });
-      protected static string GetCustomAttributes(IEnumerable<CustomAttributeData> customAttributeData)
-      {
-         List<string> customAttributes = customAttributeData.Select(a => a.ToString()).ToList();
-         customAttributes.RemoveAll(s => IgnoreAttributes.Select(s.Contains).Any());
-
-         return string.Join("", customAttributes);
-      }
-
-      protected static Multiplicity ConvertMultiplicity(RelationshipMultiplicity relationshipMultiplicity)
-      {
-         Multiplicity multiplicity = Multiplicity.ZeroOne;
-
-         switch (relationshipMultiplicity)
-         {
-            case RelationshipMultiplicity.ZeroOrOne:
-               multiplicity = Multiplicity.ZeroOne;
-
-               break;
-
-            case RelationshipMultiplicity.One:
-               multiplicity = Multiplicity.One;
-
-               break;
-
-            case RelationshipMultiplicity.Many:
-               multiplicity = Multiplicity.ZeroMany;
-
-               break;
-         }
-
-         return multiplicity;
-      }
-
    }
 }

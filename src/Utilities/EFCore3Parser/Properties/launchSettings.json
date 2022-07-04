@@ -1,7 +1,8 @@
 {
-  "profiles": {
-    "EFCore3Parser": {
-      "commandName": "Project"
-    }
-  }
-}
+      "profiles": {
+            "EFCore3Parser": {
+                  "commandName": "Project"
+                  , "commandLineArgs": "C:\\Code\\_Clients\\AWH\\PointPro\\Prognostics\\Server\\Prognostics.Data\\bin\\Debug\\net6.0\\Prognostics.Data.dll c:\\temp\\parsertest.txt"
+               }
+         }
+   }

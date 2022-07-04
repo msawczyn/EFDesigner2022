@@ -15,7 +15,7 @@ namespace EFCore2Parser
    public static class IModelExtensions
    {
       /// <summary>
-      /// Extension method used to get from the entity all navigation properties by multiplicity
+      ///    Extension method used to get from the entity all navigation properties by multiplicity
       /// </summary>
       /// <typeparam name="T">Entity from where the navigation properties are taken</typeparam>
       /// <param name="model">Context Model</param>
@@ -29,19 +29,37 @@ namespace EFCore2Parser
          {
             case RelationshipMultiplicity.Many:
                return navigations?
-                      .Where(nav => nav.IsCollection())
-                      .Select(nav => nav.PropertyInfo);
+                     .Where(nav => nav.IsCollection())
+                     .Select(nav => nav.PropertyInfo);
+
             case RelationshipMultiplicity.One:
                return navigations?
-                      .Where(nav => !nav.IsCollection() && nav.ForeignKey.IsRequired)
-                      .Select(nav => nav.PropertyInfo);
+                     .Where(nav => !nav.IsCollection() && nav.ForeignKey.IsRequired)
+                     .Select(nav => nav.PropertyInfo);
+
             case RelationshipMultiplicity.ZeroOrOne:
                return navigations?
-                      .Where(nav => !nav.IsCollection())
-                      .Select(nav => nav.PropertyInfo);
+                     .Where(nav => !nav.IsCollection())
+                     .Select(nav => nav.PropertyInfo);
+
             default:
                return null;
          }
+      }
+
+      public static RelationshipMultiplicity GetSourceMultiplicity(this INavigation navigation)
+      {
+         INavigation inverse = navigation.FindInverse();
+
+         if (inverse == null)
+            return RelationshipMultiplicity.One;
+
+         return inverse.GetTargetMultiplicity();
+      }
+
+      public static IEntityType GetSourceType(this INavigation navigation)
+      {
+         return navigation.DeclaringType as IEntityType;
       }
 
       public static RelationshipMultiplicity GetTargetMultiplicity(this INavigation navigation)
@@ -55,29 +73,13 @@ namespace EFCore2Parser
          return RelationshipMultiplicity.ZeroOrOne;
       }
 
-      public static RelationshipMultiplicity GetSourceMultiplicity(this INavigation navigation)
-      {
-         INavigation inverse = navigation.FindInverse();
-
-         if (inverse == null)
-            return RelationshipMultiplicity.One;
-
-         return inverse.GetTargetMultiplicity();
-      }
-
       public static Type Unwrap(this Type type)
       {
-         if (type.IsGenericType &&
-             (type.GetGenericTypeDefinition() == typeof(Nullable<>) ||
-              type.GetGenericTypeDefinition() == typeof(IEnumerable<>) ||
-              type.GetGenericTypeDefinition() == typeof(ICollection<>)))
+         if (type.IsGenericType
+          && ((type.GetGenericTypeDefinition() == typeof(Nullable<>)) || (type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) || (type.GetGenericTypeDefinition() == typeof(ICollection<>))))
             type = type.GetGenericArguments()[0];
-         return type;
-      }
 
-      public static IEntityType GetSourceType(this INavigation navigation)
-      {
-         return navigation.DeclaringType as IEntityType;
+         return type;
       }
    }
 }

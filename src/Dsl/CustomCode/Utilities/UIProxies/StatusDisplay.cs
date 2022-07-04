@@ -2,8 +2,14 @@
 {
    public static class StatusDisplay
    {
-      public delegate void StatusVisualizer(string message);
       private static StatusVisualizer StatusVisualizerMethod;
+
+      public delegate void StatusVisualizer(string message);
+
+      public static void RegisterDisplayHandler(StatusVisualizer method)
+      {
+         StatusVisualizerMethod = method;
+      }
 
       public static void Show(string message)
       {
@@ -19,11 +25,5 @@
             }
          }
       }
-
-      public static void RegisterDisplayHandler(StatusVisualizer method)
-      {
-         StatusVisualizerMethod = method;
-      }
-
    }
 }

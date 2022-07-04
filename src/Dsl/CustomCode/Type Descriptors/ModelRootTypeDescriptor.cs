@@ -1,10 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Data.Entity.Design.PluralizationServices;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
-
    public partial class ModelRootTypeDescriptor
    {
       /// <summary>

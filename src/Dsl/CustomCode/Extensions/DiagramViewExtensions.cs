@@ -6,12 +6,12 @@ using Microsoft.VisualStudio.Modeling.Diagrams;
 namespace Sawczyn.EFDesigner.EFModel.Extensions
 {
    /// <summary>
-   /// Extension methods for Microsoft.VisualStudio.Modeling.Diagrams.DiagramView
+   ///    Extension methods for Microsoft.VisualStudio.Modeling.Diagrams.DiagramView
    /// </summary>
    public static class DiagramViewExtensions
    {
       /// <summary>
-      /// Sets the selection state of a shape element that represents the modelElement parameter on the given DiagramView
+      ///    Sets the selection state of a shape element that represents the modelElement parameter on the given DiagramView
       /// </summary>
       /// <param name="diagramView">Object containing the shape element to select</param>
       /// <param name="modelElement">Model element the shape represents</param>

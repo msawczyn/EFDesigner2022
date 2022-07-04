@@ -24,7 +24,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
          if (!enumElement.IsFlags)
          {
-            bool hasDuplicates = enumElement.Values.Any(x => x != element && x.Value == element.Value);
+            bool hasDuplicates = enumElement.Values.Any(x => (x != element) && (x.Value == element.Value));
 
             if (hasDuplicates)
                element.Value = null;

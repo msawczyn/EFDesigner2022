@@ -7,12 +7,10 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Sawczyn.EFDesigner.EFModel {
+namespace Sawczyn.EFDesigner.EFModel
+{
    internal class XMLDocumentation
    {
-      public string Summary { get; }
-      public string Description { get; }
-
       public XMLDocumentation(SyntaxNode classDecl)
       {
          if (classDecl == null)
@@ -25,6 +23,14 @@ namespace Sawczyn.EFDesigner.EFModel {
             Summary = Extract(xmlComment, "summary");
             Description = Extract(xmlComment, "remarks");
          }
+      }
+
+      public string Summary { get; }
+      public string Description { get; }
+
+      private string Clean(XmlNodeSyntax xmlNodeSyntax)
+      {
+         return xmlNodeSyntax.ToString().Replace("\r", "").Replace("\n", "").Replace("///", "").Trim();
       }
 
       private string Extract(DocumentationCommentTriviaSyntax xmlComment, string tagName)
@@ -40,15 +46,13 @@ namespace Sawczyn.EFDesigner.EFModel {
             {
                XmlNodeSyntax xmlNodeSyntax = summary.Content[index];
 
-               extracted += (index == 0
-                                ? Clean(xmlNodeSyntax)
-                                : $"\n<p>{Clean(xmlNodeSyntax)}</p>");
+               extracted += index == 0
+                               ? Clean(xmlNodeSyntax)
+                               : $"\n<p>{Clean(xmlNodeSyntax)}</p>";
             }
          }
 
          return extracted;
       }
-
-      private string Clean(XmlNodeSyntax xmlNodeSyntax) => xmlNodeSyntax.ToString().Replace("\r", "").Replace("\n", "").Replace("///", "").Trim();
    }
 }

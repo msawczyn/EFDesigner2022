@@ -26,29 +26,6 @@ namespace Sawczyn.EFDesigner.EFModel
          Store = store;
       }
 
-      private bool DoProcessing(string outputFilename, out List<ModelElement> newElements)
-      {
-         newElements = new List<ModelElement>();
-
-         try
-         {
-            using (StreamReader sr = new StreamReader(outputFilename))
-            {
-               string json = sr.ReadToEnd();
-               ParsingModels.ModelRoot rootData = JsonConvert.DeserializeObject<ParsingModels.ModelRoot>(json);
-
-               newElements = ProcessRootData(rootData);
-               return true;
-            }
-         }
-         catch (Exception e)
-         {
-            ErrorDisplay.Show(Store, $"Error processing assembly: {e.Message}");
-         }
-
-         return false;
-      }
-
       public bool Process(string inputFile, out List<ModelElement> newElements)
       {
          try
@@ -62,15 +39,10 @@ namespace Sawczyn.EFDesigner.EFModel
             string logFilename = Path.ChangeExtension(outputFilename, "log");
             StatusDisplay.Show("Detecting .NET and EF versions");
 
-            string[] parsers =
-            {
-               @"Parsers\EF6Parser.exe"
-             , @"Parsers\EFCore2Parser.exe"
-             , @"Parsers\EFCore3Parser.exe"
-             , @"Parsers\EFCore5Parser.exe"
-            };
+            string[] parsers = {@"Parsers\EF6Parser.exe", @"Parsers\EFCore2Parser.exe", @"Parsers\EFCore3Parser.exe", @"Parsers\EFCore5Parser.exe", @"Parsers\EFCore6Parser.exe"};
 
             Dictionary<string, bool> contexts = new Dictionary<string, bool>();
+
             foreach (string parserPath in parsers)
             {
                if (TryProcess(inputFile, ref newElements, parserPath, outputFilename, logFilename, contexts))
@@ -81,12 +53,150 @@ namespace Sawczyn.EFDesigner.EFModel
                WarningDisplay.Show(logEntry);
 
             ErrorDisplay.Show(Store, $"Error processing assembly. See Output window or {logFilename} for further information");
+            System.Diagnostics.Process.Start(logFilename);
+
             return false;
          }
          finally
          {
             StatusDisplay.Show("Ready");
          }
+      }
+
+      private Multiplicity ConvertMultiplicity(ParsingModels.Multiplicity data)
+      {
+         switch (data)
+         {
+            case ParsingModels.Multiplicity.ZeroMany:
+               return Multiplicity.ZeroMany;
+
+            case ParsingModels.Multiplicity.One:
+               return Multiplicity.One;
+
+            case ParsingModels.Multiplicity.ZeroOne:
+               return Multiplicity.ZeroOne;
+         }
+
+         return Multiplicity.ZeroOne;
+      }
+
+      private EndpointRole ConvertRole(AssociationRole data)
+      {
+         switch (data)
+         {
+            case AssociationRole.Dependent:
+               return EndpointRole.Dependent;
+
+            case AssociationRole.Principal:
+               return EndpointRole.Principal;
+         }
+
+         return EndpointRole.NotSet;
+      }
+
+      private bool DoProcessing(string outputFilename, out List<ModelElement> newElements)
+      {
+         newElements = new List<ModelElement>();
+
+         try
+         {
+            using (StreamReader sr = new StreamReader(outputFilename))
+            {
+               string json = sr.ReadToEnd();
+               ParsingModels.ModelRoot rootData = JsonConvert.DeserializeObject<ParsingModels.ModelRoot>(json);
+
+               newElements = ProcessRootData(rootData);
+
+               return true;
+            }
+         }
+         catch (Exception e)
+         {
+            ErrorDisplay.Show(Store, $"Error processing assembly: {e.Message}");
+         }
+
+         return false;
+      }
+
+#region ModelRoot
+
+      private List<ModelElement> ProcessRootData(ParsingModels.ModelRoot rootData)
+      {
+         List<ModelElement> result = new List<ModelElement>();
+         ModelRoot modelRoot = Store.ModelRoot();
+
+         modelRoot.EntityContainerName = rootData.EntityContainerName;
+         modelRoot.Namespace = rootData.Namespace;
+
+         result.AddRange(ProcessClasses(modelRoot, rootData.Classes));
+         result.AddRange(ProcessEnumerations(modelRoot, rootData.Enumerations));
+
+         foreach (Association association in modelRoot.Store.GetAll<Association>())
+         {
+            AssociationChangedRules.SetEndpointRoles(association);
+            AssociationChangedRules.FixupForeignKeys(association);
+         }
+
+         return result;
+      }
+
+#endregion
+
+      private int TryParseAssembly(string filename, string parserAssembly, string outputFilename, string contextName)
+      {
+         string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), parserAssembly);
+         string arguments = $@"""{filename.Trim('\"')}"" ""{outputFilename}""{(string.IsNullOrEmpty(contextName) ? string.Empty : $@" ""{contextName}""")}";
+         Debug.WriteLine($"Trying parser: {path} {arguments}");
+
+         ProcessStartInfo processStartInfo = new ProcessStartInfo(path)
+                                             {
+                                                Arguments = arguments,
+                                                CreateNoWindow = true,
+                                                ErrorDialog = false,
+                                                WindowStyle = ProcessWindowStyle.Hidden,
+                                                UseShellExecute = true
+                                             };
+
+         using (Process process = System.Diagnostics.Process.Start(processStartInfo))
+         {
+            process.WaitForExit();
+
+            return process.ExitCode;
+         }
+      }
+
+      private bool TryProcess(string assemblyPath, ref List<ModelElement> newElements, string parserPath, string outputFilename, string logFilename, Dictionary<string, bool> contexts)
+      {
+         string contextName = contexts.Any(kv => contexts[kv.Key])
+                                 ? contexts.First(kv => contexts[kv.Key]).Key
+                                 : null;
+
+         if (contexts.Any() && string.IsNullOrEmpty(contextName))
+            return false;
+
+         int parseResult = TryParseAssembly(assemblyPath, parserPath, outputFilename, contextName);
+
+         if (parseResult == 0)
+            return DoProcessing(outputFilename, out newElements);
+
+         if (!contexts.Any())
+         {
+            string dupeContextTag = "Found more than one class derived from DbContext:";
+            string dupeContextLogEntry = File.ReadAllLines(logFilename).FirstOrDefault(logEntry => logEntry.Contains(dupeContextTag));
+
+            if (dupeContextLogEntry != null)
+            {
+               IEnumerable<string> contextNames = dupeContextLogEntry.Substring(dupeContextLogEntry.IndexOf(dupeContextTag, StringComparison.InvariantCulture) + dupeContextTag.Length).Split(',')
+                                                                     .Select(s => s.Trim().Split('.').Last());
+
+               foreach (string context in contextNames)
+                  contexts.Add(context, BooleanQuestionDisplay.Show(Store, $"Found multiple DbContext classes. Process {context}?") == true);
+
+               return TryProcess(assemblyPath, ref newElements, parserPath, outputFilename, logFilename, contexts);
+            }
+         }
+
+         return false;
       }
 
       internal bool TryProcessIntermediateFile(string inputFile, List<ModelElement> newElements)
@@ -111,6 +221,7 @@ namespace Sawczyn.EFDesigner.EFModel
             if (DoProcessing(inputFile, out List<ModelElement> processedElements))
             {
                newElements.AddRange(processedElements);
+
                return true;
             }
          }
@@ -118,65 +229,7 @@ namespace Sawczyn.EFDesigner.EFModel
          return false;
       }
 
-      private bool TryProcess(string assemblyPath, ref List<ModelElement> newElements, string parserPath, string outputFilename, string logFilename, Dictionary<string, bool> contexts)
-      {
-         string contextName = contexts.Any(kv => contexts[kv.Key])
-                                    ? contexts.First(kv => contexts[kv.Key]).Key
-                                    : null;
-
-         if (contexts.Any() && string.IsNullOrEmpty(contextName))
-            return false;
-
-         int parseResult = TryParseAssembly(assemblyPath, parserPath, outputFilename, contextName);
-
-         if (parseResult == 0)
-            return DoProcessing(outputFilename, out newElements);
-
-         if (!contexts.Any())
-         {
-            string dupeContextTag = "Found more than one class derived from DbContext:";
-            string dupeContextLogEntry = File.ReadAllLines(logFilename).FirstOrDefault(logEntry => logEntry.Contains(dupeContextTag));
-
-            if (dupeContextLogEntry != null)
-            {
-               IEnumerable<string> contextNames = dupeContextLogEntry.Substring(dupeContextLogEntry.IndexOf(dupeContextTag, StringComparison.InvariantCulture) + dupeContextTag.Length).Split(',')
-                                                                        .Select(s => s.Trim().Split('.').Last());
-
-               foreach (string context in contextNames)
-                  contexts.Add(context, BooleanQuestionDisplay.Show(Store, $"Found multiple DbContext classes. Process {context}?") == true);
-
-               return TryProcess(assemblyPath, ref newElements, parserPath, outputFilename, logFilename, contexts);
-            }
-         }
-
-         return false;
-      }
-
-      #region ModelRoot
-
-      private List<ModelElement> ProcessRootData(ParsingModels.ModelRoot rootData)
-      {
-         List<ModelElement> result = new List<ModelElement>();
-         ModelRoot modelRoot = Store.ModelRoot();
-
-         modelRoot.EntityContainerName = rootData.EntityContainerName;
-         modelRoot.Namespace = rootData.Namespace;
-
-         result.AddRange(ProcessClasses(modelRoot, rootData.Classes));
-         result.AddRange(ProcessEnumerations(modelRoot, rootData.Enumerations));
-
-         foreach (Association association in modelRoot.Store.GetAll<Association>())
-         {
-            AssociationChangedRules.SetEndpointRoles(association);
-            AssociationChangedRules.FixupForeignKeys(association);
-         }
-
-         return result;
-      }
-
-      #endregion
-
-      #region Classes
+#region Classes
 
       private List<ModelElement> ProcessClasses(ModelRoot modelRoot, List<ParsingModels.ModelClass> classDataList)
       {
@@ -219,11 +272,13 @@ namespace Sawczyn.EFDesigner.EFModel
             // if base class exists and isn't in the list yet, we can't hook it up to this class
             // so we'll defer base class linkage for all classes until we're sure they're all in the model.
             // Note that we don't support generic base classes or System.Object, so we'll tell the user that they'll have to add that to the partial
-            if (!string.IsNullOrEmpty(data.BaseClass) && data.BaseClass != "System.Object")
+            if (!string.IsNullOrEmpty(data.BaseClass) && (data.BaseClass != "System.Object"))
             {
                if (data.BaseClass.Contains("<"))
                {
-                  string message = $"Found base class {data.BaseClass} for {element.FullName}. The designer doesn't support generic base classes. You will have to manually add this to a partial class for {element.FullName}.";
+                  string message =
+                     $"Found base class {data.BaseClass} for {element.FullName}. The designer doesn't support generic base classes. You will have to manually add this to a partial class for {element.FullName}.";
+
                   MessageDisplay.Show(message);
                }
                else
@@ -241,7 +296,9 @@ namespace Sawczyn.EFDesigner.EFModel
          // now we can fixup the generalization links
          foreach (string baseClassKey in baseClasses.Keys.Where(x => x != "System.Object"))
          {
-            string baseClassName = baseClassKey.StartsWith("global::") ? baseClassKey.Substring(8) : baseClassKey;
+            string baseClassName = baseClassKey.StartsWith("global::")
+                                      ? baseClassKey.Substring(8)
+                                      : baseClassKey;
 
             foreach (ModelClass subClass in baseClasses[baseClassKey])
             {
@@ -252,7 +309,9 @@ namespace Sawczyn.EFDesigner.EFModel
                   GeneralizationBuilder.Connect(superClass, subClass);
                else
                {
-                  string message = $"Found base class {baseClassName} for {subClass.FullName}, but it's not a persistent entity. You will have to manually add this to a partial class for {subClass.FullName}.";
+                  string message =
+                     $"Found base class {baseClassName} for {subClass.FullName}, but it's not a persistent entity. You will have to manually add this to a partial class for {subClass.FullName}.";
+
                   MessageDisplay.Show(message);
                }
             }
@@ -280,11 +339,11 @@ namespace Sawczyn.EFDesigner.EFModel
             ModelBidirectionalAssociation keeper = allBidirectionalAssociations[index];
 
             ModelBidirectionalAssociation duplicate =
-                  allBidirectionalAssociations.Skip(index)
-                                              .FirstOrDefault(a => a.SourcePropertyTypeName == keeper.TargetPropertyTypeName
-                                                                && a.SourcePropertyName == keeper.TargetPropertyName
-                                                                && a.TargetPropertyTypeName == keeper.SourcePropertyTypeName
-                                                                && a.TargetPropertyName == keeper.SourcePropertyName);
+               allBidirectionalAssociations.Skip(index)
+                                           .FirstOrDefault(a => (a.SourcePropertyTypeName == keeper.TargetPropertyTypeName)
+                                                             && (a.SourcePropertyName == keeper.TargetPropertyName)
+                                                             && (a.TargetPropertyTypeName == keeper.SourcePropertyTypeName)
+                                                             && (a.TargetPropertyName == keeper.SourcePropertyName));
 
             if (duplicate != null)
             {
@@ -314,9 +373,13 @@ namespace Sawczyn.EFDesigner.EFModel
                                             new PropertyAssignment(ModelAttribute.MaxLengthDomainPropertyId, data.MaxStringLength),
                                             new PropertyAssignment(ModelAttribute.MinLengthDomainPropertyId, data.MinStringLength),
                                             new PropertyAssignment(ModelAttribute.IsIdentityDomainPropertyId, data.IsIdentity),
-                                            new PropertyAssignment(ModelAttribute.IdentityTypeDomainPropertyId, data.IsIdentity
-                                                                                                                   ? data.IsIdentityGenerated ? IdentityType.AutoGenerated : IdentityType.Manual
-                                                                                                                   : IdentityType.None));
+                                            new PropertyAssignment(ModelAttribute.IdentityTypeDomainPropertyId,
+                                                                   data.IsIdentity
+                                                                      ? data.IsIdentityGenerated
+                                                                           ? IdentityType.AutoGenerated
+                                                                           : IdentityType.Manual
+                                                                      : IdentityType.None));
+
                modelClass.Attributes.Add(element);
             }
             else
@@ -332,7 +395,9 @@ namespace Sawczyn.EFDesigner.EFModel
                element.IsIdentity = data.IsIdentity;
 
                element.IdentityType = data.IsIdentity
-                                         ? data.IsIdentityGenerated ? IdentityType.AutoGenerated : IdentityType.Manual
+                                         ? data.IsIdentityGenerated
+                                              ? IdentityType.AutoGenerated
+                                              : IdentityType.Manual
                                          : IdentityType.None;
             }
          }
@@ -344,18 +409,16 @@ namespace Sawczyn.EFDesigner.EFModel
 
          foreach (ModelUnidirectionalAssociation data in unidirectionalAssociations)
          {
-            if (Store.ModelRoot().EntityFrameworkVersion == EFVersion.EF6
-             && data.SourceMultiplicity != ParsingModels.Multiplicity.ZeroMany
-             && data.TargetMultiplicity != ParsingModels.Multiplicity.ZeroMany)
-            {
+            if ((Store.ModelRoot().EntityFrameworkVersion == EFVersion.EF6)
+             && (data.SourceMultiplicity != ParsingModels.Multiplicity.ZeroMany)
+             && (data.TargetMultiplicity != ParsingModels.Multiplicity.ZeroMany))
                data.ForeignKey = null;
-            }
 
             UnidirectionalAssociation existing = Store.GetAll<UnidirectionalAssociation>()
-                                                         .FirstOrDefault(x => x.Target.FullName == data.TargetClassFullName
-                                                                           && x.Source.FullName == data.SourceClassFullName
-                                                                           && x.Source.FullName == modelClass.FullName // just to be sure
-                                                                           && x.TargetPropertyName == data.TargetPropertyName);
+                                                      .FirstOrDefault(x => (x.Target.FullName == data.TargetClassFullName)
+                                                                        && (x.Source.FullName == data.SourceClassFullName)
+                                                                        && (x.Source.FullName == modelClass.FullName) // just to be sure
+                                                                        && (x.TargetPropertyName == data.TargetPropertyName));
 
             if (existing != null)
             {
@@ -371,7 +434,7 @@ namespace Sawczyn.EFDesigner.EFModel
             ModelClass source = Store.GetAll<ModelClass>().FirstOrDefault(c => c.FullName == data.SourceClassFullName);
             ModelClass target = Store.GetAll<ModelClass>().FirstOrDefault(c => c.FullName == data.TargetClassFullName);
 
-            if (source == null || target == null || source.FullName != modelClass.FullName)
+            if ((source == null) || (target == null) || (source.FullName != modelClass.FullName))
                continue;
 
             UnidirectionalAssociation elementLink = (UnidirectionalAssociation)UnidirectionalAssociationBuilder.Connect(source, target);
@@ -388,8 +451,8 @@ namespace Sawczyn.EFDesigner.EFModel
             AssociationChangedRules.FixupForeignKeys(elementLink);
 
             // we could have a situation where there are no roles assigned (if 0/1-0/1 or 1-1). If we have exposed foreign keys, though, we can figure those out.
-            if ((elementLink.SourceMultiplicity != Multiplicity.ZeroMany || elementLink.TargetMultiplicity != Multiplicity.ZeroMany)
-             && (elementLink.SourceRole == EndpointRole.NotSet || elementLink.TargetRole == EndpointRole.NotSet)
+            if (((elementLink.SourceMultiplicity != Multiplicity.ZeroMany) || (elementLink.TargetMultiplicity != Multiplicity.ZeroMany))
+             && ((elementLink.SourceRole == EndpointRole.NotSet) || (elementLink.TargetRole == EndpointRole.NotSet))
              && !string.IsNullOrEmpty(elementLink.FKPropertyName))
             {
                // which, if any, end has the foreign key properties in it?
@@ -415,23 +478,23 @@ namespace Sawczyn.EFDesigner.EFModel
 
          foreach (ModelBidirectionalAssociation data in bidirectionalAssociations)
          {
-            if (Store.ModelRoot().EntityFrameworkVersion == EFVersion.EF6
-             && data.SourceMultiplicity != ParsingModels.Multiplicity.ZeroMany
-             && data.TargetMultiplicity != ParsingModels.Multiplicity.ZeroMany)
+            if ((Store.ModelRoot().EntityFrameworkVersion == EFVersion.EF6)
+             && (data.SourceMultiplicity != ParsingModels.Multiplicity.ZeroMany)
+             && (data.TargetMultiplicity != ParsingModels.Multiplicity.ZeroMany))
                data.ForeignKey = null;
 
             BidirectionalAssociation existing = Store.GetAll<BidirectionalAssociation>()
-                                                        .FirstOrDefault(x => x.Target.Name == data.TargetClassName
-                                                                          && x.Source.Name == data.SourceClassName
-                                                                          && x.Source.Name == modelClass.Name // just to be sure
-                                                                          && x.TargetPropertyName == data.TargetPropertyName
-                                                                          && x.SourcePropertyName == data.SourcePropertyName)
-                                                ?? Store.GetAll<BidirectionalAssociation>()
-                                                        .FirstOrDefault(x => x.Source.Name == data.TargetClassName
-                                                                          && x.Target.Name == data.SourceClassName
-                                                                          && x.Target.Name == modelClass.Name // just to be sure
-                                                                          && x.SourcePropertyName == data.TargetPropertyName
-                                                                          && x.TargetPropertyName == data.SourcePropertyName);
+                                                     .FirstOrDefault(x => (x.Target.Name == data.TargetClassName)
+                                                                       && (x.Source.Name == data.SourceClassName)
+                                                                       && (x.Source.Name == modelClass.Name) // just to be sure
+                                                                       && (x.TargetPropertyName == data.TargetPropertyName)
+                                                                       && (x.SourcePropertyName == data.SourcePropertyName))
+                                             ?? Store.GetAll<BidirectionalAssociation>()
+                                                     .FirstOrDefault(x => (x.Source.Name == data.TargetClassName)
+                                                                       && (x.Target.Name == data.SourceClassName)
+                                                                       && (x.Target.Name == modelClass.Name) // just to be sure
+                                                                       && (x.SourcePropertyName == data.TargetPropertyName)
+                                                                       && (x.TargetPropertyName == data.SourcePropertyName));
 
             if (existing != null)
             {
@@ -447,7 +510,7 @@ namespace Sawczyn.EFDesigner.EFModel
             ModelClass source = Store.GetAll<ModelClass>().FirstOrDefault(c => c.Name == data.SourceClassName);
             ModelClass target = Store.GetAll<ModelClass>().FirstOrDefault(c => c.Name == data.TargetClassName);
 
-            if (source == null || target == null || source.FullName != modelClass.FullName)
+            if ((source == null) || (target == null) || (source.FullName != modelClass.FullName))
                continue;
 
             BidirectionalAssociation elementLink = (BidirectionalAssociation)BidirectionalAssociationBuilder.Connect(source, target);
@@ -467,8 +530,8 @@ namespace Sawczyn.EFDesigner.EFModel
             AssociationChangedRules.FixupForeignKeys(elementLink);
 
             // we could have a situation where there are no roles assigned (if 0/1-0/1 or 1-1). If we have exposed foreign keys, though, we can figure those out.
-            if ((elementLink.SourceMultiplicity != Multiplicity.ZeroMany || elementLink.TargetMultiplicity != Multiplicity.ZeroMany)
-             && (elementLink.SourceRole == EndpointRole.NotSet || elementLink.TargetRole == EndpointRole.NotSet)
+            if (((elementLink.SourceMultiplicity != Multiplicity.ZeroMany) || (elementLink.TargetMultiplicity != Multiplicity.ZeroMany))
+             && ((elementLink.SourceRole == EndpointRole.NotSet) || (elementLink.TargetRole == EndpointRole.NotSet))
              && !string.IsNullOrEmpty(elementLink.FKPropertyName))
             {
                // which, if any, end has the foreign key properties in it?
@@ -488,9 +551,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      #endregion
+#endregion
 
-      #region Enumerations
+#region Enumerations
 
       private List<ModelElement> ProcessEnumerations(ModelRoot modelRoot, List<ParsingModels.ModelEnum> enumDataList)
       {
@@ -508,6 +571,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                        new PropertyAssignment(ModelEnum.NamespaceDomainPropertyId, data.Namespace),
                                        new PropertyAssignment(ModelEnum.CustomAttributesDomainPropertyId, data.CustomAttributes),
                                        new PropertyAssignment(ModelEnum.IsFlagsDomainPropertyId, data.IsFlags));
+
                modelRoot.Enums.Add(element);
                result.Add(element);
             }
@@ -541,6 +605,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                             new PropertyAssignment(ModelEnumValue.ValueDomainPropertyId, data.Value),
                                             new PropertyAssignment(ModelEnumValue.CustomAttributesDomainPropertyId, data.CustomAttributes),
                                             new PropertyAssignment(ModelEnumValue.DisplayTextDomainPropertyId, data.DisplayText));
+
                modelEnum.Values.Add(element);
             }
             else
@@ -553,57 +618,6 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      #endregion
-
-      private int TryParseAssembly(string filename, string parserAssembly, string outputFilename, string contextName)
-      {
-         string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), parserAssembly);
-         ProcessStartInfo processStartInfo = new ProcessStartInfo(path)
-         {
-            Arguments = $"\"{filename.Trim('\"')}\" \"{outputFilename}\"" + (!string.IsNullOrEmpty(contextName) ? $" \"{contextName}\"" : ""),
-            CreateNoWindow = true,
-            ErrorDialog = false,
-            WindowStyle = ProcessWindowStyle.Hidden,
-            UseShellExecute = true
-         };
-
-         using (Process process = System.Diagnostics.Process.Start(processStartInfo))
-         {
-            process.WaitForExit();
-            return process.ExitCode;
-         }
-      }
-
-      private Multiplicity ConvertMultiplicity(ParsingModels.Multiplicity data)
-      {
-         switch (data)
-         {
-            case ParsingModels.Multiplicity.ZeroMany:
-               return Multiplicity.ZeroMany;
-
-            case ParsingModels.Multiplicity.One:
-               return Multiplicity.One;
-
-            case ParsingModels.Multiplicity.ZeroOne:
-               return Multiplicity.ZeroOne;
-         }
-
-         return Multiplicity.ZeroOne;
-      }
-
-      private EndpointRole ConvertRole(AssociationRole data)
-      {
-         switch (data)
-         {
-            case AssociationRole.Dependent:
-               return EndpointRole.Dependent;
-
-            case AssociationRole.Principal:
-               return EndpointRole.Principal;
-         }
-
-         return EndpointRole.NotSet;
-      }
-
+#endregion
    }
 }

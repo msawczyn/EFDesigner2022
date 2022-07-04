@@ -12,7 +12,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    [SuppressMessage("ReSharper", "UnusedMember.Global")]
    public partial class GeneratedTextTransformation
    {
-      #region Template
+#region Template
 
       // EFDesigner v4.1.2.0
       // Copyright (c) 2017-2022 Michael Sawczyn
@@ -27,7 +27,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
        * Interactions with Visual Studio
        */
 
-      public IEnumerable<EnvDTE.Project> GetAllProjects()
+      public IEnumerable<Project> GetAllProjects()
       {
          foreach (Project project in GetSolution().Projects.OfType<Project>())
          {
@@ -67,7 +67,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          throw new InvalidOperationException("Error in GetCurrentProject(). Unable to find project.");
       }
 
-      private EnvDTE.ProjectItem GetDirectoryItem(string target)
+      private ProjectItem GetDirectoryItem(string target)
       {
          DTE dte = GetDTE();
          Array projects = dte?.ActiveSolutionProjects as Array;
@@ -80,7 +80,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             Directory.CreateDirectory(Path.Combine(rootDirectory, target));
 
             Queue<string> paths = new Queue<string>(target.Split('\\'));
-            EnvDTE.ProjectItems currentItemList = currentProject.ProjectItems;
+            ProjectItems currentItemList = currentProject.ProjectItems;
             bool found = false;
 
             while (paths.Any())
@@ -117,7 +117,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          return targetProjectItem;
       }
 
-      public EnvDTE.DTE GetDTE()
+      public DTE GetDTE()
       {
          IServiceProvider serviceProvider = (IServiceProvider)Host;
 
@@ -143,7 +143,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          {
             FileInfo info = new FileInfo(fullProjectName);
 
-            return info.Directory != null ? info.Directory.FullName : string.Empty;
+            return info.Directory != null
+                      ? info.Directory.FullName
+                      : string.Empty;
          }
          catch
          {
@@ -153,7 +155,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          }
       }
 
-      public EnvDTE.Solution GetSolution()
+      public Solution GetSolution()
       {
          return GetDTE().Solution;
       }
@@ -178,8 +180,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          }
       }
 
-      #endregion Template
+#endregion Template
    }
 }
-
-

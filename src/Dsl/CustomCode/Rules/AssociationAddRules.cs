@@ -8,6 +8,19 @@ namespace Sawczyn.EFDesigner.EFModel
    [RuleOn(typeof(BidirectionalAssociation), FireTime = TimeToFire.Inline)]
    internal class AssociationAddRules : AddRule
    {
+      private void ConfigureNewAssociation(BidirectionalAssociation element)
+      {
+         SetInitialMultiplicity(element);
+         SetTargetPropertyName(element);
+         SetSourcePropertyName(element);
+      }
+
+      private void ConfigureNewAssociation(UnidirectionalAssociation element)
+      {
+         SetInitialMultiplicity(element);
+         SetTargetPropertyName(element);
+      }
+
       public override void ElementAdded(ElementAddedEventArgs e)
       {
          base.ElementAdded(e);
@@ -29,19 +42,6 @@ namespace Sawczyn.EFDesigner.EFModel
          PresentationHelper.UpdateAssociationDisplay(element);
       }
 
-      private void ConfigureNewAssociation(BidirectionalAssociation element)
-      {
-         SetInitialMultiplicity(element);
-         SetTargetPropertyName(element);
-         SetSourcePropertyName(element);
-      }
-
-      private void ConfigureNewAssociation(UnidirectionalAssociation element)
-      {
-         SetInitialMultiplicity(element);
-         SetTargetPropertyName(element);
-      }
-
       private void SetInitialMultiplicity(BidirectionalAssociation element)
       {
          // valid bidirectional associations:
@@ -60,7 +60,7 @@ namespace Sawczyn.EFDesigner.EFModel
                element.TargetMultiplicity = Multiplicity.ZeroMany;
             }
          }
-         else if (entityFrameworkVersion == EFVersion.EFCore && !modelRoot.IsEFCore5Plus)
+         else if ((entityFrameworkVersion == EFVersion.EFCore) && !modelRoot.IsEFCore5Plus)
          {
             if (element.Source.IsEntity() && element.Target.IsEntity())
             {
@@ -80,7 +80,7 @@ namespace Sawczyn.EFDesigner.EFModel
                element.TargetMultiplicity = Multiplicity.One;
             }
          }
-         else if (entityFrameworkVersion == EFVersion.EFCore && modelRoot.IsEFCore5Plus)
+         else if ((entityFrameworkVersion == EFVersion.EFCore) && modelRoot.IsEFCore5Plus)
          {
             if (element.Source.IsEntity() && element.Target.IsEntity())
             {
@@ -126,7 +126,7 @@ namespace Sawczyn.EFDesigner.EFModel
                element.TargetMultiplicity = Multiplicity.One;
             }
          }
-         else if (entityFrameworkVersion == EFVersion.EFCore && !modelRoot.IsEFCore5Plus)
+         else if ((entityFrameworkVersion == EFVersion.EFCore) && !modelRoot.IsEFCore5Plus)
          {
             if (element.Source.IsEntity() && element.Target.IsEntity())
             {
@@ -140,7 +140,7 @@ namespace Sawczyn.EFDesigner.EFModel
                element.TargetMultiplicity = Multiplicity.ZeroOne;
             }
          }
-         else if (entityFrameworkVersion == EFVersion.EFCore && modelRoot.IsEFCore5Plus)
+         else if ((entityFrameworkVersion == EFVersion.EFCore) && modelRoot.IsEFCore5Plus)
          {
             if (element.Source.IsEntity() && element.Target.IsEntity())
             {
@@ -172,7 +172,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          if (string.IsNullOrEmpty(element.SourcePropertyName))
          {
-            string rootName = element.SourceMultiplicity == Multiplicity.ZeroMany && ModelRoot.PluralizationService?.IsSingular(element.Source.Name) == true
+            string rootName = (element.SourceMultiplicity == Multiplicity.ZeroMany) && (ModelRoot.PluralizationService?.IsSingular(element.Source.Name) == true)
                                  ? ModelRoot.PluralizationService.Pluralize(element.Source.Name)
                                  : element.Source.Name;
 
@@ -184,9 +184,7 @@ namespace Sawczyn.EFDesigner.EFModel
             while (modelClass.HasPropertyNamed(identifierName)
                 || modelClass.AllSubclasses.Any(c => c.HasPropertyNamed(identifierName))
                 || modelClass.AllSuperclasses.Any(c => c.HasPropertyNamed(identifierName)))
-            {
                identifierName = $"{rootName}_{++index}";
-            }
 
             element.SourcePropertyName = identifierName;
          }
@@ -196,7 +194,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          if (string.IsNullOrEmpty(element.TargetPropertyName))
          {
-            string rootName = element.TargetMultiplicity == Multiplicity.ZeroMany && ModelRoot.PluralizationService?.IsSingular(element.Target.Name) == true
+            string rootName = (element.TargetMultiplicity == Multiplicity.ZeroMany) && (ModelRoot.PluralizationService?.IsSingular(element.Target.Name) == true)
                                  ? ModelRoot.PluralizationService.Pluralize(element.Target.Name)
                                  : element.Target.Name;
 
@@ -208,9 +206,7 @@ namespace Sawczyn.EFDesigner.EFModel
             while (modelClass.HasPropertyNamed(identifierName)
                 || modelClass.AllSubclasses.Any(c => c.HasPropertyNamed(identifierName))
                 || modelClass.AllSuperclasses.Any(c => c.HasPropertyNamed(identifierName)))
-            {
                identifierName = $"{rootName}_{++index}";
-            }
 
             element.TargetPropertyName = identifierName;
          }

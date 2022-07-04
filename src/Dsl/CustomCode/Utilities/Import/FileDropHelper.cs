@@ -6,8 +6,6 @@ using System.Windows.Forms;
 
 using Microsoft.VisualStudio.Modeling;
 
-using Sawczyn.EFDesigner.EFModel.Extensions;
-
 namespace Sawczyn.EFDesigner.EFModel
 {
    public static class FileDropHelper
@@ -24,7 +22,7 @@ namespace Sawczyn.EFDesigner.EFModel
          List<ModelElement> newElements = new List<ModelElement>();
          List<string> filenameList = filenames?.ToList();
 
-         if (store == null || filenameList == null)
+         if ((store == null) || (filenameList == null))
             return newElements;
 
          try

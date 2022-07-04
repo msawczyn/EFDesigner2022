@@ -15,6 +15,15 @@ namespace ParsingModels
       public List<ModelEnumValue> Values { get; set; }
       public string ValueType { get; set; }
       public bool IsFlags { get; set; }
-      public string FullName => string.IsNullOrWhiteSpace(Namespace) ? $"global::{Name}" : $"global::{Namespace}.{Name}";
+
+      public string FullName
+      {
+         get
+         {
+            return string.IsNullOrWhiteSpace(Namespace)
+                      ? $"global::{Name}"
+                      : $"global::{Namespace}.{Name}";
+         }
+      }
    }
 }

@@ -5149,6 +5149,23 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
+	      // DatabaseDefaultValue
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribDatabaseDefaultValue = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "databaseDefaultValue");
+	         if (attribDatabaseDefaultValue != null)
+	         {
+	            global::System.String valueOfDatabaseDefaultValue;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.String>(serializationContext, attribDatabaseDefaultValue, out valueOfDatabaseDefaultValue))
+	            {
+	               instanceOfModelAttribute.DatabaseDefaultValue = valueOfDatabaseDefaultValue;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "databaseDefaultValue", typeof(global::System.String), attribDatabaseDefaultValue);
+	            }
+	         }
+	      }
 	   }
 	
 	   /// <summary>
@@ -6004,6 +6021,17 @@ namespace Sawczyn.EFDesigner.EFModel
 	            {   // No need to write the value out if it's the same as default value.
 	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "isPropertyAccessModeTracking", serializedPropValue);
 	            }
+	         }
+	      }
+	      // DatabaseDefaultValue
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.String propValue = instanceOfModelAttribute.DatabaseDefaultValue;
+	         if (!serializationContext.Result.Failed)
+	         {
+	            if (!string.IsNullOrEmpty(propValue))
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "databaseDefaultValue", propValue);
+	
 	         }
 	      }
 	   }

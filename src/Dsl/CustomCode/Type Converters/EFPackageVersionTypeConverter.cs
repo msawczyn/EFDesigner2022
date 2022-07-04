@@ -2,12 +2,54 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+
 using Microsoft.VisualStudio.Modeling;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
    public class EFPackageVersionTypeConverter : TypeConverterBase
    {
+      /// <summary>
+      ///    Returns whether this converter can convert an object of the given type to the type of this converter, using the
+      ///    specified context.
+      /// </summary>
+      /// <param name="context">
+      ///    An <see cref="T:System.ComponentModel.ITypeDescriptorContext" /> that provides a format context.
+      /// </param>
+      /// <param name="sourceType">
+      ///    A <see cref="T:System.Type" /> that represents the type you want to convert from.
+      /// </param>
+      /// <returns>
+      ///    true if this converter can perform the conversion; otherwise, false.
+      /// </returns>
+      public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+      {
+         return (sourceType == typeof(string)) || base.CanConvertFrom(context, sourceType);
+      }
+
+      /// <summary>
+      ///    Converts the given object to the type of this converter, using the specified context and culture information.
+      /// </summary>
+      /// <param name="context">
+      ///    An <see cref="T:System.ComponentModel.ITypeDescriptorContext" /> that provides a format context.
+      /// </param>
+      /// <param name="culture">
+      ///    The <see cref="T:System.Globalization.CultureInfo" /> to use as the current culture.
+      /// </param>
+      /// <param name="value">
+      ///    The <see cref="T:System.Object" /> to convert.
+      /// </param>
+      /// <returns>
+      ///    An <see cref="T:System.Object" /> that represents the converted value.
+      /// </returns>
+      /// <exception cref="T:System.NotSupportedException">
+      ///    The conversion cannot be performed.
+      /// </exception>
+      public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+      {
+         return value?.ToString();
+      }
+
       /// <summary>
       ///    Returns a collection of standard values for the data type this type converter is designed for when provided
       ///    with a format context.
@@ -25,13 +67,17 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          // "context.Instance"  returns the element(s) that are currently selected i.e. whose values are being shown in the property grid.   
          // Note that the user could have selected multiple objects, in which case context.Instance will be an array. 
-         if (context.Instance.GetType().IsArray) return null;
+         if (context.Instance.GetType().IsArray)
+            return null;
 
          Store store = GetStore(context.Instance);
          ModelRoot modelRoot = store.ElementDirectory.FindElements<ModelRoot>().FirstOrDefault();
-         if (modelRoot == null) return null;
+
+         if (modelRoot == null)
+            return null;
 
          string[] values = NuGetHelper.EFPackageVersions[modelRoot.EntityFrameworkVersion].ToArray();
+
          return new StandardValuesCollection(values);
       }
 
@@ -63,47 +109,6 @@ namespace Sawczyn.EFDesigner.EFModel
       public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
       {
          return true;
-      }
-
-      /// <summary>
-      ///    Returns whether this converter can convert an object of the given type to the type of this converter, using the
-      ///    specified context.
-      /// </summary>
-      /// <param name="context">
-      ///    An <see cref="T:System.ComponentModel.ITypeDescriptorContext" /> that provides a format context.
-      /// </param>
-      /// <param name="sourceType">
-      ///    A <see cref="T:System.Type" /> that represents the type you want to convert from.
-      /// </param>
-      /// <returns>
-      ///    true if this converter can perform the conversion; otherwise, false.
-      /// </returns>
-      public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-      {
-         return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
-      }
-
-      /// <summary>
-      ///    Converts the given object to the type of this converter, using the specified context and culture information.
-      /// </summary>
-      /// <param name="context">
-      ///    An <see cref="T:System.ComponentModel.ITypeDescriptorContext" /> that provides a format context.
-      /// </param>
-      /// <param name="culture">
-      ///    The <see cref="T:System.Globalization.CultureInfo" /> to use as the current culture.
-      /// </param>
-      /// <param name="value">
-      ///    The <see cref="T:System.Object" /> to convert.
-      /// </param>
-      /// <returns>
-      ///    An <see cref="T:System.Object" /> that represents the converted value.
-      /// </returns>
-      /// <exception cref="T:System.NotSupportedException">
-      ///    The conversion cannot be performed.
-      /// </exception>
-      public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-      {
-         return value?.ToString();
       }
    }
 }

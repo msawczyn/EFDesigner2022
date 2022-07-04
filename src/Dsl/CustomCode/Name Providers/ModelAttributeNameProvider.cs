@@ -9,9 +9,23 @@ namespace Sawczyn.EFDesigner.EFModel
 {
    public class ModelAttributeNameProvider : ElementNameProvider
    {
+      protected override void CustomSetUniqueNameCore(ModelElement element, string baseName, IList<ModelElement> siblings)
+      {
+         base.CustomSetUniqueNameCore(element, baseName, Siblings(element as ModelAttribute));
+      }
+
       public override void SetUniqueName(ModelElement element, ModelElement container, DomainRoleInfo embeddedDomainRole, string baseName)
       {
          base.SetUniqueName(element, container, embeddedDomainRole, "Property");
+      }
+
+      // ReSharper disable once RedundantAssignment
+      protected override void SetUniqueNameCore(ModelElement element, string baseName, IDictionary<string, ModelElement> siblingNames)
+      {
+         siblingNames = Siblings(element as ModelAttribute).GroupBy(x => (x as ModelAttribute)?.Name ?? (x as Association)?.Name)
+                                                           .ToDictionary(g => g.Key, g => g.First());
+
+         base.SetUniqueNameCore(element, baseName, siblingNames);
       }
 
       public static IList<ModelElement> Siblings(ModelAttribute modelAttribute)
@@ -33,20 +47,5 @@ namespace Sawczyn.EFDesigner.EFModel
 
          return attributes.Cast<ModelElement>().Union(associations).ToList();
       }
-
-      // ReSharper disable once RedundantAssignment
-      protected override void SetUniqueNameCore(ModelElement element, string baseName, IDictionary<string, ModelElement> siblingNames)
-      {
-
-         siblingNames = Siblings(element as ModelAttribute).GroupBy(x => (x as ModelAttribute)?.Name ?? (x as Association)?.Name)
-                                                           .ToDictionary(g => g.Key, g => g.First());
-         base.SetUniqueNameCore(element, baseName, siblingNames);
-      }
-
-      protected override void CustomSetUniqueNameCore(ModelElement element, string baseName, IList<ModelElement> siblings)
-      {
-         base.CustomSetUniqueNameCore(element, baseName, Siblings(element as ModelAttribute));
-      }
-
    }
 }

@@ -11621,6 +11621,94 @@ namespace Sawczyn.EFDesigner.EFModel
 		}
 		
 		#endregion
+		#region DatabaseDefaultValue domain property code
+		
+		/// <summary>
+		/// DatabaseDefaultValue domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid DatabaseDefaultValueDomainPropertyId = new global::System.Guid(0x3471a5b0, 0xca63, 0x4f01, 0xb4, 0x98, 0x7d, 0x98, 0x42, 0xad, 0x88, 0x0e);
+		
+		/// <summary>
+		/// Storage for DatabaseDefaultValue
+		/// </summary>
+		private global::System.String databaseDefaultValuePropertyStorage = string.Empty;
+		
+		/// <summary>
+		/// Gets or sets the value of DatabaseDefaultValue domain property.
+		/// Default value at the database level if no value is specified
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/DatabaseDefaultValue.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/DatabaseDefaultValue.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/DatabaseDefaultValue.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslModeling::DomainObjectId("3471a5b0-ca63-4f01-b498-7d9842ad880e")]
+		public global::System.String DatabaseDefaultValue
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return databaseDefaultValuePropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				DatabaseDefaultValuePropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelAttribute.DatabaseDefaultValue domain property.
+		/// </summary>
+		internal sealed partial class DatabaseDefaultValuePropertyHandler : DslModeling::DomainPropertyValueHandler<ModelAttribute, global::System.String>
+		{
+			private DatabaseDefaultValuePropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelAttribute.DatabaseDefaultValue domain property value handler.
+			/// </summary>
+			public static readonly DatabaseDefaultValuePropertyHandler Instance = new DatabaseDefaultValuePropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelAttribute.DatabaseDefaultValue domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return DatabaseDefaultValueDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.String GetValue(ModelAttribute element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.databaseDefaultValuePropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelAttribute element, global::System.String newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.String oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.databaseDefaultValuePropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
 		#region ModelClass opposite domain role accessor
 		/// <summary>
 		/// Gets or sets ModelClass.
@@ -13972,6 +14060,6 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
 	partial class ModelRoot
 	{
-		public const string DSLVersion = "4.1.2.0";
+		public const string DSLVersion = "4.3.0.0";
 	}
 }

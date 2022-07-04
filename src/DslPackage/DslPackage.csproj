@@ -38,7 +38,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
-    <NoWarn>CS1762</NoWarn>
+    <NoWarn>CS1762,VSTHRD010,VSTHRD001</NoWarn>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -82,12 +82,15 @@
     <Reference Include="GOLD Engine, Version=5.0.6650.43176, Culture=neutral, PublicKeyToken=65f6575a661235db, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libraries\GOLD Engine.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.Modeling.Components">
       <HintPath>..\..\..\..\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\Modeling\17.0\Microsoft.VisualStudio.Modeling.Components.dll</HintPath>
     </Reference>
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.31902.203" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.31902.203" ExcludeAssets="runtime">
+      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk" Version="17.0.31902.203" />
     <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Diagrams" Version="17.0.31902.203" />
     <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Shell" Version="17.0.31902.203" />
@@ -246,6 +249,9 @@
     <Content Include="Parsers\EFCore5Parser.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Parsers\EFCore6Parser.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\Commands.png" />
     <Content Include="TextTemplates\EF6Designer.ttinclude">
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -277,6 +283,18 @@
     <Content Include="TextTemplates\EFModelGenerator.ttinclude">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Compile Include="TextTemplates\EditingOnly\EF6Designer.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EF6ModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCore2ModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCore3ModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCore5ModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCoreDesigner.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCoreModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFDesigner.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFModelFileManager.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\MultipleOutputHelper.cs" />
+    <Compile Include="TextTemplates\EditingOnly\VSIntegration.cs" />
     <Compile Include="VSPackage.Designer.cs" />
     <Content Include="Logo.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -322,7 +340,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <InstallRoot>Schemas</InstallRoot>
     </Content>
-    <None Include="ReadMe - Build Events.txt" />
     <Content Include="System.Spatial.dll">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -376,6 +393,7 @@
     <Content Include="TextTemplates\VSIntegration.ttinclude">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include="TextTemplates\EditingOnly\_ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dsl\Dsl.csproj">
@@ -465,8 +483,9 @@
          dotnet publish -c $(ConfigurationName) -r win-x64 -f netcoreapp3.1 --nologo --no-self-contained -o $(ProjectDir)Parsers /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore2Parser\EFCore2Parser.csproj"
          dotnet publish -c $(ConfigurationName) -r win-x64 -f netcoreapp3.1 --nologo --no-self-contained -o $(ProjectDir)Parsers /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore3Parser\EFCore3Parser.csproj"
          dotnet publish -c $(ConfigurationName) -r win-x64 -f netcoreapp3.1 --nologo --no-self-contained -o $(ProjectDir)Parsers /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore5Parser\EFCore5Parser.csproj"
+         dotnet publish -c $(ConfigurationName) -r win-x64 -f net6.0 --nologo --no-self-contained -o $(ProjectDir)Parsers /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore6Parser\EFCore6Parser.csproj"
          if "$(ConfigurationName)"=="Release" del "$(ProjectDir)Parsers\*.pdb
-      </PreBuildEvent>
+</PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\CodeAnalysisDictionary.xml">
@@ -475,18 +494,24 @@
     <Content Include="Resources\ModelExplorerToolWindowBitmaps.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
+      <Version>17.0.31902.203</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.TemplateWizardInterface">
       <Version>17.0.31902.203</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.TextTemplating.VSHost">
-      <Version>17.0.32112.339</Version>
+      <Version>17.0.31902.203</Version>
     </PackageReference>
     <PackageReference Include="QuikGraph" Version="2.3.0" />
     <PackageReference Include="QuikGraph.Graphviz" Version="2.3.1" />
     <PackageReference Include="Shields.GraphViz">
       <Version>1.0.2</Version>
     </PackageReference>
-    <PackageReference Include="stdole" Version="17.0.*-*" />
+    <PackageReference Include="stdole" Version="17.0.31902.203" />
+    <PackageReference Include="StreamJsonRpc">
+      <Version>2.11.35</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>

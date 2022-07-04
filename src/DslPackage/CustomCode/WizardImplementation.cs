@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+
 using EnvDTE;
+
 using Microsoft.VisualStudio.TemplateWizard;
 
 namespace Sawczyn.EFDesigner.EFModel
@@ -14,13 +16,9 @@ namespace Sawczyn.EFDesigner.EFModel
       public void RunStarted(object automationObject,
                              Dictionary<string, string> replacementsDictionary,
                              WizardRunKind runKind,
-                             object[] customParams)
-      {
-      }
+                             object[] customParams) { }
 
-      public void ProjectFinishedGenerating(Project project)
-      {
-      }
+      public void ProjectFinishedGenerating(Project project) { }
 
       public void ProjectItemFinishedGenerating(ProjectItem projectItem)
       {
@@ -40,15 +38,14 @@ namespace Sawczyn.EFDesigner.EFModel
          return true;
       }
 
-      public void BeforeOpeningFile(ProjectItem projectItem)
-      {
-      }
+      public void BeforeOpeningFile(ProjectItem projectItem) { }
 
       public void RunFinished()
       {
          // The VSIX can't nest files, so we'll do that here
          // NOTE: Don't nest the .tt file -- it doesn't seem to like that, and bad things happen
-         if (modelPath != null && dte != null)
+
+         if ((modelPath != null) && (dte != null))
          {
             ProjectItem modelItem = dte.Solution.FindProjectItem(modelPath);
 
@@ -57,6 +54,7 @@ namespace Sawczyn.EFDesigner.EFModel
                if (diagramPath != null)
                {
                   ProjectItem diagramItem = dte.Solution.FindProjectItem(diagramPath);
+
                   if (diagramItem != null)
                   {
                      diagramItem.Remove();
@@ -67,6 +65,7 @@ namespace Sawczyn.EFDesigner.EFModel
                if (xsdPath != null)
                {
                   ProjectItem xsdItem = dte.Solution.FindProjectItem(xsdPath);
+
                   if (xsdItem != null)
                   {
                      xsdItem.Remove();

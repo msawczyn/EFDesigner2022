@@ -1,18 +1,19 @@
-﻿using Microsoft.VisualStudio.Modeling;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+
+using Microsoft.VisualStudio.Modeling;
 
 using Sawczyn.EFDesigner.EFModel.Extensions;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
    /// <summary>
-   /// Extension methods for Sawczyn.EFDesigner.EFModel.ModelClass
+   ///    Extension methods for Sawczyn.EFDesigner.EFModel.ModelClass
    /// </summary>
    public static class ModelClassExtensions
    {
       /// <summary>
-      /// Moves all attributes and associations from a superclass to its subclass
+      ///    Moves all attributes and associations from a superclass to its subclass
       /// </summary>
       /// <param name="source">Source ModelClass</param>
       /// <param name="target">Target ModelClass</param>
@@ -23,18 +24,19 @@ namespace Sawczyn.EFDesigner.EFModel
          using (Transaction transaction = store.TransactionManager.BeginTransaction("PushDown"))
          {
             List<ModelAttribute> newAttributes = source.AllAttributes
-                                                           .Select(modelAttribute => (ModelAttribute)modelAttribute.Copy(new[] {ClassHasAttributes.AttributeDomainRoleId}))
-                                                           .Distinct()
-                                                           .ToList();
+                                                       .Select(modelAttribute => (ModelAttribute)modelAttribute.Copy(new[] {ClassHasAttributes.AttributeDomainRoleId}))
+                                                       .Distinct()
+                                                       .ToList();
 
             foreach (ModelAttribute newAttribute in newAttributes)
                newAttribute.ModelClass = target;
 
-            List<Association> associations = new List<Association>(); 
+            List<Association> associations = new List<Association>();
             ModelClass src = source;
+
             while (src != null)
             {
-               associations.AddRange(store.GetAll<Association>().Where(a => a.Source == src || a.Target == src));
+               associations.AddRange(store.GetAll<Association>().Where(a => (a.Source == src) || (a.Target == src)));
                src = src.Superclass;
             }
 

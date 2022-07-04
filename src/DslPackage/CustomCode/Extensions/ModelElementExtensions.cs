@@ -82,7 +82,8 @@ namespace Sawczyn.EFDesigner.EFModel
       public static bool LocateInActiveDiagram(this ModelElement element, bool ensureVisible)
       {
          DiagramView diagramView = element?.GetActiveDiagramView();
-         return diagramView != null && diagramView.SelectModelElement(element, ensureVisible);
+
+         return (diagramView != null) && diagramView.SelectModelElement(element, ensureVisible);
       }
 
       public static bool SelectModelElement(this DiagramView diagramView, ModelElement modelElement, bool ensureVisible)
@@ -109,6 +110,7 @@ namespace Sawczyn.EFDesigner.EFModel
             }
 
             shapeElement.Invalidate();
+
             return true;
          }
 
@@ -155,6 +157,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      }
 
                      compartment.Invalidate();
+
                      return true;
                   }
                }

@@ -4,7 +4,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 {
    public partial class GeneratedTextTransformation
    {
-      #region Template
+#region Template
 
       // EFDesigner v4.1.2.0
       // Copyright (c) 2017-2022 Michael Sawczyn
@@ -14,11 +14,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
       {
          public EFCore3ModelGenerator(GeneratedTextTransformation host) : base(host) { }
 
-         protected override void WriteTargetDeleteBehavior(Association association, List<string> segments)
+         protected override void WriteSourceDeleteBehavior(BidirectionalAssociation association, List<string> segments)
          {
             if (!association.Source.IsDependentType
              && !association.Target.IsDependentType
-             && (association.TargetRole == EndpointRole.Principal || association.SourceRole == EndpointRole.Principal))
+             && ((association.TargetRole == EndpointRole.Principal) || (association.SourceRole == EndpointRole.Principal)))
             {
                DeleteAction deleteAction = association.SourceRole == EndpointRole.Principal
                                               ? association.SourceDeleteAction
@@ -39,11 +39,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
 
-         protected override void WriteSourceDeleteBehavior(BidirectionalAssociation association, List<string> segments)
+         protected override void WriteTargetDeleteBehavior(Association association, List<string> segments)
          {
             if (!association.Source.IsDependentType
              && !association.Target.IsDependentType
-             && (association.TargetRole == EndpointRole.Principal || association.SourceRole == EndpointRole.Principal))
+             && ((association.TargetRole == EndpointRole.Principal) || (association.SourceRole == EndpointRole.Principal)))
             {
                DeleteAction deleteAction = association.SourceRole == EndpointRole.Principal
                                               ? association.SourceDeleteAction
@@ -65,8 +65,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          }
       }
 
-      #endregion Template
+#endregion Template
    }
 }
-
-

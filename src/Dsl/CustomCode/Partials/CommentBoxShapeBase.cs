@@ -27,7 +27,7 @@ namespace Sawczyn.EFDesigner.EFModel
                return;
 
             // set text color to contrasting color based on new fill color, if it's currently black or white
-            if (element.TextColor == Color.Black || element.TextColor == Color.White)
+            if ((element.TextColor == Color.Black) || (element.TextColor == Color.White))
                element.TextColor = newValue.LegibleTextColor();
          }
       }

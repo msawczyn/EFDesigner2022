@@ -15,7 +15,7 @@ using QuikGraph.Graphviz.Dot;
 namespace Sawczyn.EFDesigner.EFModel
 {
    public class DotEngine : IDotEngine
-   {    
+   {
       public string Run(GraphvizImageType imageType, string dot, string outputFileName)
       {
          return dot;
@@ -45,63 +45,6 @@ namespace Sawczyn.EFDesigner.EFModel
    // Set to public to allow MEF extension to perform layout
    public class Commands
    {
-      public static void LayoutDiagram(EFModelDiagram diagram)
-      {
-         using (WaitCursor _ = new WaitCursor())
-         {
-            IEnumerable<ShapeElement> shapeElements = diagram.NestedChildShapes.Where(s => s.IsVisible);
-
-            LayoutDiagram(diagram, shapeElements);
-         }
-      }
-
-      public static void LayoutDiagram(EFModelDiagram diagram, IEnumerable<ShapeElement> shapeElements)
-      {
-         using (Transaction tx = diagram.Store.TransactionManager.BeginTransaction("ModelAutoLayout"))
-         {
-            List<ShapeElement> shapeList = shapeElements.ToList();
-
-            List<DotNode> vertices = shapeList
-                                    .OfType<NodeShape>()
-                                    .Select(node => new DotNode { Shape = node })
-                                    .ToList();
-
-            List<DotEdge> edges = shapeList
-                                 .OfType<BinaryLinkShape>()
-                                 .Where(link => link.FromShape != null && link.ToShape != null)
-                                 .Select(link => new DotEdge(vertices.Single(vertex => vertex.Shape.Id == link.FromShape.Id),
-                                                             vertices.Single(vertex => vertex.Shape.Id == link.ToShape.Id))
-                                                 {
-                                                    Shape = link
-                                                 })
-                                 .ToList();
-
-            // use graphviz as the default if available
-            if (File.Exists(EFModelPackage.Options.DotExePath))
-               DoGraphvizLayout(vertices, edges, diagram);
-            else
-               DoStandardLayout(edges.Select(edge => edge.Shape).ToList(), diagram);
-
-            tx.Commit();
-         }
-      }
-
-      private static void DoStandardLayout(List<BinaryLinkShape> linkShapes, EFModelDiagram diagram)
-      {
-         // first we need to mark all the connectors as dirty so they'll route. Easiest way is to flip their 'ManuallyRouted' flag
-         foreach (BinaryLinkShape linkShape in linkShapes)
-            linkShape.ManuallyRouted = !linkShape.ManuallyRouted;
-
-         // now let the layout mechanism route the connectors by setting 'ManuallyRouted' to false, regardless of what it was before
-         foreach (BinaryLinkShape linkShape in linkShapes)
-            linkShape.ManuallyRouted = false;
-
-         diagram.AutoLayoutShapeElements(diagram.NestedChildShapes.Where(s => s.IsVisible).ToList(),
-                                         VGRoutingStyle.VGRouteStraight,
-                                         PlacementValueStyle.VGPlaceSN,
-                                         true);
-      }
-
       // ReSharper disable once UnusedParameter.Local
       private static void DoGraphvizLayout(List<DotNode> vertices, List<DotEdge> edges, EFModelDiagram diagram)
       {
@@ -121,13 +64,15 @@ namespace Sawczyn.EFDesigner.EFModel
          graphviz.FormatVertex += (sender, args) =>
                                   {
                                      args.VertexFormat.Label = args.Vertex.Shape.ModelElement is ModelClass modelClass
-                                                                     ? modelClass.Name
-                                                                     : args.Vertex.Shape.ModelElement is ModelEnum modelEnum
-                                                                        ? modelEnum.Name
-                                                                        : args.Vertex.Shape.ModelElement.Id.ToString();
+                                                                  ? modelClass.Name
+                                                                  : args.Vertex.Shape.ModelElement is ModelEnum modelEnum
+                                                                     ? modelEnum.Name
+                                                                     : args.Vertex.Shape.ModelElement.Id.ToString();
+
                                      args.VertexFormat.FixedSize = true;
-                                     args.VertexFormat.Size = new GraphvizSizeF((float)args.Vertex.Shape.Size.Width, 
-                                                                                   (float)args.Vertex.Shape.Size.Height);
+
+                                     args.VertexFormat.Size = new GraphvizSizeF((float)args.Vertex.Shape.Size.Width,
+                                                                                (float)args.Vertex.Shape.Size.Height);
 
                                      args.VertexFormat.Label = args.Vertex.Shape.Id.ToString();
                                   };
@@ -136,33 +81,38 @@ namespace Sawczyn.EFDesigner.EFModel
                                 {
                                    args.EdgeFormat.Label.Value = args.Edge.Shape.Id.ToString();
                                 };
+
          // generate the commands
          string dotCommands = graphviz.Generate(new DotEngine(), Path.Combine(Path.GetTempPath(), Path.GetTempFileName()));
          Debug.WriteLine(dotCommands);
 
          ProcessStartInfo dotStartInfo = new ProcessStartInfo(EFModelPackage.Options.DotExePath, "-T plain")
                                          {
-                                            RedirectStandardInput = true, 
-                                            RedirectStandardOutput = true, 
+                                            RedirectStandardInput = true,
+                                            RedirectStandardOutput = true,
                                             UseShellExecute = false,
                                             CreateNoWindow = true
                                          };
+
          string graphOutput;
 
          using (Process dotProcess = Process.Start(dotStartInfo))
          {
             // stdin is redirected to our stream, so pump the commands in through that
             dotProcess.StandardInput.WriteLine(dotCommands);
+
             // closing the stream starts the process
             dotProcess.StandardInput.Close();
+
             // stdout is redirected too, so capture the output
             graphOutput = dotProcess.StandardOutput.ReadToEnd();
             dotProcess.WaitForExit();
          }
+
          Debug.WriteLine(graphOutput);
 
          // break it up into lines of text for processing
-         string[] outputLines = graphOutput.Split(new []{'\r','\n'}, StringSplitOptions.RemoveEmptyEntries);
+         string[] outputLines = graphOutput.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
          SizeD graphSize = SizeD.Empty;
 
          // ReSharper disable once LoopCanBePartlyConvertedToQuery
@@ -171,7 +121,9 @@ namespace Sawczyn.EFDesigner.EFModel
             // spaces aren't valid in any of the data, so we can treat them as delimiters
             string[] parts = outputLine.Split(' ');
             string id;
-            double x, y;
+
+            double x,
+                   y;
 
             // graphviz coordinates have 0,0 at the bottom left, positive means moving up
             // our coordinates have 0,0 at the top left, positive means moving down
@@ -182,6 +134,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   // 0     1 2      3
                   // graph 1 109.38 92.681
                   graphSize = new SizeD(double.Parse(parts[2]), double.Parse(parts[3]));
+
                   break;
 
                case "node":
@@ -200,7 +153,7 @@ namespace Sawczyn.EFDesigner.EFModel
                case "edge":
                   // 0    1 2  3 4      5      6      7      8      9     10     11    12
                   // edge 6 18 4 34.926 77.518 34.926 77.518 34.926 75.88 34.926 75.88 "567b5db7-7591-4aa7-845c-76635bf56f28" 36.083 77.16 solid black
-                  id = parts[4 + int.Parse(parts[3]) * 2].Trim('"');
+                  id = parts[4 + (int.Parse(parts[3]) * 2)].Trim('"');
                   DotEdge edge = edges.Single(e => e.Shape.Id.ToString() == id);
 
                   // need to mark the connector as dirty. this is the easiest way to do this
@@ -220,21 +173,75 @@ namespace Sawczyn.EFDesigner.EFModel
 
                   int pointCount = int.Parse(parts[3]);
 
-                  for (int index = 4; index < 4 + pointCount * 2; index += 2)
+                  for (int index = 4; index < 4 + (pointCount * 2); index += 2)
                   {
                      x = double.Parse(parts[index]);
                      y = graphSize.Height - double.Parse(parts[index + 1]);
                      linkShape.EdgePoints.Add(new EdgePoint(x, y, VGPointType.Normal));
                   }
-                 
+
                   // since we're not changing the nodes this edge connects, this really doesn't do much.
                   // what it DOES do, however, is call ConnectEdgeToNodes, which is an internal method we'd otherwise
                   // be unable to access
                   linkShape.Connect(linkShape.FromShape, linkShape.ToShape);
                   linkShape.ManuallyRouted = false;
-                  
+
                   break;
             }
+         }
+      }
+
+      private static void DoStandardLayout(List<BinaryLinkShape> linkShapes, EFModelDiagram diagram)
+      {
+         // first we need to mark all the connectors as dirty so they'll route. Easiest way is to flip their 'ManuallyRouted' flag
+         foreach (BinaryLinkShape linkShape in linkShapes)
+            linkShape.ManuallyRouted = !linkShape.ManuallyRouted;
+
+         // now let the layout mechanism route the connectors by setting 'ManuallyRouted' to false, regardless of what it was before
+         foreach (BinaryLinkShape linkShape in linkShapes)
+            linkShape.ManuallyRouted = false;
+
+         diagram.AutoLayoutShapeElements(diagram.NestedChildShapes.Where(s => s.IsVisible).ToList(),
+                                         VGRoutingStyle.VGRouteStraight,
+                                         PlacementValueStyle.VGPlaceSN,
+                                         true);
+      }
+
+      public static void LayoutDiagram(EFModelDiagram diagram)
+      {
+         using (WaitCursor _ = new WaitCursor())
+         {
+            IEnumerable<ShapeElement> shapeElements = diagram.NestedChildShapes.Where(s => s.IsVisible);
+
+            LayoutDiagram(diagram, shapeElements);
+         }
+      }
+
+      public static void LayoutDiagram(EFModelDiagram diagram, IEnumerable<ShapeElement> shapeElements)
+      {
+         using (Transaction tx = diagram.Store.TransactionManager.BeginTransaction("ModelAutoLayout"))
+         {
+            List<ShapeElement> shapeList = shapeElements.ToList();
+
+            List<DotNode> vertices = shapeList
+                                    .OfType<NodeShape>()
+                                    .Select(node => new DotNode {Shape = node})
+                                    .ToList();
+
+            List<DotEdge> edges = shapeList
+                                 .OfType<BinaryLinkShape>()
+                                 .Where(link => (link.FromShape != null) && (link.ToShape != null))
+                                 .Select(link => new DotEdge(vertices.Single(vertex => vertex.Shape.Id == link.FromShape.Id),
+                                                             vertices.Single(vertex => vertex.Shape.Id == link.ToShape.Id)) {Shape = link})
+                                 .ToList();
+
+            // use graphviz as the default if available
+            if (File.Exists(EFModelPackage.Options.DotExePath))
+               DoGraphvizLayout(vertices, edges, diagram);
+            else
+               DoStandardLayout(edges.Select(edge => edge.Shape).ToList(), diagram);
+
+            tx.Commit();
          }
       }
    }

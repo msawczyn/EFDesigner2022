@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using Microsoft.VisualStudio.Modeling;
@@ -12,22 +13,94 @@ namespace Sawczyn.EFDesigner.EFModel
    [ValidationState(ValidationState.Enabled)]
    public partial class BidirectionalAssociation
    {
+      internal string _sourceBackingFieldName;
+
+      internal string SourceBackingFieldNameDefault
+      {
+         get
+         {
+            return string.IsNullOrEmpty(SourcePropertyName)
+                      ? string.Empty
+                      : $"_{SourcePropertyName.Substring(0, 1).ToLowerInvariant()}{SourcePropertyName.Substring(1)}";
+         }
+      }
+
+      /// <summary>
+      ///    Short display text for this attribute
+      /// </summary>
+      public override string GetDisplayText()
+      {
+         string sourceAutoIncluded = SourceAutoInclude
+                                        ? " (AutoInclude)"
+                                        : string.Empty;
+
+         string targetAutoIncluded = TargetAutoInclude
+                                        ? " (AutoInclude)"
+                                        : string.Empty;
+
+         return $"{Source.Name}.{TargetPropertyName}{targetAutoIncluded} <--> {Target.Name}.{SourcePropertyName}{sourceAutoIncluded}";
+      }
+
+      private string GetSourceBackingFieldNameValue()
+      {
+         return string.IsNullOrEmpty(_sourceBackingFieldName)
+                   ? SourceBackingFieldNameDefault
+                   : _sourceBackingFieldName;
+      }
+
       private string GetSourcePropertyNameDisplayValue()
       {
-         return TargetRole == EndpointRole.Dependent && !string.IsNullOrWhiteSpace(FKPropertyName) && Target.ModelRoot.ShowForeignKeyPropertyNames
+         return (TargetRole == EndpointRole.Dependent) && !string.IsNullOrWhiteSpace(FKPropertyName) && Target.ModelRoot.ShowForeignKeyPropertyNames
                    ? $"{SourcePropertyName}\n[{string.Join(", ", GetForeignKeyPropertyNames().Select(n => $"{Target.Name}.{n.Trim()}"))}]"
                    : SourcePropertyName;
       }
 
+      /// <summary>
+      ///    Calls the pre-reset method on the associated property value handler for each
+      ///    tracking property of this model element.
+      /// </summary>
+
+      // ReSharper disable once UnusedMember.Global
+      internal override void PreResetIsTrackingProperties()
+      {
+         base.PreResetIsTrackingProperties();
+         IsSourceImplementNotifyTrackingPropertyHandler.Instance.PreResetValue(this);
+         IsSourceAutoPropertyTrackingPropertyHandler.Instance.PreResetValue(this);
+
+         // same with other tracking properties as they get added
+      }
+
+      /// <summary>
+      ///    Calls the reset method on the associated property value handler for each
+      ///    tracking property of this model element.
+      /// </summary>
+
+      // ReSharper disable once UnusedMember.Global
+      internal override void ResetIsTrackingProperties()
+      {
+         base.ResetIsTrackingProperties();
+         IsSourceImplementNotifyTrackingPropertyHandler.Instance.ResetValue(this);
+         IsSourceAutoPropertyTrackingPropertyHandler.Instance.ResetValue(this);
+
+         // same with other tracking properties as they get added
+      }
+
+      private void SetSourceBackingFieldNameValue(string value)
+      {
+         _sourceBackingFieldName = value;
+      }
+
       [ValidationMethod(ValidationCategories.Open | ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void SummaryDescriptionIsEmpty(ValidationContext context)
       {
-         if (Source?.ModelRoot == null) return;
+         if (Source?.ModelRoot == null)
+            return;
 
          ModelRoot modelRoot = Store.ElementDirectory.FindElements<ModelRoot>().FirstOrDefault();
-         if (modelRoot?.WarnOnMissingDocumentation == true && Target != null && string.IsNullOrWhiteSpace(SourceSummary))
+
+         if ((modelRoot?.WarnOnMissingDocumentation == true) && (Target != null) && string.IsNullOrWhiteSpace(SourceSummary))
          {
             context.LogWarning($"{Target.Name}.{SourcePropertyName}: Association end should be documented", "AWMissingSummary", this);
             hasWarning = true;
@@ -35,26 +108,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      /// <summary>
-      /// Short display text for this attribute
-      /// </summary>
-      public override string GetDisplayText()
-      {
-         string sourceAutoIncluded = SourceAutoInclude ? " (AutoInclude)" : string.Empty;
-         string targetAutoIncluded = TargetAutoInclude ? " (AutoInclude)" : string.Empty;
+#region SourceImplementNotify tracking property
 
-         return $"{Source.Name}.{TargetPropertyName}{targetAutoIncluded} <--> {Target.Name}.{SourcePropertyName}{sourceAutoIncluded}";
-      }
-
-      internal string SourceBackingFieldNameDefault => string.IsNullOrEmpty(SourcePropertyName) ? string.Empty : $"_{SourcePropertyName.Substring(0, 1).ToLowerInvariant()}{SourcePropertyName.Substring(1)}";
-
-      internal string _sourceBackingFieldName;
-      private string GetSourceBackingFieldNameValue() => string.IsNullOrEmpty(_sourceBackingFieldName) ? SourceBackingFieldNameDefault : _sourceBackingFieldName;
-      private void SetSourceBackingFieldNameValue(string value) => _sourceBackingFieldName = value;
-
-      #region SourceImplementNotify tracking property
-
-      /// <summary>Storage for the SourceImplementNotify property.</summary>  
+      /// <summary>Storage for the SourceImplementNotify property.</summary>
       private bool sourceImplementNotifyStorage;
 
       /// <summary>Gets the storage for the SourceImplementNotify property.</summary>
@@ -90,7 +146,7 @@ namespace Sawczyn.EFDesigner.EFModel
          sourceImplementNotifyStorage = value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
-            IsSourceImplementNotifyTracking = (sourceImplementNotifyStorage == Source.ImplementNotify);
+            IsSourceImplementNotifyTracking = sourceImplementNotifyStorage == Source.ImplementNotify;
       }
 
       internal sealed partial class IsSourceImplementNotifyTrackingPropertyHandler
@@ -104,11 +160,26 @@ namespace Sawczyn.EFDesigner.EFModel
          protected override void OnValueChanged(BidirectionalAssociation element, bool oldValue, bool newValue)
          {
             base.OnValueChanged(element, oldValue, newValue);
+
             if (!element.Store.InUndoRedoOrRollback && newValue)
             {
                DomainPropertyInfo propInfo = element.Store.DomainDataDirectory.GetDomainProperty(SourceImplementNotifyDomainPropertyId);
                propInfo.NotifyValueChange(element);
             }
+         }
+
+         /// <summary>
+         ///    Method to set IsSourceImplementNotifyTracking to false so that this instance of this tracking property is not
+         ///    storage-based.
+         /// </summary>
+         /// <param name="element">
+         ///    The element on which to reset the property value.
+         /// </param>
+         internal void PreResetValue(BidirectionalAssociation element)
+         {
+            // Force the IsSourceImplementNotifyTracking property to false so that the value  
+            // of the SourceImplementNotify property is retrieved from storage.  
+            element.isSourceImplementNotifyTrackingPropertyStorage = false;
          }
 
          /// <summary>Performs the reset operation for the IsSourceImplementNotifyTracking property for a model element.</summary>
@@ -128,28 +199,14 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if (calculatedValue != null && element.SourceImplementNotify == (bool)calculatedValue)
+            if ((calculatedValue != null) && (element.SourceImplementNotify == (bool)calculatedValue))
                element.isSourceImplementNotifyTrackingPropertyStorage = true;
-         }
-
-         /// <summary>
-         ///    Method to set IsSourceImplementNotifyTracking to false so that this instance of this tracking property is not
-         ///    storage-based.
-         /// </summary>
-         /// <param name="element">
-         ///    The element on which to reset the property value.
-         /// </param>
-         internal void PreResetValue(BidirectionalAssociation element)
-         {
-            // Force the IsSourceImplementNotifyTracking property to false so that the value  
-            // of the SourceImplementNotify property is retrieved from storage.  
-            element.isSourceImplementNotifyTrackingPropertyStorage = false;
          }
       }
 
-      #endregion
+#endregion
 
-      #region SourceAutoProperty tracking property
+#region SourceAutoProperty tracking property
 
       private bool sourceAutoPropertyStorage;
 
@@ -182,7 +239,7 @@ namespace Sawczyn.EFDesigner.EFModel
          sourceAutoPropertyStorage = value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
-            IsSourceAutoPropertyTracking = (value == Source.AutoPropertyDefault);
+            IsSourceAutoPropertyTracking = value == Source.AutoPropertyDefault;
       }
 
       internal sealed partial class IsSourceAutoPropertyTrackingPropertyHandler
@@ -196,6 +253,7 @@ namespace Sawczyn.EFDesigner.EFModel
          protected override void OnValueChanged(BidirectionalAssociation element, bool oldValue, bool newValue)
          {
             base.OnValueChanged(element, oldValue, newValue);
+
             if (!element.Store.InUndoRedoOrRollback && newValue)
             {
                DomainPropertyInfo propInfo = element.Store.DomainDataDirectory.GetDomainProperty(SourceAutoPropertyDomainPropertyId);
@@ -203,11 +261,27 @@ namespace Sawczyn.EFDesigner.EFModel
             }
          }
 
+         /// <summary>
+         ///    Method to set IsSourceAutoPropertyTracking to false so that this instance of this tracking property is not
+         ///    storage-based.
+         /// </summary>
+         /// <param name="element">
+         ///    The element on which to reset the property
+         ///    value.
+         /// </param>
+         internal void PreResetValue(BidirectionalAssociation element)
+         {
+            // of the SourceAutoProperty property is retrieved from storage.  
+            // Force the IsSourceAutoPropertyTracking property to false so that the value  
+            element.isSourceAutoPropertyTrackingPropertyStorage = false;
+         }
+
          /// <summary>Performs the reset operation for the IsSourceAutoPropertyTracking property for a model element.</summary>
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(BidirectionalAssociation element)
          {
             object calculatedValue = null;
+
             try
             {
                calculatedValue = element.Source?.AutoPropertyDefault;
@@ -219,50 +293,11 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if (calculatedValue != null && element.SourceAutoProperty == (bool)calculatedValue)
+            if ((calculatedValue != null) && (element.SourceAutoProperty == (bool)calculatedValue))
                element.isSourceAutoPropertyTrackingPropertyStorage = true;
          }
-
-         /// <summary>
-         ///    Method to set IsSourceAutoPropertyTracking to false so that this instance of this tracking property is not
-         ///    storage-based.
-         /// </summary>
-         /// <param name="element">
-         ///    The element on which to reset the property
-         ///    value.
-         /// </param>
-         internal void PreResetValue(BidirectionalAssociation element) =>
-            // Force the IsSourceAutoPropertyTracking property to false so that the value  
-            // of the SourceAutoProperty property is retrieved from storage.  
-            element.isSourceAutoPropertyTrackingPropertyStorage = false;
       }
 
-      #endregion SourceAutoProperty tracking property
-
-      /// <summary>
-      ///    Calls the pre-reset method on the associated property value handler for each
-      ///    tracking property of this model element.
-      /// </summary>
-      // ReSharper disable once UnusedMember.Global
-      internal override void PreResetIsTrackingProperties()
-      {
-         base.PreResetIsTrackingProperties();
-         IsSourceImplementNotifyTrackingPropertyHandler.Instance.PreResetValue(this);
-         IsSourceAutoPropertyTrackingPropertyHandler.Instance.PreResetValue(this);
-         // same with other tracking properties as they get added
-      }
-
-      /// <summary>
-      ///    Calls the reset method on the associated property value handler for each
-      ///    tracking property of this model element.
-      /// </summary>
-      // ReSharper disable once UnusedMember.Global
-      internal override void ResetIsTrackingProperties()
-      {
-         base.ResetIsTrackingProperties();
-         IsSourceImplementNotifyTrackingPropertyHandler.Instance.ResetValue(this);
-         IsSourceAutoPropertyTrackingPropertyHandler.Instance.ResetValue(this);
-         // same with other tracking properties as they get added
-      }
+#endregion SourceAutoProperty tracking property
    }
 }

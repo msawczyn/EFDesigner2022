@@ -22,17 +22,18 @@
    </ItemGroup>
 
    <ItemGroup>
-      <PackageReference Include="log4net" Version="2.0.14" />
-      <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="5.0.0" />
+      <PackageReference Include="log4net" Version="2.0.13" />
+      <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="6.0.0" />
+      <PackageReference Include="Microsoft.VisualStudio.RpcContracts" Version="17.2.31" />
+      <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.2.32" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="2.2.6" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="2.2.6" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.6" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.6" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.6" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational.Design" Version="1.1.6" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.6" />
+      <PackageReference Include="StreamJsonRpc" Version="2.11.35" />
    </ItemGroup>
 
    <ItemGroup>
@@ -58,6 +59,12 @@
          <LastGenOutput>Resources.Designer.cs</LastGenOutput>
          <Generator>ResXFileCodeGenerator</Generator>
       </EmbeddedResource>
+   </ItemGroup>
+
+   <ItemGroup>
+     <None Update="log4net.config">
+       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+     </None>
    </ItemGroup>
 
 </Project>

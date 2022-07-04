@@ -19,7 +19,7 @@ namespace Sawczyn.EFDesigner.EFModel
          if (current.IsSerializing || ModelRoot.BatchUpdating)
             return;
 
-         List<ModelAttribute> unnecessaryProperties = element.Dependent?.AllAttributes?.Where(x => x.IsForeignKeyFor == element.Id && !x.IsIdentity).ToList();
+         List<ModelAttribute> unnecessaryProperties = element.Dependent?.AllAttributes?.Where(x => (x.IsForeignKeyFor == element.Id) && !x.IsIdentity).ToList();
 
          if (unnecessaryProperties?.Any() == true)
          {

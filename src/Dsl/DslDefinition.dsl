@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" MinorVersion="1" Build="2" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
+<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" MinorVersion="3" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
   <Classes>
     <DomainClass Id="95532cb8-3452-4b09-a654-aeb2e2d0b3ad" Description="" Name="ModelRoot" DisplayName="Entity Model" Namespace="Sawczyn.EFDesigner.EFModel">
       <CustomTypeDescriptor>
@@ -885,6 +885,11 @@
         <DomainProperty Id="e8193ff7-7dd5-4ea8-82e1-6c7e4f992a53" Description="If true, ModelAttribute.PropertyAccessMode tracks ModelRoot.PropertyAccessModeDefault" Name="IsPropertyAccessModeTracking" DisplayName="Is Property Access Mode Tracking" DefaultValue="true" IsBrowsable="false">
           <Type>
             <ExternalTypeMoniker Name="/System/Boolean" />
+          </Type>
+        </DomainProperty>
+        <DomainProperty Id="3471a5b0-ca63-4f01-b498-7d9842ad880e" Description="Default value at the database level if no value is specified" Name="DatabaseDefaultValue" DisplayName="Database Default Value" Category="Database">
+          <Type>
+            <ExternalTypeMoniker Name="/System/String" />
           </Type>
         </DomainProperty>
       </Properties>
@@ -2630,6 +2635,9 @@
           </XmlPropertyData>
           <XmlPropertyData XmlName="isPropertyAccessModeTracking">
             <DomainPropertyMoniker Name="ModelAttribute/IsPropertyAccessModeTracking" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="databaseDefaultValue">
+            <DomainPropertyMoniker Name="ModelAttribute/DatabaseDefaultValue" />
           </XmlPropertyData>
         </ElementData>
       </XmlClassData>

@@ -13,7 +13,7 @@ using Sawczyn.EFDesigner.EFModel.Annotations;
 namespace Sawczyn.EFDesigner.EFModel
 {
    /// <summary>
-   /// Configures connection strings for database
+   ///    Configures connection strings for database
    /// </summary>
    [UsedImplicitly]
    public class DataConnectionConfiguration
@@ -92,7 +92,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       // ReSharper disable once UnusedMember.Global
       /// <summary>
-      /// Loads standard data sources and providers
+      ///    Loads standard data sources and providers
       /// </summary>
       /// <param name="dialog"></param>
       public void LoadConfiguration(DataConnectionDialog dialog)
@@ -111,20 +111,20 @@ namespace Sawczyn.EFDesigner.EFModel
 
          dataSources = new Dictionary<string, DataSource>
                        {
-                          { DataSource.SqlDataSource.Name, DataSource.SqlDataSource }
-                        , { DataSource.SqlFileDataSource.Name, DataSource.SqlFileDataSource }
-                        , { DataSource.OracleDataSource.Name, DataSource.OracleDataSource }
-                        , { DataSource.AccessDataSource.Name, DataSource.AccessDataSource }
-                        , { DataSource.OdbcDataSource.Name, DataSource.OdbcDataSource }
-                        , { dialog.UnspecifiedDataSource.DisplayName, dialog.UnspecifiedDataSource }
+                          {DataSource.SqlDataSource.Name, DataSource.SqlDataSource},
+                          {DataSource.SqlFileDataSource.Name, DataSource.SqlFileDataSource},
+                          {DataSource.OracleDataSource.Name, DataSource.OracleDataSource},
+                          {DataSource.AccessDataSource.Name, DataSource.AccessDataSource},
+                          {DataSource.OdbcDataSource.Name, DataSource.OdbcDataSource},
+                          {dialog.UnspecifiedDataSource.DisplayName, dialog.UnspecifiedDataSource}
                        };
 
          dataProviders = new Dictionary<string, DataProvider>
                          {
-                            { DataProvider.SqlDataProvider.Name, DataProvider.SqlDataProvider }
-                          , { DataProvider.OracleDataProvider.Name, DataProvider.OracleDataProvider }
-                          , { DataProvider.OleDBDataProvider.Name, DataProvider.OleDBDataProvider }
-                          , { DataProvider.OdbcDataProvider.Name, DataProvider.OdbcDataProvider }
+                            {DataProvider.SqlDataProvider.Name, DataProvider.SqlDataProvider},
+                            {DataProvider.OracleDataProvider.Name, DataProvider.OracleDataProvider},
+                            {DataProvider.OleDBDataProvider.Name, DataProvider.OleDBDataProvider},
+                            {DataProvider.OdbcDataProvider.Name, DataProvider.OdbcDataProvider}
                          };
 
          string dsName = GetSelectedSource();
@@ -203,5 +203,4 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
    }
-
 }

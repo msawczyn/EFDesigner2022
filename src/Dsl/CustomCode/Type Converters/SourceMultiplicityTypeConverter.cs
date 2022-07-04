@@ -1,8 +1,9 @@
-﻿using Microsoft.VisualStudio.Modeling.Diagrams;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+
+using Microsoft.VisualStudio.Modeling.Diagrams;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
@@ -25,19 +26,21 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             Association association = context.Instance as Association;
 
-            if (association == null && context.Instance is AssociationConnector connector)
+            if ((association == null) && context.Instance is AssociationConnector connector)
                association = PresentationViewsSubject.GetSubject(connector) as Association;
 
-            if (destinationType == typeof(string) && association != null && value is Multiplicity multiplicity)
+            if ((destinationType == typeof(string)) && (association != null) && value is Multiplicity multiplicity)
             {
                switch (multiplicity)
                {
                   case Multiplicity.One:
                      return $"1 (One {association.Source.Name})";
+
                   //case Multiplicity.OneMany:
                   //   return $"1..* (Collection of one or more {association.Source.Name})";
                   case Multiplicity.ZeroMany:
                      return $"* (Collection of {association.Source.Name})";
+
                   case Multiplicity.ZeroOne:
                      return $"0..1 (Zero or one of {association.Source.Name})";
                }
@@ -64,19 +67,21 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          Association association = context.Instance as Association;
 
-         if (association == null && context.Instance is AssociationConnector connector)
+         if ((association == null) && context.Instance is AssociationConnector connector)
             association = PresentationViewsSubject.GetSubject(connector) as Association;
 
          if (association == null)
             return new StandardValuesCollection(new string[0]);
 
          List<string> result = new List<string>
-                                {
-                                    $"* (Collection of {association.Source.Name})",
-                                    //$"1..* (Collection of one or more {association.Source.Name})",
-                                    $"0..1 (Zero or one of {association.Source.Name})",
-                                    $"1 (One {association.Source.Name})"
-                                };
+                               {
+                                  $"* (Collection of {association.Source.Name})",
+
+                                  //$"1..* (Collection of one or more {association.Source.Name})",
+                                  $"0..1 (Zero or one of {association.Source.Name})",
+                                  $"1 (One {association.Source.Name})"
+                               };
+
          return new StandardValuesCollection(result);
       }
    }

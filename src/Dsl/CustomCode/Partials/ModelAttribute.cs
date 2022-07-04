@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 
@@ -13,65 +14,23 @@ using Sawczyn.EFDesigner.EFModel.Extensions;
 namespace Sawczyn.EFDesigner.EFModel
 {
    [ValidationState(ValidationState.Enabled)]
-   [System.Diagnostics.CodeAnalysis.SuppressMessage("ReSharper", "ArrangeAccessorOwnerBody")]
+   [SuppressMessage("ReSharper", "ArrangeAccessorOwnerBody")]
    public partial class ModelAttribute : IModelElementInCompartment, IDisplaysWarning, IHasStore
    {
       internal const int MAXLENGTH_MAX = -1;
       internal const int MAXLENGTH_UNDEFINED = 0;
 
-      /// <summary>Gets the parent model element (ModelClass).</summary>
-      /// <value>The parent model element.</value>
-      public IModelElementWithCompartments ParentModelElement => ModelClass;
-
-      /// <summary>Gets the name of the compartment holding this model element</summary>
-      /// <value>The name of the compartment holding this model element.</value>
-      public string CompartmentName => this.GetFirstShapeElement().AccessibleName;
+      internal string _backingFieldName;
 
       /// <summary>
-      /// Short display text for this attribute
-      /// </summary>
-      public string GetDisplayText() => $"{ModelClass.Name}.{Name}";
-
-      /// <summary>
-      /// If true, this property is an exposed foreign key for an association.
+      ///    If true, this property is an exposed foreign key for an association.
       /// </summary>
       [UsedImplicitly]
       public bool IsForeignKeyProperty => IsForeignKeyFor != Guid.Empty;
 
-      internal string BackingFieldNameDefault => string.IsNullOrEmpty(Name) ? string.Empty : $"_{Name.Substring(0, 1).ToLowerInvariant()}{Name.Substring(1)}";
-
-      internal string _backingFieldName;
-      private string GetBackingFieldNameValue() => string.IsNullOrEmpty(_backingFieldName) ? BackingFieldNameDefault : _backingFieldName;
-      private void SetBackingFieldNameValue(string value) => _backingFieldName = value;
-
-      #region Warning display
-
-      // set as methods to avoid issues around serialization
-
-      private bool hasWarning;
-
-
-      /// <summary>Indicates if there are any model warnings in this element.</summary>
-      /// <returns>True if model warnings exist, false otherwise.</returns>
-      public bool GetHasWarningValue() => hasWarning;
-
-
-      /// <summary>Resets the warning indicator</summary>
-      public void ResetWarning() => hasWarning = false;
-
-
-      /// <summary>Redraws the presentation element on any diagram rendering this model element</summary>
-      public void RedrawItem()
-      {
-         if (ParentModelElement != null)
-         {
-            foreach (ShapeElement shapeElement in
-                  PresentationViewsSubject.GetPresentation(ParentModelElement as ModelElement).OfType<ShapeElement>().Distinct())
-               shapeElement.Invalidate();
-         }
-      }
-
-      #endregion
+      internal string BackingFieldNameDefault => string.IsNullOrEmpty(Name)
+                                                    ? string.Empty
+                                                    : $"_{Name.Substring(0, 1).ToLowerInvariant()}{Name.Substring(1)}";
 
       /// <summary>Gets a value indicating whether this attribute supports initial values.</summary>
       /// <value>True if supports initial values, false if not.</value>
@@ -111,14 +70,36 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>Gets the parent model element (ModelClass).</summary>
+      /// <value>The parent model element.</value>
+      public IModelElementWithCompartments ParentModelElement => ModelClass;
+
+      /// <summary>Gets the name of the compartment holding this model element</summary>
+      /// <value>The name of the compartment holding this model element.</value>
+      public string CompartmentName => this.GetFirstShapeElement().AccessibleName;
+
+      private string GetBackingFieldNameValue()
+      {
+         return string.IsNullOrEmpty(_backingFieldName)
+                   ? BackingFieldNameDefault
+                   : _backingFieldName;
+      }
 
       /// <summary>
-      /// Tests if the InitialValue property is valid for the type indicated
+      ///    Short display text for this attribute
+      /// </summary>
+      public string GetDisplayText()
+      {
+         return $"{ModelClass.Name}.{Name}";
+      }
+
+      /// <summary>
+      ///    Tests if the InitialValue property is valid for the type indicated
       /// </summary>
       /// <param name="typeName">Name of type to test. If typeName is null, Type property will be used. If initialValue is null, InitialValue property will be used</param>
       /// <param name="initialValue">Initial value to test</param>
       /// <returns>true if InitialValue is a valid value for the type, or if initialValue is null or empty</returns>
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0049:Simplify Names", Justification = "By design")]
+      [SuppressMessage("Style", "IDE0049:Simplify Names", Justification = "By design")]
       public bool IsValidInitialValue(string typeName = null, string initialValue = null)
       {
          typeName = typeName ?? Type;
@@ -154,10 +135,13 @@ namespace Sawczyn.EFDesigner.EFModel
             case "Point":
             case "Polygon":
                return false; //string.IsNullOrEmpty(initialValue);
+
             case "Boolean":
                return bool.TryParse(initialValue, out _);
+
             case "Byte":
                return byte.TryParse(initialValue, out _);
+
             case "DateTime":
                switch (initialValue?.Trim())
                {
@@ -166,47 +150,64 @@ namespace Sawczyn.EFDesigner.EFModel
                   case "DateTime.MinValue":
                   case "DateTime.MaxValue":
                      return true;
+
                   default:
                      return DateTime.TryParse(initialValue, out _);
                }
+
             case "DateTimeOffset":
                return DateTimeOffset.TryParse(initialValue, out _);
+
             case "Decimal":
                return Decimal.TryParse(initialValue, out _);
+
             case "Double":
                return Double.TryParse(initialValue, out _);
+
             case "Guid":
                return Guid.TryParse(initialValue, out _);
+
             case "Int16":
                return Int16.TryParse(initialValue, out _);
+
             case "UInt16":
                return UInt16.TryParse(initialValue, out _);
+
             case "Int32":
                return Int32.TryParse(initialValue, out _);
+
             case "UInt32":
                return UInt32.TryParse(initialValue, out _);
+
             case "Int64":
                return Int64.TryParse(initialValue, out _);
+
             case "UInt64":
                return UInt64.TryParse(initialValue, out _);
+
             case "SByte":
                return SByte.TryParse(initialValue, out _);
+
             case "Single":
                return Single.TryParse(initialValue, out _);
+
             case "String":
                return true;
+
             case "Time":
                return DateTime.TryParseExact(initialValue,
-                                             new[] { "HH:mm:ss", "H:mm:ss", "HH:mm", "H:mm", "HH:mm:ss tt", "H:mm:ss tt", "HH:mm tt", "H:mm tt" },
+                                             new[] {"HH:mm:ss", "H:mm:ss", "HH:mm", "H:mm", "HH:mm:ss tt", "H:mm:ss tt", "HH:mm tt", "H:mm tt"},
                                              CultureInfo.InvariantCulture,
                                              DateTimeStyles.None,
                                              out _);
+
             default:
                if (initialValue.Contains("."))
                {
                   string[] parts = initialValue.Split('.');
                   ModelEnum enumType = ModelClass.ModelRoot.Enums.FirstOrDefault(x => x.Name == parts[0]);
-                  return enumType != null && parts.Length == 2 && enumType.Values.Any(x => x.Name == parts[1]);
+
+                  return (enumType != null) && (parts.Length == 2) && enumType.Values.Any(x => x.Name == parts[1]);
                }
 
                break;
@@ -215,8 +216,45 @@ namespace Sawczyn.EFDesigner.EFModel
          return false;
       }
 
+      private void SetBackingFieldNameValue(string value)
+      {
+         _backingFieldName = value;
+      }
+
+#region Warning display
+
+      // set as methods to avoid issues around serialization
+
+      private bool hasWarning;
+
+      /// <summary>Indicates if there are any model warnings in this element.</summary>
+      /// <returns>True if model warnings exist, false otherwise.</returns>
+      public bool GetHasWarningValue()
+      {
+         return hasWarning;
+      }
+
+      /// <summary>Resets the warning indicator</summary>
+      public void ResetWarning()
+      {
+         hasWarning = false;
+      }
+
+      /// <summary>Redraws the presentation element on any diagram rendering this model element</summary>
+      public void RedrawItem()
+      {
+         if (ParentModelElement != null)
+         {
+            foreach (ShapeElement shapeElement in
+                     PresentationViewsSubject.GetPresentation(ParentModelElement as ModelElement).OfType<ShapeElement>().Distinct())
+               shapeElement.Invalidate();
+         }
+      }
+
+#endregion
+
       /// <summary>
-      /// From internal class System.Data.Metadata.Edm.PrimitiveType in System.Data.Entity. Converts the attribute's CLR type to a C# primitive type.
+      ///    From internal class System.Data.Metadata.Edm.PrimitiveType in System.Data.Entity. Converts the attribute's CLR type to a C# primitive type.
       /// </summary>
       /// <value>Name of primitive type</value>
       public string PrimitiveType
@@ -239,6 +277,7 @@ namespace Sawczyn.EFDesigner.EFModel
       /// <summary>Converts the attribute's CLR type to a C# primitive type.</summary>
       ///
       /// <value>Name of primitive type, or the fully qualified name if the attribute is an enumeration</value>
+
       // ReSharper disable once UnusedMember.Global
       public string FQPrimitiveType
       {
@@ -254,14 +293,16 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>Converts a C# primitive type to a CLR type.</summary>
+
       // ReSharper disable once UnusedMember.Global
       public string CLRType => ToCLRType(Type);
 
       /// <summary>
-      /// From internal class System.Data.Metadata.Edm.PrimitiveType in System.Data.Entity. Converts a CLR type to a C# primitive type.
+      ///    From internal class System.Data.Metadata.Edm.PrimitiveType in System.Data.Entity. Converts a CLR type to a C# primitive type.
       /// </summary>
       /// <param name="typeName">CLR type</param>
       /// <returns>Name of primitive type given </returns>
+
       // ReSharper disable once UnusedMember.Global
       public static string ToPrimitiveType(string typeName)
       {
@@ -269,16 +310,22 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             case "Binary":
                return "byte[]";
+
             case "Boolean":
                return "bool";
+
             case "Byte":
                return "byte";
+
             case "Time":
                return "TimeSpan";
+
             case "Decimal":
                return "decimal";
+
             case "Double":
                return "double";
+
             //case "Geography":
             //case "GeographyPoint":
             //case "GeographyLineString":
@@ -299,18 +346,25 @@ namespace Sawczyn.EFDesigner.EFModel
             //   return "DbGeometry";
             case "Int16":
                return "short";
+
             case "UInt16":
                return "ushort";
+
             case "Int32":
                return "int";
+
             case "UInt32":
                return "uint";
+
             case "Int64":
                return "long";
+
             case "UInt64":
                return "ulong";
+
             case "SByte":
                return "sbyte";
+
             case "String":
                return "string";
          }
@@ -327,34 +381,49 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             case "byte[]":
                return "Binary";
+
             case "bool":
                return "Boolean";
+
             case "byte":
                return "Byte";
+
             case "TimeSpan":
                return "Time";
+
             case "decimal":
                return "Decimal";
+
             case "double":
                return "Double";
+
             case "DbGeography":
                return "Geography";
+
             case "DbGeometry":
                return "Geometry";
+
             case "short":
                return "Int16";
+
             case "ushort":
                return "UInt16";
+
             case "int":
                return "Int32";
+
             case "uint":
                return "UInt32";
+
             case "long":
                return "Int64";
+
             case "ulong":
                return "UInt64";
+
             case "sbyte":
                return "SByte";
+
             case "string":
                return "String";
          }
@@ -370,9 +439,10 @@ namespace Sawczyn.EFDesigner.EFModel
          if (!string.IsNullOrWhiteSpace(summaryBoilerplate))
          {
             int boilerplateLength = summaryBoilerplate.Length;
-            Summary = !string.IsNullOrWhiteSpace(Summary) && Summary.Length >= boilerplateLength
-                            ? Summary.Substring(boilerplateLength).TrimStart('.', ' ')
-                            : null;
+
+            Summary = !string.IsNullOrWhiteSpace(Summary) && (Summary.Length >= boilerplateLength)
+                         ? Summary.Substring(boilerplateLength).TrimStart('.', ' ')
+                         : null;
          }
 
          RedrawItem();
@@ -398,9 +468,9 @@ namespace Sawczyn.EFDesigner.EFModel
          RedrawItem();
       }
 
-      #region ColumnName
+#region ColumnName
 
-      /// <summary>Storage for the ColumnName property.</summary>  
+      /// <summary>Storage for the ColumnName property.</summary>
       private string columnNameStorage;
 
       /// <summary>Gets the storage for the ColumnName property.</summary>
@@ -433,18 +503,21 @@ namespace Sawczyn.EFDesigner.EFModel
       /// <param name="value">The ColumnName value.</param>
       public void SetColumnNameValue(string value)
       {
-         columnNameStorage = value == Name ? null : value;
+         columnNameStorage = value == Name
+                                ? null
+                                : value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
+
             // ReSharper disable once ArrangeRedundantParentheses
             IsColumnNameTracking = (columnNameStorage == null);
       }
 
-      #endregion
+#endregion
 
-      #region ImplementNotify
+#region ImplementNotify
 
-      /// <summary>Storage for the ImplementNotify property.</summary>  
+      /// <summary>Storage for the ImplementNotify property.</summary>
       private bool implementNotifyStorage;
 
       /// <summary>Gets the storage for the ImplementNotify property.</summary>
@@ -480,18 +553,19 @@ namespace Sawczyn.EFDesigner.EFModel
          implementNotifyStorage = value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
+
             // ReSharper disable once ArrangeRedundantParentheses
             IsImplementNotifyTracking = (implementNotifyStorage == (ModelClass?.ImplementNotify ?? false));
       }
 
-      #endregion
+#endregion
 
-      #region DatabaseCollation
+#region DatabaseCollation
 
       private string databaseCollationStorage;
 
       /// <summary>
-      /// Getter for DatabaseCollation custom storage property
+      ///    Getter for DatabaseCollation custom storage property
       /// </summary>
       public string GetDatabaseCollationValue()
       {
@@ -514,22 +588,24 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Setter for DatabaseCollation custom storage property
+      ///    Setter for DatabaseCollation custom storage property
       /// </summary>
       /// <param name="value"></param>
       public void SetDatabaseCollationValue(string value)
       {
-         databaseCollationStorage = string.IsNullOrEmpty(value) ? null : value;
+         databaseCollationStorage = string.IsNullOrEmpty(value)
+                                       ? null
+                                       : value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
-            IsDatabaseCollationTracking = ((databaseCollationStorage ?? "default") == "default");
+            IsDatabaseCollationTracking = (databaseCollationStorage ?? "default") == "default";
       }
 
-      #endregion
+#endregion
 
-      #region AutoProperty
+#region AutoProperty
 
-      /// <summary>Storage for the AutoProperty property.</summary>  
+      /// <summary>Storage for the AutoProperty property.</summary>
       private bool autoPropertyStorage;
 
       /// <summary>Gets the storage for the AutoProperty property.</summary>
@@ -565,17 +641,19 @@ namespace Sawczyn.EFDesigner.EFModel
          autoPropertyStorage = value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
-            IsAutoPropertyTracking = (autoPropertyStorage == (ModelClass?.AutoPropertyDefault ?? true));
+            IsAutoPropertyTracking = autoPropertyStorage == (ModelClass?.AutoPropertyDefault ?? true);
       }
 
-      #endregion
+#endregion
 
-      #region PropertyAccessMode
+#region PropertyAccessMode
 
-      /// <summary>Storage for the PropertyAccessMode property.</summary>  
+      /// <summary>Storage for the PropertyAccessMode property.</summary>
       private PropertyAccessMode propertyAccessModeStorage;
 
-      internal PropertyAccessMode DefaultPropertyAccessMode => ModelClass?.ModelRoot.IsEFCore5Plus == true ? PropertyAccessMode.PreferField : PropertyAccessMode.PreferFieldDuringConstruction;
+      internal PropertyAccessMode DefaultPropertyAccessMode => ModelClass?.ModelRoot.IsEFCore5Plus == true
+                                                                  ? PropertyAccessMode.PreferField
+                                                                  : PropertyAccessMode.PreferFieldDuringConstruction;
 
       /// <summary>Gets the storage for the PropertyAccessMode property.</summary>
       /// <returns>The AutoProperty value.</returns>
@@ -610,14 +688,14 @@ namespace Sawczyn.EFDesigner.EFModel
          propertyAccessModeStorage = value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
-            IsPropertyAccessModeTracking = (propertyAccessModeStorage == (ModelClass?.ModelRoot.PropertyAccessModeDefault ?? DefaultPropertyAccessMode));
+            IsPropertyAccessModeTracking = propertyAccessModeStorage == (ModelClass?.ModelRoot.PropertyAccessModeDefault ?? DefaultPropertyAccessMode);
       }
 
-      #endregion
+#endregion
 
-      #region ColumnType
+#region ColumnType
 
-      /// <summary>Storage for the ColumnType property.</summary>  
+      /// <summary>Storage for the ColumnType property.</summary>
       private string columnTypeStorage;
 
       /// <summary>Gets the storage for the ColumnType property.</summary>
@@ -650,16 +728,19 @@ namespace Sawczyn.EFDesigner.EFModel
       /// <param name="value">The ColumnType value.</param>
       public void SetColumnTypeValue(string value)
       {
-         columnTypeStorage = value.ToLowerInvariant() == "default" ? null : value;
+         columnTypeStorage = value.ToLowerInvariant() == "default"
+                                ? null
+                                : value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
+
             // ReSharper disable once ArrangeRedundantParentheses
             IsColumnTypeTracking = (columnTypeStorage == null);
       }
 
-      #endregion
+#endregion
 
-      #region Tracking Properties
+#region Tracking Properties
 
       internal sealed partial class IsPropertyAccessModeTrackingPropertyHandler
       {
@@ -672,21 +753,12 @@ namespace Sawczyn.EFDesigner.EFModel
          protected override void OnValueChanged(ModelAttribute element, bool oldValue, bool newValue)
          {
             base.OnValueChanged(element, oldValue, newValue);
+
             if (!element.Store.InUndoRedoOrRollback && newValue)
             {
                DomainPropertyInfo propInfo = element.Store.DomainDataDirectory.GetDomainProperty(PropertyAccessModeDomainPropertyId);
                propInfo.NotifyValueChange(element);
             }
-         }
-
-         /// <summary>Performs the reset operation for the IsPropertyAccessModeTracking property for a model element.</summary>
-         /// <param name="element">The model element that has the property to reset.</param>
-         internal void ResetValue(ModelAttribute element)
-         {
-            PropertyAccessMode? calculatedValue= element?.ModelClass.ModelRoot.PropertyAccessModeDefault;
-
-            if (calculatedValue != null && element.PropertyAccessMode == calculatedValue)
-               element.isPropertyAccessModeTrackingPropertyStorage = true;
          }
 
          /// <summary>
@@ -702,6 +774,16 @@ namespace Sawczyn.EFDesigner.EFModel
             // of the DatabaseCollation property is retrieved from storage.  
             element.isPropertyAccessModeTrackingPropertyStorage = false;
          }
+
+         /// <summary>Performs the reset operation for the IsPropertyAccessModeTracking property for a model element.</summary>
+         /// <param name="element">The model element that has the property to reset.</param>
+         internal void ResetValue(ModelAttribute element)
+         {
+            PropertyAccessMode? calculatedValue = element?.ModelClass.ModelRoot.PropertyAccessModeDefault;
+
+            if ((calculatedValue != null) && (element.PropertyAccessMode == calculatedValue))
+               element.isPropertyAccessModeTrackingPropertyStorage = true;
+         }
       }
 
       internal sealed partial class IsDatabaseCollationTrackingPropertyHandler
@@ -715,11 +797,26 @@ namespace Sawczyn.EFDesigner.EFModel
          protected override void OnValueChanged(ModelAttribute element, bool oldValue, bool newValue)
          {
             base.OnValueChanged(element, oldValue, newValue);
+
             if (!element.Store.InUndoRedoOrRollback && newValue)
             {
                DomainPropertyInfo propInfo = element.Store.DomainDataDirectory.GetDomainProperty(DatabaseCollationDomainPropertyId);
                propInfo.NotifyValueChange(element);
             }
+         }
+
+         /// <summary>
+         ///    Method to set IsDatabaseCollationTracking to false so that this instance of this tracking property is not
+         ///    storage-based.
+         /// </summary>
+         /// <param name="element">
+         ///    The element on which to reset the property value.
+         /// </param>
+         internal void PreResetValue(ModelAttribute element)
+         {
+            // Force the IsDatabaseCollationTracking property to false so that the value  
+            // of the DatabaseCollation property is retrieved from storage.  
+            element.isDatabaseCollationTrackingPropertyStorage = false;
          }
 
          /// <summary>Performs the reset operation for the IsDatabaseCollationTracking property for a model element.</summary>
@@ -739,22 +836,8 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if (calculatedValue != null && element.DatabaseCollation == calculatedValue)
+            if ((calculatedValue != null) && (element.DatabaseCollation == calculatedValue))
                element.isDatabaseCollationTrackingPropertyStorage = true;
-         }
-
-         /// <summary>
-         ///    Method to set IsDatabaseCollationTracking to false so that this instance of this tracking property is not
-         ///    storage-based.
-         /// </summary>
-         /// <param name="element">
-         ///    The element on which to reset the property value.
-         /// </param>
-         internal void PreResetValue(ModelAttribute element)
-         {
-            // Force the IsDatabaseCollationTracking property to false so that the value  
-            // of the DatabaseCollation property is retrieved from storage.  
-            element.isDatabaseCollationTrackingPropertyStorage = false;
          }
       }
 
@@ -769,11 +852,26 @@ namespace Sawczyn.EFDesigner.EFModel
          protected override void OnValueChanged(ModelAttribute element, bool oldValue, bool newValue)
          {
             base.OnValueChanged(element, oldValue, newValue);
+
             if (!element.Store.InUndoRedoOrRollback && newValue)
             {
                DomainPropertyInfo propInfo = element.Store.DomainDataDirectory.GetDomainProperty(ColumnNameDomainPropertyId);
                propInfo.NotifyValueChange(element);
             }
+         }
+
+         /// <summary>
+         ///    Method to set IsColumnNameTracking to false so that this instance of this tracking property is not
+         ///    storage-based.
+         /// </summary>
+         /// <param name="element">
+         ///    The element on which to reset the property value.
+         /// </param>
+         internal void PreResetValue(ModelAttribute element)
+         {
+            // Force the IsColumnNameTracking property to false so that the value  
+            // of the ColumnName property is retrieved from storage.  
+            element.isColumnNameTrackingPropertyStorage = false;
          }
 
          /// <summary>Performs the reset operation for the IsColumnNameTracking property for a model element.</summary>
@@ -793,22 +891,8 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if (calculatedValue != null && element.ColumnName == calculatedValue)
+            if ((calculatedValue != null) && (element.ColumnName == calculatedValue))
                element.isColumnNameTrackingPropertyStorage = true;
-         }
-
-         /// <summary>
-         ///    Method to set IsColumnNameTracking to false so that this instance of this tracking property is not
-         ///    storage-based.
-         /// </summary>
-         /// <param name="element">
-         ///    The element on which to reset the property value.
-         /// </param>
-         internal void PreResetValue(ModelAttribute element)
-         {
-            // Force the IsColumnNameTracking property to false so that the value  
-            // of the ColumnName property is retrieved from storage.  
-            element.isColumnNameTrackingPropertyStorage = false;
          }
       }
 
@@ -823,11 +907,26 @@ namespace Sawczyn.EFDesigner.EFModel
          protected override void OnValueChanged(ModelAttribute element, bool oldValue, bool newValue)
          {
             base.OnValueChanged(element, oldValue, newValue);
+
             if (!element.Store.InUndoRedoOrRollback && newValue)
             {
                DomainPropertyInfo propInfo = element.Store.DomainDataDirectory.GetDomainProperty(ColumnTypeDomainPropertyId);
                propInfo.NotifyValueChange(element);
             }
+         }
+
+         /// <summary>
+         ///    Method to set IsColumnTypeTracking to false so that this instance of this tracking property is not
+         ///    storage-based.
+         /// </summary>
+         /// <param name="element">
+         ///    The element on which to reset the property value.
+         /// </param>
+         internal void PreResetValue(ModelAttribute element)
+         {
+            // Force the IsColumnTypeTracking property to false so that the value  
+            // of the ColumnType property is retrieved from storage.  
+            element.isColumnTypeTrackingPropertyStorage = false;
          }
 
          /// <summary>Performs the reset operation for the IsColumnTypeTracking property for a model element.</summary>
@@ -847,22 +946,8 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if (calculatedValue != null && element.ColumnType == (string)calculatedValue)
+            if ((calculatedValue != null) && (element.ColumnType == (string)calculatedValue))
                element.isColumnTypeTrackingPropertyStorage = true;
-         }
-
-         /// <summary>
-         ///    Method to set IsColumnTypeTracking to false so that this instance of this tracking property is not
-         ///    storage-based.
-         /// </summary>
-         /// <param name="element">
-         ///    The element on which to reset the property value.
-         /// </param>
-         internal void PreResetValue(ModelAttribute element)
-         {
-            // Force the IsColumnTypeTracking property to false so that the value  
-            // of the ColumnType property is retrieved from storage.  
-            element.isColumnTypeTrackingPropertyStorage = false;
          }
       }
 
@@ -877,11 +962,26 @@ namespace Sawczyn.EFDesigner.EFModel
          protected override void OnValueChanged(ModelAttribute element, bool oldValue, bool newValue)
          {
             base.OnValueChanged(element, oldValue, newValue);
+
             if (!element.Store.InUndoRedoOrRollback && newValue)
             {
                DomainPropertyInfo propInfo = element.Store.DomainDataDirectory.GetDomainProperty(ImplementNotifyDomainPropertyId);
                propInfo.NotifyValueChange(element);
             }
+         }
+
+         /// <summary>
+         ///    Method to set IsImplementNotifyTracking to false so that this instance of this tracking property is not
+         ///    storage-based.
+         /// </summary>
+         /// <param name="element">
+         ///    The element on which to reset the property value.
+         /// </param>
+         internal void PreResetValue(ModelAttribute element)
+         {
+            // Force the IsImplementNotifyTracking property to false so that the value  
+            // of the ImplementNotify property is retrieved from storage.  
+            element.isImplementNotifyTrackingPropertyStorage = false;
          }
 
          /// <summary>Performs the reset operation for the IsColumnTypeTracking property for a model element.</summary>
@@ -901,22 +1001,8 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if (calculatedValue != null && element.ImplementNotify == (bool)calculatedValue)
+            if ((calculatedValue != null) && (element.ImplementNotify == (bool)calculatedValue))
                element.isImplementNotifyTrackingPropertyStorage = true;
-         }
-
-         /// <summary>
-         ///    Method to set IsImplementNotifyTracking to false so that this instance of this tracking property is not
-         ///    storage-based.
-         /// </summary>
-         /// <param name="element">
-         ///    The element on which to reset the property value.
-         /// </param>
-         internal void PreResetValue(ModelAttribute element)
-         {
-            // Force the IsImplementNotifyTracking property to false so that the value  
-            // of the ImplementNotify property is retrieved from storage.  
-            element.isImplementNotifyTrackingPropertyStorage = false;
          }
       }
 
@@ -931,11 +1017,26 @@ namespace Sawczyn.EFDesigner.EFModel
          protected override void OnValueChanged(ModelAttribute element, bool oldValue, bool newValue)
          {
             base.OnValueChanged(element, oldValue, newValue);
+
             if (!element.Store.InUndoRedoOrRollback && newValue)
             {
                DomainPropertyInfo propInfo = element.Store.DomainDataDirectory.GetDomainProperty(AutoPropertyDomainPropertyId);
                propInfo.NotifyValueChange(element);
             }
+         }
+
+         /// <summary>
+         ///    Method to set IsAutoPropertyTracking to false so that this instance of this tracking property is not
+         ///    storage-based.
+         /// </summary>
+         /// <param name="element">
+         ///    The element on which to reset the property value.
+         /// </param>
+         internal void PreResetValue(ModelAttribute element)
+         {
+            // Force the IsAutoPropertyTracking property to false so that the value  
+            // of the AutoProperty property is retrieved from storage.  
+            element.isAutoPropertyTrackingPropertyStorage = false;
          }
 
          /// <summary>Performs the reset operation for the IsAutoPropertyTracking property for a model element.</summary>
@@ -955,22 +1056,8 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if (calculatedValue != null && element.AutoProperty == (bool)calculatedValue)
+            if ((calculatedValue != null) && (element.AutoProperty == (bool)calculatedValue))
                element.isAutoPropertyTrackingPropertyStorage = true;
-         }
-
-         /// <summary>
-         ///    Method to set IsAutoPropertyTracking to false so that this instance of this tracking property is not
-         ///    storage-based.
-         /// </summary>
-         /// <param name="element">
-         ///    The element on which to reset the property value.
-         /// </param>
-         internal void PreResetValue(ModelAttribute element)
-         {
-            // Force the IsAutoPropertyTracking property to false so that the value  
-            // of the AutoProperty property is retrieved from storage.  
-            element.isAutoPropertyTrackingPropertyStorage = false;
          }
       }
 
@@ -978,6 +1065,7 @@ namespace Sawczyn.EFDesigner.EFModel
       ///    Calls the pre-reset method on the associated property value handler for each
       ///    tracking property of this model element.
       /// </summary>
+
       // ReSharper disable once UnusedMember.Global
       internal virtual void PreResetIsTrackingProperties()
       {
@@ -987,6 +1075,7 @@ namespace Sawczyn.EFDesigner.EFModel
          IsAutoPropertyTrackingPropertyHandler.Instance.PreResetValue(this);
          IsDatabaseCollationTrackingPropertyHandler.Instance.PreResetValue(this);
          IsPropertyAccessModeTrackingPropertyHandler.Instance.PreResetValue(this);
+
          // same with other tracking properties as they get added
       }
 
@@ -994,6 +1083,7 @@ namespace Sawczyn.EFDesigner.EFModel
       ///    Calls the reset method on the associated property value handler for each
       ///    tracking property of this model element.
       /// </summary>
+
       // ReSharper disable once UnusedMember.Global
       internal virtual void ResetIsTrackingProperties()
       {
@@ -1003,28 +1093,29 @@ namespace Sawczyn.EFDesigner.EFModel
          IsAutoPropertyTrackingPropertyHandler.Instance.ResetValue(this);
          IsDatabaseCollationTrackingPropertyHandler.Instance.ResetValue(this);
          IsPropertyAccessModeTrackingPropertyHandler.Instance.ResetValue(this);
+
          // same with other tracking properties as they get added
       }
 
-      #endregion Tracking Properties
+#endregion Tracking Properties
 
-      #region Validation methods
+#region Validation methods
 
-      internal static (string ef6Version, string efCoreVersion)[] GeometryTypes = {
-                                                                                        (ef6Version : "Geometry", efCoreVersion : "Geometry")
-                                                                                      , (ef6Version : "GeometryPoint", efCoreVersion : "Point")
-                                                                                      , (ef6Version : "GeometryLineString", efCoreVersion : "LineString")
-                                                                                      , (ef6Version : "GeometryPolygon", efCoreVersion : "Polygon")
-                                                                                      , (ef6Version : "GeometryCollection", efCoreVersion : "GeometryCollection")
-                                                                                      , (ef6Version : "GeometryMultiPoint", efCoreVersion : "MultiPoint")
-                                                                                      , (ef6Version : "GeometryMultiLineString", efCoreVersion : "MultiLineString")
-                                                                                      , (ef6Version : "GeometryMultiPolygon", efCoreVersion : "MultiPolygon")
-                                                                                  };
+      internal static (string ef6Version, string efCoreVersion)[] GeometryTypes =
+      {
+         (ef6Version : "Geometry", efCoreVersion : "Geometry"),
+         (ef6Version : "GeometryPoint", efCoreVersion : "Point"),
+         (ef6Version : "GeometryLineString", efCoreVersion : "LineString"),
+         (ef6Version : "GeometryPolygon", efCoreVersion : "Polygon"),
+         (ef6Version : "GeometryCollection", efCoreVersion : "GeometryCollection"),
+         (ef6Version : "GeometryMultiPoint", efCoreVersion : "MultiPoint"),
+         (ef6Version : "GeometryMultiLineString", efCoreVersion : "MultiLineString"),
+         (ef6Version : "GeometryMultiPolygon", efCoreVersion : "MultiPolygon")
+      };
 
-
-      [ValidationMethod(/*ValidationCategories.Open | */ValidationCategories.Save | ValidationCategories.Menu)]
+      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void GeographyTypeDoesNotMatchEFVersion(ValidationContext context)
       {
          if (ModelClass?.ModelRoot == null)
@@ -1038,7 +1129,7 @@ namespace Sawczyn.EFDesigner.EFModel
                hasWarning = true;
                RedrawItem();
             }
-            else if (GeometryTypes.Any(g => g.efCoreVersion != g.ef6Version && g.ef6Version == Type))
+            else if (GeometryTypes.Any(g => (g.efCoreVersion != g.ef6Version) && (g.ef6Version == Type)))
             {
                context.LogError($"{ModelClass.Name}.{Name}: {Type} type invalid for EF Core.", "AEInvalidGeometry", this);
                hasWarning = true;
@@ -1047,7 +1138,7 @@ namespace Sawczyn.EFDesigner.EFModel
          }
          else
          {
-            if (GeometryTypes.Any(g => g.efCoreVersion != g.ef6Version && g.efCoreVersion == Type))
+            if (GeometryTypes.Any(g => (g.efCoreVersion != g.ef6Version) && (g.efCoreVersion == Type)))
             {
                context.LogError($"{ModelClass.Name}.{Name}: {Type} type invalid for EF6.", "AEInvalidGeometry", this);
                hasWarning = true;
@@ -1058,13 +1149,13 @@ namespace Sawczyn.EFDesigner.EFModel
 
       [ValidationMethod(ValidationCategories.Open | ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void StringsShouldHaveLength(ValidationContext context)
       {
          if (ModelClass?.ModelRoot == null)
             return;
 
-         if (ModelClass != null && Type == "String" && (!MaxLength.HasValue || MaxLength.Value == MAXLENGTH_UNDEFINED))
+         if ((ModelClass != null) && (Type == "String") && (!MaxLength.HasValue || (MaxLength.Value == MAXLENGTH_UNDEFINED)))
          {
             context.LogWarning($"{ModelClass.Name}.{Name}: String length not specified", "MWStringNoLength", this);
             hasWarning = true;
@@ -1074,14 +1165,15 @@ namespace Sawczyn.EFDesigner.EFModel
 
       [ValidationMethod(ValidationCategories.Open | ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void SummaryDescriptionIsEmpty(ValidationContext context)
       {
          if (ModelClass?.ModelRoot == null)
             return;
 
          ModelRoot modelRoot = Store.ElementDirectory.FindElements<ModelRoot>().FirstOrDefault();
-         if (ModelClass != null && modelRoot?.WarnOnMissingDocumentation == true && string.IsNullOrWhiteSpace(Summary))
+
+         if ((ModelClass != null) && (modelRoot?.WarnOnMissingDocumentation == true) && string.IsNullOrWhiteSpace(Summary))
          {
             context.LogWarning($"{ModelClass.Name}.{Name}: Property should be documented", "AWMissingSummary", this);
             hasWarning = true;
@@ -1089,12 +1181,12 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      #endregion Validation Rules
+#endregion Validation Rules
 
-      #region ColumnName tracking property
+#region ColumnName tracking property
 
       /// <summary>
-      /// Change the column name, if it's tracking the name of the property
+      ///    Change the column name, if it's tracking the name of the property
       /// </summary>
       /// <param name="oldValue"></param>
       /// <param name="newValue"></param>
@@ -1116,12 +1208,12 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      #endregion ColumnName tracking property
+#endregion ColumnName tracking property
 
-      #region ColumnType tracking property
+#region ColumnType tracking property
 
       /// <summary>
-      /// Notify watchers of change to Type property
+      ///    Notify watchers of change to Type property
       /// </summary>
       /// <param name="oldValue"></param>
       /// <param name="newValue"></param>
@@ -1131,8 +1223,8 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             TrackingHelper.UpdateTrackingCollectionProperty(Store,
                                                             ModelClass.Attributes,
-                                                            ModelAttribute.ColumnTypeDomainPropertyId,
-                                                            ModelAttribute.IsColumnTypeTrackingDomainPropertyId);
+                                                            ColumnTypeDomainPropertyId,
+                                                            IsColumnTypeTrackingDomainPropertyId);
          }
       }
 
@@ -1147,28 +1239,37 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      #endregion ColumnType tracking property
+#endregion ColumnType tracking property
 
-      #region To/From String
+#region To/From String
 
       /// <summary>Returns a string that represents the current object.</summary>
-      /// <remarks>Output is, in order:
-      /// <ul>
-      /// <li>Visibility</li>
-      /// <li>Type (with optional '?' if not a required field</li>
-      /// <li>Min/Max length in brackets, if a string field and length(s) is/are specified</li>
-      /// <li>Name (with optional '!' if an identity field</li>
-      /// <li>an equal sign (=) followed by an initializer, if an initializer is specified</li>
-      /// </ul>
+      /// <remarks>
+      ///    Output is, in order:
+      ///    <ul>
+      ///       <li>Visibility</li>
+      ///       <li>Type (with optional '?' if not a required field</li>
+      ///       <li>Min/Max length in brackets, if a string field and length(s) is/are specified</li>
+      ///       <li>Name (with optional '!' if an identity field</li>
+      ///       <li>an equal sign (=) followed by an initializer, if an initializer is specified</li>
+      ///    </ul>
       /// </remarks>
       /// <returns>A string that represents the current object. Note that this is a parsable string when turning back to a ModelAttribute.</returns>
       public override string ToString()
       {
          string visibility = SetterVisibility.ToString().ToLower();
-         string identity = IsIdentity ? "!" : string.Empty;
 
-         string nullable = Required ? string.Empty : "?";
-         string initial = !string.IsNullOrEmpty(InitialValue) ? $" = {InitialValue.Trim('"')}" : string.Empty;
+         string identity = IsIdentity
+                              ? "!"
+                              : string.Empty;
+
+         string nullable = Required
+                              ? string.Empty
+                              : "?";
+
+         string initial = !string.IsNullOrEmpty(InitialValue)
+                             ? $" = {InitialValue.Trim('"')}"
+                             : string.Empty;
 
          return $"{visibility} {Type}{nullable}{LengthDisplay()} {Name}{identity}{initial}";
       }
@@ -1189,10 +1290,12 @@ namespace Sawczyn.EFDesigner.EFModel
                   result = $"[{MinLength}-]";
 
                   break;
+
                case MAXLENGTH_MAX:
                   result = $"[{MinLength}-max]";
 
                   break;
+
                default:
                   result = $"[{MinLength}-{MaxLength}]";
 
@@ -1201,26 +1304,31 @@ namespace Sawczyn.EFDesigner.EFModel
          }
          else if (MaxLength == MAXLENGTH_MAX)
             result = "[max]";
-         else if (MaxLength != null && MaxLength != MAXLENGTH_UNDEFINED)
+         else if ((MaxLength != null) && (MaxLength != MAXLENGTH_UNDEFINED))
             result = $"[{MaxLength}]";
 
          return result;
       }
 
       /// <summary>
-      /// Full display name for this attribute
+      ///    Full display name for this attribute
       /// </summary>
       /// <returns></returns>
       public string ToDisplayString()
       {
-         string nullable = Required ? string.Empty : "?";
-         string initial = !string.IsNullOrEmpty(InitialValue) ? $" = {InitialValue.Trim('"')}" : string.Empty;
+         string nullable = Required
+                              ? string.Empty
+                              : "?";
+
+         string initial = !string.IsNullOrEmpty(InitialValue)
+                             ? $" = {InitialValue.Trim('"')}"
+                             : string.Empty;
 
          return $"{Name}: {Type}{nullable}{LengthDisplay()}{initial}";
       }
 
       /// <summary>
-      /// Parses the input string to check for type validity.
+      ///    Parses the input string to check for type validity.
       /// </summary>
       /// <param name="modelRoot">Context in which to parse the input</param>
       /// <param name="input">String to parse</param>
@@ -1229,17 +1337,20 @@ namespace Sawczyn.EFDesigner.EFModel
       public static ParseResult Parse(ModelRoot modelRoot, string input)
       {
          string _input = input?.Split('{')[0].Trim(';');
+
          if (_input == null)
             return null;
 
          ParseResult result = AttributeParser.Parse(_input);
+
          if (result != null)
          {
             result.Type = ToCLRType(result.Type);
 
-            if (result.Type != null && !modelRoot.ValidTypes.Contains(result.Type))
+            if ((result.Type != null) && !modelRoot.ValidTypes.Contains(result.Type))
             {
                result.Type = ToCLRType(result.Type);
+
                if (!modelRoot.ValidTypes.Contains(result.Type) && !modelRoot.Enums.Select(e => e.Name).Contains(result.Type))
                {
                   result.Type = null;
@@ -1253,6 +1364,6 @@ namespace Sawczyn.EFDesigner.EFModel
          return result;
       }
 
-      #endregion Parse string
+#endregion Parse string
    }
 }

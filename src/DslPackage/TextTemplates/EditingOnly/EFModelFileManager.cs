@@ -14,7 +14,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    [SuppressMessage("ReSharper", "UnusedMember.Global")]
    public partial class GeneratedTextTransformation
    {
-      #region Template
+#region Template
 
       // EFDesigner v4.1.2.0
       // Copyright (c) 2017-2022 Michael Sawczyn
@@ -102,7 +102,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             CurrentBlock.Length = template.Length - CurrentBlock.Start;
 
-            if (CurrentBlock != header && CurrentBlock != footer)
+            if ((CurrentBlock != header) && (CurrentBlock != footer))
                files.Add(CurrentBlock);
 
             currentBlock = null;
@@ -115,7 +115,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
          private bool IsFileContentDifferent(string fileName, string newContent)
          {
-            return !(File.Exists(fileName) && File.ReadAllText(fileName) == newContent);
+            return !(File.Exists(fileName) && (File.ReadAllText(fileName) == newContent));
          }
 
          public virtual void Process(bool split)
@@ -161,7 +161,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             if (name == null)
                throw new ArgumentNullException(nameof(name));
 
-            CurrentBlock = new Block { Name = name };
+            CurrentBlock = new Block {Name = name};
          }
 
          private class Block
@@ -169,8 +169,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             public bool IncludeInDefault;
             public string Name;
 
-            public int Start
-                     , Length;
+            public int Start,
+                       Length;
          }
 
          private class VSManager : Manager
@@ -191,19 +191,25 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             public override string DefaultProjectNamespace
             {
-               get { return templateProjectItem.ContainingProject.Properties.Item("DefaultNamespace").Value.ToString(); }
+               get
+               {
+                  return templateProjectItem.ContainingProject.Properties.Item("DefaultNamespace").Value.ToString();
+               }
             }
 
             public override string OutputPath
             {
-               get { return Path.GetDirectoryName(templateProjectItem.ContainingProject.FullName); }
+               get
+               {
+                  return Path.GetDirectoryName(templateProjectItem.ContainingProject.FullName);
+               }
             }
 
             private void CheckoutFileIfRequired(string fileName)
             {
-               EnvDTE.SourceControl sc = dte.SourceControl;
+               SourceControl sc = dte.SourceControl;
 
-               if (sc != null && sc.IsItemUnderSCC(fileName) && !sc.IsItemCheckedOut(fileName))
+               if ((sc != null) && sc.IsItemUnderSCC(fileName) && !sc.IsItemCheckedOut(fileName))
                   sc.CheckOutItem(fileName);
             }
 
@@ -277,7 +283,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   {
                      ProjectItem item = currentItemList.Item(index);
 
-                     if (item.Kind == EnvDTE.Constants.vsProjectItemKindPhysicalFolder && item.Name == pathPart)
+                     if ((item.Kind == EnvDTE.Constants.vsProjectItemKindPhysicalFolder) && (item.Name == pathPart))
                      {
                         if (!pathParts.Any())
                            result = item;
@@ -306,7 +312,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             private Dictionary<ProjectItem, List<string>> GetTargetState(string[] fileNames)
             {
-               Dictionary<ProjectItem, List<string>> result = new Dictionary<ProjectItem, List<string>> { { templateProjectItem, new List<string>() } };
+               Dictionary<ProjectItem, List<string>> result = new Dictionary<ProjectItem, List<string>> {{templateProjectItem, new List<string>()}};
 
                foreach (string fileName in fileNames)
                {
@@ -363,6 +369,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          }
       }
 
-      #endregion Template
+#endregion Template
    }
 }

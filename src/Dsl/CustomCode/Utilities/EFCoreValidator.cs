@@ -15,7 +15,7 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
    public static class EFCoreValidator
    {
-      #region ModelAttribute
+#region ModelAttribute
 
       public static void AdjustEFCoreProperties(PropertyDescriptorCollection propertyDescriptors, ModelAttribute element)
       {
@@ -32,7 +32,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
                   break;
 
-                  // add more as needed
+               // add more as needed
             }
 
             if (shouldRemove)
@@ -40,16 +40,16 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      #endregion ModelAttribute
+#endregion ModelAttribute
 
-      #region Association
+#region Association
 
       public static IEnumerable<string> GetErrors(Association element)
       {
          ModelRoot modelRoot = element.Store.ModelRoot();
          List<string> errorMessages = new List<string>();
 
-         if (modelRoot?.EntityFrameworkVersion == EFVersion.EFCore && modelRoot?.IsEFCore5Plus == false)
+         if ((modelRoot?.EntityFrameworkVersion == EFVersion.EFCore) && (modelRoot?.IsEFCore5Plus == false))
          {
             if ((element.SourceMultiplicity == Multiplicity.ZeroMany) && (element.TargetMultiplicity == Multiplicity.ZeroMany))
                errorMessages.Add($"EFCore does not support many-to-many associations (found one between {element.Source.Name} and {element.Target.Name})");
@@ -58,9 +58,9 @@ namespace Sawczyn.EFDesigner.EFModel
          return errorMessages;
       }
 
-      #endregion Association
+#endregion Association
 
-      #region ModelRoot
+#region ModelRoot
 
       public static IEnumerable<string> GetErrors(ModelRoot element)
       {
@@ -111,12 +111,12 @@ namespace Sawczyn.EFDesigner.EFModel
                   break;
 
                case "InheritanceStrategy":
-                  shouldRemove = modelRoot.EntityFrameworkVersion == EFVersion.EFCore && !modelRoot.IsEFCore5Plus;
+                  shouldRemove = (modelRoot.EntityFrameworkVersion == EFVersion.EFCore) && !modelRoot.IsEFCore5Plus;
 
                   break;
 
                case "LazyLoadingEnabled":
-                  shouldRemove = modelRoot.EntityFrameworkVersion == EFVersion.EFCore && modelRoot.GetEntityFrameworkPackageVersionNum() < 2.1;
+                  shouldRemove = (modelRoot.EntityFrameworkVersion == EFVersion.EFCore) && (modelRoot.GetEntityFrameworkPackageVersionNum() < 2.1);
 
                   break;
             }
@@ -126,6 +126,6 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      #endregion ModelRoot
+#endregion ModelRoot
    }
 }

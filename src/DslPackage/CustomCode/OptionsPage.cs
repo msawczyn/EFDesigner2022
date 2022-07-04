@@ -9,28 +9,23 @@ namespace Sawczyn.EFDesigner.EFModel.DslPackage
 {
    public class OptionsEventArgs : EventArgs
    {
-      public string Option { get; }
-      public object OldValue { get; }
-      public object NewValue { get; }
-
       public OptionsEventArgs(string option, object oldValue, object newValue)
       {
          Option = option;
          OldValue = oldValue;
          NewValue = newValue;
       }
+
+      public string Option { get; }
+      public object OldValue { get; }
+      public object NewValue { get; }
    }
 
    public class OptionsPage : DialogPage
    {
-      public event EventHandler<OptionsEventArgs> OptionChanged ;
-
-      protected virtual void OnOptionsChanged(OptionsEventArgs args)
-      {
-         OptionChanged?.Invoke(this, args);
-      }
-
       private string dotExePath;
+
+      private bool saveDiagramsCompressed;
 
       [Category("Display")]
       [DisplayName("GraphViz dot.exe path")]
@@ -50,8 +45,6 @@ namespace Sawczyn.EFDesigner.EFModel.DslPackage
          }
       }
 
-      private bool saveDiagramsCompressed;
-
       [Category("File")]
       [DisplayName("Save diagram using legacy binary format")]
       [Description("If true, .diagramx files will be saved in compressed format. If false, they will not.")]
@@ -68,5 +61,12 @@ namespace Sawczyn.EFDesigner.EFModel.DslPackage
             OnOptionsChanged(args);
          }
       }
+
+      protected virtual void OnOptionsChanged(OptionsEventArgs args)
+      {
+         OptionChanged?.Invoke(this, args);
+      }
+
+      public event EventHandler<OptionsEventArgs> OptionChanged;
    }
 }

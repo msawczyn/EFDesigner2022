@@ -23,8 +23,11 @@
 
    <ItemGroup>
       <PackageReference Include="EntityFramework" Version="6.4.4" />
-      <PackageReference Include="log4net" Version="2.0.14" />
+      <PackageReference Include="log4net" Version="2.0.13" />
+      <PackageReference Include="Microsoft.VisualStudio.RpcContracts" Version="17.2.31" />
+      <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.2.32" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="StreamJsonRpc" Version="2.11.35" />
       <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
       <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
       <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
@@ -52,6 +55,12 @@
          <Generator>ResXFileCodeGenerator</Generator>
          <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+   </ItemGroup>
+
+   <ItemGroup>
+     <None Update="log4net.config">
+       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+     </None>
    </ItemGroup>
 
 </Project>

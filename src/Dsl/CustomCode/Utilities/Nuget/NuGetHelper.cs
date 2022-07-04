@@ -1,7 +1,9 @@
-﻿using Sawczyn.EFDesigner.EFModel.Nuget;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
+
+using Sawczyn.EFDesigner.EFModel.Nuget;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
@@ -31,13 +33,12 @@ namespace Sawczyn.EFDesigner.EFModel
 
             NuGetPackageDisplay.Clear();
          }
-
       }
 
       public static Dictionary<EFVersion, IEnumerable<string>> EFPackageVersions { get; }
       public static List<NuGetDisplay> NuGetPackageDisplay { get; }
 
-      [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "Caller requires synchronous method")]
+      [SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "Caller requires synchronous method")]
       private static void LoadNuGetVersions(EFVersion efVersion, string packageId)
       {
          // get NuGet packages with that package id

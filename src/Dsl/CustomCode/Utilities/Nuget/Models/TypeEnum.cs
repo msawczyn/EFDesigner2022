@@ -1,4 +1,5 @@
-﻿namespace Sawczyn.EFDesigner.EFModel.Nuget {
+﻿namespace Sawczyn.EFDesigner.EFModel.Nuget
+{
    public enum TypeEnum
    {
       Package

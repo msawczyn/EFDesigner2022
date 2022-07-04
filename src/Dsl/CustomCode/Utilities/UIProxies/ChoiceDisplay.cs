@@ -4,8 +4,9 @@ namespace Sawczyn.EFDesigner
 {
    public static class ChoiceDisplay
    {
-      public delegate string ChoiceVisualizer(string title, IEnumerable<string> choices);
       private static ChoiceVisualizer ChoiceVisualizerMethod;
+
+      public delegate string ChoiceVisualizer(string title, IEnumerable<string> choices);
 
       public static string GetChoice(string title, IEnumerable<string> choices)
       {
@@ -20,6 +21,7 @@ namespace Sawczyn.EFDesigner
                return null;
             }
          }
+
          return null;
       }
 
@@ -27,6 +29,5 @@ namespace Sawczyn.EFDesigner
       {
          ChoiceVisualizerMethod = method;
       }
-
    }
 }

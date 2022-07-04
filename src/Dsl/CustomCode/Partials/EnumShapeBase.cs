@@ -1,23 +1,21 @@
 ﻿using System.Drawing;
+
 using Microsoft.VisualStudio.Modeling;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
-   public partial class EnumShapeBase: IHasStore
+   public partial class EnumShapeBase : IHasStore
    {
-      internal sealed partial class FillColorPropertyHandler
+      private static string GetDisplayPropertyFromModelEnumForValuesCompartment(ModelElement element)
       {
-         protected override void OnValueChanging(EnumShapeBase element, Color oldValue, Color newValue)
-         {
-            base.OnValueChanging(element, oldValue, newValue);
+         ModelEnumValue enumValue = element as ModelEnumValue;
 
-            if (element.Store.InUndoRedoOrRollback || element.Store.InSerializationTransaction)
-               return;
+         if (enumValue == null)
+            return "?";
 
-            // set text color to contrasting color based on new fill color, if it's currently black or white
-            if (element.TextColor == Color.Black || element.TextColor == Color.White)
-               element.TextColor = newValue.LegibleTextColor();
-         }
+         return !string.IsNullOrWhiteSpace(enumValue.Value)
+                   ? $"{enumValue.Name} = {enumValue.Value}"
+                   : enumValue.Name;
       }
 
       private bool GetVisibleValue()
@@ -33,15 +31,19 @@ namespace Sawczyn.EFDesigner.EFModel
             Hide();
       }
 
-      static string GetDisplayPropertyFromModelEnumForValuesCompartment(ModelElement element)
+      internal sealed partial class FillColorPropertyHandler
       {
-         ModelEnumValue enumValue = element as ModelEnumValue;
-         if (enumValue == null)
-            return "?";
+         protected override void OnValueChanging(EnumShapeBase element, Color oldValue, Color newValue)
+         {
+            base.OnValueChanging(element, oldValue, newValue);
 
-         return !string.IsNullOrWhiteSpace(enumValue.Value)
-                   ? $"{enumValue.Name} = {enumValue.Value}"
-                   : enumValue.Name;
+            if (element.Store.InUndoRedoOrRollback || element.Store.InSerializationTransaction)
+               return;
+
+            // set text color to contrasting color based on new fill color, if it's currently black or white
+            if ((element.TextColor == Color.Black) || (element.TextColor == Color.White))
+               element.TextColor = newValue.LegibleTextColor();
+         }
       }
    }
 }

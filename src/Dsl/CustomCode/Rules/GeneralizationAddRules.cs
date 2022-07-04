@@ -23,7 +23,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
          if (element.Subclass.IsPropertyBag && !element.Superclass.IsPropertyBag)
          {
-            ErrorDisplay.Show(store, $"{element.Subclass.Name} -> {element.Superclass.Name}: Since {element.Subclass.Name} is a property bag, it can't inherit from {element.Superclass.Name}, which is not a property bag.");
+            ErrorDisplay.Show(store,
+                              $"{element.Subclass.Name} -> {element.Superclass.Name}: Since {element.Subclass.Name} is a property bag, it can't inherit from {element.Superclass.Name}, which is not a property bag.");
+
             current.Rollback();
 
             return;
@@ -45,7 +47,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                            .Select(a => a.Name)
                                            .Union(element.Subclass
                                                          .LocalNavigationProperties()
-                                                         .Where(p => p.PropertyName != null && superclassPropertyNames.Contains(p.PropertyName))
+                                                         .Where(p => (p.PropertyName != null) && superclassPropertyNames.Contains(p.PropertyName))
                                                          .Select(p => p.PropertyName))
                                            .ToList();
 
@@ -57,9 +59,7 @@ namespace Sawczyn.EFDesigner.EFModel
             List<(string propertyName, object thisValue, object otherValue)> differences = superclassAttribute.GetDifferences(subclassAttribute);
 
             // ignore these differences if found
-            differences.RemoveAll(x => x.propertyName == "ModelClass" || 
-                                       x.propertyName == "Summary" || 
-                                       x.propertyName == "Description");
+            differences.RemoveAll(x => (x.propertyName == "ModelClass") || (x.propertyName == "Summary") || (x.propertyName == "Description"));
 
             if (!differences.Any())
             {
@@ -72,7 +72,10 @@ namespace Sawczyn.EFDesigner.EFModel
          if (nameClashes.Any())
          {
             string nameClashList = string.Join("\n   ", nameClashes);
-            ErrorDisplay.Show(store, $"{element.Subclass.Name} -> {element.Superclass.Name}: That inheritance link would cause name clashes. Resolve the following before setting the inheritance:\n   {nameClashList}");
+
+            ErrorDisplay.Show(store,
+                              $"{element.Subclass.Name} -> {element.Superclass.Name}: That inheritance link would cause name clashes. Resolve the following before setting the inheritance:\n   {nameClashList}");
+
             current.Rollback();
          }
       }

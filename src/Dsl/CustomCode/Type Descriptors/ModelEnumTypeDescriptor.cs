@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+
 using Microsoft.VisualStudio.Modeling;
 using Microsoft.VisualStudio.Modeling.Design;
 
@@ -25,25 +26,25 @@ namespace Sawczyn.EFDesigner.EFModel
 
             //Add the descriptors for the tracking properties 
 
-            propertyDescriptors.Add(new TrackingPropertyDescriptor(modelEnum
-                                                                 , storeDomainDataDirectory.GetDomainProperty(ModelEnum.NamespaceDomainPropertyId)
-                                                                 , storeDomainDataDirectory.GetDomainProperty(ModelEnum.IsNamespaceTrackingDomainPropertyId)
-                                                                 , new Attribute[]
+            propertyDescriptors.Add(new TrackingPropertyDescriptor(modelEnum,
+                                                                   storeDomainDataDirectory.GetDomainProperty(ModelEnum.NamespaceDomainPropertyId),
+                                                                   storeDomainDataDirectory.GetDomainProperty(ModelEnum.IsNamespaceTrackingDomainPropertyId),
+                                                                   new Attribute[]
                                                                    {
-                                                                      new DisplayNameAttribute("Namespace")
-                                                                    , new DescriptionAttribute("Overrides default namespace")
-                                                                    , new CategoryAttribute("Code Generation")
+                                                                      new DisplayNameAttribute("Namespace"),
+                                                                      new DescriptionAttribute("Overrides default namespace"),
+                                                                      new CategoryAttribute("Code Generation")
                                                                    }));
 
-            propertyDescriptors.Add(new TrackingPropertyDescriptor(modelEnum
-                                                                 , storeDomainDataDirectory.GetDomainProperty(ModelEnum.OutputDirectoryDomainPropertyId)
-                                                                 , storeDomainDataDirectory.GetDomainProperty(ModelEnum.IsOutputDirectoryTrackingDomainPropertyId)
-                                                                 , new Attribute[]
+            propertyDescriptors.Add(new TrackingPropertyDescriptor(modelEnum,
+                                                                   storeDomainDataDirectory.GetDomainProperty(ModelEnum.OutputDirectoryDomainPropertyId),
+                                                                   storeDomainDataDirectory.GetDomainProperty(ModelEnum.IsOutputDirectoryTrackingDomainPropertyId),
+                                                                   new Attribute[]
                                                                    {
-                                                                      new DisplayNameAttribute("Output Directory")
-                                                                    , new DescriptionAttribute("Overrides default output directory")
-                                                                    , new CategoryAttribute("Code Generation")
-                                                                    , new TypeConverterAttribute(typeof(ProjectDirectoryTypeConverter))
+                                                                      new DisplayNameAttribute("Output Directory"),
+                                                                      new DescriptionAttribute("Overrides default output directory"),
+                                                                      new CategoryAttribute("Code Generation"),
+                                                                      new TypeConverterAttribute(typeof(ProjectDirectoryTypeConverter))
                                                                    }));
          }
 

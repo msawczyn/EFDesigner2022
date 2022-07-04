@@ -16,6 +16,7 @@ namespace Sawczyn.EFDesigner.EFModel
          base.ElementPropertyChanged(e);
 
          ModelEnumValue element = (ModelEnumValue)e.ModelElement;
+
          if (element.IsDeleted)
             return;
 
@@ -48,14 +49,14 @@ namespace Sawczyn.EFDesigner.EFModel
                   errorMessage = $"{modelEnum.Name}.{newName}: Name must be a valid .NET identifier";
                else if (modelEnum.Values.Except(new[] {element}).Any(v => v.Name == newName))
                   errorMessage = $"{modelEnum.Name}.{newName}: Name already in use";
-               else 
+               else
                {
                   // find ModelAttributes where the default value is this ModelEnumValue and change it to the new name
                   foreach (ModelAttribute modelAttribute in store.GetAll<ModelAttribute>().Where(a => a.InitialValue == $"{modelEnum.Name}.{(string)e.OldValue}"))
                   {
-                        string[] parts = modelAttribute.InitialValue.Split('.');
-                        parts[1] = newName;
-                        modelAttribute.InitialValue = string.Join(".", parts);
+                     string[] parts = modelAttribute.InitialValue.Split('.');
+                     parts[1] = newName;
+                     modelAttribute.InitialValue = string.Join(".", parts);
                   }
                }
 
@@ -74,10 +75,12 @@ namespace Sawczyn.EFDesigner.EFModel
                         badValue = !short.TryParse(newValue, out short _);
 
                         break;
+
                      case EnumValueType.Int32:
                         badValue = !int.TryParse(newValue, out int _);
 
                         break;
+
                      case EnumValueType.Int64:
                         badValue = !long.TryParse(newValue, out long _);
 
@@ -88,7 +91,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      errorMessage = $"Invalid value for {modelEnum.Name}. Must be {modelEnum.ValueType}.";
                   else
                   {
-                     bool hasDuplicates = modelEnum.Values.Any(x => x != element && x.Value == newValue);
+                     bool hasDuplicates = modelEnum.Values.Any(x => (x != element) && (x.Value == newValue));
 
                      if (hasDuplicates)
                         errorMessage = $"Value {newValue} is already present in {modelEnum.Name}. Can't have duplicate values.";

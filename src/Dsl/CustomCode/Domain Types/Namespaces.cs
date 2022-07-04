@@ -7,21 +7,15 @@ using Microsoft.VisualStudio.Modeling.Design;
 namespace Sawczyn.EFDesigner.EFModel
 {
    /// <summary>
-   /// Encapsulates values of the current Namespace settings in the ModelRoot
+   ///    Encapsulates values of the current Namespace settings in the ModelRoot
    /// </summary>
    [Serializable]
-   public class Namespaces: IHasStore
+   public class Namespaces : IHasStore
    {
       private readonly ModelRoot modelRoot;
 
       /// <summary>
-      /// Exposes the Store object.  Store is a complete model.  Stores contain both the domain data  and the model data for all the domain models in a model.
-      /// </summary>
-      [Browsable(false)]
-      public Store Store => modelRoot?.Store;
-
-      /// <summary>
-      /// Constructor
+      ///    Constructor
       /// </summary>
       /// <param name="modelRoot">DomainClass ModelRoot</param>
       public Namespaces(ModelRoot modelRoot)
@@ -30,8 +24,9 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Namespace value for the generated DbContext-derived object
+      ///    Namespace value for the generated DbContext-derived object
       /// </summary>
+
       // ReSharper disable once UnusedMember.Global
       [DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelRoot/Namespace.DisplayName", typeof(EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
       [CategoryResource("Sawczyn.EFDesigner.EFModel.ModelRoot/Namespace.Category", typeof(EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
@@ -53,7 +48,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Namespace value for the generated entity classes
+      ///    Namespace value for the generated entity classes
       /// </summary>
       [DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelRoot/EntityNamespace.DisplayName", typeof(EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
       [CategoryResource("Sawczyn.EFDesigner.EFModel.ModelRoot/EntityNamespace.Category", typeof(EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
@@ -70,7 +65,7 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             using (Transaction t = modelRoot.Store.TransactionManager.BeginTransaction())
             {
-               modelRoot.EntityNamespace = string.IsNullOrWhiteSpace(value) || value == modelRoot.Namespace
+               modelRoot.EntityNamespace = string.IsNullOrWhiteSpace(value) || (value == modelRoot.Namespace)
                                               ? null
                                               : value;
 
@@ -80,7 +75,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Namespace value for the generated enumerations
+      ///    Namespace value for the generated enumerations
       /// </summary>
       [DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelRoot/EnumNamespace.DisplayName", typeof(EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
       [CategoryResource("Sawczyn.EFDesigner.EFModel.ModelRoot/EnumNamespace.Category", typeof(EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
@@ -97,7 +92,7 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             using (Transaction t = modelRoot.Store.TransactionManager.BeginTransaction())
             {
-               modelRoot.EnumNamespace = string.IsNullOrWhiteSpace(value) || value == modelRoot.Namespace
+               modelRoot.EnumNamespace = string.IsNullOrWhiteSpace(value) || (value == modelRoot.Namespace)
                                             ? null
                                             : value;
 
@@ -107,7 +102,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      /// Namespace value for the generated non-persistent objects
+      ///    Namespace value for the generated non-persistent objects
       /// </summary>
       [DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelRoot/StructNamespace.DisplayName", typeof(EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
       [CategoryResource("Sawczyn.EFDesigner.EFModel.ModelRoot/StructNamespace.Category", typeof(EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
@@ -124,12 +119,24 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             using (Transaction t = modelRoot.Store.TransactionManager.BeginTransaction())
             {
-               modelRoot.StructNamespace = string.IsNullOrWhiteSpace(value) || value == modelRoot.Namespace
+               modelRoot.StructNamespace = string.IsNullOrWhiteSpace(value) || (value == modelRoot.Namespace)
                                               ? null
                                               : value;
 
                t.Commit();
             }
+         }
+      }
+
+      /// <summary>
+      ///    Exposes the Store object.  Store is a complete model.  Stores contain both the domain data  and the model data for all the domain models in a model.
+      /// </summary>
+      [Browsable(false)]
+      public Store Store
+      {
+         get
+         {
+            return modelRoot?.Store;
          }
       }
 
@@ -141,5 +148,4 @@ namespace Sawczyn.EFDesigner.EFModel
          return string.Empty;
       }
    }
-
 }

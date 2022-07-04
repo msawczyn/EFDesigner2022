@@ -2,7 +2,8 @@
 
 using Newtonsoft.Json;
 
-namespace Sawczyn.EFDesigner.EFModel.Nuget {
+namespace Sawczyn.EFDesigner.EFModel.Nuget
+{
    public class PackageData
    {
       [JsonProperty("@id")]

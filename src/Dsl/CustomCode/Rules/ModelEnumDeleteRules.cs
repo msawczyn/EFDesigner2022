@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 using Microsoft.VisualStudio.Modeling;
 
@@ -14,7 +10,7 @@ namespace Sawczyn.EFDesigner.EFModel
    internal class ModelEnumDeleteRules : DeletingRule
    {
       /// <summary>
-      /// public virtual method for the client to have his own user-defined delete rule class
+      ///    public virtual method for the client to have his own user-defined delete rule class
       /// </summary>
       /// <param name="e"></param>
       public override void ElementDeleting(ElementDeletingEventArgs e)

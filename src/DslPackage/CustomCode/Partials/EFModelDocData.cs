@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -12,6 +11,8 @@ using System.Windows.Forms;
 using EnvDTE;
 
 using EnvDTE80;
+
+using Mexedge.VisualStudio.Modeling;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -26,6 +27,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Sawczyn.EFDesigner.EFModel.Extensions;
 
 using VSLangProj;
+
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace Sawczyn.EFDesigner.EFModel
@@ -36,137 +38,51 @@ namespace Sawczyn.EFDesigner.EFModel
       private static DTE _dte;
       private static DTE2 _dte2;
       private IComponentModel _componentModel;
-      //private IVsOutputWindowPane _outputWindow;
 
-      internal static DTE Dte => _dte ?? (_dte = Package.GetGlobalService(typeof(DTE)) as DTE);
-      internal static DTE2 Dte2 => _dte2 ?? (_dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2);
-      internal IComponentModel ComponentModel => _componentModel ?? (_componentModel = (IComponentModel)GetService(typeof(SComponentModel)));
-      //internal IVsOutputWindowPane OutputWindow => _outputWindow ?? (_outputWindow = (IVsOutputWindowPane)GetService(typeof(SVsGeneralOutputWindowPane)));
-
-      internal static Project ActiveProject =>
-            Dte.ActiveSolutionProjects is Array activeSolutionProjects && activeSolutionProjects.Length > 0
-                  ? activeSolutionProjects.GetValue(0) as Project
-                  : null;
+      private IMonitorSelectionService monitorSelection;
 
       static EFModelDocData()
       {
          ModelDisplay.GetDiagramColors = GetDiagramColors;
       }
 
-      internal static void GenerateCode()
+      //private IVsOutputWindowPane _outputWindow;
+
+      internal static DTE Dte
       {
-         GenerateCode(null);
-      }
-
-      internal static void GenerateCode(string filepath)
-      {
-         ProjectItem modelProjectItem = Dte2.Solution.FindProjectItem(filepath ?? Dte2.ActiveDocument.FullName);
-
-         if (Guid.Parse(modelProjectItem.Kind) == VSConstants.GUID_ItemType_PhysicalFile)
-            modelProjectItem.Save();
-
-         string templateFilename = Path.ChangeExtension(filepath ?? Dte2.ActiveDocument.FullName, "tt");
-
-         ProjectItem templateProjectItem = Dte2.Solution.FindProjectItem(templateFilename);
-#pragma warning disable IDE0019 // Use pattern matching
-         VSProjectItem templateVsProjectItem = templateProjectItem?.Object as VSProjectItem;
-#pragma warning restore IDE0019 // Use pattern matching
-
-         if (templateVsProjectItem == null)
-            Messages.AddError($"Tried to generate code but couldn't find {templateFilename} in the solution.");
-         else
+         get
          {
-
-            try
-            {
-               Dte.StatusBar.Text = $"Generating code from {templateFilename}";
-               templateVsProjectItem.RunCustomTool();
-               Dte.StatusBar.Text = $"Finished generating code from {templateFilename}";
-            }
-            catch (COMException)
-            {
-               string message = $"Encountered an error generating code from {templateFilename}. Please transform T4 template manually.";
-               Dte.StatusBar.Text = message;
-               Messages.AddError(message);
-            }
+            return _dte ?? (_dte = Package.GetGlobalService(typeof(DTE)) as DTE);
          }
       }
 
-      /// <summary>
-      /// Called before the document is initially loaded with data.
-      /// </summary>
-      protected override void OnDocumentLoading(EventArgs e)
+      internal static DTE2 Dte2
       {
-         base.OnDocumentLoading(e);
-         ValidationController?.ClearMessages();
-      }
-
-      /// <summary>
-      /// Called when user double clicks on a class shape
-      /// </summary>
-      /// <param name="modelClass"></param>
-      internal static bool OpenFileFor(ModelClass modelClass)
-      {
-         try
+         get
          {
-            Project activeProject = ActiveProject;
-
-            if (activeProject != null)
-            {
-               string projectDirectory = Path.GetDirectoryName(activeProject.FullName);
-               string filename = Path.Combine(projectDirectory, modelClass.GetRelativeFileName());
-
-               if (File.Exists(filename))
-               {
-                  Dte.ItemOperations.OpenFile(filename);
-
-                  return true;
-               }
-            }
-
-            return false;
-         }
-         catch (Exception e)
-         {
-            Debug.WriteLine("Error opening file. " + e.Message);
-            return false;
+            return _dte2 ?? (_dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2);
          }
       }
 
-      /// <summary>
-      /// Called when user double clicks on a enum shape
-      /// </summary>
-      /// <param name="modelEnum"></param>
-      internal static bool OpenFileFor(ModelEnum modelEnum)
+      internal IComponentModel ComponentModel
       {
-         try
+         get
          {
-            Project activeProject = ActiveProject;
-
-            if (activeProject != null)
-            {
-               string projectDirectory = Path.GetDirectoryName(activeProject.FullName);
-               Debug.Assert(projectDirectory != null, nameof(projectDirectory) + " != null");
-               string filename = Path.Combine(projectDirectory, modelEnum.GetRelativeFileName());
-
-               if (File.Exists(filename))
-               {
-                  Dte.ItemOperations.OpenFile(filename);
-
-                  return true;
-               }
-            }
-
-            return false;
-         }
-         catch (Exception e)
-         {
-            Debug.WriteLine("Error opening file. " + e.Message);
-            return false;
+            return _componentModel ?? (_componentModel = (IComponentModel)GetService(typeof(SComponentModel)));
          }
       }
 
-      private IMonitorSelectionService monitorSelection;
+      //internal IVsOutputWindowPane OutputWindow => _outputWindow ?? (_outputWindow = (IVsOutputWindowPane)GetService(typeof(SVsGeneralOutputWindowPane)));
+
+      internal static Project ActiveProject
+      {
+         get
+         {
+            return Dte.ActiveSolutionProjects is Array activeSolutionProjects && (activeSolutionProjects.Length > 0)
+                      ? activeSolutionProjects.GetValue(0) as Project
+                      : null;
+         }
+      }
 
       protected IMonitorSelectionService MonitorSelection
       {
@@ -194,13 +110,148 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      ///    Validate the model before the file is saved.
+      /// </summary>
+      protected override bool CanSave(bool allowUserInterface)
+      {
+         if (allowUserInterface)
+            ValidationController?.ClearMessages();
+
+         return base.CanSave(allowUserInterface);
+      }
+
+      protected override void CleanupOldDiagramFiles()
+      {
+         string diagramsFileName = FileName + DiagramExtension;
+
+         if (diagramsFileName.EndsWith("x"))
+         {
+            string oldDiagramFileName = diagramsFileName.TrimEnd('x');
+
+            if (File.Exists(oldDiagramFileName))
+            {
+               Dte2.Solution.FindProjectItem(oldDiagramFileName)?.Delete();
+            }
+         }
+      }
+
+      private void CloseDiagram(EFModelDiagram diagram)
+      {
+         DocViews.OfType<EFModelDocView>().FirstOrDefault(d => d.Diagram == diagram)?.Frame
+                ?.CloseFrame((uint)__FRAMECLOSE.FRAMECLOSE_SaveIfDirty);
+      }
+
+      private void DisplayDiagram(ModelDiagramData diagramData)
+      {
+         OpenView(Constants.LogicalView, new ViewContext(diagramData.Name, typeof(EFModelDiagram), RootElement));
+      }
+
+      internal static void GenerateCode()
+      {
+         GenerateCode(null);
+      }
+
+      internal static void GenerateCode(string filepath)
+      {
+         ProjectItem modelProjectItem = Dte2.Solution.FindProjectItem(filepath ?? Dte2.ActiveDocument.FullName);
+
+         if (Guid.Parse(modelProjectItem.Kind) == VSConstants.GUID_ItemType_PhysicalFile)
+            modelProjectItem.Save();
+
+         string templateFilename = Path.ChangeExtension(filepath ?? Dte2.ActiveDocument.FullName, "tt");
+
+         ProjectItem templateProjectItem = Dte2.Solution.FindProjectItem(templateFilename);
+#pragma warning disable IDE0019 // Use pattern matching
+         VSProjectItem templateVsProjectItem = templateProjectItem?.Object as VSProjectItem;
+#pragma warning restore IDE0019 // Use pattern matching
+
+         if (templateVsProjectItem == null)
+            Messages.AddError($"Tried to generate code but couldn't find {templateFilename} in the solution.");
+         else
+         {
+            try
+            {
+               Dte.StatusBar.Text = $"Generating code from {templateFilename}";
+               templateVsProjectItem.RunCustomTool();
+               Dte.StatusBar.Text = $"Finished generating code from {templateFilename}";
+            }
+            catch (COMException)
+            {
+               string message = $"Encountered an error generating code from {templateFilename}. Please transform T4 template manually.";
+               Dte.StatusBar.Text = message;
+               Messages.AddError(message);
+            }
+         }
+      }
+
+      public override IEnumerable<ModelElement> GetAllElementsForValidation()
+      {
+         List<ModelElement> elements = base.GetAllElementsForValidation().ToList();
+         elements.OfType<IDisplaysWarning>().ToList().ForEach(e => e.ResetWarning());
+
+         return elements;
+      }
+
+      internal static string GetChoice(string title, IEnumerable<string> choices)
+      {
+         return Messages.GetChoice(title, choices);
+      }
+
       protected Diagram GetCurrentDiagram()
       {
          return CurrentDocView?.CurrentDiagram;
       }
 
+      private static DiagramThemeColors GetDiagramColors()
+      {
+         return new DiagramThemeColors(VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundBrushKey));
+      }
+
+      public void Merge(UnidirectionalAssociation[] selected)
+      {
+         if (!(RootElement is ModelRoot modelRoot))
+            return;
+
+         using (Transaction tx = modelRoot.Store.TransactionManager.BeginTransaction("Merge associations"))
+         {
+            selected[0].Delete();
+            selected[1].Delete();
+
+            // ReSharper disable once UnusedVariable
+            BidirectionalAssociation element = new BidirectionalAssociation(Store,
+                                                                            new[]
+                                                                            {
+                                                                               new RoleAssignment(BidirectionalAssociation.BidirectionalSourceDomainRoleId, selected[0].Source),
+                                                                               new RoleAssignment(BidirectionalAssociation.BidirectionalTargetDomainRoleId, selected[1].Source)
+                                                                            },
+                                                                            new[]
+                                                                            {
+                                                                               new PropertyAssignment(BidirectionalAssociation.SourcePropertyNameDomainPropertyId, selected[1].TargetPropertyName),
+                                                                               new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, selected[0].TargetPropertyName),
+                                                                               new PropertyAssignment(BidirectionalAssociation.SourceCustomAttributesDomainPropertyId,
+                                                                                                      selected[1].TargetCustomAttributes),
+                                                                               new PropertyAssignment(Association.TargetCustomAttributesDomainPropertyId, selected[0].TargetCustomAttributes),
+                                                                               new PropertyAssignment(BidirectionalAssociation.SourceDisplayTextDomainPropertyId, selected[1].TargetDisplayText),
+                                                                               new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, selected[0].TargetDisplayText),
+                                                                               new PropertyAssignment(BidirectionalAssociation.SourceSummaryDomainPropertyId, selected[1].TargetSummary),
+                                                                               new PropertyAssignment(BidirectionalAssociation.SourceDescriptionDomainPropertyId, selected[1].TargetDescription),
+                                                                               new PropertyAssignment(Association.TargetSummaryDomainPropertyId, selected[0].TargetSummary),
+                                                                               new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, selected[0].TargetDescription),
+                                                                               new PropertyAssignment(Association.SourceDeleteActionDomainPropertyId, selected[1].TargetDeleteAction),
+                                                                               new PropertyAssignment(Association.TargetDeleteActionDomainPropertyId, selected[0].TargetDeleteAction),
+                                                                               new PropertyAssignment(Association.SourceRoleDomainPropertyId, selected[1].TargetRole),
+                                                                               new PropertyAssignment(Association.TargetRoleDomainPropertyId, selected[0].TargetRole),
+                                                                               new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, selected[1].TargetMultiplicity),
+                                                                               new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, selected[0].TargetMultiplicity)
+                                                                            });
+
+            tx.Commit();
+         }
+      }
+
       /// <summary>
-      /// Called on both document load and reload.
+      ///    Called on both document load and reload.
       /// </summary>
       protected override void OnDocumentLoaded()
       {
@@ -233,6 +284,7 @@ namespace Sawczyn.EFDesigner.EFModel
          VSColorTheme.ThemeChanged += VSColorTheme_OnThemeChanged;
 
          // set to the project's namespace if no namespace set
+
          if (string.IsNullOrEmpty(modelRoot.Namespace))
          {
             using (Transaction tx = Store.TransactionManager.BeginTransaction("SetDefaultNamespace"))
@@ -269,8 +321,8 @@ namespace Sawczyn.EFDesigner.EFModel
                   Store.ElementDirectory
                        .AllElements
                        .OfType<Association>()
-                       .Where(a => a.SourceMultiplicity != Multiplicity.ZeroMany
-                                && a.TargetMultiplicity != Multiplicity.ZeroMany
+                       .Where(a => (a.SourceMultiplicity != Multiplicity.ZeroMany)
+                                && (a.TargetMultiplicity != Multiplicity.ZeroMany)
                                 && !string.IsNullOrEmpty(a.FKPropertyName))
                        .ToList()
                        .ForEach(a => a.FKPropertyName = null);
@@ -278,8 +330,6 @@ namespace Sawczyn.EFDesigner.EFModel
                   tx.Commit();
                }
             }
-
-
          }
 
          List<GeneralizationConnector> generalizationConnectors = Store.ElementDirectory
@@ -343,59 +393,193 @@ namespace Sawczyn.EFDesigner.EFModel
          SetDocDataDirty(0);
       }
 
-      private static DiagramThemeColors GetDiagramColors()
+      /// <summary>
+      ///    Called before the document is initially loaded with data.
+      /// </summary>
+      protected override void OnDocumentLoading(EventArgs e)
       {
-         return new DiagramThemeColors(VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundBrushKey));
+         base.OnDocumentLoading(e);
+         ValidationController?.ClearMessages();
       }
 
-      private void VSColorTheme_OnThemeChanged(ThemeChangedEventArgs e)
+      protected override void OnDocumentSaved(EventArgs e)
       {
-         DiagramThemeColors diagramColors = GetDiagramColors();
+         base.OnDocumentSaved(e);
 
-         EFModelDocView docView = (EFModelDocView)CurrentDocView;
-         EFModelExplorer modelExplorer = (EFModelExplorer)docView?.ModelExplorerWindow.TreeContainer;
-         modelExplorer?.SetThemeColors(diagramColors);
-         modelExplorer?.Show();
-
-         if (Store != null)
+         if (RootElement is ModelRoot modelRoot)
          {
-            foreach (GeneralizationConnector connector in Store.ElementDirectory.AllElements.OfType<GeneralizationConnector>().ToArray())
-               connector.SetThemeColors(diagramColors);
+            if (modelRoot.TransformOnSave)
+               GenerateCode(((DocumentSavedEventArgs)e).NewFileName);
 
-            foreach (AssociationConnector connector in Store.ElementDirectory.AllElements.OfType<AssociationConnector>().ToArray())
-               connector.SetThemeColors(diagramColors);
+            CurrentDocView?.CurrentDesigner?.Focus();
 
-            foreach (CommentConnector connector in Store.ElementDirectory.AllElements.OfType<CommentConnector>().ToArray())
-               connector.SetThemeColors(diagramColors);
-
-            foreach (ClassShape classShape in Store.ElementDirectory.AllElements.OfType<ClassShape>().ToArray())
-               classShape.SetThemeColors(diagramColors);
-
-            foreach (EnumShape enumShape in Store.ElementDirectory.AllElements.OfType<EnumShape>().ToArray())
-               enumShape.SetThemeColors(diagramColors);
-
-            foreach (CommentBoxShape commentShape in Store.ElementDirectory.AllElements.OfType<CommentBoxShape>().ToArray())
-               commentShape.SetThemeColors(diagramColors);
-
-            foreach (EFModelDiagram diagram in Store.ElementDirectory.AllElements.OfType<EFModelDiagram>().ToArray())
-               diagram.SetThemeColors(diagramColors);
+            // add other post-save processing as needed
          }
       }
 
-      private void DisplayDiagram(ModelDiagramData diagramData)
+      /// <summary>
+      ///    Called when user double clicks on a class shape
+      /// </summary>
+      /// <param name="modelClass"></param>
+      internal static bool OpenFileFor(ModelClass modelClass)
       {
-         OpenView(Constants.LogicalView, new Mexedge.VisualStudio.Modeling.ViewContext(diagramData.Name, typeof(EFModelDiagram), RootElement));
+         try
+         {
+            Project activeProject = ActiveProject;
+
+            if (activeProject != null)
+            {
+               string projectDirectory = Path.GetDirectoryName(activeProject.FullName);
+               string filename = Path.Combine(projectDirectory, modelClass.GetRelativeFileName());
+
+               if (File.Exists(filename))
+               {
+                  Dte.ItemOperations.OpenFile(filename);
+
+                  return true;
+               }
+            }
+
+            return false;
+         }
+         catch (Exception e)
+         {
+            Debug.WriteLine("Error opening file. " + e.Message);
+
+            return false;
+         }
       }
 
-      private void CloseDiagram(EFModelDiagram diagram)
+      /// <summary>
+      ///    Called when user double clicks on a enum shape
+      /// </summary>
+      /// <param name="modelEnum"></param>
+      internal static bool OpenFileFor(ModelEnum modelEnum)
       {
-         DocViews.OfType<EFModelDocView>().FirstOrDefault(d => d.Diagram == diagram)?.Frame?.CloseFrame((uint)__FRAMECLOSE.FRAMECLOSE_SaveIfDirty);
+         try
+         {
+            Project activeProject = ActiveProject;
+
+            if (activeProject != null)
+            {
+               string projectDirectory = Path.GetDirectoryName(activeProject.FullName);
+               Debug.Assert(projectDirectory != null, nameof(projectDirectory) + " != null");
+               string filename = Path.Combine(projectDirectory, modelEnum.GetRelativeFileName());
+
+               if (File.Exists(filename))
+               {
+                  Dte.ItemOperations.OpenFile(filename);
+
+                  return true;
+               }
+            }
+
+            return false;
+         }
+         catch (Exception e)
+         {
+            Debug.WriteLine("Error opening file. " + e.Message);
+
+            return false;
+         }
       }
 
       private void RenameWindow(EFModelDiagram diagram)
       {
          DocViews.OfType<EFModelDocView>().FirstOrDefault(d => d.Diagram == diagram)?.Frame
                 ?.SetProperty((int)__VSFPROPID.VSFPROPID_EditorCaption, $" [{diagram.Name}]");
+      }
+
+      internal static bool ShowBooleanQuestionBox(IServiceProvider serviceProvider, string question)
+      {
+         return ShowQuestionBox(serviceProvider, question) == DialogResult.Yes;
+      }
+
+      internal static void ShowError(IServiceProvider serviceProvider, string message)
+      {
+         Messages.AddError(message);
+         PackageUtility.ShowError(serviceProvider, message);
+      }
+
+      internal static void ShowMessage(string message)
+      {
+         Messages.AddMessage(message);
+      }
+
+      internal static DialogResult ShowQuestionBox(IServiceProvider serviceProvider, string question)
+      {
+         return PackageUtility.ShowMessageBox(serviceProvider,
+                                              question,
+                                              OLEMSGBUTTON.OLEMSGBUTTON_YESNO,
+                                              OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND,
+                                              OLEMSGICON.OLEMSGICON_QUERY);
+      }
+
+      internal static void ShowStatus(string message)
+      {
+         Messages.AddStatus(message);
+      }
+
+      internal static void ShowWarning(string message)
+      {
+         Messages.AddWarning(message);
+      }
+
+      public void Split(BidirectionalAssociation selected)
+      {
+         if (!(RootElement is ModelRoot modelRoot))
+            return;
+
+         using (Transaction tx = modelRoot.Store.TransactionManager.BeginTransaction("Split associations"))
+         {
+            selected.Delete();
+
+            // ReSharper disable once UnusedVariable
+            UnidirectionalAssociation element1 = new UnidirectionalAssociation(Store,
+                                                                               new[]
+                                                                               {
+                                                                                  new RoleAssignment(Association.SourceDomainRoleId, selected.Source),
+                                                                                  new RoleAssignment(Association.TargetDomainRoleId, selected.Target)
+                                                                               },
+                                                                               new[]
+                                                                               {
+                                                                                  new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, selected.TargetPropertyName),
+                                                                                  new PropertyAssignment(Association.TargetCustomAttributesDomainPropertyId, selected.TargetCustomAttributes),
+                                                                                  new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, selected.TargetDisplayText),
+                                                                                  new PropertyAssignment(Association.TargetSummaryDomainPropertyId, selected.TargetSummary),
+                                                                                  new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, selected.TargetDescription),
+                                                                                  new PropertyAssignment(Association.SourceDeleteActionDomainPropertyId, selected.SourceDeleteAction),
+                                                                                  new PropertyAssignment(Association.TargetDeleteActionDomainPropertyId, selected.TargetDeleteAction),
+                                                                                  new PropertyAssignment(Association.SourceRoleDomainPropertyId, selected.SourceRole),
+                                                                                  new PropertyAssignment(Association.TargetRoleDomainPropertyId, selected.TargetRole),
+                                                                                  new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, selected.SourceMultiplicity),
+                                                                                  new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, selected.TargetMultiplicity)
+                                                                               });
+
+            // ReSharper disable once UnusedVariable
+            UnidirectionalAssociation element2 = new UnidirectionalAssociation(Store,
+                                                                               new[]
+                                                                               {
+                                                                                  new RoleAssignment(Association.SourceDomainRoleId, selected.Target),
+                                                                                  new RoleAssignment(Association.TargetDomainRoleId, selected.Source)
+                                                                               },
+                                                                               new[]
+                                                                               {
+                                                                                  new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, selected.SourcePropertyName),
+                                                                                  new PropertyAssignment(Association.TargetCustomAttributesDomainPropertyId, selected.SourceCustomAttributes),
+                                                                                  new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, selected.SourceDisplayText),
+                                                                                  new PropertyAssignment(Association.TargetSummaryDomainPropertyId, selected.SourceSummary),
+                                                                                  new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, selected.SourceDescription),
+                                                                                  new PropertyAssignment(Association.SourceDeleteActionDomainPropertyId, selected.TargetDeleteAction),
+                                                                                  new PropertyAssignment(Association.TargetDeleteActionDomainPropertyId, selected.SourceDeleteAction),
+                                                                                  new PropertyAssignment(Association.SourceRoleDomainPropertyId, selected.TargetRole),
+                                                                                  new PropertyAssignment(Association.TargetRoleDomainPropertyId, selected.SourceRole),
+                                                                                  new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, selected.TargetMultiplicity),
+                                                                                  new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, selected.SourceMultiplicity)
+                                                                               });
+
+            tx.Commit();
+         }
       }
 
       private void ValidateAll()
@@ -431,202 +615,37 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      internal static DialogResult ShowQuestionBox(IServiceProvider serviceProvider, string question)
+      private void VSColorTheme_OnThemeChanged(ThemeChangedEventArgs e)
       {
-         return PackageUtility.ShowMessageBox(serviceProvider,
-                                              question,
-                                              OLEMSGBUTTON.OLEMSGBUTTON_YESNO,
-                                              OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND,
-                                              OLEMSGICON.OLEMSGICON_QUERY);
-      }
+         DiagramThemeColors diagramColors = GetDiagramColors();
 
-      internal static bool ShowBooleanQuestionBox(IServiceProvider serviceProvider, string question)
-      {
-         return ShowQuestionBox(serviceProvider, question) == DialogResult.Yes;
-      }
+         EFModelDocView docView = (EFModelDocView)CurrentDocView;
+         EFModelExplorer modelExplorer = (EFModelExplorer)docView?.ModelExplorerWindow.TreeContainer;
+         modelExplorer?.SetThemeColors(diagramColors);
+         modelExplorer?.Show();
 
-      internal static void ShowMessage(string message)
-      {
-         Messages.AddMessage(message);
-      }
-
-      internal static void ShowWarning(string message)
-      {
-         Messages.AddWarning(message);
-      }
-
-      internal static void ShowStatus(string message)
-      {
-         Messages.AddStatus(message);
-      }
-
-      internal static void ShowError(IServiceProvider serviceProvider, string message)
-      {
-         Messages.AddError(message);
-         PackageUtility.ShowError(serviceProvider, message);
-      }
-
-      internal static string GetChoice(string title, IEnumerable<string> choices)
-      {
-         return Messages.GetChoice(title, choices);
-      }
-
-      public override IEnumerable<ModelElement> GetAllElementsForValidation()
-      {
-         List<ModelElement> elements = base.GetAllElementsForValidation().ToList();
-         elements.OfType<IDisplaysWarning>().ToList().ForEach(e => e.ResetWarning());
-
-         return elements;
-      }
-
-      /// <summary>
-      /// Validate the model before the file is saved.
-      /// </summary>
-      protected override bool CanSave(bool allowUserInterface)
-      {
-         if (allowUserInterface)
-            ValidationController?.ClearMessages();
-         return base.CanSave(allowUserInterface);
-      }
-
-      protected override void OnDocumentSaved(EventArgs e)
-      {
-         base.OnDocumentSaved(e);
-
-         if (RootElement is ModelRoot modelRoot)
+         if (Store != null)
          {
-            if (modelRoot.TransformOnSave)
-               GenerateCode(((DocumentSavedEventArgs)e).NewFileName);
+            foreach (GeneralizationConnector connector in Store.ElementDirectory.AllElements.OfType<GeneralizationConnector>().ToArray())
+               connector.SetThemeColors(diagramColors);
 
-            CurrentDocView?.CurrentDesigner?.Focus();
+            foreach (AssociationConnector connector in Store.ElementDirectory.AllElements.OfType<AssociationConnector>().ToArray())
+               connector.SetThemeColors(diagramColors);
 
-            // add other post-save processing as needed
-         }
-      }
+            foreach (CommentConnector connector in Store.ElementDirectory.AllElements.OfType<CommentConnector>().ToArray())
+               connector.SetThemeColors(diagramColors);
 
-      public void Merge(UnidirectionalAssociation[] selected)
-      {
-         if (!(RootElement is ModelRoot modelRoot)) return;
+            foreach (ClassShape classShape in Store.ElementDirectory.AllElements.OfType<ClassShape>().ToArray())
+               classShape.SetThemeColors(diagramColors);
 
-         using (Transaction tx = modelRoot.Store.TransactionManager.BeginTransaction("Merge associations"))
-         {
-            selected[0].Delete();
-            selected[1].Delete();
+            foreach (EnumShape enumShape in Store.ElementDirectory.AllElements.OfType<EnumShape>().ToArray())
+               enumShape.SetThemeColors(diagramColors);
 
-            // ReSharper disable once UnusedVariable
-            BidirectionalAssociation element = new BidirectionalAssociation(Store,
-                                                   new[]
-                                                   {
-                                                      new RoleAssignment(BidirectionalAssociation.BidirectionalSourceDomainRoleId, selected[0].Source),
-                                                      new RoleAssignment(BidirectionalAssociation.BidirectionalTargetDomainRoleId, selected[1].Source)
-                                                   },
-                                                   new[]
-                                                   {
-                                                      new PropertyAssignment(BidirectionalAssociation.SourcePropertyNameDomainPropertyId, selected[1].TargetPropertyName),
-                                                      new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, selected[0].TargetPropertyName),
+            foreach (CommentBoxShape commentShape in Store.ElementDirectory.AllElements.OfType<CommentBoxShape>().ToArray())
+               commentShape.SetThemeColors(diagramColors);
 
-                                                      new PropertyAssignment(BidirectionalAssociation.SourceCustomAttributesDomainPropertyId, selected[1].TargetCustomAttributes),
-                                                      new PropertyAssignment(Association.TargetCustomAttributesDomainPropertyId, selected[0].TargetCustomAttributes),
-
-                                                      new PropertyAssignment(BidirectionalAssociation.SourceDisplayTextDomainPropertyId, selected[1].TargetDisplayText),
-                                                      new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, selected[0].TargetDisplayText),
-
-                                                      new PropertyAssignment(BidirectionalAssociation.SourceSummaryDomainPropertyId, selected[1].TargetSummary),
-                                                      new PropertyAssignment(BidirectionalAssociation.SourceDescriptionDomainPropertyId, selected[1].TargetDescription),
-
-                                                      new PropertyAssignment(Association.TargetSummaryDomainPropertyId, selected[0].TargetSummary),
-                                                      new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, selected[0].TargetDescription),
-
-                                                      new PropertyAssignment(Association.SourceDeleteActionDomainPropertyId, selected[1].TargetDeleteAction),
-                                                      new PropertyAssignment(Association.TargetDeleteActionDomainPropertyId, selected[0].TargetDeleteAction),
-
-                                                      new PropertyAssignment(Association.SourceRoleDomainPropertyId, selected[1].TargetRole),
-                                                      new PropertyAssignment(Association.TargetRoleDomainPropertyId, selected[0].TargetRole),
-
-                                                      new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, selected[1].TargetMultiplicity),
-                                                      new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, selected[0].TargetMultiplicity),
-                                                   });
-            tx.Commit();
-         }
-      }
-
-      public void Split(BidirectionalAssociation selected)
-      {
-         if (!(RootElement is ModelRoot modelRoot)) return;
-
-         using (Transaction tx = modelRoot.Store.TransactionManager.BeginTransaction("Split associations"))
-         {
-            selected.Delete();
-
-            // ReSharper disable once UnusedVariable
-            UnidirectionalAssociation element1 = new UnidirectionalAssociation(Store,
-                                                   new[]
-                                                   {
-                                                      new RoleAssignment(Association.SourceDomainRoleId, selected.Source),
-                                                      new RoleAssignment(Association.TargetDomainRoleId, selected.Target)
-                                                   },
-                                                   new[]
-                                                   {
-                                                      new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, selected.TargetPropertyName),
-
-                                                      new PropertyAssignment(Association.TargetCustomAttributesDomainPropertyId, selected.TargetCustomAttributes),
-
-                                                      new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, selected.TargetDisplayText),
-
-                                                      new PropertyAssignment(Association.TargetSummaryDomainPropertyId, selected.TargetSummary),
-                                                      new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, selected.TargetDescription),
-
-                                                      new PropertyAssignment(Association.SourceDeleteActionDomainPropertyId, selected.SourceDeleteAction),
-                                                      new PropertyAssignment(Association.TargetDeleteActionDomainPropertyId, selected.TargetDeleteAction),
-
-                                                      new PropertyAssignment(Association.SourceRoleDomainPropertyId, selected.SourceRole),
-                                                      new PropertyAssignment(Association.TargetRoleDomainPropertyId, selected.TargetRole),
-
-                                                      new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, selected.SourceMultiplicity),
-                                                      new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, selected.TargetMultiplicity),
-                                                   });
-
-            // ReSharper disable once UnusedVariable
-            UnidirectionalAssociation element2 = new UnidirectionalAssociation(Store,
-                                                   new[]
-                                                   {
-                                                      new RoleAssignment(Association.SourceDomainRoleId, selected.Target),
-                                                      new RoleAssignment(Association.TargetDomainRoleId, selected.Source)
-                                                   },
-                                                   new[]
-                                                   {
-                                                      new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, selected.SourcePropertyName),
-
-                                                      new PropertyAssignment(Association.TargetCustomAttributesDomainPropertyId, selected.SourceCustomAttributes),
-
-                                                      new PropertyAssignment(Association.TargetDisplayTextDomainPropertyId, selected.SourceDisplayText),
-
-                                                      new PropertyAssignment(Association.TargetSummaryDomainPropertyId, selected.SourceSummary),
-                                                      new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, selected.SourceDescription),
-
-                                                      new PropertyAssignment(Association.SourceDeleteActionDomainPropertyId, selected.TargetDeleteAction),
-                                                      new PropertyAssignment(Association.TargetDeleteActionDomainPropertyId, selected.SourceDeleteAction),
-
-                                                      new PropertyAssignment(Association.SourceRoleDomainPropertyId, selected.TargetRole),
-                                                      new PropertyAssignment(Association.TargetRoleDomainPropertyId, selected.SourceRole),
-
-                                                      new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, selected.TargetMultiplicity),
-                                                      new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, selected.SourceMultiplicity),
-                                                   });
-
-            tx.Commit();
-         }
-      }
-
-      protected override void CleanupOldDiagramFiles()
-      {
-         string diagramsFileName = FileName + this.DiagramExtension;
-         if (diagramsFileName.EndsWith("x"))
-         {
-            string oldDiagramFileName = diagramsFileName.TrimEnd('x');
-
-            if (File.Exists(oldDiagramFileName))
-               Dte2.Solution.FindProjectItem(oldDiagramFileName)?.Delete();
+            foreach (EFModelDiagram diagram in Store.ElementDirectory.AllElements.OfType<EFModelDiagram>().ToArray())
+               diagram.SetThemeColors(diagramColors);
          }
       }
    }
