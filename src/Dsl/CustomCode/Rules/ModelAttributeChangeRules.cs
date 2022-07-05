@@ -94,7 +94,10 @@ namespace Sawczyn.EFDesigner.EFModel
                      element.Indexed = true;
 
                   if (element.IsConcurrencyToken)
+                  {
                      element.Indexed = false;
+                     element.Required = false;
+                  }
 
                   if (element.Indexed)
                      element.Persistent = true;
@@ -129,14 +132,18 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "IsConcurrencyToken":
                {
-                  bool newIsConcurrencyToken = (bool)e.NewValue;
-
-                  if (newIsConcurrencyToken)
+                  if (element.IsConcurrencyToken)
                   {
-                     element.IsIdentity = false;
-                     element.Persistent = true;
-                     element.Required = true;
-                     element.Type = "Binary";
+                     if (element.IsIdentity)
+                        errorMessages.Add($"{modelClass.Name}.{element.Name}: Makes no sense for a concurrenty token to be an identity.");
+                     else
+                     {
+                        foreach (ModelAttribute modelAttribute in element.ModelClass.AllAttributes.Where(a => a.IsConcurrencyToken && a != element))
+                           modelAttribute.IsConcurrencyToken = false;
+
+                        if (element.Type == "Timestamp")
+                           element.Required = false;
+                     }
                   }
                }
 
@@ -146,7 +153,9 @@ namespace Sawczyn.EFDesigner.EFModel
                {
                   if ((bool)e.NewValue)
                   {
-                     if (element.ModelClass.IsDependentType)
+                     if (element.IsConcurrencyToken)
+                        errorMessages.Add($"{modelClass.Name}.{element.Name}: Makes no sense for a concurrenty token to be an identity.");
+                     else if (element.ModelClass.IsDependentType)
                      {
                         if (!modelRoot.IsEFCore5Plus)
                            errorMessages.Add($"{modelClass.Name}.{element.Name}: Can't make {element.Name} an identity because {modelClass.Name} is a dependent type and can't have an identity property.");
@@ -250,13 +259,10 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "Required":
                {
-                  bool newRequired = (bool)e.NewValue;
-
-                  if (!newRequired)
-                  {
-                     if (element.IsIdentity || element.IsConcurrencyToken)
-                        element.Required = true;
-                  }
+                  if (element.IsConcurrencyToken)
+                     element.Required = false;
+                  else if (element.IsIdentity)
+                     element.Required = true;
                }
 
                break;

@@ -13,7 +13,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
 #region Template
 
-      // EFDesigner v4.1.2.0
+      // EFDesigner v4.2.0.0
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -324,9 +324,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             {
                if (modelAttribute.IsIdentity)
                   Output("[Key]");
-
-               if (modelAttribute.IsConcurrencyToken)
-                  Output("[ConcurrencyCheck]");
             }
             else
                Output("[NotMapped]");
@@ -458,8 +455,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                // don't use 1..1 associations in constructor parameters. Becomes a Catch-22 scenario.
                requiredParameters.AddRange(modelClass.AllRequiredNavigationProperties()
-                                                     .Where(np => (np.AssociationObject.SourceMultiplicity != Multiplicity.One)
-                                                               || (np.AssociationObject.TargetMultiplicity != Multiplicity.One))
+                                                     .Where(np => (np.AssociationObject.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)
+                                                               || (np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
                                                      .Select(x => $"{x.ClassType.FullName} {x.PropertyName.ToLower()}"));
             }
 
@@ -561,6 +558,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                Output("/// </remarks>");
             }
 
+            if (!modelClass.Persistent && !modelClass.CustomAttributes.Contains("NotMapped"))
+               Output("[NotMapped]");
+
             if (!string.IsNullOrWhiteSpace(modelClass.CustomAttributes))
                Output($"[{modelClass.CustomAttributes.Trim('[', ']')}]");
 
@@ -602,15 +602,15 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             // all required navigation properties that aren't a 1..1 relationship
             List<NavigationProperty> requiredNavigationProperties = modelClass.AllRequiredNavigationProperties()
-                                                                              .Where(np => (np.AssociationObject.SourceMultiplicity != Multiplicity.One)
-                                                                                        || (np.AssociationObject.TargetMultiplicity != Multiplicity.One))
+                                                                              .Where(np => (np.AssociationObject.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)
+                                                                                        || (np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
                                                                               .ToList();
 
             bool hasRequiredNavigationProperties = requiredNavigationProperties.Any();
 
             bool hasOneToOneAssociations = modelClass.AllRequiredNavigationProperties()
-                                                     .Any(np => (np.AssociationObject.SourceMultiplicity == Multiplicity.One)
-                                                             && (np.AssociationObject.TargetMultiplicity != Multiplicity.One));
+                                                     .Any(np => (np.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One)
+                                                             && (np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One));
 
             string visibility = GetDefaultConstructorVisibility(modelClass);
 
@@ -638,8 +638,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             if (hasOneToOneAssociations)
             {
                List<Association> oneToOneAssociations = modelClass.AllRequiredNavigationProperties()
-                                                                  .Where(np => (np.AssociationObject.SourceMultiplicity == Multiplicity.One)
-                                                                            && (np.AssociationObject.TargetMultiplicity == Multiplicity.One))
+                                                                  .Where(np => (np.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One)
+                                                                            && (np.AssociationObject.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One))
                                                                   .Select(np => np.AssociationObject)
                                                                   .ToList();
 
@@ -743,8 +743,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                Output($@"/// <param name=""{requiredAttribute.Name.ToLower()}"">{string.Join(" ", GenerateCommentBody(requiredAttribute.Summary))}</param>");
 
             foreach (NavigationProperty requiredNavigationProperty in modelClass.AllRequiredNavigationProperties()
-                                                                                .Where(np => (np.AssociationObject.SourceMultiplicity != Multiplicity.One)
-                                                                                          || (np.AssociationObject.TargetMultiplicity != Multiplicity.One)))
+                                                                                .Where(np => (np.AssociationObject.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)
+                                                                                          || (np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)))
                Output($@"/// <param name=""{requiredNavigationProperty.PropertyName.ToLower()}"">{string.Join(" ", GenerateCommentBody(requiredNavigationProperty.Summary))}</param>");
          }
 

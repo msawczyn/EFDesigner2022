@@ -1149,6 +1149,18 @@
     <value>Database</value>
     <comment>Category for DomainProperty &apos;TableComment&apos; on DomainClass &apos;ModelClass&apos;</comment>
   </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/Persistent.Description" xml:space="preserve">
+    <value>Class will be stored in persistent storage</value>
+    <comment>Description for DomainProperty &apos;Persistent&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/Persistent.DisplayName" xml:space="preserve">
+    <value>Persistent</value>
+    <comment>DisplayName for DomainProperty &apos;Persistent&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/Persistent.Category" xml:space="preserve">
+    <value>Code Generation</value>
+    <comment>Category for DomainProperty &apos;Persistent&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
   <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute.Description" xml:space="preserve">
     <value>An attribute of a class.</value>
     <comment>Description for DomainClass &apos;ModelAttribute&apos;</comment>

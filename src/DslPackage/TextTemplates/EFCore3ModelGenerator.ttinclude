@@ -22,7 +22,7 @@
 #><#@ import namespace="System.Data.Entity.Design.PluralizationServices"
 #><#@ import namespace="Microsoft.VisualStudio.TextTemplating"
 #><#+
-      // EFDesigner v4.1.2.0
+      // EFDesigner v4.2.0.0
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -30,11 +30,11 @@
       {
          public EFCore3ModelGenerator(GeneratedTextTransformation host) : base(host) { }
 
-         protected override void WriteTargetDeleteBehavior(Association association, List<string> segments)
+         protected override void WriteSourceDeleteBehavior(BidirectionalAssociation association, List<string> segments)
          {
             if (!association.Source.IsDependentType
              && !association.Target.IsDependentType
-             && (association.TargetRole == EndpointRole.Principal || association.SourceRole == EndpointRole.Principal))
+             && ((association.TargetRole == EndpointRole.Principal) || (association.SourceRole == EndpointRole.Principal)))
             {
                DeleteAction deleteAction = association.SourceRole == EndpointRole.Principal
                                               ? association.SourceDeleteAction
@@ -55,11 +55,11 @@
             }
          }
 
-         protected override void WriteSourceDeleteBehavior(BidirectionalAssociation association, List<string> segments)
+         protected override void WriteTargetDeleteBehavior(Association association, List<string> segments)
          {
             if (!association.Source.IsDependentType
              && !association.Target.IsDependentType
-             && (association.TargetRole == EndpointRole.Principal || association.SourceRole == EndpointRole.Principal))
+             && ((association.TargetRole == EndpointRole.Principal) || (association.SourceRole == EndpointRole.Principal)))
             {
                DeleteAction deleteAction = association.SourceRole == EndpointRole.Principal
                                               ? association.SourceDeleteAction
@@ -81,5 +81,5 @@
          }
       }
 
-      
+
 #>

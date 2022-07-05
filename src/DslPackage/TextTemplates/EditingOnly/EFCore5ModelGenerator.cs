@@ -13,7 +13,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
 #region Template
 
-      // EFDesigner v4.1.2.0
+      // EFDesigner v4.2.0.0
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -339,7 +339,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                switch (association.TargetMultiplicity) // realized by property on source
                {
-                  case Multiplicity.ZeroMany:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      {
                         segments.Add(baseSegment);
                         segments.Add($"OwnsMany(p => p.{association.TargetPropertyName})");
@@ -370,7 +370,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                         break;
                      }
 
-                  case Multiplicity.One:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
                      {
                         segments.Add(baseSegment);
                         segments.Add($"OwnsOne(p => p.{association.TargetPropertyName})");
@@ -410,7 +410,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                         break;
                      }
 
-                  case Multiplicity.ZeroOne:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      {
                         segments.Add(baseSegment);
                         segments.Add($"OwnsOne(p => p.{association.TargetPropertyName})");
@@ -468,16 +468,16 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                switch (association.TargetMultiplicity) // realized by property on source
                {
-                  case Multiplicity.ZeroMany:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      {
                         segments.Add($"HasMany<{association.Target.FullName}>(p => p.{association.TargetPropertyName})");
-                        required = association.SourceMultiplicity == Multiplicity.One;
+                        required = association.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One;
 
                         break;
                      }
 
-                  case Multiplicity.One:
-                  case Multiplicity.ZeroOne:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      {
                         segments.Add($"HasOne<{association.Target.FullName}>(p => p.{association.TargetPropertyName})");
 
@@ -487,10 +487,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                switch (association.SourceMultiplicity) // realized by property on target, but no property on target
                {
-                  case Multiplicity.ZeroMany:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      segments.Add($"WithMany(p => p.{association.SourcePropertyName})");
 
-                     if (association.TargetMultiplicity == Multiplicity.ZeroMany)
+                     if (association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
                      {
                         ModelClass associationClass = modelClass.Store.ElementDirectory.AllElements.OfType<ModelClass>().FirstOrDefault(m => m.DescribedAssociationElementId == association.Id);
 
@@ -505,8 +505,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                      break;
 
-                  case Multiplicity.One:
-                  case Multiplicity.ZeroOne:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      segments.Add($"WithOne(p => p.{association.SourcePropertyName})");
 
                      break;
@@ -608,8 +608,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             WriteTargetDeleteBehavior(association, segments);
 
             if (required
-             && ((association.SourceMultiplicity != Multiplicity.One)
-              || (association.TargetMultiplicity != Multiplicity.One)))
+             && ((association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)
+              || (association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)))
                segments.Add("IsRequired()");
 
             return segments;
@@ -635,7 +635,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                switch (association.TargetMultiplicity) // realized by property on source
                {
-                  case Multiplicity.ZeroMany:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      {
                         segments.Add(baseSegment);
                         segments.Add($"OwnsMany(p => p.{association.TargetPropertyName})");
@@ -661,7 +661,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                         break;
                      }
 
-                  case Multiplicity.One:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
                      {
                         foreach (ModelAttribute modelAttribute in association.Target.AllAttributes)
                         {
@@ -685,7 +685,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                         break;
                      }
 
-                  case Multiplicity.ZeroOne:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      {
                         foreach (ModelAttribute modelAttribute in association.Target.AllAttributes)
                         {
@@ -727,14 +727,14 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                switch (association.TargetMultiplicity) // realized by property on source
                {
-                  case Multiplicity.ZeroMany:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      segments.Add($"HasMany<{association.Target.FullName}>(p => p.{association.TargetPropertyName})");
-                     required = association.SourceMultiplicity == Multiplicity.One;
+                     required = association.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One;
 
                      break;
 
-                  case Multiplicity.One:
-                  case Multiplicity.ZeroOne:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      segments.Add($"HasOne<{association.Target.FullName}>(p => p.{association.TargetPropertyName})");
 
                      break;
@@ -742,11 +742,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                switch (association.SourceMultiplicity) // realized by property on target, but no property on target
                {
-                  case Multiplicity.ZeroMany:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      segments.Add("WithMany()");
-                     required = association.TargetMultiplicity == Multiplicity.One;
+                     required = association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One;
 
-                     if (association.TargetMultiplicity == Multiplicity.ZeroMany)
+                     if (association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
                      {
                         string tableMap = string.IsNullOrEmpty(association.JoinTableName)
                                              ? $"{association.Target.Name}_x_{association.Source.Name}_{association.TargetPropertyName}"
@@ -757,8 +757,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                      break;
 
-                  case Multiplicity.One:
-                  case Multiplicity.ZeroOne:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
+                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      segments.Add("WithOne()");
 
                      break;

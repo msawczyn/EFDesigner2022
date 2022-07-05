@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 #if DEBUG
 [assembly : AssemblyConfiguration("Debug")]
 #else
-[assembly: AssemblyConfiguration("Release")]
+[assembly : AssemblyConfiguration("Release")]
 #endif
 [assembly : AssemblyCompany(@"Michael Sawczyn")]
 [assembly : AssemblyProduct(@"EFDesigner")]
@@ -19,8 +19,8 @@ using System.Runtime.InteropServices;
 [assembly : AssemblyCulture("")]
 [assembly : NeutralResourcesLanguage("en")]
 
-[assembly : AssemblyVersion("4.1.2.0")]
-[assembly : AssemblyFileVersion("4.1.2.0")]
+[assembly : AssemblyVersion("4.2.0.0")]
+[assembly : AssemblyFileVersion("4.2.0.0")]
 [assembly : ComVisible(false)]
 [assembly : CLSCompliant(true)]
 [assembly : ReliabilityContract(Consistency.MayCorruptProcess, Cer.None)]

@@ -676,6 +676,12 @@
             <xsd:documentation>Table comment that will be applied to the database, if possible</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+        <!-- Property: Persistent -->
+        <xsd:attribute name="persistent" type="xsd:boolean" >
+          <xsd:annotation>
+            <xsd:documentation>Class will be stored in persistent storage</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

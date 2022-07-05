@@ -22,7 +22,7 @@
 #><#@ import namespace="System.Data.Entity.Design.PluralizationServices"
 #><#@ import namespace="Microsoft.VisualStudio.TextTemplating"
 #><#+
-      // EFDesigner v4.1.2.0
+      // EFDesigner v4.2.0.0
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -30,10 +30,11 @@
       {
          public EFCore5ModelGenerator(GeneratedTextTransformation host) : base(host) { }
 
-         protected override void ConfigureModelClasses(List<string> segments, ModelClass[] classesWithTables, List<string> foreignKeyColumns, List<Association> visited)
+         [SuppressMessage("ReSharper", "RedundantNameQualifier")]
+         protected override void ConfigureBidirectionalAssociations(ModelClass modelClass, List<Association> visited, List<string> foreignKeyColumns, List<string> declaredShadowProperties)
          {
-            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => !x.IsAssociationClass).OrderBy(x => x.Name))
-               ConfigureModelClass(segments, classesWithTables, foreignKeyColumns, visited, modelClass);
+            WriteBidirectionalNonDependentAssociations(modelClass, visited, foreignKeyColumns);
+            WriteBidirectionalDependentAssociations(modelClass, $"modelBuilder.Entity<{modelClass.FullName}>()", visited);
          }
 
          protected override void ConfigureModelClass(List<string> segments, ModelClass[] classesWithTables, List<string> foreignKeyColumns, List<Association> visited, ModelClass modelClass)
@@ -75,7 +76,7 @@
                   ConfigureTable(segments, modelClass);
             }
 
-            if (segments.Count > 1 || modelClass.IsDependentType)
+            if ((segments.Count > 1) || modelClass.IsDependentType)
                Output(segments);
 
             // attribute level
@@ -83,7 +84,7 @@
 
             bool hasDefinedConcurrencyToken = modelClass.AllAttributes.Any(x => x.IsConcurrencyToken);
 
-            if (!hasDefinedConcurrencyToken && modelClass.EffectiveConcurrency == ConcurrencyOverride.Optimistic)
+            if (!hasDefinedConcurrencyToken && (modelClass.EffectiveConcurrency == ConcurrencyOverride.Optimistic))
                Output($@"modelBuilder.Entity<{modelClass.FullName}>().Property<byte[]>(""Timestamp"").IsConcurrencyToken();");
 
             // Navigation endpoints are distingished as Source and Target. They are also distinguished as Principal
@@ -106,6 +107,12 @@
             }
          }
 
+         protected override void ConfigureModelClasses(List<string> segments, ModelClass[] classesWithTables, List<string> foreignKeyColumns, List<Association> visited)
+         {
+            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => !x.IsAssociationClass).OrderBy(x => x.Name))
+               ConfigureModelClass(segments, classesWithTables, foreignKeyColumns, visited, modelClass);
+         }
+
          protected override void ConfigureTable(List<string> segments, ModelClass modelClass)
          {
             string tableName = string.IsNullOrEmpty(modelClass.TableName)
@@ -116,7 +123,7 @@
                                  ? modelClass.Name
                                  : modelClass.ViewName;
 
-            string schema = string.IsNullOrEmpty(modelClass.DatabaseSchema) || modelClass.DatabaseSchema == modelClass.ModelRoot.DatabaseSchema
+            string schema = string.IsNullOrEmpty(modelClass.DatabaseSchema) || (modelClass.DatabaseSchema == modelClass.ModelRoot.DatabaseSchema)
                                ? string.Empty
                                : $", \"{modelClass.DatabaseSchema}\"";
 
@@ -127,8 +134,8 @@
 
             if (modelClass.UseTemporalTables
              && !modelClass.IsDatabaseView
-             && (!modelClass.Subclasses.Any() || modelClass.ModelRoot.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
-             && modelClass.Superclass == null)
+             && (!modelClass.Subclasses.Any() || (modelClass.ModelRoot.InheritanceStrategy == CodeStrategy.TablePerHierarchy))
+             && (modelClass.Superclass == null))
                modifiers.Add("t.IsTemporal();");
 
             string buildActions = modifiers.Any()
@@ -149,6 +156,13 @@
                segments.Add($"HasKey(t => t.{identityAttributes[0].Name})");
             else if (identityAttributes.Count > 1)
                segments.Add($"HasKey(t => new {{ t.{string.Join(", t.", identityAttributes.Select(ia => ia.Name))} }})");
+         }
+
+         [SuppressMessage("ReSharper", "RedundantNameQualifier")]
+         protected override void ConfigureUnidirectionalAssociations(ModelClass modelClass, List<Association> visited, List<string> foreignKeyColumns, List<string> declaredShadowProperties)
+         {
+            WriteUnidirectionalNonDependentAssociations(modelClass, visited, foreignKeyColumns);
+            WriteUnidirectionalDependentAssociations(modelClass, $"modelBuilder.Entity<{modelClass.FullName}>()", visited);
          }
 
          protected override List<string> GatherModelAttributeSegments(ModelAttribute modelAttribute)
@@ -198,8 +212,8 @@
             }
 
             if (!string.IsNullOrEmpty(modelAttribute.DatabaseCollation)
-             && modelAttribute.DatabaseCollation != modelRoot.DatabaseCollationDefault
-             && modelAttribute.Type == "String")
+             && (modelAttribute.DatabaseCollation != modelRoot.DatabaseCollationDefault)
+             && (modelAttribute.Type == "String"))
                segments.Add($"UseCollation(\"{modelAttribute.DatabaseCollation.Trim('"')}\")");
 
             int index = segments.IndexOf("IsRequired()");
@@ -213,57 +227,105 @@
             return segments;
          }
 
-         protected override void WriteOnModelCreate(List<string> segments, ModelClass[] classesWithTables)
+         private void WriteBidirectionalAssociationWithAssociationClass(ModelClass modelClass, ModelClass associationClass, BidirectionalAssociation association)
          {
-            Output("partial void OnModelCreatingImpl(ModelBuilder modelBuilder);");
-            Output("partial void OnModelCreatedImpl(ModelBuilder modelBuilder);");
-            NL();
+            string indent = associationClass.ModelRoot.UseTabs
+                               ? "\t"
+                               : "   ";
 
-            Output("/// <summary>");
-            Output("///     Override this method to further configure the model that was discovered by convention from the entity types");
-            Output("///     exposed in <see cref=\"T:Microsoft.EntityFrameworkCore.DbSet`1\" /> properties on your derived context. The resulting model may be cached");
-            Output("///     and re-used for subsequent instances of your derived context.");
-            Output("/// </summary>");
-            Output("/// <remarks>");
-            Output("///     If a model is explicitly set on the options for this context (via <see cref=\"M:Microsoft.EntityFrameworkCore.DbContextOptionsBuilder.UseModel(Microsoft.EntityFrameworkCore.Metadata.IModel)\" />)");
-            Output("///     then this method will not be run.");
-            Output("/// </remarks>");
-            Output("/// <param name=\"modelBuilder\">");
-            Output("///     The builder being used to construct the model for this context. Databases (and other extensions) typically");
-            Output("///     define extension methods on this object that allow you to configure aspects of the model that are specific");
-            Output("///     to a given database.");
-            Output("/// </param>");
-            Output("protected override void OnModelCreating(ModelBuilder modelBuilder)");
+            BidirectionalAssociation associationToSource =
+               (BidirectionalAssociation)associationClass.AllNavigationProperties().First(n => n.AssociationObject.Source == association.Source).AssociationObject;
+
+            BidirectionalAssociation associationToTarget =
+               (BidirectionalAssociation)associationClass.AllNavigationProperties().First(n => n.AssociationObject.Source == association.Target).AssociationObject;
+
+            if (modelClass.ModelRoot.ChopMethodChains)
+               PushIndent("            ");
+            else
+               PushIndent(indent);
+
+            Output($".UsingEntity<{associationClass.FullName}>(");
+            PushIndent(indent);
+            Output("j => j");
+            PushIndent(indent);
+            Output($".HasOne(x => x.{associationToTarget.SourcePropertyName})");
+            Output($".WithMany(x => x.{associationToTarget.TargetPropertyName})");
+            Output($".HasForeignKey(x => x.{associationClass.Attributes.First(a => a.IsForeignKeyFor == associationToTarget.Id).Name}),");
+            PopIndent();
+            Output("j => j");
+            PushIndent(indent);
+            Output($".HasOne(x => x.{associationToSource.SourcePropertyName})");
+            Output($".WithMany(x => x.{associationToSource.TargetPropertyName})");
+            Output($".HasForeignKey(x => x.{associationClass.Attributes.First(a => a.IsForeignKeyFor == associationToSource.Id).Name}),");
+            PopIndent();
+            Output("j =>");
             Output("{");
-            Output("base.OnModelCreating(modelBuilder);");
-            Output("OnModelCreatingImpl(modelBuilder);");
-            NL();
 
-            if (!string.IsNullOrEmpty(modelRoot.DatabaseSchema))
-               Output($"modelBuilder.HasDefaultSchema(\"{modelRoot.DatabaseSchema.Trim('"')}\");");
+#region transient properties
 
-            if (modelRoot.DatabaseCollationDefault.ToLowerInvariant() != "default")
-               Output($"modelBuilder.UseCollation(\"{modelRoot.DatabaseCollationDefault.Trim('"')}\");");
+            foreach (ModelAttribute transient in associationClass.Attributes.Where(x => !x.Persistent))
+               Output($"j.Ignore(t => t.{transient.Name});");
 
-            List<Association> visited = new List<Association>();
-            List<string> foreignKeyColumns = new List<string>();
+#endregion
 
-            ConfigureModelClasses(segments, classesWithTables, foreignKeyColumns, visited);
+#region table definition
 
-            NL();
+            string tableName = string.IsNullOrEmpty(associationClass.TableName)
+                                  ? associationClass.Name
+                                  : associationClass.TableName;
 
-            Output("OnModelCreatedImpl(modelBuilder);");
-            Output("}");
-         }
+            string schema = string.IsNullOrEmpty(associationClass.DatabaseSchema) || (associationClass.DatabaseSchema == associationClass.ModelRoot.DatabaseSchema)
+                               ? string.Empty
+                               : $", \"{associationClass.DatabaseSchema}\"";
 
-         [SuppressMessage("ReSharper", "RedundantNameQualifier")]
-         protected override void ConfigureBidirectionalAssociations(ModelClass modelClass
-                                                                  , List<Association> visited
-                                                                  , List<string> foreignKeyColumns
-                                                                  , List<string> declaredShadowProperties)
-         {
-            WriteBidirectionalNonDependentAssociations(modelClass, visited, foreignKeyColumns);
-            WriteBidirectionalDependentAssociations(modelClass, $"modelBuilder.Entity<{modelClass.FullName}>()", visited);
+            List<string> modifiers = new List<string>();
+
+            if (associationClass.UseTemporalTables)
+               modifiers.Add(" t.IsTemporal();");
+
+            string buildActions = modifiers.Any()
+                                     ? $", t => {{ {string.Join(" ", modifiers)} }}"
+                                     : string.Empty;
+
+            Output($"j.ToTable(\"{tableName}\"{schema}{buildActions});");
+
+            List<ModelAttribute> identityAttributes = associationClass.IdentityAttributes.ToList();
+
+            if (identityAttributes.Count == 1)
+               Output($"j.HasKey(t => t.{identityAttributes[0].Name});");
+            else if (identityAttributes.Count > 1)
+               Output($"j.HasKey(t => new {{ t.{string.Join(", t.", identityAttributes.Select(ia => ia.Name))} }});");
+
+#endregion
+
+#region model attributes
+
+            foreach (ModelAttribute modelAttribute in associationClass.Attributes.Where(x => x.Persistent && !x.IsIdentity))
+            {
+               List<string> buffer = new List<string>();
+               buffer.AddRange(GatherModelAttributeSegments(modelAttribute));
+
+               if (buffer.Any())
+                  Output($"j.Property(t => t.{modelAttribute.Name}).{string.Join(".", buffer)};");
+
+               if (modelAttribute.Indexed)
+               {
+                  buffer.Clear();
+                  buffer.Add($"HasIndex(t => t.{modelAttribute.Name})");
+
+                  if (modelAttribute.IndexedUnique)
+                     buffer.Add("IsUnique()");
+
+                  Output($"j.{string.Join(".", buffer)};");
+               }
+            }
+
+#endregion
+
+            PopIndent();
+            Output("});");
+            PopIndent();
+            PopIndent();
          }
 
          protected override void WriteBidirectionalDependentAssociations(ModelClass sourceInstance, string baseSegment, List<Association> visited)
@@ -336,7 +398,7 @@
                         {
                            segments.Add($"{baseSegment}.OwnsOne(p => p.{association.TargetPropertyName}).Property(p => p.{modelAttribute.Name})");
 
-                           if (modelAttribute.ColumnName != modelAttribute.Name && !string.IsNullOrEmpty(modelAttribute.ColumnName))
+                           if ((modelAttribute.ColumnName != modelAttribute.Name) && !string.IsNullOrEmpty(modelAttribute.ColumnName))
                               segments.Add($"HasColumnName(\"{modelAttribute.ColumnName}\")");
 
                            if (modelAttribute.Required)
@@ -376,7 +438,7 @@
                         {
                            segments.Add($"{baseSegment}.OwnsOne(p => p.{association.TargetPropertyName}).Property(p => p.{modelAttribute.Name})");
 
-                           if (modelAttribute.ColumnName != modelAttribute.Name && !string.IsNullOrEmpty(modelAttribute.ColumnName))
+                           if ((modelAttribute.ColumnName != modelAttribute.Name) && !string.IsNullOrEmpty(modelAttribute.ColumnName))
                               segments.Add($"HasColumnName(\"{modelAttribute.ColumnName}\")");
 
                            if (modelAttribute.Required)
@@ -459,7 +521,8 @@
                      break;
                }
 
-               if (segments.Any()) Output(segments);
+               if (segments.Any())
+                  Output(segments);
 
                if (association.TargetAutoInclude)
                   Output($"modelBuilder.Entity<{association.Source.FullName}>().Navigation(e => e.{association.TargetPropertyName}).AutoInclude();");
@@ -492,6 +555,49 @@
             }
          }
 
+         protected override void WriteOnModelCreate(List<string> segments, ModelClass[] classesWithTables)
+         {
+            Output("partial void OnModelCreatingImpl(ModelBuilder modelBuilder);");
+            Output("partial void OnModelCreatedImpl(ModelBuilder modelBuilder);");
+            NL();
+
+            Output("/// <summary>");
+            Output("///     Override this method to further configure the model that was discovered by convention from the entity types");
+            Output("///     exposed in <see cref=\"T:Microsoft.EntityFrameworkCore.DbSet`1\" /> properties on your derived context. The resulting model may be cached");
+            Output("///     and re-used for subsequent instances of your derived context.");
+            Output("/// </summary>");
+            Output("/// <remarks>");
+            Output("///     If a model is explicitly set on the options for this context (via <see cref=\"M:Microsoft.EntityFrameworkCore.DbContextOptionsBuilder.UseModel(Microsoft.EntityFrameworkCore.Metadata.IModel)\" />)");
+            Output("///     then this method will not be run.");
+            Output("/// </remarks>");
+            Output("/// <param name=\"modelBuilder\">");
+            Output("///     The builder being used to construct the model for this context. Databases (and other extensions) typically");
+            Output("///     define extension methods on this object that allow you to configure aspects of the model that are specific");
+            Output("///     to a given database.");
+            Output("/// </param>");
+            Output("protected override void OnModelCreating(ModelBuilder modelBuilder)");
+            Output("{");
+            Output("base.OnModelCreating(modelBuilder);");
+            Output("OnModelCreatingImpl(modelBuilder);");
+            NL();
+
+            if (!string.IsNullOrEmpty(modelRoot.DatabaseSchema))
+               Output($"modelBuilder.HasDefaultSchema(\"{modelRoot.DatabaseSchema.Trim('"')}\");");
+
+            if (modelRoot.DatabaseCollationDefault.ToLowerInvariant() != "default")
+               Output($"modelBuilder.UseCollation(\"{modelRoot.DatabaseCollationDefault.Trim('"')}\");");
+
+            List<Association> visited = new List<Association>();
+            List<string> foreignKeyColumns = new List<string>();
+
+            ConfigureModelClasses(segments, classesWithTables, foreignKeyColumns, visited);
+
+            NL();
+
+            Output("OnModelCreatedImpl(modelBuilder);");
+            Output("}");
+         }
+
          private IEnumerable<string> WriteStandardBidirectionalAssociation(BidirectionalAssociation association, List<string> foreignKeyColumns, bool required)
          {
             List<string> segments = new List<string>();
@@ -511,118 +617,11 @@
             WriteTargetDeleteBehavior(association, segments);
 
             if (required
-             && (association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One
-              || association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
+             && ((association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)
+              || (association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)))
                segments.Add("IsRequired()");
 
             return segments;
-         }
-
-         private void WriteBidirectionalAssociationWithAssociationClass(ModelClass modelClass, ModelClass associationClass, BidirectionalAssociation association)
-         {
-            string indent = associationClass.ModelRoot.UseTabs
-                               ? "\t"
-                               : "   ";
-            BidirectionalAssociation associationToSource = (BidirectionalAssociation)associationClass.AllNavigationProperties().First(n => n.AssociationObject.Source == association.Source).AssociationObject;
-            BidirectionalAssociation associationToTarget = (BidirectionalAssociation)associationClass.AllNavigationProperties().First(n => n.AssociationObject.Source == association.Target).AssociationObject;
-            
-            if (modelClass.ModelRoot.ChopMethodChains) 
-               PushIndent("            "); 
-            else 
-               PushIndent(indent);
-
-            Output($".UsingEntity<{associationClass.FullName}>(");
-            PushIndent(indent);
-            Output("j => j");
-            PushIndent(indent);
-            Output($".HasOne(x => x.{associationToTarget.SourcePropertyName})");
-            Output($".WithMany(x => x.{associationToTarget.TargetPropertyName})");
-            Output($".HasForeignKey(x => x.{associationClass.Attributes.First(a => a.IsForeignKeyFor == associationToTarget.Id).Name}),");
-            PopIndent();
-            Output("j => j");
-            PushIndent(indent);
-            Output($".HasOne(x => x.{associationToSource.SourcePropertyName})");
-            Output($".WithMany(x => x.{associationToSource.TargetPropertyName})");
-            Output($".HasForeignKey(x => x.{associationClass.Attributes.First(a => a.IsForeignKeyFor == associationToSource.Id).Name}),");
-            PopIndent();
-            Output("j =>");
-            Output("{");
-
-#region transient properties
-
-            foreach (ModelAttribute transient in associationClass.Attributes.Where(x => !x.Persistent))
-               Output($"j.Ignore(t => t.{transient.Name});");
-
-#endregion
-
-#region table definition
-
-            string tableName = string.IsNullOrEmpty(associationClass.TableName)
-                                  ? associationClass.Name
-                                  : associationClass.TableName;
-
-            string schema = string.IsNullOrEmpty(associationClass.DatabaseSchema) || associationClass.DatabaseSchema == associationClass.ModelRoot.DatabaseSchema
-                               ? string.Empty
-                               : $", \"{associationClass.DatabaseSchema}\"";
-
-            List<string> modifiers = new List<string>();
-
-            if (associationClass.UseTemporalTables)
-               modifiers.Add(" t.IsTemporal();");
-
-            string buildActions = modifiers.Any()
-                                     ? $", t => {{ {string.Join(" ", modifiers)} }}"
-                                     : string.Empty;
-
-            Output($"j.ToTable(\"{tableName}\"{schema}{buildActions});");
-
-            List<ModelAttribute> identityAttributes = associationClass.IdentityAttributes.ToList();
-
-            if (identityAttributes.Count == 1)
-               Output($"j.HasKey(t => t.{identityAttributes[0].Name});");
-            else if (identityAttributes.Count > 1)
-               Output($"j.HasKey(t => new {{ t.{string.Join(", t.", identityAttributes.Select(ia => ia.Name))} }});");
-
-#endregion
-
-#region model attributes
-
-            foreach (ModelAttribute modelAttribute in associationClass.Attributes.Where(x => x.Persistent && !x.IsIdentity))
-            {
-               List<string> buffer = new List<string>();
-               buffer.AddRange(GatherModelAttributeSegments(modelAttribute));
-
-               if (buffer.Any())
-                  Output($"j.Property(t => t.{modelAttribute.Name}).{string.Join(".", buffer)};");
-
-               if (modelAttribute.Indexed)
-               {
-                  buffer.Clear();
-                  buffer.Add($"HasIndex(t => t.{modelAttribute.Name})");
-
-                  if (modelAttribute.IndexedUnique)
-                     buffer.Add("IsUnique()");
-
-                  Output($"j.{string.Join(".", buffer)};");
-               }
-            }
-
-#endregion
-
-            PopIndent();
-            Output("});");
-            PopIndent();
-            PopIndent();
-         }
-
-         [SuppressMessage("ReSharper", "RedundantNameQualifier")]
-         protected override void ConfigureUnidirectionalAssociations(ModelClass modelClass
-                                                                   , List<Association> visited
-                                                                   , List<string> foreignKeyColumns
-                                                                   , List<string> declaredShadowProperties)
-         {
-            WriteUnidirectionalNonDependentAssociations(modelClass, visited, foreignKeyColumns);
-            WriteUnidirectionalDependentAssociations(modelClass, $"modelBuilder.Entity<{modelClass.FullName}>()", visited);
          }
 
          protected override void WriteUnidirectionalDependentAssociations(ModelClass sourceInstance, string baseSegment, List<Association> visited)
@@ -677,7 +676,7 @@
                         {
                            segments.Add($"{baseSegment}.OwnsOne(p => p.{association.TargetPropertyName}).Property(p => p.{modelAttribute.Name})");
 
-                           if (modelAttribute.ColumnName != modelAttribute.Name && !string.IsNullOrEmpty(modelAttribute.ColumnName))
+                           if ((modelAttribute.ColumnName != modelAttribute.Name) && !string.IsNullOrEmpty(modelAttribute.ColumnName))
                               segments.Add($"HasColumnName(\"{modelAttribute.ColumnName}\")");
 
                            if (modelAttribute.Required)
@@ -701,7 +700,7 @@
                         {
                            segments.Add($"{baseSegment}.OwnsOne(p => p.{association.TargetPropertyName}).Property(p => p.{modelAttribute.Name})");
 
-                           if (modelAttribute.ColumnName != modelAttribute.Name && !string.IsNullOrEmpty(modelAttribute.ColumnName))
+                           if ((modelAttribute.ColumnName != modelAttribute.Name) && !string.IsNullOrEmpty(modelAttribute.ColumnName))
                               segments.Add($"HasColumnName(\"{modelAttribute.ColumnName}\")");
 
                            if (modelAttribute.Required)
@@ -739,7 +738,7 @@
                {
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      segments.Add($"HasMany<{association.Target.FullName}>(p => p.{association.TargetPropertyName})");
-                     required = (association.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One);
+                     required = association.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One;
 
                      break;
 
@@ -754,7 +753,7 @@
                {
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      segments.Add("WithMany()");
-                     required = (association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One);
+                     required = association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One;
 
                      if (association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
                      {
@@ -815,5 +814,6 @@
             }
          }
       }
+
 
 #>

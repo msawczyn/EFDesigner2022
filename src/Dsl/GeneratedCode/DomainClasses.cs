@@ -8061,6 +8061,95 @@ namespace Sawczyn.EFDesigner.EFModel
 		}
 		
 		#endregion
+		#region Persistent domain property code
+		
+		/// <summary>
+		/// Persistent domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid PersistentDomainPropertyId = new global::System.Guid(0x49372566, 0x67b9, 0x44c9, 0xba, 0xd4, 0xd9, 0x60, 0x1f, 0x2c, 0xd6, 0xea);
+		
+		/// <summary>
+		/// Storage for Persistent
+		/// </summary>
+		private global::System.Boolean persistentPropertyStorage = true;
+		
+		/// <summary>
+		/// Gets or sets the value of Persistent domain property.
+		/// Class will be stored in persistent storage
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/Persistent.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelClass/Persistent.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelClass/Persistent.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[global::System.ComponentModel.DefaultValue(true)]
+		[DslModeling::DomainObjectId("49372566-67b9-44c9-bad4-d9601f2cd6ea")]
+		public global::System.Boolean Persistent
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return persistentPropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				PersistentPropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelClass.Persistent domain property.
+		/// </summary>
+		internal sealed partial class PersistentPropertyHandler : DslModeling::DomainPropertyValueHandler<ModelClass, global::System.Boolean>
+		{
+			private PersistentPropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelClass.Persistent domain property value handler.
+			/// </summary>
+			public static readonly PersistentPropertyHandler Instance = new PersistentPropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelClass.Persistent domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return PersistentDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.Boolean GetValue(ModelClass element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.persistentPropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelClass element, global::System.Boolean newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.Boolean oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.persistentPropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
 		#region Targets opposite domain role accessor
 		
 		/// <summary>
@@ -14060,6 +14149,6 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
 	partial class ModelRoot
 	{
-		public const string DSLVersion = "4.3.0.0";
+		public const string DSLVersion = "4.2.0.0";
 	}
 }

@@ -3166,6 +3166,23 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
+	      // Persistent
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribPersistent = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "persistent");
+	         if (attribPersistent != null)
+	         {
+	            global::System.Boolean valueOfPersistent;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.Boolean>(serializationContext, attribPersistent, out valueOfPersistent))
+	            {
+	               instanceOfModelClass.Persistent = valueOfPersistent;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "persistent", typeof(global::System.Boolean), attribPersistent);
+	            }
+	         }
+	      }
 	   }
 	
 	   /// <summary>
@@ -4222,6 +4239,19 @@ namespace Sawczyn.EFDesigner.EFModel
 	            if (!string.IsNullOrEmpty(propValue))
 	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "tableComment", propValue);
 	
+	         }
+	      }
+	      // Persistent
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.Boolean propValue = instanceOfModelClass.Persistent;
+	         string serializedPropValue = DslModeling::SerializationUtilities.GetString<global::System.Boolean>(serializationContext, propValue);
+	         if (!serializationContext.Result.Failed)
+	         {
+	            if (serializationContext.WriteOptionalPropertiesWithDefaultValue || string.CompareOrdinal(serializedPropValue, "true") != 0)
+	            {   // No need to write the value out if it's the same as default value.
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "persistent", serializedPropValue);
+	            }
 	         }
 	      }
 	   }

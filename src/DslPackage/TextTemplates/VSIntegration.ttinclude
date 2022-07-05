@@ -22,7 +22,7 @@
 #><#@ import namespace="System.Data.Entity.Design.PluralizationServices"
 #><#@ import namespace="Microsoft.VisualStudio.TextTemplating"
 #><#+
-      // EFDesigner v4.1.2.0
+      // EFDesigner v4.2.0.0
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -35,7 +35,7 @@
        * Interactions with Visual Studio
        */
 
-      public IEnumerable<EnvDTE.Project> GetAllProjects()
+      public IEnumerable<Project> GetAllProjects()
       {
          foreach (Project project in GetSolution().Projects.OfType<Project>())
          {
@@ -75,7 +75,7 @@
          throw new InvalidOperationException("Error in GetCurrentProject(). Unable to find project.");
       }
 
-      private EnvDTE.ProjectItem GetDirectoryItem(string target)
+      private ProjectItem GetDirectoryItem(string target)
       {
          DTE dte = GetDTE();
          Array projects = dte?.ActiveSolutionProjects as Array;
@@ -88,7 +88,7 @@
             Directory.CreateDirectory(Path.Combine(rootDirectory, target));
 
             Queue<string> paths = new Queue<string>(target.Split('\\'));
-            EnvDTE.ProjectItems currentItemList = currentProject.ProjectItems;
+            ProjectItems currentItemList = currentProject.ProjectItems;
             bool found = false;
 
             while (paths.Any())
@@ -125,7 +125,7 @@
          return targetProjectItem;
       }
 
-      public EnvDTE.DTE GetDTE()
+      public DTE GetDTE()
       {
          IServiceProvider serviceProvider = (IServiceProvider)Host;
 
@@ -151,7 +151,9 @@
          {
             FileInfo info = new FileInfo(fullProjectName);
 
-            return info.Directory != null ? info.Directory.FullName : string.Empty;
+            return info.Directory != null
+                      ? info.Directory.FullName
+                      : string.Empty;
          }
          catch
          {
@@ -161,7 +163,7 @@
          }
       }
 
-      public EnvDTE.Solution GetSolution()
+      public Solution GetSolution()
       {
          return GetDTE().Solution;
       }
@@ -186,5 +188,5 @@
          }
       }
 
-      
+
 #>
