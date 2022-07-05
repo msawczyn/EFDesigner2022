@@ -10,7 +10,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 {
    public partial class GeneratedTextTransformation
    {
-#region Template
+      #region Template
 
       // EFDesigner v4.2.0.0
       // Copyright (c) 2017-2022 Michael Sawczyn
@@ -55,7 +55,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             // declaring foreign keys can only happen on ..n multiplicities
             // otherwise, primary keys are required to be used, and the framework takes care of that
-            if ((association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany) && (association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany))
+            if (association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany
+             && association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
                return null;
 
             if (association.SourceRole == EndpointRole.Dependent)
@@ -139,11 +140,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                      break;
 
-                  //one or more constraint not supported in EF.
-                  // TODO: make this possible ... later
-                  //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
-                  //   segments.Add($"HasMany(x => x.{association.SourcePropertyName})");
-                  //   break;
+                     //one or more constraint not supported in EF.
+                     // TODO: make this possible ... later
+                     //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
+                     //   segments.Add($"HasMany(x => x.{association.SourcePropertyName})");
+                     //   break;
                }
 
                switch (association.TargetMultiplicity) // realized by property on source
@@ -199,10 +200,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                      break;
 
-                  //one or more constraint not supported in EF. TODO: make this possible ... later
-                  //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
-                  //   segments.Add($"HasMany(x => x.{association.TargetPropertyName})");
-                  //   break;
+                     //one or more constraint not supported in EF. TODO: make this possible ... later
+                     //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
+                     //   segments.Add($"HasMany(x => x.{association.TargetPropertyName})");
+                     //   break;
                }
 
                string foreignKeySegment = CreateForeignKeySegment(association, foreignKeyColumns);
@@ -265,9 +266,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                      break;
 
-                  //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
-                  //   segments.Add($"HasMany(x => x.{association.TargetPropertyName})");
-                  //   break;
+                     //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
+                     //   segments.Add($"HasMany(x => x.{association.TargetPropertyName})");
+                     //   break;
                }
 
                switch (association.SourceMultiplicity) // realized by property on target, but no property on target
@@ -323,9 +324,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                      break;
 
-                  //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
-                  //   segments.Add("HasMany()");
-                  //   break;
+                     //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
+                     //   segments.Add("HasMany()");
+                     //   break;
                }
 
                string foreignKeySegment = CreateForeignKeySegment(association, foreignKeyColumns);
@@ -610,7 +611,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             Output("#region DbSets");
             PluralizationService pluralizationService = ModelRoot.PluralizationService;
 
-            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => !x.IsDependentType).OrderBy(x => x.Name))
+            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => !x.IsDependentType && x.Persistent).OrderBy(x => x.Name))
             {
                string dbSetName;
 
@@ -685,7 +686,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             List<string> foreignKeyColumns = new List<string>();
             List<string> declaredShadowProperties = new List<string>();
 
-            foreach (ModelClass modelClass in modelRoot.Classes.OrderBy(x => x.Name))
+            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => x.Persistent).OrderBy(x => x.Name))
             {
                segments.Clear();
                foreignKeyColumns.Clear();
@@ -802,6 +803,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          }
       }
 
-#endregion Template
+      #endregion Template
    }
 }

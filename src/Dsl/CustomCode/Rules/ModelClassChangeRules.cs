@@ -1,4 +1,5 @@
-﻿using System.CodeDom.Compiler;
+﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -90,7 +91,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      }
 
                      if (store.GetAll<ModelClass>()
-                              .Except(new[] {element})
+                              .Except(new[] { element })
                               .Any(x => x.DbSetName == element.DbSetName))
                      {
                         errorMessages.Add($"DbSet name '{element.DbSetName}' already in use");
@@ -451,7 +452,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
                   if (string.IsNullOrWhiteSpace(element.Name) || !CodeGenerator.IsValidLanguageIndependentIdentifier(element.Name))
                      errorMessages.Add("Name must be a valid .NET identifier");
-                  else if (store.GetAll<ModelClass>().Except(new[] {element}).Any(x => x.FullName == element.FullName))
+                  else if (store.GetAll<ModelClass>().Except(new[] { element }).Any(x => x.FullName == element.FullName))
                      errorMessages.Add($"Class name '{element.FullName}' already in use by another class");
                   else if (store.GetAll<ModelEnum>().Any(x => x.FullName == element.FullName))
                      errorMessages.Add($"Class name '{element.FullName}' already in use by an enum");
@@ -474,6 +475,38 @@ namespace Sawczyn.EFDesigner.EFModel
                {
                   if (current.Name.ToLowerInvariant() != "paste")
                      errorMessages.Add(CommonRules.ValidateNamespace(element.Namespace, CodeGenerator.IsValidLanguageIndependentIdentifier));
+
+                  break;
+               }
+
+            case "Persistent":
+               {
+                  if (!element.Persistent)
+                  {
+                     if (element.LocalNavigationsFromThisAsSource(Array.Empty<Association>()).Any(n => n.PointsToTarget && !n.ClassType.Persistent)
+                      || element.LocalNavigationsFromThisAsTarget(Array.Empty<Association>()).Any(n => n.PointsToSource && !n.ClassType.Persistent))
+                        errorMessages.Add($"{element.Name} can't be made transient since it has associations to persistent properties.");
+                  }
+                  else
+                  {
+                     if (element.IsDependentType)
+                        errorMessages.Add($"{element.Name} can't be made transient since it's a dependent type.");
+
+                     ModelClass target = element.Superclass;
+
+                     while (target != null)
+                     {
+                        if (!target.Persistent)
+                        {
+                           errorMessages.Add($"{element.Name} is a descendent of {target.Name}, a persistent class. "
+                                           + "Transient classes can't have a persistent class in their hierarchy, even indirectly.");
+
+                           break;
+                        }
+
+                        target = target.Superclass;
+                     }
+                  }
 
                   break;
                }
@@ -503,7 +536,7 @@ namespace Sawczyn.EFDesigner.EFModel
                            element.TableName = MakeDefaultTableAndSetName(element.Name);
 
                         if (store.GetAll<ModelClass>()
-                                 .Except(new[] {element})
+                                 .Except(new[] { element })
                                  .Any(x => x.TableName == newTableName))
                            errorMessages.Add($"Table name '{newTableName}' already in use");
                      }
@@ -529,7 +562,7 @@ namespace Sawczyn.EFDesigner.EFModel
                            element.TableName = MakeDefaultTableAndSetName(element.Name);
 
                         List<ModelClass> classesUsingTableName = store.GetAll<ModelClass>()
-                                                                      .Except(new[] {element})
+                                                                      .Except(new[] { element })
                                                                       .Where(x => x.TableName == newViewName)
                                                                       .ToList();
 

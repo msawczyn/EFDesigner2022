@@ -523,16 +523,9 @@ namespace Sawczyn.EFDesigner.EFModel
       /// <returns>All navigation properties defined in this class, except those listed in the parameter</returns>
       public IEnumerable<NavigationProperty> LocalNavigationProperties(params Association[] except)
       {
-         List<NavigationProperty> sourceProperties = Association.GetLinksToTargets(this)
-                                                                .Except(except)
-                                                                .Select(NavigationProperty.LinkToTarget)
-                                                                .ToList();
+         List<NavigationProperty> sourceProperties = LocalNavigationsFromThisAsSource(except);
 
-         List<NavigationProperty> targetProperties = Association.GetLinksToSources(this)
-                                                                .Except(except)
-                                                                .OfType<BidirectionalAssociation>()
-                                                                .Select(NavigationProperty.LinkToSource)
-                                                                .ToList();
+         List<NavigationProperty> targetProperties = LocalNavigationsFromThisAsTarget(except);
 
          targetProperties.AddRange(Association.GetLinksToSources(this)
                                               .Except(except)
@@ -548,6 +541,23 @@ namespace Sawczyn.EFDesigner.EFModel
          }
 
          return sourceProperties.Concat(targetProperties);
+      }
+
+      public List<NavigationProperty> LocalNavigationsFromThisAsTarget(Association[] except)
+      {
+         return Association.GetLinksToSources(this)
+                           .Except(except)
+                           .OfType<BidirectionalAssociation>()
+                           .Select(NavigationProperty.LinkToSource)
+                           .ToList();
+      }
+
+      public List<NavigationProperty> LocalNavigationsFromThisAsSource(Association[] except)
+      {
+         return Association.GetLinksToTargets(this)
+                           .Except(except)
+                           .Select(NavigationProperty.LinkToTarget)
+                           .ToList();
       }
 
       internal void MoveAttribute(ModelAttribute attribute, ModelClass destination)

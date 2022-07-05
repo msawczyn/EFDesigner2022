@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.VisualStudio.Modeling;
 
@@ -33,6 +34,14 @@ namespace Sawczyn.EFDesigner.EFModel
          if (current.IsSerializing || ModelRoot.BatchUpdating)
             return;
 
+         List<string> errorMessages = EFCoreValidator.GetErrors(element).ToList();
+
+         if (!element.Source.Persistent || !element.Source.Persistent)
+         {
+            errorMessages.Add($"Unsupported association between {element.Source.Name} and {element.Target.Name}. "
+                            + "Both classes must be persistent. If needed, model this in a partial method.");
+         }
+
          if (e.ModelElement is UnidirectionalAssociation u)
             ConfigureNewAssociation(u);
          else if (e.ModelElement is BidirectionalAssociation b)
@@ -40,6 +49,15 @@ namespace Sawczyn.EFDesigner.EFModel
 
          AssociationChangedRules.SetEndpointRoles(element);
          PresentationHelper.UpdateAssociationDisplay(element);
+
+         errorMessages = errorMessages.Where(m => m != null).ToList();
+
+         if (errorMessages.Any())
+         {
+            current.Rollback();
+            ErrorDisplay.Show(store, string.Join("\n", errorMessages));
+         }
+
       }
 
       private void SetInitialMultiplicity(BidirectionalAssociation element)

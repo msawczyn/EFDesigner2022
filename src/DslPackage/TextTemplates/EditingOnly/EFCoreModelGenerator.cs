@@ -138,7 +138,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
          protected virtual void ConfigureModelClasses(List<string> segments, ModelClass[] classesWithTables, List<string> foreignKeyColumns, List<Association> visited)
          {
-            foreach (ModelClass modelClass in modelRoot.Classes.OrderBy(x => x.Name))
+            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => x.Persistent).OrderBy(x => x.Name))
                ConfigureModelClass(segments, classesWithTables, foreignKeyColumns, visited, modelClass);
          }
 
@@ -739,7 +739,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             Output("#region DbSets");
             PluralizationService pluralizationService = ModelRoot.PluralizationService;
 
-            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => !x.IsDependentType).OrderBy(x => x.Name))
+            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => !x.IsDependentType && x.Persistent).OrderBy(x => x.Name))
             {
                string dbSetName;
 

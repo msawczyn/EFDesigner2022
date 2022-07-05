@@ -100,7 +100,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
          protected override void ConfigureModelClasses(List<string> segments, ModelClass[] classesWithTables, List<string> foreignKeyColumns, List<Association> visited)
          {
-            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => !x.IsAssociationClass).OrderBy(x => x.Name))
+            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => !x.IsAssociationClass && x.Persistent).OrderBy(x => x.Name))
                ConfigureModelClass(segments, classesWithTables, foreignKeyColumns, visited, modelClass);
          }
 

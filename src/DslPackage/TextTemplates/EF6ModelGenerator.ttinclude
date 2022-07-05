@@ -65,7 +65,8 @@
 
             // declaring foreign keys can only happen on ..n multiplicities
             // otherwise, primary keys are required to be used, and the framework takes care of that
-            if ((association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany) && (association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany))
+            if (association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany
+             && association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
                return null;
 
             if (association.SourceRole == EndpointRole.Dependent)
@@ -149,11 +150,11 @@
 
                      break;
 
-                  //one or more constraint not supported in EF.
-                  // TODO: make this possible ... later
-                  //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
-                  //   segments.Add($"HasMany(x => x.{association.SourcePropertyName})");
-                  //   break;
+                     //one or more constraint not supported in EF.
+                     // TODO: make this possible ... later
+                     //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
+                     //   segments.Add($"HasMany(x => x.{association.SourcePropertyName})");
+                     //   break;
                }
 
                switch (association.TargetMultiplicity) // realized by property on source
@@ -209,10 +210,10 @@
 
                      break;
 
-                  //one or more constraint not supported in EF. TODO: make this possible ... later
-                  //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
-                  //   segments.Add($"HasMany(x => x.{association.TargetPropertyName})");
-                  //   break;
+                     //one or more constraint not supported in EF. TODO: make this possible ... later
+                     //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
+                     //   segments.Add($"HasMany(x => x.{association.TargetPropertyName})");
+                     //   break;
                }
 
                string foreignKeySegment = CreateForeignKeySegment(association, foreignKeyColumns);
@@ -275,9 +276,9 @@
 
                      break;
 
-                  //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
-                  //   segments.Add($"HasMany(x => x.{association.TargetPropertyName})");
-                  //   break;
+                     //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
+                     //   segments.Add($"HasMany(x => x.{association.TargetPropertyName})");
+                     //   break;
                }
 
                switch (association.SourceMultiplicity) // realized by property on target, but no property on target
@@ -333,9 +334,9 @@
 
                      break;
 
-                  //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
-                  //   segments.Add("HasMany()");
-                  //   break;
+                     //case Sawczyn.EFDesigner.EFModel.Multiplicity.OneMany:
+                     //   segments.Add("HasMany()");
+                     //   break;
                }
 
                string foreignKeySegment = CreateForeignKeySegment(association, foreignKeyColumns);
@@ -620,7 +621,7 @@
             Output("#region DbSets");
             PluralizationService pluralizationService = ModelRoot.PluralizationService;
 
-            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => !x.IsDependentType).OrderBy(x => x.Name))
+            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => !x.IsDependentType && x.Persistent).OrderBy(x => x.Name))
             {
                string dbSetName;
 
@@ -695,7 +696,7 @@
             List<string> foreignKeyColumns = new List<string>();
             List<string> declaredShadowProperties = new List<string>();
 
-            foreach (ModelClass modelClass in modelRoot.Classes.OrderBy(x => x.Name))
+            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => x.Persistent).OrderBy(x => x.Name))
             {
                segments.Clear();
                foreignKeyColumns.Clear();
@@ -812,5 +813,5 @@
          }
       }
 
-
+      
 #>
