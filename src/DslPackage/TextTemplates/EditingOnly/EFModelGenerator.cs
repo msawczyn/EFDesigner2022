@@ -11,7 +11,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    // ReSharper disable once UnusedMember.Global
    public partial class GeneratedTextTransformation
    {
-#region Template
+      #region Template
 
       // EFDesigner v4.2.0.0
       // Copyright (c) 2017-2022 Michael Sawczyn
@@ -289,7 +289,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             if (!string.IsNullOrEmpty(comment))
             {
                int chunkSize = 80;
-               string[] parts = comment.Split(new[] {"\r\n", "\r", "\n"}, StringSplitOptions.RemoveEmptyEntries);
+               string[] parts = comment.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                foreach (string value in parts)
                {
@@ -320,13 +320,13 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
          protected void GeneratePropertyAnnotations(ModelAttribute modelAttribute)
          {
-            if (modelAttribute.Persistent)
-            {
-               if (modelAttribute.IsIdentity)
-                  Output("[Key]");
-            }
-            else
+            string customAttributes = modelAttribute.CustomAttributes ?? string.Empty;
+
+            if (!modelAttribute.Persistent && modelAttribute.ModelClass.Persistent && !customAttributes.Contains("NotMapped"))
                Output("[NotMapped]");
+
+            if (modelAttribute.IsIdentity)
+               Output("[Key]");
 
             if (modelAttribute.Required)
                Output("[Required]");
@@ -540,7 +540,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                bases.Add(modelClass.Superclass.FullName);
 
             if (!string.IsNullOrEmpty(modelClass.CustomInterfaces))
-               bases.AddRange(modelClass.CustomInterfaces.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries));
+               bases.AddRange(modelClass.CustomInterfaces.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
 
             string baseClass = string.Join(", ", bases.Select(x => x.Trim()));
 
@@ -558,11 +558,13 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                Output("/// </remarks>");
             }
 
-            if (!modelClass.Persistent && !modelClass.CustomAttributes.Contains("NotMapped"))
+            string customAttributes = modelClass.CustomAttributes ?? string.Empty;
+
+            if (!modelClass.Persistent && !customAttributes.Contains("NotMapped"))
                Output("[NotMapped]");
 
-            if (!string.IsNullOrWhiteSpace(modelClass.CustomAttributes))
-               Output($"[{modelClass.CustomAttributes.Trim('[', ']')}]");
+            if (!string.IsNullOrWhiteSpace(customAttributes))
+               Output($"[{customAttributes.Trim('[', ']')}]");
 
             if (!string.IsNullOrWhiteSpace(modelClass.Summary))
                Output($"[System.ComponentModel.Description(\"{modelClass.Summary.Trim('\r', '\n').Replace("\"", "\\\"")}\")]");
@@ -702,7 +704,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             if (hasRequiredParameters || hasRequiredNavigationProperties)
             {
-                  WriteConstructorsWithRequiredProperties(modelClass, remarks, requiredNavigationProperties);
+               WriteConstructorsWithRequiredProperties(modelClass, remarks, requiredNavigationProperties);
 
                if (!modelClass.IsAbstract)
                {
@@ -1009,7 +1011,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          [SuppressMessage("ReSharper", "ConvertIfStatementToConditionalTernaryExpression")]
          protected void WriteNavigationProperties(ModelClass modelClass)
          {
-            if (!modelClass.LocalNavigationProperties().Any(x => x.AssociationObject.Persistent))
+            if (!modelClass.LocalNavigationProperties().Any())
                return;
 
             Output("/*************************************************************************");
@@ -1017,7 +1019,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             Output(" *************************************************************************/");
             NL();
 
-            foreach (NavigationProperty navigationProperty in modelClass.LocalNavigationProperties().Where(x => !x.ConstructorParameterOnly).OrderBy(x => x.PropertyName))
+            foreach (NavigationProperty navigationProperty in modelClass.LocalNavigationProperties()
+                                                                        .Where(x => !x.ConstructorParameterOnly)
+                                                                        .OrderBy(x => x.PropertyName))
             {
                string type = navigationProperty.IsCollection
                                 ? $"ICollection<{navigationProperty.ClassType.FullName}>"
@@ -1080,14 +1084,19 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   Output("/// </remarks>");
                }
 
-               if (!string.IsNullOrWhiteSpace(navigationProperty.CustomAttributes))
-                  Output($"[{navigationProperty.CustomAttributes.Trim('[', ']')}]");
+               string customAttributes = navigationProperty.CustomAttributes ?? string.Empty;
+
+               if (!string.IsNullOrWhiteSpace(customAttributes))
+                  Output($"[{customAttributes.Trim('[', ']')}]");
 
                if (!string.IsNullOrWhiteSpace(navigationProperty.Summary))
                   Output($"[System.ComponentModel.Description(\"{navigationProperty.Summary.Replace("\"", "\\\"")}\")]");
 
                if (!string.IsNullOrWhiteSpace(navigationProperty.DisplayText))
                   Output($"[System.ComponentModel.DataAnnotations.Display(Name=\"{navigationProperty.DisplayText.Replace("\"", "\\\"")}\")]");
+
+               if (!navigationProperty.AssociationObject.Persistent && !customAttributes.Contains("NotMapped") && modelClass.Persistent)
+                  Output("[NotMapped]");
 
                if (navigationProperty.IsAutoProperty)
                {
@@ -1142,6 +1151,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
          protected void WriteProperties(ModelClass modelClass)
          {
+            if (!modelClass.Attributes.Any())
+               return;
+
             Output("/*************************************************************************");
             Output(" * Properties");
             Output(" *************************************************************************/");
@@ -1296,6 +1308,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 #pragma warning restore IDE1006 // Naming Styles
       }
 
-#endregion Template
+      #endregion Template
    }
 }

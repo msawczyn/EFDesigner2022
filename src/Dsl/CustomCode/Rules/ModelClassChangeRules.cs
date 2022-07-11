@@ -485,7 +485,10 @@ namespace Sawczyn.EFDesigner.EFModel
                   {
                      if (element.LocalNavigationsFromThisAsSource(Array.Empty<Association>()).Any(n => n.PointsToTarget && !n.ClassType.Persistent)
                       || element.LocalNavigationsFromThisAsTarget(Array.Empty<Association>()).Any(n => n.PointsToSource && !n.ClassType.Persistent))
-                        errorMessages.Add($"{element.Name} can't be made transient since it has associations to persistent properties.");
+                     {
+                        foreach (NavigationProperty navigationProperty in element.LocalNavigationProperties())
+                           navigationProperty.AssociationObject.Persistent = false;
+                     }
                   }
                   else
                   {

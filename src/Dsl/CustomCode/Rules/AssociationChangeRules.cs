@@ -96,6 +96,19 @@ namespace Sawczyn.EFDesigner.EFModel
                      break;
                   }
 
+               case "Persistent":
+                  {
+                     if (element.Persistent)
+                     {
+                        if (!element.Source.Persistent)
+                           errorMessages.Add($"Can't make {element.GetDisplayText()} persistent since {element.Source.Name} is transient.");
+                        if (!element.Target.Persistent)
+                           errorMessages.Add($"Can't make {element.GetDisplayText()} persistent since {element.Target.Name} is transient.");
+                     }
+
+                     break;
+                  }
+
                case "SourceCustomAttributes":
                   {
                      if ((bidirectionalAssociation != null) && !string.IsNullOrWhiteSpace(bidirectionalAssociation.SourceCustomAttributes))
