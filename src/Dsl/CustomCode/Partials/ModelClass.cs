@@ -543,20 +543,20 @@ namespace Sawczyn.EFDesigner.EFModel
          return sourceProperties.Concat(targetProperties);
       }
 
+      public List<NavigationProperty> LocalNavigationsFromThisAsSource(Association[] except)
+      {
+         return Association.GetLinksToTargets(this)
+                           .Except(except)
+                           .Select(NavigationProperty.LinkToTarget)
+                           .ToList();
+      }
+
       public List<NavigationProperty> LocalNavigationsFromThisAsTarget(Association[] except)
       {
          return Association.GetLinksToSources(this)
                            .Except(except)
                            .OfType<BidirectionalAssociation>()
                            .Select(NavigationProperty.LinkToSource)
-                           .ToList();
-      }
-
-      public List<NavigationProperty> LocalNavigationsFromThisAsSource(Association[] except)
-      {
-         return Association.GetLinksToTargets(this)
-                           .Except(except)
-                           .Select(NavigationProperty.LinkToTarget)
                            .ToList();
       }
 
@@ -673,6 +673,9 @@ namespace Sawczyn.EFDesigner.EFModel
          if (IsPropertyBag)
             return "DictionaryGlyph";
 
+         if (!Persistent)
+            return "TransientGlyph";
+
          // ReSharper disable once ConvertIfStatementToReturnStatement
          if (IsAbstract)
             return "AbstractEntityGlyph";
@@ -700,7 +703,7 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Menu)]
+      [ValidationMethod(ValidationCategories.Menu)]
       [UsedImplicitly]
       [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void OwnedTypeCannotHaveABaseClass(ValidationContext context)
@@ -712,7 +715,7 @@ namespace Sawczyn.EFDesigner.EFModel
             context.LogError($"Can't make {Name} a dependent class since it has a base class", "MCEOwnedHasBaseClass", this);
       }
 
-      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Menu)]
+      [ValidationMethod(ValidationCategories.Menu)]
       [UsedImplicitly]
       [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void OwnedTypeCannotHaveASubclass(ValidationContext context)
@@ -724,7 +727,7 @@ namespace Sawczyn.EFDesigner.EFModel
             context.LogError($"Can't make {Name} a dependent class since it has subclass(es) {string.Join(", ", Subclasses.Select(s => s.Name))}", "MCEOwnedHasSubclass", this);
       }
 
-      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Menu)]
+      [ValidationMethod(ValidationCategories.Menu)]
       [UsedImplicitly]
       [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void OwnedTypeCannotBeAbstract(ValidationContext context)
@@ -736,7 +739,7 @@ namespace Sawczyn.EFDesigner.EFModel
             context.LogError($"Can't make {Name} a dependent class since it's abstract", "MCEOwnedIsAbstract", this);
       }
 
-      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Menu)]
+      [ValidationMethod(ValidationCategories.Menu)]
       [UsedImplicitly]
       [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void OwnedTypeCannotBePrincipal(ValidationContext context)
@@ -753,7 +756,7 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Menu)]
+      [ValidationMethod(ValidationCategories.Menu)]
       [UsedImplicitly]
       [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void OwnedTypeCannotBeInBidirectionalAssociation(ValidationContext context)
@@ -765,7 +768,7 @@ namespace Sawczyn.EFDesigner.EFModel
             context.LogError($"Can't make {Name} a dependent class since it's part of a bidirectional association", "MCEOwnedInBidirectional", this);
       }
 
-      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Save | ValidationCategories.Menu)]
+      [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
       [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void AttributesCannotBeNamedSameAsEnclosingClass(ValidationContext context)
@@ -777,7 +780,7 @@ namespace Sawczyn.EFDesigner.EFModel
             context.LogError($"{Name}: Properties can't be named the same as the enclosing class", "MCESameName", this);
       }
 
-      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Save | ValidationCategories.Menu)]
+      [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
       [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void PersistentClassesMustHaveIdentity(ValidationContext context)

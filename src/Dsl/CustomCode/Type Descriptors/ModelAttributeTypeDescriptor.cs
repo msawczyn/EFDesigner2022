@@ -99,29 +99,48 @@ namespace Sawczyn.EFDesigner.EFModel
             if (modelAttribute.Persistent)
                propertyDescriptors.Remove("ReadOnly");
 
+            // things unavailable to transient properties
+            if (!modelAttribute.Persistent || !modelAttribute.ModelClass.Persistent)
+            {
+               propertyDescriptors.Remove("IsIdentity");
+               propertyDescriptors.Remove("MaxLength");
+               propertyDescriptors.Remove("Indexed");
+               propertyDescriptors.Remove("IndexedUnique");
+               propertyDescriptors.Remove("StringType");
+               propertyDescriptors.Remove("TableOverride");
+               propertyDescriptors.Remove("IsConcurrencyToken");
+               propertyDescriptors.Remove("IdentityType");
+               propertyDescriptors.Remove("MinLength");
+               propertyDescriptors.Remove("IsForeignKeyFor");
+               propertyDescriptors.Remove("PropertyAccessMode");
+               propertyDescriptors.Remove("DatabaseDefaultValue");
+            }
+
             /********************************************************************************/
 
             //Add the descriptors for the tracking properties 
 
-            propertyDescriptors.Add(new TrackingPropertyDescriptor(modelAttribute,
-                                                                   storeDomainDataDirectory.GetDomainProperty(ModelAttribute.ColumnNameDomainPropertyId),
-                                                                   storeDomainDataDirectory.GetDomainProperty(ModelAttribute.IsColumnNameTrackingDomainPropertyId),
-                                                                   new Attribute[]
-                                                                   {
-                                                                      new DisplayNameAttribute("Column Name"),
-                                                                      new DescriptionAttribute("Overrides default column name"),
-                                                                      new CategoryAttribute("Database")
-                                                                   }));
-
-            propertyDescriptors.Add(new TrackingPropertyDescriptor(modelAttribute,
-                                                                   storeDomainDataDirectory.GetDomainProperty(ModelAttribute.ColumnTypeDomainPropertyId),
-                                                                   storeDomainDataDirectory.GetDomainProperty(ModelAttribute.IsColumnTypeTrackingDomainPropertyId),
-                                                                   new Attribute[]
-                                                                   {
-                                                                      new DisplayNameAttribute("Column Type"),
-                                                                      new DescriptionAttribute("Overrides default column type"),
-                                                                      new CategoryAttribute("Database")
-                                                                   }));
+            if (modelAttribute.Persistent)
+            {
+               propertyDescriptors.Add(new TrackingPropertyDescriptor(modelAttribute,
+                                                                      storeDomainDataDirectory.GetDomainProperty(ModelAttribute.ColumnNameDomainPropertyId),
+                                                                      storeDomainDataDirectory.GetDomainProperty(ModelAttribute.IsColumnNameTrackingDomainPropertyId),
+                                                                      new Attribute[]
+                                                                      {
+                                                                         new DisplayNameAttribute("Column Name"),
+                                                                         new DescriptionAttribute("Overrides default column name"),
+                                                                         new CategoryAttribute("Database")
+                                                                      }));
+               propertyDescriptors.Add(new TrackingPropertyDescriptor(modelAttribute,
+                                                                      storeDomainDataDirectory.GetDomainProperty(ModelAttribute.ColumnTypeDomainPropertyId),
+                                                                      storeDomainDataDirectory.GetDomainProperty(ModelAttribute.IsColumnTypeTrackingDomainPropertyId),
+                                                                      new Attribute[]
+                                                                      {
+                                                                         new DisplayNameAttribute("Column Type"),
+                                                                         new DescriptionAttribute("Overrides default column type"),
+                                                                         new CategoryAttribute("Database")
+                                                                      }));
+            }
 
             propertyDescriptors.Add(new TrackingPropertyDescriptor(modelAttribute,
                                                                    storeDomainDataDirectory.GetDomainProperty(ModelAttribute.AutoPropertyDomainPropertyId),
@@ -145,7 +164,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             if (modelRoot.IsEFCore5Plus)
             {
-               if (modelAttribute.Type == "String")
+               if (modelAttribute.Type == "String" && modelAttribute.Persistent)
                {
                   propertyDescriptors.Add(new TrackingPropertyDescriptor(modelAttribute,
                                                                          storeDomainDataDirectory.GetDomainProperty(ModelAttribute.DatabaseCollationDomainPropertyId),
@@ -158,17 +177,19 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                          }));
                }
 
-               propertyDescriptors.Add(new TrackingPropertyDescriptor(modelAttribute,
-                                                                      storeDomainDataDirectory.GetDomainProperty(ModelAttribute.PropertyAccessModeDomainPropertyId),
-                                                                      storeDomainDataDirectory.GetDomainProperty(ModelAttribute.IsPropertyAccessModeTrackingDomainPropertyId),
-                                                                      new Attribute[]
-                                                                      {
-                                                                         new DisplayNameAttribute("Property Access Mode"),
-                                                                         new
-                                                                            DescriptionAttribute("Defines how EF reads and write this property or its backing field. See  https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.propertyaccessmode"),
-                                                                         new CategoryAttribute("Code Generation")
-                                                                      }));
-            }
+               if (modelAttribute.Persistent)
+               {
+                  propertyDescriptors.Add(new TrackingPropertyDescriptor(modelAttribute,
+                                                                         storeDomainDataDirectory.GetDomainProperty(ModelAttribute.PropertyAccessModeDomainPropertyId),
+                                                                         storeDomainDataDirectory.GetDomainProperty(ModelAttribute.IsPropertyAccessModeTrackingDomainPropertyId),
+                                                                         new Attribute[]
+                                                                         {
+                                                                            new DisplayNameAttribute("Property Access Mode"),
+                                                                            new
+                                                                               DescriptionAttribute("Defines how EF reads and write this property or its backing field. See  https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.propertyaccessmode"),
+                                                                            new CategoryAttribute("Code Generation")
+                                                                         }));
+               }            }
          }
 
          // Return the property descriptors for this element  

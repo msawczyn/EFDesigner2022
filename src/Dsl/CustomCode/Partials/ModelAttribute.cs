@@ -510,7 +510,7 @@ namespace Sawczyn.EFDesigner.EFModel
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
 
             // ReSharper disable once ArrangeRedundantParentheses
-            IsColumnNameTracking = (columnNameStorage == null);
+            IsColumnNameTracking = columnNameStorage == null;
       }
 
 #endregion
@@ -555,7 +555,7 @@ namespace Sawczyn.EFDesigner.EFModel
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
 
             // ReSharper disable once ArrangeRedundantParentheses
-            IsImplementNotifyTracking = (implementNotifyStorage == (ModelClass?.ImplementNotify ?? false));
+            IsImplementNotifyTracking = implementNotifyStorage == (ModelClass?.ImplementNotify ?? false);
       }
 
 #endregion
@@ -735,7 +735,7 @@ namespace Sawczyn.EFDesigner.EFModel
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
 
             // ReSharper disable once ArrangeRedundantParentheses
-            IsColumnTypeTracking = (columnTypeStorage == null);
+            IsColumnTypeTracking = columnTypeStorage == null;
       }
 
 #endregion
@@ -1113,7 +1113,7 @@ namespace Sawczyn.EFDesigner.EFModel
          (ef6Version : "GeometryMultiPolygon", efCoreVersion : "MultiPolygon")
       };
 
-      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Save | ValidationCategories.Menu)]
+      [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
       [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void GeographyTypeDoesNotMatchEFVersion(ValidationContext context)
@@ -1155,7 +1155,11 @@ namespace Sawczyn.EFDesigner.EFModel
          if (ModelClass?.ModelRoot == null)
             return;
 
-         if ((ModelClass != null) && (Type == "String") && (!MaxLength.HasValue || (MaxLength.Value == MAXLENGTH_UNDEFINED)))
+         if ((ModelClass != null)
+          && (Type == "String")
+          && Persistent
+          && ModelClass.Persistent
+          && (!MaxLength.HasValue || (MaxLength.Value == MAXLENGTH_UNDEFINED)))
          {
             context.LogWarning($"{ModelClass.Name}.{Name}: String length not specified", "MWStringNoLength", this);
             hasWarning = true;

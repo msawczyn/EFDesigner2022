@@ -28,13 +28,13 @@ namespace Sawczyn.EFDesigner.EFModel
 
             // show FKPropertyName only when possible and required
             if (!modelRoot.ExposeForeignKeys
-             || ((association.SourceRole != EndpointRole.Dependent) && (association.TargetRole != EndpointRole.Dependent)))
+             || association.SourceRole != EndpointRole.Dependent && association.TargetRole != EndpointRole.Dependent)
                propertyDescriptors.Remove("FKPropertyName");
 
             // EF6 can't have declared foreign keys for 1..1 / 0-1..1 / 1..0-1 / 0-1..0-1 relationships
-            if ((modelRoot.EntityFrameworkVersion == EFVersion.EF6)
-             && (association.SourceMultiplicity != Multiplicity.ZeroMany)
-             && (association.TargetMultiplicity != Multiplicity.ZeroMany))
+            if (modelRoot.EntityFrameworkVersion == EFVersion.EF6
+             && association.SourceMultiplicity != Multiplicity.ZeroMany
+             && association.TargetMultiplicity != Multiplicity.ZeroMany)
                propertyDescriptors.Remove("FKPropertyName");
 
             // no FKs for aggregates
@@ -42,8 +42,8 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("FKPropertyName");
 
             // only display roles for 1..1 and 0-1..0-1 associations
-            if (((association.SourceMultiplicity != Multiplicity.One) || (association.TargetMultiplicity != Multiplicity.One))
-             && ((association.SourceMultiplicity != Multiplicity.ZeroOne) || (association.TargetMultiplicity != Multiplicity.ZeroOne)))
+            if ((association.SourceMultiplicity != Multiplicity.One || association.TargetMultiplicity != Multiplicity.One)
+             && (association.SourceMultiplicity != Multiplicity.ZeroOne || association.TargetMultiplicity != Multiplicity.ZeroOne))
             {
                propertyDescriptors.Remove("SourceRole");
                propertyDescriptors.Remove("TargetRole");
@@ -51,28 +51,28 @@ namespace Sawczyn.EFDesigner.EFModel
 
             // only display delete behavior on the principal end
             // except that owned types don't have deletiion behavior choices
-            if ((association.SourceRole != EndpointRole.Principal) || association.Source.IsDependentType || association.Target.IsDependentType)
+            if (association.SourceRole != EndpointRole.Principal || association.Source.IsDependentType || association.Target.IsDependentType)
                propertyDescriptors.Remove("SourceDeleteAction");
 
-            if ((association.TargetRole != EndpointRole.Principal) || association.Source.IsDependentType || association.Target.IsDependentType)
+            if (association.TargetRole != EndpointRole.Principal || association.Source.IsDependentType || association.Target.IsDependentType)
                propertyDescriptors.Remove("TargetDeleteAction");
 
             // only show JoinTableName if is *..* association
-            if ((association.SourceMultiplicity != Multiplicity.ZeroMany) || (association.TargetMultiplicity != Multiplicity.ZeroMany))
+            if (association.SourceMultiplicity != Multiplicity.ZeroMany || association.TargetMultiplicity != Multiplicity.ZeroMany)
                propertyDescriptors.Remove("JoinTableName");
 
             // implementNotify implicitly defines autoproperty as false, so we don't display it
             if (association.TargetImplementNotify)
                propertyDescriptors.Remove("TargetAutoProperty");
 
-            if ((bidirectionalAssociation != null) && bidirectionalAssociation.SourceImplementNotify)
+            if (bidirectionalAssociation != null && bidirectionalAssociation.SourceImplementNotify)
                propertyDescriptors.Remove("SourceAutoProperty");
 
             // we're only allowing ..1 and ..0-1 associations to have backing fields
             if (association.TargetMultiplicity == Multiplicity.ZeroMany)
                propertyDescriptors.Remove("TargetAutoProperty");
 
-            if ((bidirectionalAssociation != null) && (bidirectionalAssociation.SourceMultiplicity == Multiplicity.ZeroMany))
+            if (bidirectionalAssociation != null && bidirectionalAssociation.SourceMultiplicity == Multiplicity.ZeroMany)
                propertyDescriptors.Remove("SourceAutoProperty");
 
             // EF6 doesn't support property access modes
@@ -89,10 +89,21 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("TargetPropertyAccessMode");
             }
 
-            if ((bidirectionalAssociation == null) || bidirectionalAssociation.SourceAutoProperty)
+            if (bidirectionalAssociation == null || bidirectionalAssociation.SourceAutoProperty)
             {
                propertyDescriptors.Remove("SourceBackingFieldName");
                propertyDescriptors.Remove("SourcePropertyAccessMode");
+            }
+
+            // things unavailable if association is transient
+            if (!association.Persistent || !association.Source.Persistent || !association.Target.Persistent)
+            {
+               propertyDescriptors.Remove("SourceRole");
+               propertyDescriptors.Remove("TargetRole");
+               propertyDescriptors.Remove("ForeignKeyLocation");
+               propertyDescriptors.Remove("FKPropertyName");
+               propertyDescriptors.Remove("JoinTableName");
+               propertyDescriptors.Remove("TargetAutoInclude");
             }
 
             /********************************************************************************/
@@ -109,7 +120,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                       new CategoryAttribute("Code Generation")
                                                                    }));
 
-            if ((association.TargetMultiplicity == Multiplicity.One) || (association.TargetMultiplicity == Multiplicity.ZeroOne))
+            if (association.TargetMultiplicity == Multiplicity.One || association.TargetMultiplicity == Multiplicity.ZeroOne)
             {
                propertyDescriptors.Add(new TrackingPropertyDescriptor(association,
                                                                       storeDomainDataDirectory.GetDomainProperty(Association.TargetImplementNotifyDomainPropertyId),
@@ -134,7 +145,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                       }));
             }
 
-            if ((bidirectionalAssociation?.SourceMultiplicity == Multiplicity.One) || (bidirectionalAssociation?.SourceMultiplicity == Multiplicity.ZeroOne))
+            if (bidirectionalAssociation?.SourceMultiplicity == Multiplicity.One || bidirectionalAssociation?.SourceMultiplicity == Multiplicity.ZeroOne)
             {
                propertyDescriptors.Add(new TrackingPropertyDescriptor(bidirectionalAssociation,
                                                                       storeDomainDataDirectory.GetDomainProperty(BidirectionalAssociation.SourceImplementNotifyDomainPropertyId),

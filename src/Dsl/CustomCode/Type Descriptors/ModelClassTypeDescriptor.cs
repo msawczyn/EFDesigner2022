@@ -87,6 +87,24 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("ExcludeFromMigrations");
             }
 
+            // things unavailable for transient classes
+            if (!modelClass.Persistent)
+            {
+               propertyDescriptors.Remove("TableName");
+               propertyDescriptors.Remove("Concurrency");
+               propertyDescriptors.Remove("DbSetName");
+               propertyDescriptors.Remove("IsDependentType");
+               propertyDescriptors.Remove("IsPropertyBag");
+               propertyDescriptors.Remove("IsQueryType");
+               propertyDescriptors.Remove("ExcludeFromMigrations");
+               propertyDescriptors.Remove("IsDatabaseView");
+               propertyDescriptors.Remove("ViewName");
+               propertyDescriptors.Remove("UseTemporalTables");
+               propertyDescriptors.Remove("IsAssociationClass");
+               propertyDescriptors.Remove("DescribedAssociationElementId");
+               propertyDescriptors.Remove("TableComment");
+            }
+
             //Add the descriptors for the tracking properties 
 
             propertyDescriptors.Add(new TrackingPropertyDescriptor(modelClass,
@@ -99,15 +117,18 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                       new CategoryAttribute("Code Generation")
                                                                    }));
 
-            propertyDescriptors.Add(new TrackingPropertyDescriptor(modelClass,
-                                                                   storeDomainDataDirectory.GetDomainProperty(ModelClass.DatabaseSchemaDomainPropertyId),
-                                                                   storeDomainDataDirectory.GetDomainProperty(ModelClass.IsDatabaseSchemaTrackingDomainPropertyId),
-                                                                   new Attribute[]
-                                                                   {
-                                                                      new DisplayNameAttribute("Database Schema"),
-                                                                      new DescriptionAttribute("The schema to use for table creation. Overrides default schema for model if present."),
-                                                                      new CategoryAttribute("Database")
-                                                                   }));
+            if (modelClass.Persistent)
+            {
+               propertyDescriptors.Add(new TrackingPropertyDescriptor(modelClass,
+                                                                      storeDomainDataDirectory.GetDomainProperty(ModelClass.DatabaseSchemaDomainPropertyId),
+                                                                      storeDomainDataDirectory.GetDomainProperty(ModelClass.IsDatabaseSchemaTrackingDomainPropertyId),
+                                                                      new Attribute[]
+                                                                      {
+                                                                         new DisplayNameAttribute("Database Schema"),
+                                                                         new DescriptionAttribute("The schema to use for table creation. Overrides default schema for model if present."),
+                                                                         new CategoryAttribute("Database")
+                                                                      }));
+            }
 
             propertyDescriptors.Add(new TrackingPropertyDescriptor(modelClass,
                                                                    storeDomainDataDirectory.GetDomainProperty(ModelClass.NamespaceDomainPropertyId),

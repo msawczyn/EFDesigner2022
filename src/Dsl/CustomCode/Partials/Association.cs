@@ -138,9 +138,7 @@ namespace Sawczyn.EFDesigner.EFModel
       private void FKPropertiesCannotBeStoreGeneratedIdentifiers(ValidationContext context)
       {
          foreach (ModelAttribute attribute in GetFKAutoIdentityErrors())
-         {
             context.LogError($"{Source.Name} <=> {Target.Name}: FK property {attribute.Name} in {Dependent.FullName} is an auto-generated identity. Migration will fail.", "AEIdentityFK", this);
-         }
       }
 
       [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
@@ -152,9 +150,7 @@ namespace Sawczyn.EFDesigner.EFModel
             return;
 
          if (Dependent == null)
-         {
             context.LogError($"{Source.Name} <=> {Target.Name}: FK property set without association having a Dependent end.", "AEFKWithNoDependent", this);
-         }
       }
 
       [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
@@ -354,7 +350,7 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Save | ValidationCategories.Menu)]
+      [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
       [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void TPCEndpointsOnlyOnLeafNodes(ValidationContext context)

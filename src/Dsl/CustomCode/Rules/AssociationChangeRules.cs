@@ -1,4 +1,5 @@
-﻿using System.CodeDom.Compiler;
+﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -6,6 +7,8 @@ using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.Modeling;
 
 using Sawczyn.EFDesigner.EFModel.Extensions;
+
+using stdole;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
@@ -104,6 +107,11 @@ namespace Sawczyn.EFDesigner.EFModel
                            errorMessages.Add($"Can't make {element.GetDisplayText()} persistent since {element.Source.Name} is transient.");
                         if (!element.Target.Persistent)
                            errorMessages.Add($"Can't make {element.GetDisplayText()} persistent since {element.Target.Name} is transient.");
+                     }
+                     else
+                     {
+                        element.Source.Attributes.Where(a => a.IsForeignKeyFor == element.Id).ToList().ForEach(a => a.IsForeignKeyFor = Guid.Empty);
+                        element.Target.Attributes.Where(a => a.IsForeignKeyFor == element.Id).ToList().ForEach(a => a.IsForeignKeyFor = Guid.Empty);
                      }
 
                      break;

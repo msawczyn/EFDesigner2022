@@ -156,21 +156,35 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case ModelClass modelClass:
                if (modelClass.IsAssociationClass)
+               {
                   result = modelClass.IsVisible()
                               ? nameof(Resources.AssociationClassGlyphVisible)
                               : nameof(Resources.AssociationClassGlyph);
+               }
                else if (modelClass.IsQueryType)
+               {
                   result = modelClass.IsVisible()
                               ? nameof(Resources.SQLVisible)
                               : nameof(Resources.SQL);
+               }
+               else if (!modelClass.Persistent)
+               {
+                  result = modelClass.IsVisible() 
+                              ? nameof(Resources.TransientClassVisible) 
+                              : nameof(Resources.TransientClass);
+               }
                else if (modelClass.IsAbstract)
+               {
                   result = modelClass.IsVisible()
                               ? nameof(Resources.AbstractEntityGlyphVisible)
                               : nameof(Resources.AbstractEntityGlyph);
+               }
                else
+               {
                   result = modelClass.IsVisible()
                               ? nameof(Resources.EntityGlyphVisible)
                               : nameof(Resources.EntityGlyph);
+               }
 
                break;
          }
@@ -191,9 +205,11 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             case BidirectionalAssociation bidirectionalAssociation:
                if (modelRoot.ShowWarningsInDesigner && bidirectionalAssociation.GetHasWarningValue())
+               {
                   return UseInverseGlyphs
                             ? Resources.Warning_i
                             : Resources.Warning;
+               }
 
                return UseInverseGlyphs
                          ? InvertedAssociationGlyphCache[bidirectionalAssociation.TargetMultiplicity][bidirectionalAssociation.SourceMultiplicity]
@@ -201,9 +217,11 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case UnidirectionalAssociation unidirectionalAssociation:
                if (modelRoot.ShowWarningsInDesigner && unidirectionalAssociation.GetHasWarningValue())
+               {
                   return UseInverseGlyphs
                             ? Resources.Warning_i
                             : Resources.Warning;
+               }
 
                return UseInverseGlyphs
                          ? InvertedAssociationGlyphCache[unidirectionalAssociation.SourceMultiplicity][unidirectionalAssociation.TargetMultiplicity]
@@ -211,25 +229,33 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case ModelAttribute attribute:
                if (modelRoot.ShowWarningsInDesigner && attribute.GetHasWarningValue())
+               {
                   return UseInverseGlyphs
                             ? Resources.Warning_i
                             : Resources.Warning;
+               }
 
                if (attribute.IsIdentity && (attribute.IsForeignKeyFor != Guid.Empty))
+               {
                   return UseInverseGlyphs
                             ? Resources.ForeignKeyIdentity_i
                             : Resources.ForeignKeyIdentity;
+               }
 
                if (attribute.IsIdentity)
+               {
                   return UseInverseGlyphs
                             ? Resources.Identity_i
                             : Resources.Identity;
+               }
 
                // ReSharper disable once ConvertIfStatementToReturnStatement
                if (attribute.IsForeignKeyFor != Guid.Empty)
+               {
                   return UseInverseGlyphs
                             ? Resources.ForeignKey_i
                             : Resources.ForeignKey;
+               }
 
                return UseInverseGlyphs
                          ? InvertedAttributeGlyphCache[attribute.Persistent][attribute.SetterVisibility]
@@ -434,6 +460,8 @@ namespace Sawczyn.EFDesigner.EFModel
                                                {
                                                   {nameof(Resources.EntityGlyph), Resources.EntityGlyph_i},
                                                   {nameof(Resources.EntityGlyphVisible), Resources.EntityGlyphVisible_i},
+                                                  {nameof(Resources.TransientClass), Resources.TransientClass_i},
+                                                  {nameof(Resources.TransientClassVisible), Resources.TransientClassVisible_i},
                                                   {nameof(Resources.SQL), Resources.SQL_i},
                                                   {nameof(Resources.SQLVisible), Resources.SQLVisible_i},
                                                   {nameof(Resources.AbstractEntityGlyph), Resources.AbstractEntityGlyph_i},

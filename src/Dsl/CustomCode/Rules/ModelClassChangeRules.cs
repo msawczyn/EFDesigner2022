@@ -483,12 +483,10 @@ namespace Sawczyn.EFDesigner.EFModel
                {
                   if (!element.Persistent)
                   {
-                     if (element.LocalNavigationsFromThisAsSource(Array.Empty<Association>()).Any(n => n.PointsToTarget && !n.ClassType.Persistent)
-                      || element.LocalNavigationsFromThisAsTarget(Array.Empty<Association>()).Any(n => n.PointsToSource && !n.ClassType.Persistent))
-                     {
-                        foreach (NavigationProperty navigationProperty in element.LocalNavigationProperties())
-                           navigationProperty.AssociationObject.Persistent = false;
-                     }
+                     foreach (Association association in Association.GetLinksToTargets(element)
+                                                                    .Union(Association.GetLinksToSources(element))
+                                                                    .Where(x => x.Persistent))
+                        association.Persistent = false;
                   }
                   else
                   {

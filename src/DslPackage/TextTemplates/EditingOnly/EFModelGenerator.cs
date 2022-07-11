@@ -322,24 +322,29 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          {
             string customAttributes = modelAttribute.CustomAttributes ?? string.Empty;
 
-            if (!modelAttribute.Persistent && modelAttribute.ModelClass.Persistent && !customAttributes.Contains("NotMapped"))
-               Output("[NotMapped]");
-
-            if (modelAttribute.IsIdentity)
-               Output("[Key]");
-
-            if (modelAttribute.Required)
-               Output("[Required]");
-
-            if (modelAttribute.FQPrimitiveType == "string")
+            if (!modelAttribute.Persistent && modelAttribute.ModelClass.Persistent)
             {
-               if (modelAttribute.MinLength > 0)
-                  Output($"[MinLength({modelAttribute.MinLength})]");
+               if (!customAttributes.Contains("NotMapped"))
+                  Output("[NotMapped]");
+            }
+            else
+            {
+               if (modelAttribute.IsIdentity)
+                  Output("[Key]");
 
-               if (modelAttribute.MaxLength > 0)
+               if (modelAttribute.Required)
+                  Output("[Required]");
+
+               if (modelAttribute.FQPrimitiveType == "string")
                {
-                  Output($"[MaxLength({modelAttribute.MaxLength})]");
-                  Output($"[StringLength({modelAttribute.MaxLength})]");
+                  if (modelAttribute.MinLength > 0)
+                     Output($"[MinLength({modelAttribute.MinLength})]");
+
+                  if (modelAttribute.MaxLength > 0)
+                  {
+                     Output($"[MaxLength({modelAttribute.MaxLength})]");
+                     Output($"[StringLength({modelAttribute.MaxLength})]");
+                  }
                }
             }
 
@@ -1095,8 +1100,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                if (!string.IsNullOrWhiteSpace(navigationProperty.DisplayText))
                   Output($"[System.ComponentModel.DataAnnotations.Display(Name=\"{navigationProperty.DisplayText.Replace("\"", "\\\"")}\")]");
 
-               if (!navigationProperty.AssociationObject.Persistent && !customAttributes.Contains("NotMapped") && modelClass.Persistent)
-                  Output("[NotMapped]");
+               if (!navigationProperty.AssociationObject.Persistent && modelClass.Persistent)
+               {
+                  if (!customAttributes.Contains("NotMapped"))
+                     Output("[NotMapped]");
+               }
 
                if (navigationProperty.IsAutoProperty)
                {

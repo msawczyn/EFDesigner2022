@@ -427,7 +427,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
 #region Validation methods
 
-      [ValidationMethod( /*ValidationCategories.Open | */ValidationCategories.Save | ValidationCategories.Menu)]
+      [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
       [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void ConnectionStringMustExist(ValidationContext context)
