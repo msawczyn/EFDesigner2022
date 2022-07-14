@@ -67,7 +67,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   ConfigureTable(segments, modelClass);
             }
 
-            if ((segments.Count > 1) || modelClass.IsDependentType)
+            if (segments.Count > 1 || modelClass.IsDependentType)
                Output(segments);
 
             // attribute level
@@ -75,7 +75,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             bool hasDefinedConcurrencyToken = modelClass.AllAttributes.Any(x => x.IsConcurrencyToken);
 
-            if (!hasDefinedConcurrencyToken && (modelClass.EffectiveConcurrency == ConcurrencyOverride.Optimistic))
+            if (!hasDefinedConcurrencyToken && modelClass.EffectiveConcurrency == ConcurrencyOverride.Optimistic)
                Output($@"modelBuilder.Entity<{modelClass.FullName}>().Property<byte[]>(""Timestamp"").IsConcurrencyToken();");
 
             // Navigation endpoints are distingished as Source and Target. They are also distinguished as Principal
@@ -114,7 +114,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                                  ? modelClass.Name
                                  : modelClass.ViewName;
 
-            string schema = string.IsNullOrEmpty(modelClass.DatabaseSchema) || (modelClass.DatabaseSchema == modelClass.ModelRoot.DatabaseSchema)
+            string schema = string.IsNullOrEmpty(modelClass.DatabaseSchema) || modelClass.DatabaseSchema == modelClass.ModelRoot.DatabaseSchema
                                ? string.Empty
                                : $", \"{modelClass.DatabaseSchema}\"";
 
@@ -125,8 +125,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             if (modelClass.UseTemporalTables
              && !modelClass.IsDatabaseView
-             && (!modelClass.Subclasses.Any() || (modelClass.ModelRoot.InheritanceStrategy == CodeStrategy.TablePerHierarchy))
-             && (modelClass.Superclass == null))
+             && (!modelClass.Subclasses.Any() || modelClass.ModelRoot.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
+             && modelClass.Superclass == null)
                modifiers.Add("t.IsTemporal();");
 
             string buildActions = modifiers.Any()
@@ -203,8 +203,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
 
             if (!string.IsNullOrEmpty(modelAttribute.DatabaseCollation)
-             && (modelAttribute.DatabaseCollation != modelRoot.DatabaseCollationDefault)
-             && (modelAttribute.Type == "String"))
+             && modelAttribute.DatabaseCollation != modelRoot.DatabaseCollationDefault
+             && modelAttribute.Type == "String")
                segments.Add($"UseCollation(\"{modelAttribute.DatabaseCollation.Trim('"')}\")");
 
             int index = segments.IndexOf("IsRequired()");
@@ -265,7 +265,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                                   ? associationClass.Name
                                   : associationClass.TableName;
 
-            string schema = string.IsNullOrEmpty(associationClass.DatabaseSchema) || (associationClass.DatabaseSchema == associationClass.ModelRoot.DatabaseSchema)
+            string schema = string.IsNullOrEmpty(associationClass.DatabaseSchema) || associationClass.DatabaseSchema == associationClass.ModelRoot.DatabaseSchema
                                ? string.Empty
                                : $", \"{associationClass.DatabaseSchema}\"";
 
@@ -389,7 +389,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                         {
                            segments.Add($"{baseSegment}.OwnsOne(p => p.{association.TargetPropertyName}).Property(p => p.{modelAttribute.Name})");
 
-                           if ((modelAttribute.ColumnName != modelAttribute.Name) && !string.IsNullOrEmpty(modelAttribute.ColumnName))
+                           if (modelAttribute.ColumnName != modelAttribute.Name && !string.IsNullOrEmpty(modelAttribute.ColumnName))
                               segments.Add($"HasColumnName(\"{modelAttribute.ColumnName}\")");
 
                            if (modelAttribute.Required)
@@ -429,7 +429,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                         {
                            segments.Add($"{baseSegment}.OwnsOne(p => p.{association.TargetPropertyName}).Property(p => p.{modelAttribute.Name})");
 
-                           if ((modelAttribute.ColumnName != modelAttribute.Name) && !string.IsNullOrEmpty(modelAttribute.ColumnName))
+                           if (modelAttribute.ColumnName != modelAttribute.Name && !string.IsNullOrEmpty(modelAttribute.ColumnName))
                               segments.Add($"HasColumnName(\"{modelAttribute.ColumnName}\")");
 
                            if (modelAttribute.Required)
@@ -508,6 +508,17 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      segments.Add($"WithOne(p => p.{association.SourcePropertyName})");
+                     string foreignKeySegment = CreateForeignKeySegment(association, foreignKeyColumns);
+
+                     if (!string.IsNullOrEmpty(foreignKeySegment))
+                        segments.Add(foreignKeySegment);
+
+                     WriteSourceDeleteBehavior(association, segments);
+
+                     if (required
+                      && (association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One
+                       || association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
+                        segments.Add("IsRequired()");
 
                      break;
                }
@@ -608,8 +619,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             WriteTargetDeleteBehavior(association, segments);
 
             if (required
-             && ((association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)
-              || (association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)))
+             && (association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One
+              || association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
                segments.Add("IsRequired()");
 
             return segments;
@@ -667,7 +678,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                         {
                            segments.Add($"{baseSegment}.OwnsOne(p => p.{association.TargetPropertyName}).Property(p => p.{modelAttribute.Name})");
 
-                           if ((modelAttribute.ColumnName != modelAttribute.Name) && !string.IsNullOrEmpty(modelAttribute.ColumnName))
+                           if (modelAttribute.ColumnName != modelAttribute.Name && !string.IsNullOrEmpty(modelAttribute.ColumnName))
                               segments.Add($"HasColumnName(\"{modelAttribute.ColumnName}\")");
 
                            if (modelAttribute.Required)
@@ -691,7 +702,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                         {
                            segments.Add($"{baseSegment}.OwnsOne(p => p.{association.TargetPropertyName}).Property(p => p.{modelAttribute.Name})");
 
-                           if ((modelAttribute.ColumnName != modelAttribute.Name) && !string.IsNullOrEmpty(modelAttribute.ColumnName))
+                           if (modelAttribute.ColumnName != modelAttribute.Name && !string.IsNullOrEmpty(modelAttribute.ColumnName))
                               segments.Add($"HasColumnName(\"{modelAttribute.ColumnName}\")");
 
                            if (modelAttribute.Required)

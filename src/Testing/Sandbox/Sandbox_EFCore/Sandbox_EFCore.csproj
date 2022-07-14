@@ -47,6 +47,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>EFModel1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Generated\AppDbContext.generated.cs" />
+    <Compile Include="Generated\Entity1.generated.cs" />
+    <Compile Include="Generated\Entity2.generated.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

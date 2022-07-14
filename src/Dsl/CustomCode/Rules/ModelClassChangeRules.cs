@@ -483,15 +483,21 @@ namespace Sawczyn.EFDesigner.EFModel
                {
                   if (!element.Persistent)
                   {
-                     foreach (Association association in Association.GetLinksToTargets(element)
-                                                                    .Union(Association.GetLinksToSources(element))
-                                                                    .Where(x => x.Persistent))
-                        association.Persistent = false;
+                     if (element.IsDependentType)
+                        errorMessages.Add($"{element.Name} can't be made transient since it's a dependent type.");
+                     else
+                     {
+                        foreach (Association association in Association.GetLinksToTargets(element)
+                                                                       .Union(Association.GetLinksToSources(element))
+                                                                       .Where(x => x.Persistent))
+                           association.Persistent = false;
+
+                        foreach (ModelAttribute attribute in element.Attributes.Where(attr => attr.IsIdentity))
+                           attribute.IsIdentity = false;
+                     }
                   }
                   else
                   {
-                     if (element.IsDependentType)
-                        errorMessages.Add($"{element.Name} can't be made transient since it's a dependent type.");
 
                      ModelClass target = element.Superclass;
 
