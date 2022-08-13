@@ -75,6 +75,15 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 
 ### Change Log
 
+4.2.0
+4.2.0
+   - Added ability to import EFCore6 assemblies
+   - Added database default values to properties (see https://github.com/msawczyn/EFDesigner2022/issues/15)
+   - Extension now obeys Visual Studio theme colors (see https://github.com/msawczyn/EFDesigner2022/issues/9)
+   - Entity constructors with required navigation properties are now generated with either the required navigation target or its foreign key property, if available (see https://github.com/msawczyn/EFDesigner2022/issues/21)
+   - Fixed other Entity Framework assembly imports that broke with VS2022 moving to 64-bit (see https://github.com/msawczyn/EFDesigner2022/issues/14)
+   - Fixed problem with generated Timestamp concurrency check (see https://github.com/msawczyn/EFDesigner2022/issues/20)
+
 4.1.2
    - Added ability to create association classes via drag and drop of an entity onto a bidirectional many-to-many association
    - Restored ability to open secondary diagrams

@@ -48,8 +48,25 @@ namespace Sandbox_EFCore5NetCore3_Test
       /// Public constructor with required data
       /// </summary>
       /// <param name="property1"></param>
+      /// <param name="fkto1">Foreign key for Entity1.Entity2 &lt;--&gt; Entity2.Entity1 (AutoInclude). </param>
+      /// <param name="fkto6">Foreign key for Entity6.Entity2 &lt;--&gt; Entity2.Entity6. </param>
+      public Entity2(decimal property1, long fkto1, long fkto6) : this()
+      {
+         this.Property1 = property1;
+
+         this.FKto1 = fkto1;
+
+         this.FKto6 = fkto6;
+
+      }
+
+      /// <summary>
+      /// Public constructor with required data
+      /// </summary>
+      /// <param name="property1"></param>
       /// <param name="entity1"></param>
-      public Entity2(decimal property1, global::Sandbox_EFCore5NetCore3_Test.Entity1 entity1)
+      /// <param name="fkto6">Foreign key for Entity6.Entity2 &lt;--&gt; Entity2.Entity6. </param>
+      public Entity2(decimal property1, global::Sandbox_EFCore5NetCore3_Test.Entity1 entity1, long fkto6) : this()
       {
          this.Property1 = property1;
 
@@ -57,7 +74,57 @@ namespace Sandbox_EFCore5NetCore3_Test
          this.Entity1 = entity1;
          entity1.Entity2.Add(this);
 
-         Init();
+         this.FKto6 = fkto6;
+
+      }
+
+      /// <summary>
+      /// Public constructor with required data
+      /// </summary>
+      /// <param name="property1"></param>
+      /// <param name="fkto1">Foreign key for Entity1.Entity2 &lt;--&gt; Entity2.Entity1 (AutoInclude). </param>
+      /// <param name="entity6"></param>
+      public Entity2(decimal property1, long fkto1, global::Sandbox_EFCore5NetCore3_Test.Entity6 entity6) : this()
+      {
+         this.Property1 = property1;
+
+         this.FKto1 = fkto1;
+
+         if (entity6 == null) throw new ArgumentNullException(nameof(entity6));
+         this.Entity6 = entity6;
+         entity6.Entity2.Add(this);
+
+      }
+
+      /// <summary>
+      /// Public constructor with required data
+      /// </summary>
+      /// <param name="property1"></param>
+      /// <param name="entity1"></param>
+      /// <param name="entity6"></param>
+      public Entity2(decimal property1, global::Sandbox_EFCore5NetCore3_Test.Entity1 entity1, global::Sandbox_EFCore5NetCore3_Test.Entity6 entity6) : this()
+      {
+         this.Property1 = property1;
+
+         if (entity1 == null) throw new ArgumentNullException(nameof(entity1));
+         this.Entity1 = entity1;
+         entity1.Entity2.Add(this);
+
+         if (entity6 == null) throw new ArgumentNullException(nameof(entity6));
+         this.Entity6 = entity6;
+         entity6.Entity2.Add(this);
+
+      }
+
+      /// <summary>
+      /// Static create function (for use in LINQ queries, etc.)
+      /// </summary>
+      /// <param name="property1"></param>
+      /// <param name="fkto1">Foreign key for Entity1.Entity2 &lt;--&gt; Entity2.Entity1 (AutoInclude). </param>
+      /// <param name="fkto6">Foreign key for Entity6.Entity2 &lt;--&gt; Entity2.Entity6. </param>
+      public static Entity2 Create(decimal property1, long fkto1, long fkto6)
+      {
+         return new Entity2(property1, fkto1, fkto6);
       }
 
       /// <summary>
@@ -65,14 +132,53 @@ namespace Sandbox_EFCore5NetCore3_Test
       /// </summary>
       /// <param name="property1"></param>
       /// <param name="entity1"></param>
-      public static Entity2 Create(decimal property1, global::Sandbox_EFCore5NetCore3_Test.Entity1 entity1)
+      /// <param name="fkto6">Foreign key for Entity6.Entity2 &lt;--&gt; Entity2.Entity6. </param>
+      public static Entity2 Create(decimal property1, global::Sandbox_EFCore5NetCore3_Test.Entity1 entity1, long fkto6)
       {
-         return new Entity2(property1, entity1);
+         return new Entity2(property1, entity1, fkto6);
+      }
+
+      /// <summary>
+      /// Static create function (for use in LINQ queries, etc.)
+      /// </summary>
+      /// <param name="property1"></param>
+      /// <param name="fkto1">Foreign key for Entity1.Entity2 &lt;--&gt; Entity2.Entity1 (AutoInclude). </param>
+      /// <param name="entity6"></param>
+      public static Entity2 Create(decimal property1, long fkto1, global::Sandbox_EFCore5NetCore3_Test.Entity6 entity6)
+      {
+         return new Entity2(property1, fkto1, entity6);
+      }
+
+      /// <summary>
+      /// Static create function (for use in LINQ queries, etc.)
+      /// </summary>
+      /// <param name="property1"></param>
+      /// <param name="entity1"></param>
+      /// <param name="entity6"></param>
+      public static Entity2 Create(decimal property1, global::Sandbox_EFCore5NetCore3_Test.Entity1 entity1, global::Sandbox_EFCore5NetCore3_Test.Entity6 entity6)
+      {
+         return new Entity2(property1, entity1, entity6);
       }
 
       /*************************************************************************
        * Properties
        *************************************************************************/
+
+      /// <summary>
+      /// Indexed, Required
+      /// Foreign key for Entity1.Entity2 &lt;--&gt; Entity2.Entity1 (AutoInclude). 
+      /// </summary>
+      [Required]
+      [System.ComponentModel.Description("Foreign key for Entity1.Entity2 <--> Entity2.Entity1 (AutoInclude). ")]
+      public long FKto1 { get; set; }
+
+      /// <summary>
+      /// Indexed, Required
+      /// Foreign key for Entity6.Entity2 &lt;--&gt; Entity2.Entity6. 
+      /// </summary>
+      [Required]
+      [System.ComponentModel.Description("Foreign key for Entity6.Entity2 <--> Entity2.Entity6. ")]
+      public long FKto6 { get; set; }
 
       /// <summary>
       /// Identity, Indexed, Required
@@ -97,6 +203,11 @@ namespace Sandbox_EFCore5NetCore3_Test
       /// Required
       /// </summary>
       public virtual global::Sandbox_EFCore5NetCore3_Test.Entity1 Entity1 { get; set; }
+
+      /// <summary>
+      /// Required
+      /// </summary>
+      public virtual global::Sandbox_EFCore5NetCore3_Test.Entity6 Entity6 { get; set; }
 
    }
 }

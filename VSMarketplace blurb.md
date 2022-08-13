@@ -52,6 +52,14 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
 
 **ChangeLog**
 
+**4.2.0**
+   - **[NEW]** Added ability to import EFCore6 assemblies
+   - **[NEW]** Added database default values to properties (see https://github.com/msawczyn/EFDesigner2022/issues/15)
+   - **[NEW]** Extension now obeys Visual Studio theme colors (see https://github.com/msawczyn/EFDesigner2022/issues/9)
+   - **[NEW]** Entity constructors with required navigation properties are now generated with either the required navigation target or its foreign key property, if available (see https://github.com/msawczyn/EFDesigner2022/issues/21)
+   - Fixed other Entity Framework assembly imports that broke with VS2022 moving to 64-bit (see https://github.com/msawczyn/EFDesigner2022/issues/14)
+   - Fixed problem with generated Timestamp concurrency check (see https://github.com/msawczyn/EFDesigner2022/issues/20)
+
 **4.1.2**
    - **[NEW]** Added ability to create association classes via drag and drop of an entity onto a bidirectional many-to-many association
    - Restored ability to open secondary diagrams

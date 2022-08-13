@@ -47,13 +47,31 @@ namespace Sandbox_EFCore5NetCore3_Test
       /// <summary>
       /// Public constructor with required data
       /// </summary>
+      /// <param name="thefk">Foreign key for Entity4.Entity3 --&gt; Entity3. </param>
+      public Entity3(long thefk) : this()
+      {
+         this.TheFK = thefk;
+
+      }
+
+      /// <summary>
+      /// Public constructor with required data
+      /// </summary>
       /// <param name="_entity40"></param>
-      public Entity3(global::Sandbox_EFCore5NetCore3_Test.Entity4 _entity40)
+      public Entity3(global::Sandbox_EFCore5NetCore3_Test.Entity4 _entity40) : this()
       {
          if (_entity40 == null) throw new ArgumentNullException(nameof(_entity40));
          _entity40.Entity3.Add(this);
 
-         Init();
+      }
+
+      /// <summary>
+      /// Static create function (for use in LINQ queries, etc.)
+      /// </summary>
+      /// <param name="thefk">Foreign key for Entity4.Entity3 --&gt; Entity3. </param>
+      public static Entity3 Create(long thefk)
+      {
+         return new Entity3(thefk);
       }
 
       /// <summary>
@@ -77,6 +95,14 @@ namespace Sandbox_EFCore5NetCore3_Test
       [Required]
       [System.ComponentModel.Description("Unique identifier")]
       public long Id { get; set; }
+
+      /// <summary>
+      /// Indexed, Required
+      /// Foreign key for Entity4.Entity3 --&gt; Entity3. 
+      /// </summary>
+      [Required]
+      [System.ComponentModel.Description("Foreign key for Entity4.Entity3 --> Entity3. ")]
+      public long TheFK { get; set; }
 
       /*************************************************************************
        * Navigation properties

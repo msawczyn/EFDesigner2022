@@ -22,7 +22,7 @@
 #><#@ import namespace="System.Data.Entity.Design.PluralizationServices"
 #><#@ import namespace="Microsoft.VisualStudio.TextTemplating"
 #><#+
-      // EFDesigner v4.2.0.0
+      // EFDesigner v4.2.0.4
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -59,9 +59,11 @@
          WriteLine(text);
 
          if (text == "{")
+         {
             PushIndent(ModelRoot.UseTabs
                           ? "\t"
                           : "   ");
+         }
       }
 
       protected void Output(string template, params object[] items)
@@ -207,21 +209,6 @@
                          "String"
                       };
             }
-         }
-
-         protected bool AllSuperclassesAreNullOrAbstract(ModelClass modelClass)
-         {
-            ModelClass superClass = modelClass.Superclass;
-
-            while (superClass != null)
-            {
-               if (!superClass.IsAbstract)
-                  return false;
-
-               superClass = superClass.Superclass;
-            }
-
-            return true;
          }
 
          protected void BeginNamespace(string ns)
@@ -370,7 +357,7 @@
          {
             if (modelClass.DefaultConstructorVisibility == TypeAccessModifierExt.Default)
             {
-               bool hasRequiredParameters = GetRequiredParameters(modelClass, false, true).Any();
+               bool hasRequiredParameters = GetAllRequiredParameters(modelClass, false, true).Any();
 
                string visibility = (hasRequiredParameters || modelClass.IsAbstract) && !modelClass.IsDependentType
                                       ? "protected"
@@ -444,44 +431,76 @@
             return string.Join(".", nsParts);
          }
 
-         protected List<string> GetRequiredParameterNames(ModelClass modelClass, bool publicOnly = false)
+         private List<List<(ModelAttribute Property, NavigationProperty Navigation)>> GetAllRequiredParametersMix(ModelClass modelClass, bool? haveDefaults, bool publicOnly = false)
          {
-            return GetRequiredParameters(modelClass, null, publicOnly).Select(p => p.Split(' ')[1]).ToList();
+            List<List<(ModelAttribute Property, NavigationProperty Navigation)>> result =
+               new List<List<(ModelAttribute Property, NavigationProperty Navigation)>>();
+
+            List<ModelAttribute> modelAttributes = GetAllRequiredParameterAttributes(modelClass, publicOnly)
+                                                  .Where(x => (haveDefaults != true && string.IsNullOrEmpty(x.InitialValue))
+                                                           || (haveDefaults != false && !string.IsNullOrEmpty(x.InitialValue)))
+                                                  .ToList();
+
+            List<(ModelAttribute Property, NavigationProperty Navigation)> resultBase =
+               modelAttributes.Where(x => !x.IsForeignKeyProperty)
+                              .Select(modelAttribute => ((ModelAttribute modelAttribute, NavigationProperty navigation))(modelAttribute, null))
+                              .ToList();
+
+            NavigationProperty[] navigationProperties = GetAllRequiredParameterNavigations(modelClass).ToArray();
+
+            if (navigationProperties.Length == 0)
+            {
+               if (resultBase.Any())
+                  result.Add(resultBase);
+
+               return result;
+            }
+
+            int permutationCount = (int)Math.Pow(2, navigationProperties.Length);
+
+            for (int i = 0; i < permutationCount; ++i)
+            {
+               List<(ModelAttribute Property, NavigationProperty Navigation)> permutation =
+                  new List<(ModelAttribute Property, NavigationProperty Navigation)>(resultBase);
+
+               for (int j = 0; j < navigationProperties.Length; j++)
+               {
+                  if ((i & (int)Math.Pow(2, j)) > 0)
+                     permutation.Add((null, navigationProperties[j]));
+                  else
+                     permutation.Add((modelAttributes.FirstOrDefault(a => a.IsForeignKeyFor == navigationProperties[j].AssociationObject.Id), null));
+               }
+
+               permutation.RemoveAll(x => x.Property == null && x.Navigation == null);
+               result.Add(permutation);
+            }
+
+            return result;
          }
 
          /// <summary>Gets the local required properties for the ModelClass in formal parameter format</summary>
          /// <param name="modelClass">Source</param>
          /// <param name="haveDefaults">If true, only return those with default values. If false, only return those without default values. If null, return both.</param>
          /// <param name="publicOnly">If true, only return those with public setters. If false, only return those without public setters. If null, return both.</param>
-         protected List<string> GetRequiredParameters(ModelClass modelClass, bool? haveDefaults, bool publicOnly = false)
+         private List<string> GetAllRequiredParameters(ModelClass modelClass, bool? haveDefaults, bool publicOnly = false)
          {
             List<string> requiredParameters = new List<string>();
 
             if (haveDefaults != true)
             {
                // false or null - get those without default values 
-               requiredParameters.AddRange(modelClass.AllRequiredAttributes
-                                                     .Where(x => (!x.IsIdentity || (x.IdentityType == IdentityType.Manual))
-                                                              && !x.IsConcurrencyToken
-                                                              && ((x.SetterVisibility == SetterAccessModifier.Public) || !publicOnly)
-                                                              && string.IsNullOrEmpty(x.InitialValue))
+               requiredParameters.AddRange(GetAllRequiredParameterAttributes(modelClass, publicOnly)
+                                                     .Where(x => string.IsNullOrEmpty(x.InitialValue))
                                                      .Select(x => $"{x.FQPrimitiveType} {x.Name.ToLower()}"));
 
-               // don't use 1..1 associations in constructor parameters. Becomes a Catch-22 scenario.
-               requiredParameters.AddRange(modelClass.AllRequiredNavigationProperties()
-                                                     .Where(np => (np.AssociationObject.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)
-                                                               || (np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
-                                                     .Select(x => $"{x.ClassType.FullName} {x.PropertyName.ToLower()}"));
+               requiredParameters.AddRange(GetAllRequiredParameterNavigations(modelClass).Select(x => $"{x.ClassType.FullName} {x.PropertyName.ToLower()}"));
             }
 
             if (haveDefaults != false)
             {
                // true or null - get those with default values
-               requiredParameters.AddRange(modelClass.AllRequiredAttributes
-                                                     .Where(x => (!x.IsIdentity || (x.IdentityType == IdentityType.Manual))
-                                                              && !x.IsConcurrencyToken
-                                                              && ((x.SetterVisibility == SetterAccessModifier.Public) || !publicOnly)
-                                                              && !string.IsNullOrEmpty(x.InitialValue))
+               requiredParameters.AddRange(GetAllRequiredParameterAttributes(modelClass, publicOnly)
+                                                     .Where(x => !string.IsNullOrEmpty(x.InitialValue))
                                                      .Select(x =>
                                                              {
                                                                 string quote = x.PrimitiveType == "string"
@@ -502,6 +521,22 @@
             }
 
             return requiredParameters;
+         }
+
+         private static IEnumerable<NavigationProperty> GetAllRequiredParameterNavigations(ModelClass modelClass)
+         {
+            // don't use 1..1 associations in constructor parameters. Becomes a Catch-22 scenario.
+            return modelClass.AllRequiredNavigationProperties()
+                             .Where(np => (np.AssociationObject.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)
+                                       || (np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One));
+         }
+
+         private static IEnumerable<ModelAttribute> GetAllRequiredParameterAttributes(ModelClass modelClass, bool publicOnly)
+         {
+            return modelClass.AllRequiredAttributes
+                             .Where(x => (!x.IsIdentity || (x.IdentityType == IdentityType.Manual))
+                                      && !x.IsConcurrencyToken
+                                      && ((x.SetterVisibility == SetterAccessModifier.Public) || !publicOnly));
          }
 
          public static bool IsNullable(ModelAttribute modelAttribute)
@@ -589,7 +624,7 @@
 
             Output("{");
 
-            WriteConstructor(modelClass);
+            WriteConstructors(modelClass);
             WriteProperties(modelClass);
             WriteNavigationProperties(modelClass);
 
@@ -605,29 +640,71 @@
                Output($"/// {s}");
          }
 
-         protected void WriteConstructor(ModelClass modelClass)
+         protected void WriteConstructors(ModelClass modelClass)
          {
             Output("partial void Init();");
             NL();
 
+            WriteDefaultConstructor(modelClass);
+
+            if (GetDefaultConstructorVisibility(modelClass) != "public" && !modelClass.IsAbstract)
+            {
+               Output("/// <summary>");
+               Output("/// Replaces default constructor, since it's protected. Caller assumes responsibility for setting all required values before saving.");
+               Output("/// </summary>");
+               Output($"public static {modelClass.Name} Create{modelClass.Name}Unsafe()");
+               Output("{");
+               Output($"return new {modelClass.Name}();");
+               Output("}");
+               NL();
+            }
+
             /***********************************************************************/
-            // Default constructor
+            // Constructors with required parameters (if necessary)
             /***********************************************************************/
 
-            bool hasRequiredParameters = GetRequiredParameters(modelClass, false, true).Any();
+            List<List<(ModelAttribute Property, NavigationProperty Navigation)>> requiredParametersMix = GetAllRequiredParametersMix(modelClass, false, true);
 
-            // all required navigation properties that aren't a 1..1 relationship
-            List<NavigationProperty> requiredNavigationProperties = modelClass.AllRequiredNavigationProperties()
-                                                                              .Where(np => (np.AssociationObject.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)
-                                                                                        || (np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
-                                                                              .ToList();
+            foreach (List<(ModelAttribute Property, NavigationProperty Navigation)> parameters in requiredParametersMix)
+               WriteConstructorWithRequiredProperties(modelClass, GetConstructorNote(modelClass), parameters);
 
-            bool hasRequiredNavigationProperties = requiredNavigationProperties.Any();
+            if (!modelClass.IsAbstract)
+            {
+               foreach (List<(ModelAttribute Property, NavigationProperty Navigation)> parameters in requiredParametersMix)
+               {
+                  Output("/// <summary>");
+                  Output("/// Static create function (for use in LINQ queries, etc.)");
+                  Output("/// </summary>");
+                  WriteConstructorParameterComments(parameters);
 
-            bool hasOneToOneAssociations = modelClass.AllRequiredNavigationProperties()
-                                                     .Any(np => (np.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One)
-                                                             && (np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One));
+                  List<string> parameterDeclarations = parameters.Select(GetParameterDeclaration).ToList();
 
+                  //string newToken = string.Empty;
+                  //if (!AllSuperclassesAreNullOrAbstract(modelClass))
+                  //{
+                  //   List<string> superclassRequiredParameters = GetAllRequiredParameters(modelClass.Superclass, null, true);
+
+                  //   if (!requiredParameters.Except(superclassRequiredParameters).Any())
+                  //      newToken = "new ";
+                  //}
+
+                  List<string> parameterNames = parameters.Select(p => p.Property != null
+                                                                          ? p.Property.Name.ToLowerInvariant()
+                                                                          : p.Navigation.PropertyName.ToLowerInvariant())
+                                                          .ToList();
+
+                  Output($"public static {modelClass.Name} Create({string.Join(", ", parameterDeclarations)})");
+                  Output("{");
+                  Output($"return new {modelClass.Name}({string.Join(", ", parameterNames)});");
+                  Output("}");
+                  NL();
+               }
+            }
+         }
+
+         private void WriteDefaultConstructor(ModelClass modelClass)
+         {
+            bool hasRequiredParameters = GetAllRequiredParametersMix(modelClass, false, true).Any();
             string visibility = GetDefaultConstructorVisibility(modelClass);
 
             if (visibility == "public")
@@ -649,7 +726,35 @@
                Output("/// </summary>");
             }
 
-            List<string> remarks = new List<string>();
+            Output(modelClass.Superclass != null
+                      ? $"{visibility} {modelClass.Name}(): base()"
+                      : $"{visibility} {modelClass.Name}()");
+
+            Output("{");
+
+            List<string> constructorNote = GetConstructorNote(modelClass);
+
+            if (constructorNote.Count > 0)
+            {
+               foreach (string comment in constructorNote)
+                  Output(comment);
+
+               NL();
+            }
+
+            WriteDefaultConstructorBody(modelClass);
+
+            Output("}");
+            NL();
+         }
+
+         private static List<string> GetConstructorNote(ModelClass modelClass)
+         {
+            List<string> constructorNote = new List<string>();
+
+            bool hasOneToOneAssociations = modelClass.AllRequiredNavigationProperties()
+                                                     .Any(np => (np.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One)
+                                                             && (np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One));
 
             if (hasOneToOneAssociations)
             {
@@ -659,7 +764,8 @@
                                                                   .Select(np => np.AssociationObject)
                                                                   .ToList();
 
-               List<ModelClass> otherEndsOneToOne = oneToOneAssociations.Where(a => a.Source != modelClass).Select(a => a.Target)
+               List<ModelClass> otherEndsOneToOne = oneToOneAssociations.Where(a => a.Source != modelClass)
+                                                                        .Select(a => a.Target)
                                                                         .Union(oneToOneAssociations.Where(a => a.Target != modelClass).Select(a => a.Source))
                                                                         .ToList();
 
@@ -676,92 +782,25 @@
                                              ? otherEndsOneToOne.Last().Name
                                              : "itself");
 
-                  remarks.Add($"// NOTE: This class has one-to-one associations with {nameList}.");
-                  remarks.Add("// One-to-one associations are not validated in constructors since this causes a scenario where each one must be constructed before the other.");
+                  constructorNote.Add($"// NOTE: This class has one-to-one associations with {nameList}.");
+                  constructorNote.Add("// One-to-one associations are not validated in constructors since this causes a scenario where each one must be constructed before the other.");
                }
             }
 
-            Output(modelClass.Superclass != null
-                      ? $"{visibility} {modelClass.Name}(): base()"
-                      : $"{visibility} {modelClass.Name}()");
-
-            Output("{");
-
-            if (remarks.Count > 0)
-            {
-               foreach (string remark in remarks)
-                  Output(remark);
-
-               NL();
-            }
-
-            WriteDefaultConstructorBody(modelClass);
-
-            Output("}");
-            NL();
-
-            if ((visibility != "public") && !modelClass.IsAbstract)
-            {
-               Output("/// <summary>");
-               Output("/// Replaces default constructor, since it's protected. Caller assumes responsibility for setting all required values before saving.");
-               Output("/// </summary>");
-               Output($"public static {modelClass.Name} Create{modelClass.Name}Unsafe()");
-               Output("{");
-               Output($"return new {modelClass.Name}();");
-               Output("}");
-               NL();
-            }
-
-            /***********************************************************************/
-            // Constructor with required parameters (if necessary)
-            /***********************************************************************/
-
-            if (hasRequiredParameters || hasRequiredNavigationProperties)
-            {
-               WriteConstructorsWithRequiredProperties(modelClass, remarks, requiredNavigationProperties);
-
-               if (!modelClass.IsAbstract)
-               {
-                  Output("/// <summary>");
-                  Output("/// Static create function (for use in LINQ queries, etc.)");
-                  Output("/// </summary>");
-                  WriteConstructorComments(modelClass);
-
-                  string newToken = string.Empty;
-                  List<string> requiredParameters = GetRequiredParameters(modelClass, null, true);
-
-                  if (!AllSuperclassesAreNullOrAbstract(modelClass))
-                  {
-                     List<string> superclassRequiredParameters = GetRequiredParameters(modelClass.Superclass, null, true);
-
-                     if (!requiredParameters.Except(superclassRequiredParameters).Any())
-                        newToken = "new ";
-                  }
-
-                  List<string> requiredParameterNames = GetRequiredParameterNames(modelClass, true);
-                  Output($"public static {newToken}{modelClass.Name} Create({string.Join(", ", requiredParameters)})");
-                  Output("{");
-                  Output($"return new {modelClass.Name}({string.Join(", ", requiredParameterNames)});");
-                  Output("}");
-                  NL();
-               }
-            }
+            return constructorNote;
          }
 
-         protected void WriteConstructorComments(ModelClass modelClass)
+         protected void WriteConstructorParameterComments(List<(ModelAttribute Property, NavigationProperty Navigation)> parameters)
          {
-            foreach (ModelAttribute requiredAttribute in modelClass.AllRequiredAttributes.Where(x => (!x.IsIdentity || (x.IdentityType == IdentityType.Manual))
-                                                                                                  && !x.IsConcurrencyToken
-                                                                                                  && (x.SetterVisibility == SetterAccessModifier.Public)))
-               Output($@"/// <param name=""{requiredAttribute.Name.ToLower()}"">{string.Join(" ", GenerateCommentBody(requiredAttribute.Summary))}</param>");
-
-            foreach (NavigationProperty requiredNavigationProperty in modelClass.AllRequiredNavigationProperties()
-                                                                                .Where(np => (np.AssociationObject.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)
-                                                                                          || (np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)))
-               Output($@"/// <param name=""{requiredNavigationProperty.PropertyName.ToLower()}"">{string.Join(" ", GenerateCommentBody(requiredNavigationProperty.Summary))}</param>");
+            foreach ((ModelAttribute Property, NavigationProperty Navigation) parameter in parameters)
+            {
+               Output(parameter.Property != null
+                         ? $@"/// <param name=""{parameter.Property.Name.ToLower()}"">{string.Join(" ", GenerateCommentBody(parameter.Property.Summary))}</param>"
+                         : $@"/// <param name=""{parameter.Navigation.PropertyName.ToLower()}"">{string.Join(" ", GenerateCommentBody(parameter.Navigation.Summary))}</param>");
+            }
          }
 
-         private void WriteConstructorsWithRequiredProperties(ModelClass modelClass, List<string> remarks, IEnumerable<NavigationProperty> requiredNavigationProperties)
+         private void WriteConstructorWithRequiredProperties(ModelClass modelClass, List<string> constructorNotes, List<(ModelAttribute Property, NavigationProperty Navigation)> parameters)
          {
             string visibility = modelClass.IsAbstract
                                    ? "protected"
@@ -771,93 +810,103 @@
             Output("/// Public constructor with required data");
             Output("/// </summary>");
 
-            WriteConstructorComments(modelClass);
-            Output($"{visibility} {modelClass.Name}({string.Join(", ", GetRequiredParameters(modelClass, null, true))})");
+            WriteConstructorParameterComments(parameters);
+            Output($"{visibility} {modelClass.Name}({string.Join(", ", parameters.Select(GetParameterDeclaration))}) : this()");
             Output("{");
 
-            if (remarks.Count > 0)
+            if (constructorNotes.Count > 0)
             {
-               foreach (string remark in remarks)
+               foreach (string remark in constructorNotes)
                   Output(remark);
 
                NL();
             }
 
-            foreach (ModelAttribute requiredAttribute in modelClass.AllRequiredAttributes
-                                                                   .Where(x => (!x.IsIdentity || (x.IdentityType == IdentityType.Manual))
-                                                                            && !x.IsConcurrencyToken
-                                                                            && (x.SetterVisibility == SetterAccessModifier.Public)))
+            foreach ((ModelAttribute Property, NavigationProperty Navigation) parameter in parameters)
             {
-               if (requiredAttribute.Type == "String")
-                  Output($"if (string.IsNullOrEmpty({requiredAttribute.Name.ToLower()})) throw new ArgumentNullException(nameof({requiredAttribute.Name.ToLower()}));");
-               else if (requiredAttribute.Type.StartsWith("Geo"))
-                  Output($"if ({requiredAttribute.Name.ToLower()} == null) throw new ArgumentNullException(nameof({requiredAttribute.Name.ToLower()}));");
-
-               string lhs = requiredAttribute.AutoProperty || string.IsNullOrEmpty(requiredAttribute.BackingFieldName)
-                               ? requiredAttribute.Name
-                               : requiredAttribute.BackingFieldName;
-
-               Output($"this.{lhs} = {requiredAttribute.Name.ToLower()};");
-               NL();
-            }
-
-            foreach (ModelAttribute modelAttribute in modelClass.Attributes.Where(x => (x.SetterVisibility == SetterAccessModifier.Public)
-                                                                                    && !x.Required
-                                                                                    && !string.IsNullOrEmpty(x.InitialValue)
-                                                                                    && (x.InitialValue != "null")))
-            {
-               string quote = modelAttribute.Type == "String"
-                                 ? "\""
-                                 : modelAttribute.Type == "Char"
-                                    ? "'"
-                                    : string.Empty;
-
-               string initialValue = modelAttribute.InitialValue;
-
-               if (modelAttribute.Type == "decimal")
-                  initialValue += "m";
-
-               string lhs = modelAttribute.AutoProperty || string.IsNullOrEmpty(modelAttribute.BackingFieldName)
-                               ? modelAttribute.Name
-                               : modelAttribute.BackingFieldName;
-
-               Output(quote.Length > 0
-                         ? $"this.{lhs} = {quote}{FullyQualified(initialValue.Trim(quote[0]))}{quote};"
-                         : $"this.{lhs} = {quote}{FullyQualified(initialValue)}{quote};");
-            }
-
-            foreach (NavigationProperty requiredNavigationProperty in requiredNavigationProperties)
-            {
-               NavigationProperty otherSide = requiredNavigationProperty.OtherSide;
-               string parameterName = requiredNavigationProperty.PropertyName.ToLower();
-               Output($"if ({parameterName} == null) throw new ArgumentNullException(nameof({parameterName}));");
-
-               string targetObjectName = requiredNavigationProperty.IsAutoProperty
-                                            ? requiredNavigationProperty.PropertyName
-                                            : requiredNavigationProperty.BackingFieldName;
-
-               if (!requiredNavigationProperty.ConstructorParameterOnly)
+               if (parameter.Property != null)
                {
-                  Output(requiredNavigationProperty.IsCollection
-                            ? $"this.{targetObjectName}.Add({parameterName});"
-                            : $"this.{targetObjectName} = {parameterName};");
-               }
+                  ModelAttribute requiredProperty = parameter.Property;
 
-               if (!string.IsNullOrEmpty(otherSide.PropertyName))
+                  if ((!requiredProperty.IsIdentity || requiredProperty.IdentityType == IdentityType.Manual)
+                   && !requiredProperty.IsConcurrencyToken
+                   && requiredProperty.SetterVisibility == SetterAccessModifier.Public)
+                  {
+                     if (requiredProperty.Type == "String")
+                        Output($"if (string.IsNullOrEmpty({requiredProperty.Name.ToLower()})) throw new ArgumentNullException(nameof({requiredProperty.Name.ToLower()}));");
+                     else if (requiredProperty.Type.StartsWith("Geo"))
+                        Output($"if ({requiredProperty.Name.ToLower()} == null) throw new ArgumentNullException(nameof({requiredProperty.Name.ToLower()}));");
+
+                     string lhs = requiredProperty.AutoProperty || string.IsNullOrEmpty(requiredProperty.BackingFieldName)
+                                     ? requiredProperty.Name
+                                     : requiredProperty.BackingFieldName;
+
+                     Output($"this.{lhs} = {requiredProperty.Name.ToLower()};");
+                     NL();
+                  }
+                  else if (requiredProperty.SetterVisibility == SetterAccessModifier.Public
+                        && !requiredProperty.Required
+                        && !string.IsNullOrEmpty(requiredProperty.InitialValue)
+                        && requiredProperty.InitialValue != "null")
+                  {
+                     string quote = requiredProperty.Type == "String"
+                                       ? "\""
+                                       : requiredProperty.Type == "Char"
+                                          ? "'"
+                                          : string.Empty;
+
+                     string initialValue = requiredProperty.InitialValue;
+
+                     if (requiredProperty.Type == "decimal")
+                        initialValue += "m";
+
+                     string lhs = requiredProperty.AutoProperty || string.IsNullOrEmpty(requiredProperty.BackingFieldName)
+                                     ? requiredProperty.Name
+                                     : requiredProperty.BackingFieldName;
+
+                     Output(quote.Length > 0
+                               ? $"this.{lhs} = {quote}{FullyQualified(initialValue.Trim(quote[0]))}{quote};"
+                               : $"this.{lhs} = {quote}{FullyQualified(initialValue)}{quote};");
+                  }
+               }
+               else if (parameter.Navigation != null)
                {
-                  Output(otherSide.IsCollection
-                            ? $"{parameterName}.{otherSide.PropertyName}.Add(this);"
-                            : $"{parameterName}.{otherSide.PropertyName} = this;");
-               }
+                  NavigationProperty requiredNavigationProperty = parameter.Navigation;
+                  NavigationProperty otherSide = requiredNavigationProperty.OtherSide;
+                  string parameterName = requiredNavigationProperty.PropertyName.ToLower();
+                  Output($"if ({parameterName} == null) throw new ArgumentNullException(nameof({parameterName}));");
 
-               NL();
+                  string targetObjectName = requiredNavigationProperty.IsAutoProperty
+                                               ? requiredNavigationProperty.PropertyName
+                                               : requiredNavigationProperty.BackingFieldName;
+
+                  if (!requiredNavigationProperty.ConstructorParameterOnly)
+                  {
+                     Output(requiredNavigationProperty.IsCollection
+                               ? $"this.{targetObjectName}.Add({parameterName});"
+                               : $"this.{targetObjectName} = {parameterName};");
+                  }
+
+                  if (!string.IsNullOrEmpty(otherSide.PropertyName))
+                  {
+                     Output(otherSide.IsCollection
+                               ? $"{parameterName}.{otherSide.PropertyName}.Add(this);"
+                               : $"{parameterName}.{otherSide.PropertyName} = this;");
+                  }
+
+                  NL();
+               }
             }
 
-            WriteNavigationInitializersForConstructors(modelClass);
-
-            Output("Init();");
             Output("}");
             NL();
+         }
+
+         private string GetParameterDeclaration((ModelAttribute modelAttribute, NavigationProperty navigation) parameter)
+         {
+            return parameter.modelAttribute != null
+                      ? $"{parameter.modelAttribute.FQPrimitiveType} {parameter.modelAttribute.Name.ToLower()}"
+                      : $"{parameter.navigation.ClassType.FullName} {parameter.navigation.PropertyName.ToLower()}";
          }
 
          protected void WriteDbContextComments()

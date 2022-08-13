@@ -30,6 +30,10 @@ namespace Sandbox_EFCore5NetCore3_Test
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore5NetCore3_Test.Entity2> Entity2 { get; set; }
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore5NetCore3_Test.Entity3> Entity3 { get; set; }
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore5NetCore3_Test.Entity4> Entity4 { get; set; }
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore5NetCore3_Test.Entity5> Entity5 { get; set; }
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore5NetCore3_Test.Entity6> Entity6 { get; set; }
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore5NetCore3_Test.TestData> TestDatas { get; set; }
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore5NetCore3_Test.TestView> TestViews { get; set; }
 
       #endregion DbSets
 
@@ -38,7 +42,14 @@ namespace Sandbox_EFCore5NetCore3_Test
       /// </summary>
       public static string ConnectionString { get; set; } = @"Data Source=(localDb)\MSSqlLocalDb;Initial Catalog=EFC5Test;Integrated Security=True";
 
-      /// <inheritdoc />
+      /// <summary>
+      ///     <para>
+      ///         Initializes a new instance of the <see cref="T:Microsoft.EntityFrameworkCore.DbContext" /> class using the specified options.
+      ///         The <see cref="M:Microsoft.EntityFrameworkCore.DbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)" /> method will still be called to allow further
+      ///         configuration of the options.
+      ///     </para>
+      /// </summary>
+      /// <param name="options">The options for this context.</param>
       public Context(DbContextOptions<Context> options) : base(options)
       {
       }
@@ -56,7 +67,20 @@ namespace Sandbox_EFCore5NetCore3_Test
       partial void OnModelCreatingImpl(ModelBuilder modelBuilder);
       partial void OnModelCreatedImpl(ModelBuilder modelBuilder);
 
-      /// <inheritdoc />
+      /// <summary>
+      ///     Override this method to further configure the model that was discovered by convention from the entity types
+      ///     exposed in <see cref="T:Microsoft.EntityFrameworkCore.DbSet`1" /> properties on your derived context. The resulting model may be cached
+      ///     and re-used for subsequent instances of your derived context.
+      /// </summary>
+      /// <remarks>
+      ///     If a model is explicitly set on the options for this context (via <see cref="M:Microsoft.EntityFrameworkCore.DbContextOptionsBuilder.UseModel(Microsoft.EntityFrameworkCore.Metadata.IModel)" />)
+      ///     then this method will not be run.
+      /// </remarks>
+      /// <param name="modelBuilder">
+      ///     The builder being used to construct the model for this context. Databases (and other extensions) typically
+      ///     define extension methods on this object that allow you to configure aspects of the model that are specific
+      ///     to a given database.
+      /// </param>
       protected override void OnModelCreating(ModelBuilder modelBuilder)
       {
          base.OnModelCreating(modelBuilder);
@@ -68,23 +92,46 @@ namespace Sandbox_EFCore5NetCore3_Test
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.AnEntity>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.AnEntity>().Property(t => t.Property1).HasDefaultValue(0);
 
-         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity1>().ToTable("Entity1", t => t.ExcludeFromMigrations()).HasKey(t => t.Id);
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity1>().ToTable("Entity1", t => { t.ExcludeFromMigrations(); }).HasKey(t => t.Id);
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity1>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity1>().Property(t => t.Property1).HasDefaultValue(1);
-         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity1>().HasMany<global::Sandbox_EFCore5NetCore3_Test.Entity2>(p => p.Entity2).WithOne(p => p.Entity1).HasForeignKey("Entity1Id");
-         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity2>().Navigation(e => e.Entity1).IsRequired();
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity1>().HasMany<global::Sandbox_EFCore5NetCore3_Test.Entity2>(p => p.Entity2).WithOne(p => p.Entity1).HasForeignKey(k => k.FKto1).IsRequired();
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity2>().Navigation(e => e.Entity1).AutoInclude();
 
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity2>().ToTable("Entity2").HasKey(t => t.Id);
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity2>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity2>().Property(t => t.Property1).IsRequired();
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity2>().Property(t => t.FKto6).IsRequired();
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity2>().HasIndex(t => t.FKto6);
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity2>().Property(t => t.FKto1).IsRequired();
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity2>().HasIndex(t => t.FKto1);
 
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity3>().ToTable("Entity3").HasKey(t => t.Id);
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity3>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity3>().Property(t => t.TheFK).IsRequired();
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity3>().HasIndex(t => t.TheFK);
 
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity4>().ToTable("Entity4").HasKey(t => t.Id);
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity4>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
-         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity4>().HasMany<global::Sandbox_EFCore5NetCore3_Test.Entity3>(p => p.Entity3).WithOne().HasForeignKey("Entity4Entity3Id");
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity4>().HasMany<global::Sandbox_EFCore5NetCore3_Test.Entity3>(p => p.Entity3).WithOne().HasForeignKey(k => k.TheFK).IsRequired();
+
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity5>().ToTable("Entity5").HasKey(t => t.Id);
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity5>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity5>().HasMany<global::Sandbox_EFCore5NetCore3_Test.Entity6>(p => p.Entity6).WithOne(p => p.Entity5).HasForeignKey(k => k.TheFK);
+
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity6>().ToTable("Entity6").HasKey(t => t.Id);
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity6>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity6>().HasIndex(t => t.TheFK);
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity6>().HasMany<global::Sandbox_EFCore5NetCore3_Test.Entity2>(p => p.Entity2).WithOne(p => p.Entity6).HasForeignKey(k => k.FKto6).IsRequired();
+
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.TestData>().ToTable("TestDatas").HasKey(t => t.Id);
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.TestData>().Property(t => t.TestString).HasMaxLength(200).IsRequired();
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.TestData>().HasIndex(t => t.TestString).IsUnique();
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.TestData>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
+
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.TestView>().ToView("TestView");
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.TestView>().Property(t => t.TestString).HasMaxLength(200).IsRequired();
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.TestView>().HasIndex(t => t.TestString).IsUnique();
 
          OnModelCreatedImpl(modelBuilder);
       }
