@@ -86,24 +86,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk" Version="17.0.31902.203" />
-    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Diagrams" Version="17.0.31902.203" />
+    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk" Version="17.3.32803.143" />
+    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Diagrams" Version="17.3.32803.143" />
     <PackageReference Include="Microsoft.VisualStudio.RpcContracts">
-      <Version>17.2.31</Version>
+      <Version>17.3.19</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
-      <Version>17.0.31902.203</Version>
+      <Version>17.3.32804.24</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
-      <Version>17.0.31902.203</Version>
+      <Version>17.3.32804.24</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.TemplateWizardInterface">
-      <Version>17.0.31902.203</Version>
+      <Version>17.3.32804.24</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.TextTemplating" Version="17.0.31902.203" />
-    <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Interfaces.10.0" Version="17.0.31902.203" />
-    <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Interfaces.11.0" Version="17.0.31902.203" />
-    <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Modeling" Version="17.0.31902.203" />
+    <PackageReference Include="Microsoft.VisualStudio.TextTemplating" Version="17.3.32803.143" />
+    <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Interfaces.10.0" Version="17.0.32112.339" />
+    <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Interfaces.11.0" Version="17.0.32112.339" />
+    <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Modeling" Version="17.3.32804.24" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Utilities\ParsingModels\AssociationRole.cs">
@@ -619,7 +619,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Shell" Version="17.0.31902.203" />
+    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Shell" Version="17.3.32804.24" />
     <PackageReference Include="DataConnectionDialog">
       <Version>1.2.0</Version>
     </PackageReference>
@@ -632,10 +632,10 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.TextTemplating.VSHost">
-      <Version>17.0.31902.203</Version>
+      <Version>17.3.32804.24</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Threading">
-      <Version>17.2.32</Version>
+      <Version>17.3.44</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
@@ -653,7 +653,7 @@
       <Version>1.1.14</Version>
     </PackageReference>
     <PackageReference Include="StreamJsonRpc">
-      <Version>2.11.35</Version>
+      <Version>2.12.27</Version>
     </PackageReference>
     <PackageReference Include="System.AppContext">
       <Version>4.3.0</Version>
