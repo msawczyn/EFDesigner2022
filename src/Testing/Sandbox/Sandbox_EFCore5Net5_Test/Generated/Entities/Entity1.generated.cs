@@ -33,7 +33,6 @@ namespace Sandbox_EFCore5NetCore3_Test
       /// </summary>
       public Entity1()
       {
-         Property1 = 1;
          Entity2 = new System.Collections.Generic.HashSet<global::Sandbox_EFCore5NetCore3_Test.Entity2>();
 
          Init();
@@ -52,9 +51,6 @@ namespace Sandbox_EFCore5NetCore3_Test
       [System.ComponentModel.Description("Unique identifier")]
       public long Id { get; set; }
 
-      /// <summary>
-      /// Default value = 1
-      /// </summary>
       public decimal? Property1 { get; set; }
 
       /*************************************************************************

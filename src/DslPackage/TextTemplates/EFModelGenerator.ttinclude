@@ -22,7 +22,7 @@
 #><#@ import namespace="System.Data.Entity.Design.PluralizationServices"
 #><#@ import namespace="Microsoft.VisualStudio.TextTemplating"
 #><#+
-      // EFDesigner v4.2.0.4
+      // EFDesigner v4.2.0.5
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -452,30 +452,30 @@
             {
                if (resultBase.Any())
                   result.Add(resultBase);
-
-               return result;
             }
-
-            int permutationCount = (int)Math.Pow(2, navigationProperties.Length);
-
-            for (int i = 0; i < permutationCount; ++i)
+            else
             {
-               List<(ModelAttribute Property, NavigationProperty Navigation)> permutation =
-                  new List<(ModelAttribute Property, NavigationProperty Navigation)>(resultBase);
+               int permutationCount = (int)Math.Pow(2, navigationProperties.Length);
 
-               for (int j = 0; j < navigationProperties.Length; j++)
+               for (int i = 0; i < permutationCount; ++i)
                {
-                  if ((i & (int)Math.Pow(2, j)) > 0)
-                     permutation.Add((null, navigationProperties[j]));
-                  else
-                     permutation.Add((modelAttributes.FirstOrDefault(a => a.IsForeignKeyFor == navigationProperties[j].AssociationObject.Id), null));
-               }
+                  List<(ModelAttribute Property, NavigationProperty Navigation)> permutation =
+                     new List<(ModelAttribute Property, NavigationProperty Navigation)>(resultBase);
 
-               permutation.RemoveAll(x => x.Property == null && x.Navigation == null);
-               result.Add(permutation);
+                  for (int j = 0; j < navigationProperties.Length; j++)
+                  {
+                     if ((i & (int)Math.Pow(2, j)) > 0)
+                        permutation.Add((null, navigationProperties[j]));
+                     else
+                        permutation.Add((modelAttributes.FirstOrDefault(a => a.IsForeignKeyFor == navigationProperties[j].AssociationObject.Id), null));
+                  }
+
+                  permutation.RemoveAll(x => x.Property == null && x.Navigation == null);
+                  result.Add(permutation);
+               }
             }
 
-            return result;
+            return result.Where(x => x.Any()).ToList();
          }
 
          /// <summary>Gets the local required properties for the ModelClass in formal parameter format</summary>
@@ -665,42 +665,44 @@
 
             List<List<(ModelAttribute Property, NavigationProperty Navigation)>> requiredParametersMix = GetAllRequiredParametersMix(modelClass, false, true);
 
-            foreach (List<(ModelAttribute Property, NavigationProperty Navigation)> parameters in requiredParametersMix)
-               WriteConstructorWithRequiredProperties(modelClass, GetConstructorNote(modelClass), parameters);
-
-            if (!modelClass.IsAbstract)
+            if (requiredParametersMix.Any())
             {
                foreach (List<(ModelAttribute Property, NavigationProperty Navigation)> parameters in requiredParametersMix)
+                  WriteConstructorWithRequiredProperties(modelClass, GetConstructorNote(modelClass), parameters);
+
+               if (!modelClass.IsAbstract)
                {
-                  Output("/// <summary>");
-                  Output("/// Static create function (for use in LINQ queries, etc.)");
-                  Output("/// </summary>");
-                  WriteConstructorParameterComments(parameters);
+                  foreach (List<(ModelAttribute Property, NavigationProperty Navigation)> parameters in requiredParametersMix)
+                  {
+                     Output("/// <summary>");
+                     Output("/// Static create function (for use in LINQ queries, etc.)");
+                     Output("/// </summary>");
+                     WriteConstructorParameterComments(parameters);
 
-                  List<string> parameterDeclarations = parameters.Select(GetParameterDeclaration).ToList();
+                     List<string> parameterDeclarations = parameters.Select(GetParameterDeclaration).ToList();
 
-                  //string newToken = string.Empty;
-                  //if (!AllSuperclassesAreNullOrAbstract(modelClass))
-                  //{
-                  //   List<string> superclassRequiredParameters = GetAllRequiredParameters(modelClass.Superclass, null, true);
+                     //string newToken = string.Empty;
+                     //if (!AllSuperclassesAreNullOrAbstract(modelClass))
+                     //{
+                     //   List<string> superclassRequiredParameters = GetAllRequiredParameters(modelClass.Superclass, null, true);
 
-                  //   if (!requiredParameters.Except(superclassRequiredParameters).Any())
-                  //      newToken = "new ";
-                  //}
+                     //   if (!requiredParameters.Except(superclassRequiredParameters).Any())
+                     //      newToken = "new ";
+                     //}
 
-                  List<string> parameterNames = parameters.Select(p => p.Property != null
-                                                                          ? p.Property.Name.ToLowerInvariant()
-                                                                          : p.Navigation.PropertyName.ToLowerInvariant())
-                                                          .ToList();
+                     List<string> parameterNames = parameters.Select(p => p.Property != null
+                                                                             ? p.Property.Name.ToLowerInvariant()
+                                                                             : p.Navigation.PropertyName.ToLowerInvariant())
+                                                             .ToList();
 
-                  Output($"public static {modelClass.Name} Create({string.Join(", ", parameterDeclarations)})");
-                  Output("{");
-                  Output($"return new {modelClass.Name}({string.Join(", ", parameterNames)});");
-                  Output("}");
-                  NL();
+                     Output($"public static {modelClass.Name} Create({string.Join(", ", parameterDeclarations)})");
+                     Output("{");
+                     Output($"return new {modelClass.Name}({string.Join(", ", parameterNames)});");
+                     Output("}");
+                     NL();
+                  }
                }
-            }
-         }
+            }         }
 
          private void WriteDefaultConstructor(ModelClass modelClass)
          {

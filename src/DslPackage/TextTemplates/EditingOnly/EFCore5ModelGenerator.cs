@@ -13,7 +13,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
 #region Template
 
-      // EFDesigner v4.2.0.4
+      // EFDesigner v4.2.0.5
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -147,6 +147,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                segments.Add($"HasKey(t => t.{identityAttributes[0].Name})");
             else if (identityAttributes.Count > 1)
                segments.Add($"HasKey(t => new {{ t.{string.Join(", t.", identityAttributes.Select(ia => ia.Name))} }})");
+            else
+               segments.Add("HasNoKey()");
          }
 
          [SuppressMessage("ReSharper", "RedundantNameQualifier")]
@@ -299,7 +301,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                if (buffer.Any())
                   Output($"j.Property(t => t.{modelAttribute.Name}).{string.Join(".", buffer)};");
 
-               if (modelAttribute.Indexed)
+               if (modelAttribute.Indexed && !modelClass.IsDatabaseView)
                {
                   buffer.Clear();
                   buffer.Add($"HasIndex(t => t.{modelAttribute.Name})");

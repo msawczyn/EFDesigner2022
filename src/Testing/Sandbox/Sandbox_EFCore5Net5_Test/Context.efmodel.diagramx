@@ -55,16 +55,16 @@
         <classShapeMoniker Id="bfc9f79f-04c2-4415-8c4d-ef8aa5a7f23d" />
       </nodes>
     </unidirectionalConnector>
-    <classShape Id="a3bbd8af-86c6-44ea-8961-453c9dc310ec" isExpanded="false" absoluteBounds="10.593749732710421, 0.51041656360030174, 1.5, 0.3" fillColor="0, 122, 204" textColor="White" outlineColor="Black" outlineDashStyle="Solid" outlineThickness="0.01">
+    <classShape Id="a3bbd8af-86c6-44ea-8961-453c9dc310ec" absoluteBounds="5.7812495892867446, 3.8229166623204947, 1.5, 1.5627718098958328" fillColor="0, 122, 204" textColor="White" outlineColor="Black" outlineDashStyle="Solid" outlineThickness="0.01">
       <modelClassMoniker Id="d85d4db6-d30b-4717-b7ec-438cef5e7fa6" />
       <relativeChildShapes />
       <nestedChildShapes>
-        <elementListCompartment Id="5d71abea-d6c1-4ab8-a905-e08417d056c0" absoluteBounds="10.608749732710422, 0.82041656360030135, 1.4700000000000002, 0.63399251302083326" name="AttributesCompartment" titleTextColor="Black" itemTextColor="Black" />
-        <elementListCompartment Id="a1b9a776-bbec-4c87-82af-938b3ede3279" absoluteBounds="10.608749732710422, 1.4644090766211351, 1.4700000000000002, 0.2493896484375" name="AssociationsCompartment" titleTextColor="Black" itemTextColor="Black" />
-        <elementListCompartment Id="901a7ddd-8ede-40f6-98b7-5c83b6cd5055" absoluteBounds="10.608749732710422, 1.7237987250586349, 1.4700000000000002, 0.2493896484375" name="SourcesCompartment" titleTextColor="Black" itemTextColor="Black" />
+        <elementListCompartment Id="5d71abea-d6c1-4ab8-a905-e08417d056c0" absoluteBounds="5.7962495892867452, 4.1329166623204943, 1.4700000000000002, 0.63399251302083326" name="AttributesCompartment" titleTextColor="Black" itemTextColor="Black" />
+        <elementListCompartment Id="a1b9a776-bbec-4c87-82af-938b3ede3279" absoluteBounds="5.7962495892867452, 4.776909175341328, 1.4700000000000002, 0.2493896484375" name="AssociationsCompartment" titleTextColor="Black" itemTextColor="Black" />
+        <elementListCompartment Id="901a7ddd-8ede-40f6-98b7-5c83b6cd5055" absoluteBounds="5.7962495892867452, 5.0362988237788278, 1.4700000000000002, 0.2493896484375" name="SourcesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <classShape Id="31726cf9-bb69-4428-b525-221b483315f6" isExpanded="false" absoluteBounds="8.6145835155621171, 0.97916668094694614, 1.5, 0.3" fillColor="0, 122, 204" textColor="White" outlineColor="Black" outlineDashStyle="Solid" outlineThickness="0.01">
+    <classShape Id="31726cf9-bb69-4428-b525-221b483315f6" absoluteBounds="8.6145835155621171, 0.97916668094694614, 1.5, 1.3704703776041667" fillColor="0, 122, 204" textColor="White" outlineColor="Black" outlineDashStyle="Solid" outlineThickness="0.01">
       <modelClassMoniker Id="89a5662d-5004-4bbc-916c-008c041f711c" />
       <relativeChildShapes />
       <nestedChildShapes>
@@ -73,7 +73,7 @@
         <elementListCompartment Id="f12b67e2-1c48-4586-9195-cd4a6c03083a" absoluteBounds="8.6295835155621177, 2.0002474101136127, 1.4700000000000002, 0.2493896484375" name="SourcesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <classShape Id="1929b191-d9fa-4c51-94af-4709b1f097b5" isExpanded="false" absoluteBounds="10.614583515562117, 0.97916668094694614, 1.5, 0.3" fillColor="0, 122, 204" textColor="White" outlineColor="Black" outlineDashStyle="Solid" outlineThickness="0.01">
+    <classShape Id="1929b191-d9fa-4c51-94af-4709b1f097b5" absoluteBounds="10.614583515562117, 0.97916668094694614, 1.5, 1.5627718098958332" fillColor="0, 122, 204" textColor="White" outlineColor="Black" outlineDashStyle="Solid" outlineThickness="0.01">
       <modelClassMoniker Id="83ef0e13-a54b-499b-bb18-dd6db5f43875" />
       <relativeChildShapes />
       <nestedChildShapes>

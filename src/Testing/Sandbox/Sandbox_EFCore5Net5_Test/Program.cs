@@ -32,7 +32,8 @@ namespace Sandbox_EFCore5NetCore3_Test
          using (Context context = new Context())
          {
             Entity1 e1 = new Entity1();
-            Entity2[] e2 = new[] { new Entity2(1, e1), new Entity2(2, e1), new Entity2(3, e1) };
+            Entity6 e6 = new Entity6();
+            Entity2[] e2 = new[] { new Entity2(1, e1, e6), new Entity2(2, e1, e6), new Entity2(3, e1, e6) };
 
             context.Entity1.Add(e1);
             //context.Entity2.AddRange(e2);
