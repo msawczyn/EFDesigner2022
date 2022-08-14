@@ -12,7 +12,7 @@ using log4net.Repository;
 
 using Microsoft.Extensions.DependencyModel;
 
-namespace EFCore6Parser
+namespace EFCore7Parser
 {
    internal class Program
    {
@@ -203,7 +203,7 @@ namespace EFCore6Parser
 
       private static Assembly TryLoadFrom(string inputPath)
       {
-         AssemblyLoadContext context = new AssemblyLoadContext("EFCore6Parser");
+         AssemblyLoadContext context = new AssemblyLoadContext("EFCore7Parser");
          context.Resolving += Context_Resolving;
 
          try

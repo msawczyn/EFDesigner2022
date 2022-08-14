@@ -44,7 +44,6 @@ Change line 5, which reads
 to be
 ```
 #><#@ assembly name="Microsoft.VisualStudio.Interop"
-
 ```
 That's it. Of course, if you customized any of the standard templates, you'll have to go through the customizations the same way you've always done and 
 bump your changes up against the new templates. Not much has changed that didn't absolutely _need_ to be changed due to the VS2022 differences, but there

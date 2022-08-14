@@ -90,11 +90,9 @@ namespace Sandbox_EFCore5NetCore3_Test
 
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.AnEntity>().ToTable("AnEntities").HasKey(t => t.Id);
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.AnEntity>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
-         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.AnEntity>().Property(t => t.Property1).HasDefaultValue(0);
 
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity1>().ToTable("Entity1", t => { t.ExcludeFromMigrations(); }).HasKey(t => t.Id);
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity1>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
-         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity1>().Property(t => t.Property1).HasDefaultValue(1);
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity1>().HasMany<global::Sandbox_EFCore5NetCore3_Test.Entity2>(p => p.Entity2).WithOne(p => p.Entity1).HasForeignKey(k => k.FKto1).IsRequired();
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.Entity2>().Navigation(e => e.Entity1).AutoInclude();
 

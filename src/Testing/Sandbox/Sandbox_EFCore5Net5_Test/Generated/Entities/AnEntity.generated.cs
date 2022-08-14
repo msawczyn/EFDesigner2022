@@ -33,8 +33,6 @@ namespace Sandbox_EFCore5NetCore3_Test
       /// </summary>
       public AnEntity()
       {
-         Property1 = 0;
-
          Init();
       }
 
@@ -51,9 +49,6 @@ namespace Sandbox_EFCore5NetCore3_Test
       [System.ComponentModel.Description("Unique identifier")]
       public long Id { get; set; }
 
-      /// <summary>
-      /// Default value = 0
-      /// </summary>
       public decimal? Property1 { get; set; }
 
    }
