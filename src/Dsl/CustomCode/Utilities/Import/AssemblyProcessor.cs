@@ -39,7 +39,15 @@ namespace Sawczyn.EFDesigner.EFModel
             string logFilename = Path.ChangeExtension(outputFilename, "log");
             StatusDisplay.Show("Detecting .NET and EF versions");
 
-            string[] parsers = {@"Parsers\EF6Parser.exe", @"Parsers\EFCore2Parser.exe", @"Parsers\EFCore3Parser.exe", @"Parsers\EFCore5Parser.exe", @"Parsers\EFCore6Parser.exe"};
+            string[] parsers =
+            {
+               @"Parsers\EF6Parser.exe", 
+               @"Parsers\EFCore2Parser.exe", 
+               @"Parsers\EFCore3Parser.exe", 
+               @"Parsers\EFCore5Parser.exe", 
+               @"Parsers\EFCore6Parser.exe", 
+               @"Parsers\EFCore7Parser.exe"
+            };
 
             Dictionary<string, bool> contexts = new Dictionary<string, bool>();
 

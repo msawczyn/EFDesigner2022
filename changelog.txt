@@ -1,3 +1,7 @@
+4.3.0 (next version)
+   - Added support for EFCore7
+   - Added ability to import EFCore7 assemblies
+
 4.2.0
    - Added ability to import EFCore6 assemblies
    - Added database default values to properties (see https://github.com/msawczyn/EFDesigner2022/issues/15)

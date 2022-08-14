@@ -33,7 +33,7 @@ namespace EFCore6Parser
                                     {
                                        $"Usage: {typeof(Program).Assembly.GetName().Name} InputFileName OutputFileName [FullyQualifiedClassName]",
                                        "where",
-                                       "   (required) InputFileName           - path of assembly containing EF6 DbContext to parse",
+                                       "   (required) InputFileName           - path of assembly containing EFcore6 DbContext to parse",
                                        "   (required) OutputFileName          - path to create JSON file of results",
                                        "   (optional) FullyQualifiedClassName - fully-qualified name of DbContext class to process, if more than one available.",
                                        "                                        DbContext class must have a constructor that accepts one parameter of type DbContextOptions<>",
@@ -63,25 +63,23 @@ namespace EFCore6Parser
             return context.LoadFromAssemblyName(new AssemblyName(library.Name));
 
          // try known directories
-         if (File.Exists(Path.Combine(AppContext.BaseDirectory, $"{assemblyName.Name}.dll")))
-            return context.LoadFromAssemblyPath(Path.Combine(AppContext.BaseDirectory, $"{assemblyName.Name}.dll"));
 
-         string found = context.Assemblies
-                               .Select(x => Path.Combine(Path.GetDirectoryName(x.Location), $"{x.GetName()}.dll"))
-                               .Distinct()
-                               .FirstOrDefault(File.Exists);
+         string pathInAppDirectory = Path.Combine(AppContext.BaseDirectory, $"{assemblyName.Name}.dll");
 
-         if (found != null)
-            return context.LoadFromAssemblyPath(found);
+         if (File.Exists(pathInAppDirectory))
+            return context.LoadFromAssemblyPath(pathInAppDirectory);
 
          // try the current directory
          string pathInCurrentDirectory = Path.Combine(Directory.GetCurrentDirectory(), $"{assemblyName.Name}.dll");
 
          if (File.Exists(pathInCurrentDirectory))
-            return context.LoadFromAssemblyPath(found);
+            return context.LoadFromAssemblyPath(pathInCurrentDirectory);
 
          // try gac
-         found = Directory.GetFileSystemEntries(Environment.ExpandEnvironmentVariables("%windir%\\Microsoft.NET\\assembly"), $"{assemblyName.Name}.dll", SearchOption.AllDirectories).FirstOrDefault();
+         string found = Directory.GetFileSystemEntries(Environment.ExpandEnvironmentVariables("%windir%\\Microsoft.NET\\assembly"), 
+                                                       $"{assemblyName.Name}.dll", 
+                                                       SearchOption.AllDirectories)
+                                 .FirstOrDefault();
 
          return found == null
                    ? null

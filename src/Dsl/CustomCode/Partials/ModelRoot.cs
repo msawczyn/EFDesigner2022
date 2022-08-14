@@ -79,7 +79,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
-            return (EntityFrameworkVersion == EFVersion.EFCore) && (GetEntityFrameworkPackageVersionNum() >= 5);
+            return EntityFrameworkVersion == EFVersion.EFCore && (EntityFrameworkPackageVersion == "Latest" || GetEntityFrameworkPackageVersionNum() >= 5);
          }
       }
 
@@ -90,7 +90,18 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
-            return (EntityFrameworkVersion == EFVersion.EFCore) && ((EntityFrameworkPackageVersion == "Latest") || (GetEntityFrameworkPackageVersionNum() >= 6));
+            return EntityFrameworkVersion == EFVersion.EFCore && (EntityFrameworkPackageVersion == "Latest" || GetEntityFrameworkPackageVersionNum() >= 6);
+         }
+      }
+
+      /// <summary>
+      ///    True if the model is EFCore and the Entity Framework version is >= 7
+      /// </summary>
+      public bool IsEFCore7Plus
+      {
+         get
+         {
+            return EntityFrameworkVersion == EFVersion.EFCore && (EntityFrameworkPackageVersion == "Latest" || GetEntityFrameworkPackageVersionNum() >= 7);
          }
       }
 
