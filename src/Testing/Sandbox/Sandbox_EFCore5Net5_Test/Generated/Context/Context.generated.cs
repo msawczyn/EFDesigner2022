@@ -127,7 +127,7 @@ namespace Sandbox_EFCore5NetCore3_Test
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.TestData>().HasIndex(t => t.TestString).IsUnique();
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.TestData>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
 
-         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.TestView>().ToView("TestView");
+         modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.TestView>().ToView("TestView").HasNoKey();
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.TestView>().Property(t => t.TestString).HasMaxLength(200).IsRequired();
          modelBuilder.Entity<global::Sandbox_EFCore5NetCore3_Test.TestView>().HasIndex(t => t.TestString).IsUnique();
 
