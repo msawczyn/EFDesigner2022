@@ -30,11 +30,11 @@
    </ItemGroup>
 
    <ItemGroup>
-      <PackageReference Include="log4net" Version="2.0.13" />
+      <PackageReference Include="log4net" Version="2.0.15" />
       <PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="6.0.0" />
-      <PackageReference Include="Microsoft.VisualStudio.RpcContracts" Version="17.2.31" />
-      <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.2.32" />
+      <PackageReference Include="Microsoft.VisualStudio.RpcContracts" Version="17.3.19" />
+      <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.3.44" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.6" />
@@ -43,7 +43,7 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.6" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.6" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.6" />
-      <PackageReference Include="StreamJsonRpc" Version="2.11.35" />
+      <PackageReference Include="StreamJsonRpc" Version="2.12.27" />
       <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
    </ItemGroup>
 
