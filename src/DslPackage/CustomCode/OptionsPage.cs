@@ -7,29 +7,32 @@ using Microsoft.VisualStudio.Shell;
 
 namespace Sawczyn.EFDesigner.EFModel.DslPackage
 {
-   public class OptionsEventArgs : EventArgs
-   {
-      public OptionsEventArgs(string option, object oldValue, object newValue)
-      {
-         Option = option;
-         OldValue = oldValue;
-         NewValue = newValue;
-      }
-
-      public string Option { get; }
-      public object OldValue { get; }
-      public object NewValue { get; }
-   }
-
    public class OptionsPage : DialogPage
    {
       private string dotExePath;
-
       private bool saveDiagramsCompressed;
+      private bool restrictPropertyTypes = true;
+
+      [Category("Designer")]
+      [DisplayName("Restrict property types")]
+      [Description("If true, restrict property types to built-in types or types defined in the model. If false, any type can be used but there will be no validation that it will work.")]
+      public bool RestrictPropertyTypes
+      {
+         get
+         {
+            return restrictPropertyTypes;
+         }
+         set
+         {
+            OptionsEventArgs args = new OptionsEventArgs("RestrictPorpertyTypes", restrictPropertyTypes, value);
+            restrictPropertyTypes = value;
+            OnOptionsChanged(args);
+         }
+      }
 
       [Category("Display")]
       [DisplayName("GraphViz dot.exe path")]
-      [Description("Path to the GraphViz dot.exe file, if present")]
+      [Description("Path to the GraphViz dot.exe file (including 'dot.exe'), if present")]
       [Editor(typeof(FileNameEditor), typeof(UITypeEditor))]
       public string DotExePath
       {
@@ -68,5 +71,19 @@ namespace Sawczyn.EFDesigner.EFModel.DslPackage
       }
 
       public event EventHandler<OptionsEventArgs> OptionChanged;
+   }
+
+   public class OptionsEventArgs : EventArgs
+   {
+      public OptionsEventArgs(string option, object oldValue, object newValue)
+      {
+         Option = option;
+         OldValue = oldValue;
+         NewValue = newValue;
+      }
+
+      public string Option { get; }
+      public object OldValue { get; }
+      public object NewValue { get; }
    }
 }

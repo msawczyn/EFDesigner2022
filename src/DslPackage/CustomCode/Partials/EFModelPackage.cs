@@ -29,6 +29,8 @@ namespace Sawczyn.EFDesigner.EFModel
       protected override Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
       {
          Instance = this;
+         ModelRoot.LimitModelAttributeTypeChoices = Options.RestrictPropertyTypes;
+
          TypeDescriptor.AddProvider(new ModelClassTypeDescriptionProvider(), typeof(ModelClass));
          TypeDescriptor.AddProvider(new ModelEnumTypeDescriptionProvider(), typeof(ModelEnum));
          TypeDescriptor.AddProvider(new AssociationTypeDescriptionProvider(), typeof(Association));
