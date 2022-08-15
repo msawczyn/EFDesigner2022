@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 
 using Microsoft.VisualStudio.Modeling;
@@ -11,6 +13,16 @@ namespace Sawczyn.EFDesigner.EFModel
    /// <inheritdoc />
    public class AttributeTypeTypeConverter : TypeConverterBase
    {
+      public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+      {
+         return (sourceType == typeof(string)) || base.CanConvertFrom(context, sourceType);
+      }
+
+      public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+      {
+         return value?.ToString();
+      }
+
       /// <summary>
       ///    Returns a collection of standard values for the data type this type converter is designed for when provided
       ///    with a format context.
@@ -46,6 +58,12 @@ namespace Sawczyn.EFDesigner.EFModel
                values = new List<string>(modelRoot.ValidTypes);
                values.AddRange(store.ElementDirectory.FindElements<ModelEnum>().OrderBy(e => e.Name).Select(e => e.Name));
             }
+
+            values.AddRange(store.ElementDirectory.AllElements
+                                 .OfType<ModelAttribute>()
+                                 .Select(x => x.Type)
+                                 .Where(x => !values.Contains(x))
+                                 .OrderBy(x => x));
          }
 
          return new StandardValuesCollection(values);
@@ -64,7 +82,7 @@ namespace Sawczyn.EFDesigner.EFModel
       /// </returns>
       public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
       {
-         return false;
+         return ModelRoot.LimitModelAttributeTypeChoices;
       }
 
       /// <summary>

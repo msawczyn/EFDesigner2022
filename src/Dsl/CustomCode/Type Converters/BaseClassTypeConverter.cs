@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 
 using Microsoft.VisualStudio.Modeling;
@@ -9,6 +10,16 @@ namespace Sawczyn.EFDesigner.EFModel
 {
    public class BaseClassTypeConverter : TypeConverterBase
    {
+      public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+      {
+         return (sourceType == typeof(string)) || base.CanConvertFrom(context, sourceType);
+      }
+
+      public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+      {
+         return value?.ToString();
+      }
+
       public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
       {
          Store store = GetStore(context.Instance);

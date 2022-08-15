@@ -117,7 +117,8 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                    {
                                                                       new DisplayNameAttribute("Collection Class"),
                                                                       new DescriptionAttribute("Type of collections generated. Overrides the default collection class for the model"),
-                                                                      new CategoryAttribute("Code Generation")
+                                                                      new CategoryAttribute("Code Generation"),
+                                                                      new TypeConverterAttribute(typeof(CollectionTypeTypeConverter))
                                                                    }));
 
             if (association.TargetMultiplicity == Multiplicity.One || association.TargetMultiplicity == Multiplicity.ZeroOne)

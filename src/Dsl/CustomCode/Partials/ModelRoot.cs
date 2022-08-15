@@ -13,8 +13,6 @@ using Microsoft.VisualStudio.Modeling.Validation;
 using Sawczyn.EFDesigner.EFModel.Annotations;
 using Sawczyn.EFDesigner.EFModel.Extensions;
 
-#pragma warning disable 1591
-
 namespace Sawczyn.EFDesigner.EFModel
 {
    [ValidationState(ValidationState.Enabled)]
@@ -26,6 +24,8 @@ namespace Sawczyn.EFDesigner.EFModel
       public static readonly PluralizationService PluralizationService;
 
       internal static bool BatchUpdating = false;
+
+      public static bool LimitModelAttributeTypeChoices { get; set; }
 
       static ModelRoot()
       {
