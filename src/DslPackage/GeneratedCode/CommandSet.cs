@@ -243,7 +243,7 @@ namespace Sawczyn.EFDesigner.EFModel
          get
          {
             EFModelExplorerToolWindow explorerWindow = null;
-            DslShell::ModelingPackage package = this.ServiceProvider.GetService(typeof(VSShell::Package)) as DslShell::ModelingPackage;
+            DslShell::AsyncModelingPackage package = this.ServiceProvider.GetService(typeof(VSShell::Package)) as DslShell::AsyncModelingPackage;
 
             if (package != null)
             {

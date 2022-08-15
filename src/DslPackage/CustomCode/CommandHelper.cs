@@ -17,13 +17,14 @@ namespace Sawczyn.EFDesigner.EFModel
 {
    // NOTE: This could go into the existing partial file if desired.  Might be more tidy and keep it all in one place.
    // Uncomment the following line if the extension is converted to an async package.
-   //[ProvideAutoLoad(EFModelCommandSet.guidEFModelUIContextGuidString, PackageAutoLoadFlags.BackgroundLoad)]
+   [ProvideAutoLoad(EFModelCommandSet.guidEFModelUIContextGuidString, PackageAutoLoadFlags.BackgroundLoad)]
    [ProvideUIContextRule(EFModelCommandSet.guidEFModelUIContextGuidString,
                          "EFModel auto load",
                          "EFModel",
                          new[] {"EFModel"},
                          new[] {"HierSingleSelectionName:.efmodel$"})]
-   internal sealed partial class EFModelPackage { }
+
+   //internal sealed partial class EFModelPackage { }
 
    public static class CommandHelper
    {
