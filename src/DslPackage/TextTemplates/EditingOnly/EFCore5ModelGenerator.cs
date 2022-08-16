@@ -13,7 +13,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.3.0.1
+      // EFDesigner v4.2.1.3
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -215,6 +215,15 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
              && modelAttribute.Type == "String")
                segments.Add($"UseCollation(\"{modelAttribute.DatabaseCollation.Trim('"')}\")");
 
+            if (modelRoot.IsEFCore6Plus
+             && (modelAttribute.Type == "decimal" || modelAttribute.Type == "Decimal")
+             && !string.IsNullOrEmpty(modelAttribute.TypePrecision))
+            {
+               segments.Add(!string.IsNullOrEmpty(modelAttribute.TypeScale)
+                               ? $"HasPrecision({modelAttribute.TypePrecision}, {modelAttribute.TypeScale})"
+                               : $"HasPrecision({modelAttribute.TypePrecision})");
+            }
+
             int index = segments.IndexOf("IsRequired()");
 
             if (index >= 0)
@@ -238,6 +247,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             BidirectionalAssociation associationToTarget =
                (BidirectionalAssociation)associationClass.AllNavigationProperties().First(n => n.AssociationObject.Source == association.Target).AssociationObject;
 
+            // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
             if (modelClass.ModelRoot.ChopMethodChains)
                PushIndent("            ");
             else

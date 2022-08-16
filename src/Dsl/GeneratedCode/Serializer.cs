@@ -5196,6 +5196,40 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
+	      // TypePrecision
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribTypePrecision = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "typePrecision");
+	         if (attribTypePrecision != null)
+	         {
+	            global::System.String valueOfTypePrecision;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.String>(serializationContext, attribTypePrecision, out valueOfTypePrecision))
+	            {
+	               instanceOfModelAttribute.TypePrecision = valueOfTypePrecision;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "typePrecision", typeof(global::System.String), attribTypePrecision);
+	            }
+	         }
+	      }
+	      // TypeScale
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribTypeScale = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "typeScale");
+	         if (attribTypeScale != null)
+	         {
+	            global::System.String valueOfTypeScale;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.String>(serializationContext, attribTypeScale, out valueOfTypeScale))
+	            {
+	               instanceOfModelAttribute.TypeScale = valueOfTypeScale;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "typeScale", typeof(global::System.String), attribTypeScale);
+	            }
+	         }
+	      }
 	   }
 	
 	   /// <summary>
@@ -6061,6 +6095,28 @@ namespace Sawczyn.EFDesigner.EFModel
 	         {
 	            if (!string.IsNullOrEmpty(propValue))
 	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "databaseDefaultValue", propValue);
+	
+	         }
+	      }
+	      // TypePrecision
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.String propValue = instanceOfModelAttribute.TypePrecision;
+	         if (!serializationContext.Result.Failed)
+	         {
+	            if (!string.IsNullOrEmpty(propValue))
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "typePrecision", propValue);
+	
+	         }
+	      }
+	      // TypeScale
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.String propValue = instanceOfModelAttribute.TypeScale;
+	         if (!serializationContext.Result.Failed)
+	         {
+	            if (!string.IsNullOrEmpty(propValue))
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "typeScale", propValue);
 	
 	         }
 	      }

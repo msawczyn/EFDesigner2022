@@ -65,7 +65,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                 .Where(nav => nav.AssociationObject.Dependent == element.ModelClass)
                                                                 .Select(nav => nav.AssociationObject)
                                                                 .Where(a => !string.IsNullOrWhiteSpace(a.FKPropertyName)
-                                                                         && a.FKPropertyName.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).Any(n => n.Trim() == element.Name)))
+                                                                         && a.FKPropertyName.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(n => n.Trim() == element.Name)))
                      {
                         foreach (ModelAttribute attribute in association.GetFKAutoIdentityErrors())
                            errorMessages.Add($"{association.Source.Name} <=> {association.Target.Name}: FK property {attribute.Name} in {association.Dependent.FullName} is an auto-generated identity. Migration will fail.");
@@ -225,7 +225,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   if (string.IsNullOrEmpty(element.Name) || !CodeGenerator.IsValidLanguageIndependentIdentifier(element.Name))
                      errorMessages.Add($"{modelClass.Name}: Property name '{element.Name}' isn't a valid .NET identifier");
 
-                  if (modelClass.AllAttributes.Except(new[] {element}).Any(x => x.Name == element.Name)
+                  if (modelClass.AllAttributes.Except(new[] { element }).Any(x => x.Name == element.Name)
                    || modelClass.AllNavigationProperties().Any(p => p.PropertyName == element.Name))
                      errorMessages.Add($"{modelClass.Name}: Property name '{element.Name}' already in use");
                }
@@ -286,7 +286,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                   .Where(nav => nav.AssociationObject.Dependent == element.ModelClass)
                                   .Select(nav => nav.AssociationObject)
                                   .Where(a => !string.IsNullOrWhiteSpace(a.FKPropertyName)
-                                           && a.FKPropertyName.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).Any(n => n.Trim() == element.Name));
+                                           && a.FKPropertyName.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(n => n.Trim() == element.Name));
 
                         foreach (Association association in participatingAssociations)
                            AssociationChangedRules.FixupForeignKeys(association);
@@ -310,6 +310,26 @@ namespace Sawczyn.EFDesigner.EFModel
 
                   if (!element.SupportsInitialValue)
                      element.InitialValue = null;
+               }
+
+               break;
+            case "TypePrecision":
+               {
+                  if (modelRoot.IsEFCore6Plus && !string.IsNullOrEmpty(element.TypePrecision) && (element.Type == "decimal" || element.Type == "Decimal"))
+                  {
+                     if (!int.TryParse(element.TypePrecision, out _))
+                        errorMessages.Add($"{modelClass.Name}.{element.Name}: {e.NewValue} isn't a valid value for Precision. It must be an integer.");
+                  }
+               }
+
+               break;
+            case "TypeScale":
+               {
+                  if (modelRoot.IsEFCore6Plus && !string.IsNullOrEmpty(element.TypeScale) && (element.Type == "decimal" || element.Type == "Decimal"))
+                  {
+                     if (!int.TryParse(element.TypeScale, out _))
+                        errorMessages.Add($"{modelClass.Name}.{element.Name}: {e.NewValue} isn't a valid value for Scale. It must be an integer.");
+                  }
                }
 
                break;

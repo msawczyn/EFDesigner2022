@@ -11798,6 +11798,183 @@ namespace Sawczyn.EFDesigner.EFModel
 		}
 		
 		#endregion
+		#region TypePrecision domain property code
+		
+		/// <summary>
+		/// TypePrecision domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid TypePrecisionDomainPropertyId = new global::System.Guid(0x105f2f87, 0x83c1, 0x4cfd, 0xa0, 0x1f, 0x53, 0x87, 0x9e, 0xb1, 0xd4, 0x8f);
+		
+		/// <summary>
+		/// Storage for TypePrecision
+		/// </summary>
+		private global::System.String typePrecisionPropertyStorage = string.Empty;
+		
+		/// <summary>
+		/// Gets or sets the value of TypePrecision domain property.
+		/// Maximum number of digits needed to express any value the database column will
+		/// contain
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/TypePrecision.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/TypePrecision.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/TypePrecision.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslModeling::DomainObjectId("105f2f87-83c1-4cfd-a01f-53879eb1d48f")]
+		public global::System.String TypePrecision
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return typePrecisionPropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				TypePrecisionPropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelAttribute.TypePrecision domain property.
+		/// </summary>
+		internal sealed partial class TypePrecisionPropertyHandler : DslModeling::DomainPropertyValueHandler<ModelAttribute, global::System.String>
+		{
+			private TypePrecisionPropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelAttribute.TypePrecision domain property value handler.
+			/// </summary>
+			public static readonly TypePrecisionPropertyHandler Instance = new TypePrecisionPropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelAttribute.TypePrecision domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return TypePrecisionDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.String GetValue(ModelAttribute element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.typePrecisionPropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelAttribute element, global::System.String newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.String oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.typePrecisionPropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
+		#region TypeScale domain property code
+		
+		/// <summary>
+		/// TypeScale domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid TypeScaleDomainPropertyId = new global::System.Guid(0xe6f584d3, 0x4a4c, 0x4ed0, 0x92, 0xfc, 0x0a, 0x0f, 0xa0, 0x1e, 0xf6, 0x84);
+		
+		/// <summary>
+		/// Storage for TypeScale
+		/// </summary>
+		private global::System.String typeScalePropertyStorage = string.Empty;
+		
+		/// <summary>
+		/// Gets or sets the value of TypeScale domain property.
+		/// Maximum number of decimal places
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/TypeScale.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/TypeScale.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/TypeScale.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslModeling::DomainObjectId("e6f584d3-4a4c-4ed0-92fc-0a0fa01ef684")]
+		public global::System.String TypeScale
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return typeScalePropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				TypeScalePropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelAttribute.TypeScale domain property.
+		/// </summary>
+		internal sealed partial class TypeScalePropertyHandler : DslModeling::DomainPropertyValueHandler<ModelAttribute, global::System.String>
+		{
+			private TypeScalePropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelAttribute.TypeScale domain property value handler.
+			/// </summary>
+			public static readonly TypeScalePropertyHandler Instance = new TypeScalePropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelAttribute.TypeScale domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return TypeScaleDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.String GetValue(ModelAttribute element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.typeScalePropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelAttribute element, global::System.String newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.String oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.typeScalePropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
 		#region ModelClass opposite domain role accessor
 		/// <summary>
 		/// Gets or sets ModelClass.
@@ -14149,6 +14326,6 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
 	partial class ModelRoot
 	{
-		public const string DSLVersion = "4.3.0.1";
+		public const string DSLVersion = "4.2.1.3";
 	}
 }

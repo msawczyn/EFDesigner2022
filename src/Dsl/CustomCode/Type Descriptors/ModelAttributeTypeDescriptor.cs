@@ -116,6 +116,16 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("DatabaseDefaultValue");
             }
 
+            // precision and scale introduced in EFCore6. Only use if decimal (ignoring the potential use in DateTime2)
+            if (!modelRoot.IsEFCore6Plus || (modelAttribute.Type != "decimal" && modelAttribute.Type != "Decimal"))
+            {
+               propertyDescriptors.Remove("TypePrecision");
+               propertyDescriptors.Remove("TypeScale");
+            }
+
+            if (string.IsNullOrEmpty(modelAttribute.TypePrecision))
+               propertyDescriptors.Remove("TypeScale");
+
             /********************************************************************************/
 
             //Add the descriptors for the tracking properties 

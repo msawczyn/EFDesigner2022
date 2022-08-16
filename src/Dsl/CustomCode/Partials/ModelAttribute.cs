@@ -196,7 +196,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "Time":
                return DateTime.TryParseExact(initialValue,
-                                             new[] {"HH:mm:ss", "H:mm:ss", "HH:mm", "H:mm", "HH:mm:ss tt", "H:mm:ss tt", "HH:mm tt", "H:mm tt"},
+                                             new[] { "HH:mm:ss", "H:mm:ss", "HH:mm", "H:mm", "HH:mm:ss tt", "H:mm:ss tt", "HH:mm tt", "H:mm tt" },
                                              CultureInfo.InvariantCulture,
                                              DateTimeStyles.None,
                                              out _);
@@ -221,7 +221,7 @@ namespace Sawczyn.EFDesigner.EFModel
          _backingFieldName = value;
       }
 
-#region Warning display
+      #region Warning display
 
       // set as methods to avoid issues around serialization
 
@@ -251,7 +251,7 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion
+      #endregion
 
       /// <summary>
       ///    From internal class System.Data.Metadata.Edm.PrimitiveType in System.Data.Entity. Converts the attribute's CLR type to a C# primitive type.
@@ -468,7 +468,7 @@ namespace Sawczyn.EFDesigner.EFModel
          RedrawItem();
       }
 
-#region ColumnName
+      #region ColumnName
 
       /// <summary>Storage for the ColumnName property.</summary>
       private string columnNameStorage;
@@ -513,9 +513,9 @@ namespace Sawczyn.EFDesigner.EFModel
             IsColumnNameTracking = columnNameStorage == null;
       }
 
-#endregion
+      #endregion
 
-#region ImplementNotify
+      #region ImplementNotify
 
       /// <summary>Storage for the ImplementNotify property.</summary>
       private bool implementNotifyStorage;
@@ -558,9 +558,9 @@ namespace Sawczyn.EFDesigner.EFModel
             IsImplementNotifyTracking = implementNotifyStorage == (ModelClass?.ImplementNotify ?? false);
       }
 
-#endregion
+      #endregion
 
-#region DatabaseCollation
+      #region DatabaseCollation
 
       private string databaseCollationStorage;
 
@@ -601,9 +601,9 @@ namespace Sawczyn.EFDesigner.EFModel
             IsDatabaseCollationTracking = (databaseCollationStorage ?? "default") == "default";
       }
 
-#endregion
+      #endregion
 
-#region AutoProperty
+      #region AutoProperty
 
       /// <summary>Storage for the AutoProperty property.</summary>
       private bool autoPropertyStorage;
@@ -644,9 +644,9 @@ namespace Sawczyn.EFDesigner.EFModel
             IsAutoPropertyTracking = autoPropertyStorage == (ModelClass?.AutoPropertyDefault ?? true);
       }
 
-#endregion
+      #endregion
 
-#region PropertyAccessMode
+      #region PropertyAccessMode
 
       /// <summary>Storage for the PropertyAccessMode property.</summary>
       private PropertyAccessMode propertyAccessModeStorage;
@@ -691,9 +691,9 @@ namespace Sawczyn.EFDesigner.EFModel
             IsPropertyAccessModeTracking = propertyAccessModeStorage == (ModelClass?.ModelRoot.PropertyAccessModeDefault ?? DefaultPropertyAccessMode);
       }
 
-#endregion
+      #endregion
 
-#region ColumnType
+      #region ColumnType
 
       /// <summary>Storage for the ColumnType property.</summary>
       private string columnTypeStorage;
@@ -738,9 +738,9 @@ namespace Sawczyn.EFDesigner.EFModel
             IsColumnTypeTracking = columnTypeStorage == null;
       }
 
-#endregion
+      #endregion
 
-#region Tracking Properties
+      #region Tracking Properties
 
       internal sealed partial class IsPropertyAccessModeTrackingPropertyHandler
       {
@@ -1097,9 +1097,9 @@ namespace Sawczyn.EFDesigner.EFModel
          // same with other tracking properties as they get added
       }
 
-#endregion Tracking Properties
+      #endregion Tracking Properties
 
-#region Validation methods
+      #region Validation methods
 
       internal static (string ef6Version, string efCoreVersion)[] GeometryTypes =
       {
@@ -1185,9 +1185,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Validation Rules
+      #endregion Validation Rules
 
-#region ColumnName tracking property
+      #region ColumnName tracking property
 
       /// <summary>
       ///    Change the column name, if it's tracking the name of the property
@@ -1212,9 +1212,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion ColumnName tracking property
+      #endregion ColumnName tracking property
 
-#region ColumnType tracking property
+      #region ColumnType tracking property
 
       /// <summary>
       ///    Notify watchers of change to Type property
@@ -1243,9 +1243,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion ColumnType tracking property
+      #endregion ColumnType tracking property
 
-#region To/From String
+      #region To/From String
 
       /// <summary>Returns a string that represents the current object.</summary>
       /// <remarks>
@@ -1275,41 +1275,56 @@ namespace Sawczyn.EFDesigner.EFModel
                              ? $" = {InitialValue.Trim('"')}"
                              : string.Empty;
 
-         return $"{visibility} {Type}{nullable}{LengthDisplay()} {Name}{identity}{initial}";
+         return $"{visibility} {Type}{nullable}{SizeDisplay()} {Name}{identity}{initial}";
       }
 
-      private string LengthDisplay()
+      private string SizeDisplay()
       {
          string result = string.Empty;
 
-         if (Type != "String")
-            return result;
-
-         if (MinLength > 0)
+         switch (Type)
          {
-            switch (MaxLength)
-            {
-               case null:
-               case MAXLENGTH_UNDEFINED:
-                  result = $"[{MinLength}-]";
+            case "String":
+               {
+                  if (MinLength > 0)
+                  {
+                     switch (MaxLength)
+                     {
+                        case null:
+                        case MAXLENGTH_UNDEFINED:
+                           result = $"[{MinLength}-]";
 
-                  break;
+                           break;
 
-               case MAXLENGTH_MAX:
-                  result = $"[{MinLength}-max]";
+                        case MAXLENGTH_MAX:
+                           result = $"[{MinLength}-max]";
 
-                  break;
+                           break;
 
-               default:
-                  result = $"[{MinLength}-{MaxLength}]";
+                        default:
+                           result = $"[{MinLength}-{MaxLength}]";
 
-                  break;
-            }
+                           break;
+                     }
+                  }
+                  else if (MaxLength == MAXLENGTH_MAX)
+                     result = "[max]";
+                  else if ((MaxLength != null) && (MaxLength != MAXLENGTH_UNDEFINED))
+                     result = $"[{MaxLength}]";
+               }
+
+               break;
+
+            case "Decimal":
+               if (!string.IsNullOrEmpty(TypePrecision))
+               {
+                  result = string.IsNullOrEmpty(TypeScale)
+                              ? $"({TypePrecision})"
+                              : $"({TypePrecision},{TypeScale})";
+               }
+
+               break;
          }
-         else if (MaxLength == MAXLENGTH_MAX)
-            result = "[max]";
-         else if ((MaxLength != null) && (MaxLength != MAXLENGTH_UNDEFINED))
-            result = $"[{MaxLength}]";
 
          return result;
       }
@@ -1328,7 +1343,7 @@ namespace Sawczyn.EFDesigner.EFModel
                              ? $" = {InitialValue.Trim('"')}"
                              : string.Empty;
 
-         return $"{Name}: {Type}{nullable}{LengthDisplay()}{initial}";
+         return $"{Name}: {Type}{nullable}{SizeDisplay()}{initial}";
       }
 
       /// <summary>
@@ -1368,6 +1383,6 @@ namespace Sawczyn.EFDesigner.EFModel
          return result;
       }
 
-#endregion Parse string
+      #endregion Parse string
    }
 }
