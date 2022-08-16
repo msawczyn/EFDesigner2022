@@ -51,6 +51,15 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
 
 **ChangeLog**
 
+**4.2.1**
+   - **[NEW]** Added support for EFCore7
+   - **[NEW]** Added ability to import EFCore7 assemblies
+   - **[NEW]** Added ability to use property types not available in the select list, along with a global option enabling this feature in Tools/Options/Entity Framework Visual Editor (see https://github.com/msawczyn/EFDesigner2022/issues/28)
+   - **[NEW]** Added support for DateOnly and TimeOnly types in EFCore 6+
+   - **[NEW]** Added ability to specify decimal precision in EFCore5+ projects
+   - Fix for View->Other Windows->Entity Model Explorer not working (see https://github.com/msawczyn/EFDesigner2022/issues/29)
+   - Fix error in code generation template for EFCore5+ projects
+
 **4.2.0**
    - **[NEW]** Added ability to import EFCore6 assemblies
    - **[NEW]** Added database default values to properties (see https://github.com/msawczyn/EFDesigner2022/issues/15)

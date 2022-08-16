@@ -1,4 +1,4 @@
-4.3.0 (next version)
+4.2.1
    - Added support for EFCore7
    - Added ability to import EFCore7 assemblies
    - Added ability to use property types not available in the select list, along with a global option enabling this feature in Tools/Options/Entity Framework Visual Editor (see https://github.com/msawczyn/EFDesigner2022/issues/28)

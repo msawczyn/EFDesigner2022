@@ -17,6 +17,5 @@ using System.Runtime.InteropServices;
 
 [assembly : ComVisible(false)]
 
-[assembly : AssemblyVersion("3.0.5")]
-[assembly : AssemblyFileVersion("3.0.5")]
-[assembly : ReliabilityContract(Consistency.MayCorruptProcess, Cer.None)]
+[assembly : AssemblyVersion("4.2.1.0")]
+[assembly : AssemblyFileVersion("4.2.1.0")]

@@ -75,7 +75,15 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 
 ### Change Log
 
-4.2.0
+4.2.1
+   - Added support for EFCore7
+   - Added ability to import EFCore7 assemblies
+   - Added ability to use property types not available in the select list, along with a global option enabling this feature in Tools/Options/Entity Framework Visual Editor (see https://github.com/msawczyn/EFDesigner2022/issues/28)
+   - Added support for DateOnly and TimeOnly types in EFCore 6+
+   - Added ability to specify decimal precision in EFCore5+ projects
+   - Fix for View->Other Windows->Entity Model Explorer not working (see https://github.com/msawczyn/EFDesigner2022/issues/29)
+   - Fix error in code generation template for EFCore5+ projects
+
 4.2.0
    - Added ability to import EFCore6 assemblies
    - Added database default values to properties (see https://github.com/msawczyn/EFDesigner2022/issues/15)
