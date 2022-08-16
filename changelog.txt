@@ -2,6 +2,7 @@
    - Added support for EFCore7
    - Added ability to import EFCore7 assemblies
    - Added ability to use property types not available in the select list, along with a global option enabling this feature in Tools/Options/Entity Framework Visual Editor (see https://github.com/msawczyn/EFDesigner2022/issues/28)
+   - Add support for DateOnly and TimeOnly types in EFCore 6+
    - Fix for View->Other Windows->Entity Model Explorer not working (see https://github.com/msawczyn/EFDesigner2022/issues/29)
 
 4.2.0

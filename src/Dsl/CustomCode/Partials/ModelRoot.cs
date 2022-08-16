@@ -25,6 +25,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
       internal static bool BatchUpdating = false;
 
+      /// <summary>
+      /// If true, property editor will only show known legal property type choices
+      /// </summary>
       public static bool LimitModelAttributeTypeChoices { get; set; }
 
       static ModelRoot()
@@ -118,7 +121,7 @@ namespace Sawczyn.EFDesigner.EFModel
                .ToArray();
       }
 
-#region Filename
+      #region Filename
 
       private string filename;
 
@@ -138,9 +141,9 @@ namespace Sawczyn.EFDesigner.EFModel
          return filename;
       }
 
-#endregion
+      #endregion
 
-#region OutputLocations
+      #region OutputLocations
 
       private OutputLocations outputLocationsStorage;
 
@@ -154,9 +157,9 @@ namespace Sawczyn.EFDesigner.EFModel
          outputLocationsStorage = value;
       }
 
-#endregion OutputLocations
+      #endregion OutputLocations
 
-#region Namespaces
+      #region Namespaces
 
       private Namespaces namespacesStorage;
 
@@ -170,9 +173,9 @@ namespace Sawczyn.EFDesigner.EFModel
          namespacesStorage = value;
       }
 
-#endregion Namespaces
+      #endregion Namespaces
 
-#region Valid types based on EF version
+      #region Valid types based on EF version
 
       /// <summary>
       ///    List of spatial types, depending on EF version selected
@@ -201,26 +204,46 @@ namespace Sawczyn.EFDesigner.EFModel
                            "GeometryPoint",
                            "GeometryPolygon"
                         }
-                      : new[] {"Geometry", "GeometryCollection", "LineString", "MultiLineString", "MultiPoint", "MultiPolygon", "Point", "Polygon"};
+                      : new[] { "Geometry", "GeometryCollection", "LineString", "MultiLineString", "MultiPoint", "MultiPolygon", "Point", "Polygon" };
          }
       }
 
       /// <summary>
-      ///    Class types that can be used in the model
+      ///    Class/struct types that can be used in the model
       /// </summary>
       public string[] ValidTypes
       {
          get
          {
-            List<string> validTypes = new List<string>(new[] {"Binary", "Boolean", "Byte", "byte", "DateTime", "DateTimeOffset", "Decimal", "Double", "Guid"});
+            List<string> validTypes = new List<string>(new[]
+                                                       {
+                                                          "Binary",
+                                                          "Boolean",
+                                                          "byte",
+                                                          "Byte",
+                                                          "DateTime",
+                                                          "DateTimeOffset",
+                                                          "Decimal",
+                                                          "Double",
+                                                          "Guid",
+                                                          "Int16",
+                                                          "Int32",
+                                                          "Int64",
+                                                          "Single",
+                                                          "String",
+                                                       });
+
+            if (IsEFCore6Plus)
+            {
+               validTypes.Add("DateOnly");
+               validTypes.Add("TimeOnly");
+            }
 
             if (IsEFCore5Plus)
             {
                validTypes.Add("System.Net.IPAddress");
                validTypes.Add("System.Net.NetworkInformation.PhysicalAddress");
             }
-
-            validTypes.AddRange(new[] {"Int16", "Int32", "Int64", "Single", "String", "Time"});
 
             return validTypes.Union(SpatialTypes).ToArray();
          }
@@ -236,79 +259,41 @@ namespace Sawczyn.EFDesigner.EFModel
             List<string> validClrTypes = new List<string>(new[]
                                                           {
                                                              "Binary",
-                                                             "Boolean",
-                                                             "Boolean?",
-                                                             "Nullable<Boolean>",
-                                                             "Byte",
-                                                             "Byte?",
-                                                             "Nullable<Byte>",
-                                                             "DateTime",
-                                                             "DateTime?",
-                                                             "Nullable<DateTime>",
-                                                             "DateTimeOffset",
-                                                             "DateTimeOffset?",
-                                                             "Nullable<DateTimeOffset>",
+                                                             "bool", "bool?", "Nullable<bool>",
+                                                             "Boolean", "Boolean?", "Nullable<Boolean>",
+                                                             "Byte", "Byte?", "Nullable<Byte>",
+                                                             "byte", "byte?", "Nullable<byte>",
+                                                             "byte[]",
+                                                             "DateTime", "DateTime?", "Nullable<DateTime>",
+                                                             "DateTimeOffset", "DateTimeOffset?", "Nullable<DateTimeOffset>",
                                                              "DbGeography",
                                                              "DbGeometry",
-                                                             "Decimal",
-                                                             "Decimal?",
-                                                             "Nullable<Decimal>",
-                                                             "Double",
-                                                             "Double?",
-                                                             "Nullable<Double>",
-                                                             "Guid",
-                                                             "Guid?",
-                                                             "Nullable<Guid>"
+                                                             "Decimal", "Decimal?", "Nullable<Decimal>",
+                                                             "decimal", "decimal?", "Nullable<decimal>",
+                                                             "Double", "Double?", "Nullable<Double>",
+                                                             "double", "double?", "Nullable<double>",
+                                                             "Guid", "Guid?", "Nullable<Guid>",
+                                                             "int", "int?", "Nullable<int>",
+                                                             "Int16", "Int16?", "Nullable<Int16>",
+                                                             "Int32", "Int32?", "Nullable<Int32>",
+                                                             "Int64", "Int64?", "Nullable<Int64>",
+                                                             "long", "long?", "Nullable<long>",
+                                                             "short", "short?", "Nullable<short>",
+                                                             "Single", "Single?", "Nullable<Single>",
+                                                             "String", "string",
+                                                             "TimeSpan", "TimeSpan?", "Nullable<TimeSpan>"
                                                           });
 
             if (IsEFCore5Plus)
                validClrTypes.Add("System.Net.IPAddress");
 
-            validClrTypes.AddRange(new[]
-                                   {
-                                      "Int16",
-                                      "Int16?",
-                                      "Nullable<Int16>",
-                                      "Int32",
-                                      "Int32?",
-                                      "Nullable<Int32>",
-                                      "Int64",
-                                      "Int64?",
-                                      "Nullable<Int64>",
-                                      "Single",
-                                      "Single?",
-                                      "Nullable<Single>",
-                                      "String",
-                                      "Time",
-                                      "TimeSpan",
-                                      "TimeSpan?",
-                                      "Nullable<TimeSpan>",
-                                      "bool",
-                                      "bool?",
-                                      "Nullable<bool>",
-                                      "byte",
-                                      "byte?",
-                                      "Nullable<byte>",
-                                      "byte[]",
-                                      "decimal",
-                                      "decimal?",
-                                      "Nullable<decimal>",
-                                      "double",
-                                      "double?",
-                                      "Nullable<double>",
-                                      "int",
-                                      "int?",
-                                      "Nullable<int>",
-                                      "long",
-                                      "long?",
-                                      "Nullable<long>",
-                                      "short",
-                                      "short?",
-                                      "Nullable<short>",
-                                      "string"
-                                   });
+            if (IsEFCore6Plus)
+            {
+               validClrTypes.AddRange(new[] { "DateOnly", "DateOnly?", "Nullable<DateOnly>" });
+               validClrTypes.AddRange(new[] { "TimeOnly", "TimeOnly?", "Nullable<TimeOnly>" });
+            }
 
-            return validClrTypes.Union(SpatialTypes).ToArray();
+            return validClrTypes.Union(SpatialTypes).OrderBy(x => x).ToArray(); 
          }
       }
 
@@ -340,7 +325,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                      .Select(e => e.Name)
                                      .OrderBy(n => n));
 
-            return baseResult.ToArray();
+            return baseResult.OrderBy(x => x).ToArray();
          }
       }
 
@@ -350,12 +335,12 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             return new List<string>
                    {
+                      "Byte",
+                      "Guid",
                       "Int16",
                       "Int32",
                       "Int64",
-                      "Byte",
-                      "String",
-                      "Guid"
+                      "String"
                    };
          }
       }
@@ -368,9 +353,9 @@ namespace Sawczyn.EFDesigner.EFModel
          return ValidCLRTypes.Contains(type);
       }
 
-#endregion
+      #endregion
 
-#region Nuget
+      #region Nuget
 
       /// <summary>
       ///    Transforms the selected EntityFrameworkPackageVersion into a decimal number, only taking the first two segments into account. If a "Latest" version is chosen, looks up the appropriate real version.
@@ -434,9 +419,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Nuget
+      #endregion Nuget
 
-#region Validation methods
+      #region Validation methods
 
       [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
@@ -462,9 +447,9 @@ namespace Sawczyn.EFDesigner.EFModel
             context.LogWarning("Model: Summary documentation missing", "AWMissingSummary", this);
       }
 
-#endregion Validation methods
+      #endregion Validation methods
 
-#region DatabaseSchema tracking property
+      #region DatabaseSchema tracking property
 
       protected virtual void OnDatabaseSchemaChanged(string oldValue, string newValue)
       {
@@ -485,9 +470,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion DatabaseSchema tracking property
+      #endregion DatabaseSchema tracking property
 
-#region DatabaseCollationDefault tracking property
+      #region DatabaseCollationDefault tracking property
 
       protected virtual void OnDatabaseCollationDefaultChanged(string oldValue, string newValue)
       {
@@ -508,9 +493,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion DatabaseCollationDefault tracking property
+      #endregion DatabaseCollationDefault tracking property
 
-#region DefaultCollectionClass tracking property
+      #region DefaultCollectionClass tracking property
 
       protected virtual void OnCollectionClassChanged(string oldValue, string newValue)
       {
@@ -531,9 +516,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion DefaultCollectionClass tracking property
+      #endregion DefaultCollectionClass tracking property
 
-#region Entity Output Directory tracking property
+      #region Entity Output Directory tracking property
 
       protected virtual void OnEntityOutputDirectoryChanged(string oldValue, string newValue)
       {
@@ -551,9 +536,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion
+      #endregion
 
-#region Enum Output Directory tracking property
+      #region Enum Output Directory tracking property
 
       protected virtual void OnEnumOutputDirectoryChanged(string oldValue, string newValue)
       {
@@ -571,9 +556,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion
+      #endregion
 
-#region Namespace tracking property
+      #region Namespace tracking property
 
       internal sealed partial class NamespacePropertyHandler
       {
@@ -648,9 +633,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Namespace tracking property
+      #endregion Namespace tracking property
 
-#region AutoPropertyDefault tracking property
+      #region AutoPropertyDefault tracking property
 
       /// <summary>
       ///    Updates tracking properties when the IsImplementNotify value changes
@@ -676,6 +661,6 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion AutoPropertyDefault tracking property
+      #endregion AutoPropertyDefault tracking property
    }
 }

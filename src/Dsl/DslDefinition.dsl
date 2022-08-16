@@ -1664,6 +1664,9 @@
   </Relationships>
   <Types>
     <ExternalType Name="DateTime" Namespace="System" />
+    <ExternalType Name="DateTimeOffset" Namespace="System" />
+    <ExternalType Name="DateOnly" Namespace="System" />
+    <ExternalType Name="TimeOnly" Namespace="System" />
     <ExternalType Name="String" Namespace="System" />
     <ExternalType Name="Int16" Namespace="System" />
     <ExternalType Name="Int32" Namespace="System" />

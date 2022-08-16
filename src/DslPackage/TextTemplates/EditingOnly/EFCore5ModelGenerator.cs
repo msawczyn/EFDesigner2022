@@ -11,9 +11,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    [UsedImplicitly]
    public partial class GeneratedTextTransformation
    {
-#region Template
+      #region Template
 
-      // EFDesigner v4.2.0.5
+      // EFDesigner v4.3.0.1
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -188,7 +188,13 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                            break;
 
                         case "DateTime":
-                           if (modelAttribute.InitialValue == "DateTime.UtcNow")
+                           if (modelAttribute.InitialValue == "DateTime.UtcNow" || modelAttribute.InitialValue == "DateTime.Now")
+                              segments.Add("HasDefaultValueSql(\"CURRENT_TIMESTAMP\")");
+
+                           break;
+
+                        case "DateTimeOffset":
+                           if (modelAttribute.InitialValue == "DateTimeOffset.UtcNow" || modelAttribute.InitialValue == "DateTimeOffset.Now")
                               segments.Add("HasDefaultValueSql(\"CURRENT_TIMESTAMP\")");
 
                            break;
@@ -254,14 +260,14 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             Output("j =>");
             Output("{");
 
-#region transient properties
+            #region transient properties
 
             foreach (ModelAttribute transient in associationClass.Attributes.Where(x => !x.Persistent))
                Output($"j.Ignore(t => t.{transient.Name});");
 
-#endregion
+            #endregion
 
-#region table definition
+            #region table definition
 
             string tableName = string.IsNullOrEmpty(associationClass.TableName)
                                   ? associationClass.Name
@@ -289,9 +295,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             else if (identityAttributes.Count > 1)
                Output($"j.HasKey(t => new {{ t.{string.Join(", t.", identityAttributes.Select(ia => ia.Name))} }});");
 
-#endregion
+            #endregion
 
-#region model attributes
+            #region model attributes
 
             foreach (ModelAttribute modelAttribute in associationClass.Attributes.Where(x => x.Persistent && !x.IsIdentity))
             {
@@ -313,7 +319,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                }
             }
 
-#endregion
+            #endregion
 
             PopIndent();
             Output("});");
@@ -819,6 +825,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          }
       }
 
-#endregion Template
+      #endregion Template
    }
 }

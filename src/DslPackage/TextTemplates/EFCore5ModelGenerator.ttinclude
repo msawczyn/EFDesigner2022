@@ -22,7 +22,7 @@
 #><#@ import namespace="System.Data.Entity.Design.PluralizationServices"
 #><#@ import namespace="Microsoft.VisualStudio.TextTemplating"
 #><#+
-      // EFDesigner v4.2.0.5
+      // EFDesigner v4.3.0.1
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -197,7 +197,13 @@
                            break;
 
                         case "DateTime":
-                           if (modelAttribute.InitialValue == "DateTime.UtcNow")
+                           if (modelAttribute.InitialValue == "DateTime.UtcNow" || modelAttribute.InitialValue == "DateTime.Now")
+                              segments.Add("HasDefaultValueSql(\"CURRENT_TIMESTAMP\")");
+
+                           break;
+
+                        case "DateTimeOffset":
+                           if (modelAttribute.InitialValue == "DateTimeOffset.UtcNow" || modelAttribute.InitialValue == "DateTimeOffset.Now")
                               segments.Add("HasDefaultValueSql(\"CURRENT_TIMESTAMP\")");
 
                            break;
@@ -263,14 +269,14 @@
             Output("j =>");
             Output("{");
 
-#region transient properties
+            #region transient properties
 
             foreach (ModelAttribute transient in associationClass.Attributes.Where(x => !x.Persistent))
                Output($"j.Ignore(t => t.{transient.Name});");
 
-#endregion
+            #endregion
 
-#region table definition
+            #region table definition
 
             string tableName = string.IsNullOrEmpty(associationClass.TableName)
                                   ? associationClass.Name
@@ -298,9 +304,9 @@
             else if (identityAttributes.Count > 1)
                Output($"j.HasKey(t => new {{ t.{string.Join(", t.", identityAttributes.Select(ia => ia.Name))} }});");
 
-#endregion
+            #endregion
 
-#region model attributes
+            #region model attributes
 
             foreach (ModelAttribute modelAttribute in associationClass.Attributes.Where(x => x.Persistent && !x.IsIdentity))
             {
@@ -322,7 +328,7 @@
                }
             }
 
-#endregion
+            #endregion
 
             PopIndent();
             Output("});");
@@ -828,5 +834,5 @@
          }
       }
 
-
+      
 #>
