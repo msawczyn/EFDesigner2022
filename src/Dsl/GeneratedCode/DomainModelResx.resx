@@ -1585,6 +1585,30 @@
     <value>Database</value>
     <comment>Category for DomainProperty &apos;DatabaseDefaultValue&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
   </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute/TypePrecision.Description" xml:space="preserve">
+    <value>Maximum number of digits needed to express any value the database column will contain</value>
+    <comment>Description for DomainProperty &apos;TypePrecision&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute/TypePrecision.DisplayName" xml:space="preserve">
+    <value>Type - Precision</value>
+    <comment>DisplayName for DomainProperty &apos;TypePrecision&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute/TypePrecision.Category" xml:space="preserve">
+    <value>Database</value>
+    <comment>Category for DomainProperty &apos;TypePrecision&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute/TypeScale.Description" xml:space="preserve">
+    <value>Maximum number of decimal places</value>
+    <comment>Description for DomainProperty &apos;TypeScale&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute/TypeScale.DisplayName" xml:space="preserve">
+    <value>Type - Scale</value>
+    <comment>DisplayName for DomainProperty &apos;TypeScale&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute/TypeScale.Category" xml:space="preserve">
+    <value>Database</value>
+    <comment>Category for DomainProperty &apos;TypeScale&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
+  </data>
   <data name="Sawczyn.EFDesigner.EFModel.Comment.Description" xml:space="preserve">
     <value></value>
     <comment>Description for DomainClass &apos;Comment&apos;</comment>

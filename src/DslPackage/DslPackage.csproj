@@ -256,9 +256,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\Commands.png" />
-    <Content Include="TextTemplates\EF6Designer.ttinclude">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="TextTemplates\EF6ModelGenerator.ttinclude">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -269,9 +266,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="TextTemplates\EFCore5ModelGenerator.ttinclude">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="TextTemplates\EFCoreDesigner.ttinclude">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="TextTemplates\EFCoreModelGenerator.ttinclude">

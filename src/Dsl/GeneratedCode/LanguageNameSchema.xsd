@@ -934,6 +934,18 @@
             <xsd:documentation>Default value at the database level if no value is specified</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+        <!-- Property: TypePrecision -->
+        <xsd:attribute name="typePrecision" type="xsd:string" >
+          <xsd:annotation>
+            <xsd:documentation>Maximum number of digits needed to express any value the database column will contain</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <!-- Property: TypeScale -->
+        <xsd:attribute name="typeScale" type="xsd:string" >
+          <xsd:annotation>
+            <xsd:documentation>Maximum number of decimal places</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
