@@ -399,7 +399,7 @@ namespace EF6Parser
          return result;
       }
 
-      private ModelClass ProcessEntity(string entityFullName, EntityType oSpaceType, EntityType sSpaceType, EntityType cSpaceType)
+      protected ModelClass ProcessEntity(string entityFullName, EntityType oSpaceType, EntityType sSpaceType, EntityType cSpaceType)
       {
          Type type = assembly.GetType(entityFullName);
 
@@ -477,7 +477,7 @@ namespace EF6Parser
       }
 
       // ReSharper disable once UnusedParameter.Local
-      private ModelProperty ProcessProperty(EntityType parent, EdmProperty oSpaceProperty, EdmProperty sSpaceProperty, bool isComplexType = false)
+      protected ModelProperty ProcessProperty(EntityType parent, EdmProperty oSpaceProperty, EdmProperty sSpaceProperty, bool isComplexType = false)
       {
          if (oSpaceProperty == null)
             return null;
@@ -516,7 +516,7 @@ namespace EF6Parser
          return null;
       }
 
-      private ModelRoot ProcessRoot()
+      protected ModelRoot ProcessRoot()
       {
          ModelRoot result = new ModelRoot();
          Type contextType = dbContext.GetType();

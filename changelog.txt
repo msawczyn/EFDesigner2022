@@ -1,3 +1,6 @@
+4.2.2
+   - Fixed issues with string length and required detection in assembly import
+
 4.2.1
    - Added support for EFCore7
    - Added ability to import EFCore7 assemblies

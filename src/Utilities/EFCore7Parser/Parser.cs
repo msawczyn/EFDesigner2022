@@ -102,7 +102,7 @@ namespace EFCore7Parser
          return JsonConvert.SerializeObject(modelRoot);
       }
 
-      private ModelClass ProcessEntity(IEntityType entityType, ModelRoot modelRoot)
+      protected ModelClass ProcessEntity(IEntityType entityType, ModelRoot modelRoot)
       {
          ModelClass result = new ModelClass();
          Type type = entityType.ClrType;
@@ -133,7 +133,7 @@ namespace EFCore7Parser
          return result;
       }
 
-      private void ProcessEnum(Type enumType, ModelRoot modelRoot)
+      protected void ProcessEnum(Type enumType, ModelRoot modelRoot)
       {
          string customAttributes = GetCustomAttributes(enumType);
 
@@ -159,11 +159,11 @@ namespace EFCore7Parser
          }
       }
 
-      private ModelProperty ProcessProperty(IProperty propertyData, ModelRoot modelRoot)
+      protected ModelProperty ProcessProperty(IProperty propertyData, ModelRoot modelRoot)
       {
          Type type = propertyData.ClrType;
 
-         List<CustomAttributeData> attributes = type.CustomAttributes.ToList();
+         List<CustomAttributeData> attributes = propertyData.PropertyInfo.CustomAttributes.ToList();
 
          ModelProperty result = new ModelProperty();
 
@@ -182,16 +182,17 @@ namespace EFCore7Parser
          result.IsIdentity = propertyData.IsKey();
          result.IsIdentityGenerated = result.IsIdentity && (propertyData.ValueGenerated == ValueGenerated.OnAdd);
 
-         result.Required = !propertyData.IsNullable;
+         CustomAttributeData requiredAttribute = attributes.FirstOrDefault(a => a.AttributeType.Name == "RequiredAttribute");
+         result.Required = (bool)(requiredAttribute?.ConstructorArguments.FirstOrDefault().Value ?? !propertyData.IsNullable);
          result.Indexed = propertyData.IsIndex();
 
-         CustomAttributeData maxLengthAttribute = attributes.FirstOrDefault(a => (a.AttributeType.Name == "MaxLength") || (a.AttributeType.Name == "StringLength"));
+         CustomAttributeData maxLengthAttribute = attributes.FirstOrDefault(a => (a.AttributeType.Name == "MaxLengthAttribute") || (a.AttributeType.Name == "StringLengthAttribute"));
          result.MaxStringLength = (int?)maxLengthAttribute?.ConstructorArguments.First().Value ?? 0;
 
          if (maxLengthAttribute != null)
             attributes.Remove(maxLengthAttribute);
 
-         CustomAttributeData minLengthAttribute = attributes.FirstOrDefault(a => a.AttributeType.Name == "MinLength");
+         CustomAttributeData minLengthAttribute = attributes.FirstOrDefault(a => a.AttributeType.Name == "MinLengthAttribute");
          result.MinStringLength = (int?)minLengthAttribute?.ConstructorArguments.First().Value ?? 0;
 
          if (minLengthAttribute != null)
@@ -206,7 +207,7 @@ namespace EFCore7Parser
          return result;
       }
 
-      private ModelRoot ProcessRoot()
+      protected ModelRoot ProcessRoot()
       {
          ModelRoot result = new ModelRoot();
          Type contextType = dbContext.GetType();
@@ -219,7 +220,7 @@ namespace EFCore7Parser
 
 #region Associations
 
-      private List<ModelUnidirectionalAssociation> GetUnidirectionalAssociations(IEntityType entityType)
+      protected List<ModelUnidirectionalAssociation> GetUnidirectionalAssociations(IEntityType entityType)
       {
          List<ModelUnidirectionalAssociation> result = new List<ModelUnidirectionalAssociation>();
 
@@ -267,7 +268,7 @@ namespace EFCore7Parser
          return result;
       }
 
-      private List<ModelBidirectionalAssociation> GetBidirectionalAssociations(IEntityType entityType)
+      protected List<ModelBidirectionalAssociation> GetBidirectionalAssociations(IEntityType entityType)
       {
          List<ModelBidirectionalAssociation> result = new List<ModelBidirectionalAssociation>();
 

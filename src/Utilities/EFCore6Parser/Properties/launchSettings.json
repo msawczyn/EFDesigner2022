@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EFCore6Parser": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Code\\_Clients\\AWH\\Apprisen\\ICM\\Apprisen.SSO\\AppService\\Apprisen.SSO.Data.V2022\\bin\\Debug\\net6.0\\Apprisen.SSO.Data.V2022.dll\" \"c:\\temp\\sso.json\""
+    }
+  }
+}
