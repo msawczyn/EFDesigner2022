@@ -334,8 +334,7 @@ namespace EF6Parser
          modelClasses = oSpace.OfType<ComplexType>()
                               .Select(e => ProcessComplexType(e.FullName,
                                                               oSpace.OfType<EntityType>().SingleOrDefault(s => s.FullName == e.FullName),
-                                                              sSpace?.OfType<EntityType>().SingleOrDefault(s => s.FullName == "CodeFirstDatabaseSchema." + e.FullName.Split('.').Last()),
-                                                              cSpace.OfType<EntityType>().SingleOrDefault(c => c.FullName == e.FullName)))
+                                                              sSpace?.OfType<EntityType>().SingleOrDefault(s => s.FullName == "CodeFirstDatabaseSchema." + e.FullName.Split('.').Last())))
                               .Where(x => x != null)
                               .ToList();
 
@@ -356,7 +355,7 @@ namespace EF6Parser
       }
 
       // ReSharper disable once UnusedParameter.Local
-      private ModelClass ProcessComplexType(string entityFullName, EntityType oSpaceType, EntityType sSpaceType, EntityType cSpaceType)
+      private ModelClass ProcessComplexType(string entityFullName, EntityType oSpaceType, EntityType sSpaceType)
       {
          Type type = assembly.GetType(entityFullName);
 

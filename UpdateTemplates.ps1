@@ -29,8 +29,6 @@ $1
 
 $files = 
    'EFDesigner',
-   'EF6Designer',
-   'EFCoreDesigner',
    'EF6ModelGenerator',
    'EFCore2ModelGenerator',
    'EFCore3ModelGenerator',

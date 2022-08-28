@@ -42,6 +42,7 @@ namespace Sawczyn.EFDesigner.EFModel
             string[] parsers =
             {
                @"Parsers\EF6Parser.exe", 
+               @"Parsers\EF6ParserFmwk.exe", 
                @"Parsers\EFCore2Parser.exe", 
                @"Parsers\EFCore3Parser.exe", 
                @"Parsers\EFCore5Parser.exe", 
@@ -397,6 +398,8 @@ namespace Sawczyn.EFDesigner.EFModel
                element.Name = data.Name;
                element.CustomAttributes = data.CustomAttributes;
                element.Indexed = data.Indexed;
+               element.IndexedUnique = data.IndexedUnique;
+               element.IndexName = data.IndexName;
                element.Required = data.Required;
                element.MaxLength = data.MaxStringLength;
                element.MinLength = data.MinStringLength;

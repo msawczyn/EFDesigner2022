@@ -226,6 +226,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                           "Decimal",
                                                           "Double",
                                                           "Guid",
+                                                          "HierarchyId",
                                                           "Int16",
                                                           "Int32",
                                                           "Int64",

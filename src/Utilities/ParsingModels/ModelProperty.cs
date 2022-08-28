@@ -6,6 +6,8 @@
       public string Name { get; set; }
       public string CustomAttributes { get; set; }
       public bool Indexed { get; set; }
+      public bool IndexedUnique { get; set; }
+      public string IndexName { get; set; }
       public bool Required { get; set; }
       public int MaxStringLength { get; set; }
       public int MinStringLength { get; set; }

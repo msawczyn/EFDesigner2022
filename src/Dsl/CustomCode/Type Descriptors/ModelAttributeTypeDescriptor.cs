@@ -65,7 +65,10 @@ namespace Sawczyn.EFDesigner.EFModel
 
             // don't display IndexedUnique unless the Indexed is true
             if (!modelAttribute.Indexed)
+            {
                propertyDescriptors.Remove("IndexedUnique");
+               propertyDescriptors.Remove("IndexName");
+            }
 
             // EF6 doesn't support various attribute features
             if (modelRoot.EntityFrameworkVersion == EFVersion.EF6)

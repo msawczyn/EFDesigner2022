@@ -11975,6 +11975,95 @@ namespace Sawczyn.EFDesigner.EFModel
 		}
 		
 		#endregion
+		#region IndexName domain property code
+		
+		/// <summary>
+		/// IndexName domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid IndexNameDomainPropertyId = new global::System.Guid(0x5ce52a59, 0x6c83, 0x4d2d, 0x93, 0x2f, 0x74, 0x86, 0x99, 0xea, 0xd3, 0x3f);
+		
+		/// <summary>
+		/// Storage for IndexName
+		/// </summary>
+		private global::System.String indexNamePropertyStorage = string.Empty;
+		
+		/// <summary>
+		/// Gets or sets the value of IndexName domain property.
+		/// Name of the index for this property. If empty, Entity Framework will use its
+		/// default naming
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/IndexName.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/IndexName.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/IndexName.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslModeling::DomainObjectId("5ce52a59-6c83-4d2d-932f-748699ead33f")]
+		public global::System.String IndexName
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return indexNamePropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				IndexNamePropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelAttribute.IndexName domain property.
+		/// </summary>
+		internal sealed partial class IndexNamePropertyHandler : DslModeling::DomainPropertyValueHandler<ModelAttribute, global::System.String>
+		{
+			private IndexNamePropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelAttribute.IndexName domain property value handler.
+			/// </summary>
+			public static readonly IndexNamePropertyHandler Instance = new IndexNamePropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelAttribute.IndexName domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return IndexNameDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.String GetValue(ModelAttribute element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.indexNamePropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelAttribute element, global::System.String newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.String oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.indexNamePropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
 		#region ModelClass opposite domain role accessor
 		/// <summary>
 		/// Gets or sets ModelClass.
@@ -14326,6 +14415,6 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
 	partial class ModelRoot
 	{
-		public const string DSLVersion = "4.2.2.0";
+		public const string DSLVersion = "4.2.2.1";
 	}
 }

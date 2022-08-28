@@ -1,5 +1,8 @@
 4.2.2
-   - Fixed issues with string length and required detection in assembly import
+   - Fixed issues with string length and "required" detection in assembly import
+   - Added HierarchyId as a property type
+   - Added optional index name for indexed properties
+   - Assembly import is a bit smarter now in detecting and using indexes
 
 4.2.1
    - Added support for EFCore7

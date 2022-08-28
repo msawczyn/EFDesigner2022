@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v2.0.5.7
+//     Produced by Entity Framework Visual Editor v4.2.2.0
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -22,45 +22,71 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace MultiContext.Context2
+namespace Sandbox_EF6
 {
-	public partial class Entity2
-	{
-		partial void Init();
+   public partial class Entity2
+   {
+      partial void Init();
 
-		/// <summary>
-		/// Default constructor
-		/// </summary>
-		public Entity2()
-		{
-			Entity3 = new System.Collections.Generic.HashSet<global::MultiContext.Context2.Entity3>();
+      /// <summary>
+      /// Default constructor. Protected due to required properties, but present because EF needs it.
+      /// </summary>
+      protected Entity2()
+      {
+         Init();
+      }
 
-			Init();
-		}
+      /// <summary>
+      /// Replaces default constructor, since it's protected. Caller assumes responsibility for setting all required values before saving.
+      /// </summary>
+      public static Entity2 CreateEntity2Unsafe()
+      {
+         return new Entity2();
+      }
 
-		/*************************************************************************
-		 * Properties
-		 *************************************************************************/
+      /// <summary>
+      /// Public constructor with required data
+      /// </summary>
+      /// <param name="entity1"></param>
+      public Entity2(global::Sandbox_EF6.Entity1 entity1) : this()
+      {
+         if (entity1 == null) throw new ArgumentNullException(nameof(entity1));
+         this.Entity1 = entity1;
+         entity1.Entity2.Add(this);
 
-		/// <summary>
-		/// Identity, Required
-		/// </summary>
-		[Key]
-		[Required]
-		public int Id { get; protected set; }
+      }
 
-		public string Property1 { get; set; }
+      /// <summary>
+      /// Static create function (for use in LINQ queries, etc.)
+      /// </summary>
+      /// <param name="entity1"></param>
+      public static Entity2 Create(global::Sandbox_EF6.Entity1 entity1)
+      {
+         return new Entity2(entity1);
+      }
 
-		public string Property2 { get; set; }
+      /*************************************************************************
+       * Properties
+       *************************************************************************/
 
-		public string Property3 { get; set; }
+      /// <summary>
+      /// Identity, Indexed, Required
+      /// Unique identifier
+      /// </summary>
+      [Key]
+      [Required]
+      [System.ComponentModel.Description("Unique identifier")]
+      public long Id { get; set; }
 
-		/*************************************************************************
-		 * Navigation properties
-		 *************************************************************************/
+      /*************************************************************************
+       * Navigation properties
+       *************************************************************************/
 
-		public virtual ICollection<global::MultiContext.Context2.Entity3> Entity3 { get; protected set; }
+      /// <summary>
+      /// Required
+      /// </summary>
+      public virtual global::Sandbox_EF6.Entity1 Entity1 { get; set; }
 
-	}
+   }
 }
 

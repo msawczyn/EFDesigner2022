@@ -1609,6 +1609,18 @@
     <value>Database</value>
     <comment>Category for DomainProperty &apos;TypeScale&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
   </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute/IndexName.Description" xml:space="preserve">
+    <value>Name of the index for this property. If empty, Entity Framework will use its default naming</value>
+    <comment>Description for DomainProperty &apos;IndexName&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute/IndexName.DisplayName" xml:space="preserve">
+    <value>Index Name</value>
+    <comment>DisplayName for DomainProperty &apos;IndexName&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute/IndexName.Category" xml:space="preserve">
+    <value>Database</value>
+    <comment>Category for DomainProperty &apos;IndexName&apos; on DomainClass &apos;ModelAttribute&apos;</comment>
+  </data>
   <data name="Sawczyn.EFDesigner.EFModel.Comment.Description" xml:space="preserve">
     <value></value>
     <comment>Description for DomainClass &apos;Comment&apos;</comment>

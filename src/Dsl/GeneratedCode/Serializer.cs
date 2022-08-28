@@ -5230,6 +5230,23 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
+	      // IndexName
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribIndexName = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "indexName");
+	         if (attribIndexName != null)
+	         {
+	            global::System.String valueOfIndexName;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.String>(serializationContext, attribIndexName, out valueOfIndexName))
+	            {
+	               instanceOfModelAttribute.IndexName = valueOfIndexName;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "indexName", typeof(global::System.String), attribIndexName);
+	            }
+	         }
+	      }
 	   }
 	
 	   /// <summary>
@@ -6117,6 +6134,17 @@ namespace Sawczyn.EFDesigner.EFModel
 	         {
 	            if (!string.IsNullOrEmpty(propValue))
 	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "typeScale", propValue);
+	
+	         }
+	      }
+	      // IndexName
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.String propValue = instanceOfModelAttribute.IndexName;
+	         if (!serializationContext.Result.Failed)
+	         {
+	            if (!string.IsNullOrEmpty(propValue))
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "indexName", propValue);
 	
 	         }
 	      }

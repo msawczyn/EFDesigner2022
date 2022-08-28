@@ -184,19 +184,19 @@ namespace EFCore6Parser
 
          CustomAttributeData requiredAttribute = attributes.FirstOrDefault(a => a.AttributeType.Name == "RequiredAttribute");
          result.Required = (bool)(requiredAttribute?.ConstructorArguments.FirstOrDefault().Value ?? !propertyData.IsNullable);
+         attributes.RemoveAll(a => a.AttributeType.Name == "RequiredAttribute");
+
          result.Indexed = propertyData.IsIndex();
+         result.IndexedUnique = result.Indexed && propertyData.IsUniqueIndex();
+         result.IndexName = propertyData.GetContainingIndexes().FirstOrDefault(i => i.Properties.Count == 1)?.Name;
+         result.MaxStringLength = type == typeof(string) ? (propertyData.GetMaxLength() ?? 0) : 0;
 
-         CustomAttributeData maxLengthAttribute = attributes.FirstOrDefault(a => (a.AttributeType.Name == "MaxLengthAttribute") || (a.AttributeType.Name == "StringLengthAttribute"));
-         result.MaxStringLength = (int?)maxLengthAttribute?.ConstructorArguments.First().Value ?? 0;
-
-         if (maxLengthAttribute != null)
-            attributes.Remove(maxLengthAttribute);
+         attributes.RemoveAll(a => (a.AttributeType.Name == "MaxLengthAttribute")
+                                || (a.AttributeType.Name == "StringLengthAttribute"));
 
          CustomAttributeData minLengthAttribute = attributes.FirstOrDefault(a => a.AttributeType.Name == "MinLengthAttribute");
          result.MinStringLength = (int?)minLengthAttribute?.ConstructorArguments.FirstOrDefault().Value ?? 0;
-
-         if (minLengthAttribute != null)
-            attributes.Remove(minLengthAttribute);
+         attributes.RemoveAll(a => a.AttributeType.Name == "MinLengthAttribute");
 
          string customAttributes = GetCustomAttributes(attributes);
 
@@ -220,7 +220,7 @@ namespace EFCore6Parser
 
 #region Associations
 
-      private List<ModelUnidirectionalAssociation> GetUnidirectionalAssociations(IEntityType entityType)
+      protected List<ModelUnidirectionalAssociation> GetUnidirectionalAssociations(IEntityType entityType)
       {
          List<ModelUnidirectionalAssociation> result = new List<ModelUnidirectionalAssociation>();
 
@@ -268,7 +268,7 @@ namespace EFCore6Parser
          return result;
       }
 
-      private List<ModelBidirectionalAssociation> GetBidirectionalAssociations(IEntityType entityType)
+      protected List<ModelBidirectionalAssociation> GetBidirectionalAssociations(IEntityType entityType)
       {
          List<ModelBidirectionalAssociation> result = new List<ModelBidirectionalAssociation>();
 

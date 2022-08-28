@@ -946,6 +946,12 @@
             <xsd:documentation>Maximum number of decimal places</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+        <!-- Property: IndexName -->
+        <xsd:attribute name="indexName" type="xsd:string" >
+          <xsd:annotation>
+            <xsd:documentation>Name of the index for this property. If empty, Entity Framework will use its default naming</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

@@ -47,30 +47,66 @@ namespace EF6Parser
          }
       }
 
-      private static Assembly Context_Resolving(AssemblyLoadContext context, AssemblyName assemblyName)
+      public static Assembly Context_Resolving(AssemblyLoadContext context, AssemblyName assemblyName)
       {
+         Assembly result = null;
+
          // avoid loading *.resources dlls, because of: https://github.com/dotnet/coreclr/issues/8416
-         if (assemblyName.Name.EndsWith("resources"))
-            return null;
+         if (!assemblyName.Name.EndsWith("resources"))
+         {
+            // try known directories
+            string found = context.Assemblies.Select(x => Path.Combine(Path.GetDirectoryName(x.Location), $"{assemblyName.Name}.dll")).Distinct().FirstOrDefault(File.Exists);
 
-         // try known directories
-         string found = context.Assemblies.Select(x => Path.Combine(Path.GetDirectoryName(x.Location), $"{assemblyName.Name}.dll")).Distinct().FirstOrDefault(File.Exists);
+            if (found != null)
+            {
+               try
+               {
+                  result = context.LoadFromAssemblyPath(found);
+               }
+               catch
+               {
+                  result = null;
+               }
+            }
 
-         if (found != null)
-            return context.LoadFromAssemblyPath(found);
+            if (result == null)
+            {
+               // try the current directory
+               string pathInCurrentDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), $"{assemblyName.Name}.dll");
 
-         // try the current directory
-         string pathInCurrentDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), $"{assemblyName.Name}.dll");
+               if (File.Exists(pathInCurrentDirectory))
+               {
+                  try
+                  {
+                     result = context.LoadFromAssemblyPath(pathInCurrentDirectory);
+                  }
+                  catch 
+                  {
+                     result = null;
+                  }
+               }
+            }
 
-         if (File.Exists(pathInCurrentDirectory))
-            return context.LoadFromAssemblyPath(found);
+            // try gac
+            if (result == null)
+            {
+               found = Directory.GetFileSystemEntries(Environment.ExpandEnvironmentVariables("%windir%\\Microsoft.NET\\assembly"), $"{assemblyName.Name}.dll", SearchOption.AllDirectories)
+                                .FirstOrDefault();
 
-         // try gac
-         found = Directory.GetFileSystemEntries(Environment.ExpandEnvironmentVariables("%windir%\\Microsoft.NET\\assembly"), $"{assemblyName.Name}.dll", SearchOption.AllDirectories).FirstOrDefault();
+               try
+               {
+                  result = found == null
+                              ? null
+                              : context.LoadFromAssemblyPath(found);
+               }
+               catch
+               {
+                  result = null;
+               }
+            }
+         }
 
-         return found == null
-                   ? null
-                   : context.LoadFromAssemblyPath(found);
+         return result;
       }
 
       private static void Exit(int returnCode, Exception ex = null)

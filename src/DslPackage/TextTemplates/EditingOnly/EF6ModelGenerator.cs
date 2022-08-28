@@ -12,7 +12,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.1.3
+      // EFDesigner v4.2.2.1
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -769,7 +769,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   {
                      segments.Clear();
 
-                     segments.Add($"modelBuilder.Entity<{modelClass.FullName}>().HasIndex(t => t.{modelAttribute.Name})");
+                     segments.Add(!string.IsNullOrEmpty(modelAttribute.IndexName)
+                                     ? $"modelBuilder.Entity<{modelClass.FullName}>().HasIndex(t => t.{modelAttribute.Name}, {modelAttribute.IndexName})"
+                                     : $"modelBuilder.Entity<{modelClass.FullName}>().HasIndex(t => t.{modelAttribute.Name})");
 
                      if (modelAttribute.IndexedUnique)
                         segments.Add("IsUnique()");

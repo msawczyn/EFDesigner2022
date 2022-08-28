@@ -13,7 +13,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.1.3
+      // EFDesigner v4.2.2.1
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -320,7 +320,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                if (modelAttribute.Indexed && !modelClass.IsDatabaseView)
                {
                   buffer.Clear();
-                  buffer.Add($"HasIndex(t => t.{modelAttribute.Name})");
+                  buffer.Add(!string.IsNullOrEmpty(modelAttribute.IndexName)
+                                ? $"HasIndex(t => t.{modelAttribute.Name}, {modelAttribute.IndexName})"
+                                : $"HasIndex(t => t.{modelAttribute.Name})");
 
                   if (modelAttribute.IndexedUnique)
                      buffer.Add("IsUnique()");
