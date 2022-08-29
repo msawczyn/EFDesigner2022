@@ -28,10 +28,6 @@ namespace Sawczyn.EFDesigner.EFModel
             if (modelRoot == null)
                return propertyDescriptors;
 
-            // things unavailable if pre-EFCore6
-            if (!modelRoot.IsEFCore6Plus)
-               propertyDescriptors.Remove("UseTemporalTables");
-
             // things unavailable if pre-EFCore5
             if (!modelRoot.IsEFCore5Plus)
             {
@@ -41,38 +37,25 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("ExcludeFromMigrations");
                propertyDescriptors.Remove("IsDatabaseView");
                propertyDescriptors.Remove("ViewName");
-
-               if (modelClass.IsDependentType && (modelRoot.EntityFrameworkVersion == EFVersion.EF6))
-                  propertyDescriptors.Remove("TableName");
             }
-            else
+
+            // things unavailable if pre-EFCore6
+            if (!modelRoot.IsEFCore6Plus)
             {
-               if (!modelRoot.GenerateTableComments)
-                  propertyDescriptors.Remove("TableComment");
+               propertyDescriptors.Remove("UseTemporalTables");
 
-               if (modelClass.IsQueryType)
-               {
+               if (modelClass.IsDependentType)
                   propertyDescriptors.Remove("TableName");
-                  propertyDescriptors.Remove("TableComment");
-                  propertyDescriptors.Remove("DatabaseSchema");
-                  propertyDescriptors.Remove("Concurrency");
-               }
-
-               if (modelClass.IsDatabaseView)
-               {
-                  propertyDescriptors.Remove("TableName");
-                  propertyDescriptors.Remove("TableComment");
-               }
-               else
-                  propertyDescriptors.Remove("ViewName");
-
-               if (modelClass.IsPropertyBag)
-                  propertyDescriptors.Remove("IsDependentType");
             }
 
-            if (modelClass.IsDatabaseView
-             || (modelClass.Subclasses.Any() && (modelClass.ModelRoot.InheritanceStrategy != CodeStrategy.TablePerHierarchy))
-             || (modelClass.Superclass != null))
+            if (!modelRoot.GenerateTableComments)
+               propertyDescriptors.Remove("TableComment");
+
+            if (modelClass.IsPropertyBag)
+               propertyDescriptors.Remove("IsDependentType");
+
+            if ((modelClass.Subclasses.Any() && modelClass.ModelRoot.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
+             || modelClass.Superclass != null)
                propertyDescriptors.Remove("UseTemporalTables");
 
             // things unavailable for association classes
@@ -85,6 +68,32 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("IsDatabaseView");
                propertyDescriptors.Remove("ViewName");
                propertyDescriptors.Remove("ExcludeFromMigrations");
+            }
+
+            // things unavailable for views
+            if (modelClass.IsDatabaseView)
+            {
+               propertyDescriptors.Remove("IsAssociationClass");
+               propertyDescriptors.Remove("IsDependentType");
+               propertyDescriptors.Remove("IsQueryType");
+               propertyDescriptors.Remove("UseTemporalTables");
+               propertyDescriptors.Remove("TableName");
+               propertyDescriptors.Remove("TableComment");
+            }
+            else
+               propertyDescriptors.Remove("ViewName");
+
+            // things unavailable for query types
+            if (modelClass.IsQueryType)
+            {
+               propertyDescriptors.Remove("UseTemporalTables");
+               propertyDescriptors.Remove("IsAssociationClass");
+               propertyDescriptors.Remove("ViewName");
+               propertyDescriptors.Remove("IsDatabaseView");
+               propertyDescriptors.Remove("Concurrency");
+               propertyDescriptors.Remove("TableName");
+               propertyDescriptors.Remove("TableComment");
+               propertyDescriptors.Remove("DatabaseSchema");
             }
 
             // things unavailable for transient classes

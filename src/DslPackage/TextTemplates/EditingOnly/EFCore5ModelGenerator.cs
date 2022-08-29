@@ -13,7 +13,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.2.1
+      // EFDesigner v4.2.2.2
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -123,7 +123,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             if (modelClass.ExcludeFromMigrations)
                modifiers.Add("t.ExcludeFromMigrations();");
 
-            if (modelClass.UseTemporalTables
+            if (modelRoot.IsEFCore6Plus 
+             && modelClass.UseTemporalTables
              && !modelClass.IsDatabaseView
              && (!modelClass.Subclasses.Any() || modelClass.ModelRoot.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
              && modelClass.Superclass == null)

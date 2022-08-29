@@ -26,6 +26,7 @@ namespace ParsingModels
       public bool IsAbstract { get; set; }
       public string BaseClass { get; set; }
       public string TableName { get; set; }
+      public string ViewName { get; set; }
       public bool IsDependentType { get; set; }
       public List<ModelProperty> Properties { get; set; }
       public List<ModelUnidirectionalAssociation> UnidirectionalAssociations { get; set; } = new List<ModelUnidirectionalAssociation>();

@@ -42,7 +42,6 @@ namespace Sawczyn.EFDesigner.EFModel
             string[] parsers =
             {
                @"Parsers\EF6Parser.exe", 
-               @"Parsers\EF6ParserFmwk.exe", 
                @"Parsers\EFCore2Parser.exe", 
                @"Parsers\EFCore3Parser.exe", 
                @"Parsers\EFCore5Parser.exe", 
@@ -255,14 +254,29 @@ namespace Sawczyn.EFDesigner.EFModel
 
             if (element == null)
             {
-               element = new ModelClass(Store,
-                                        new PropertyAssignment(ModelClass.NameDomainPropertyId, data.Name),
-                                        new PropertyAssignment(ModelClass.NamespaceDomainPropertyId, data.Namespace),
-                                        new PropertyAssignment(ModelClass.CustomAttributesDomainPropertyId, data.CustomAttributes),
-                                        new PropertyAssignment(ModelClass.CustomInterfacesDomainPropertyId, data.CustomInterfaces),
-                                        new PropertyAssignment(ModelClass.IsAbstractDomainPropertyId, data.IsAbstract),
-                                        new PropertyAssignment(ModelClass.TableNameDomainPropertyId, data.TableName),
-                                        new PropertyAssignment(ModelClass.IsDependentTypeDomainPropertyId, data.IsDependentType));
+               if (!string.IsNullOrEmpty(data.ViewName))
+               {
+                  element = new ModelClass(Store,
+                                           new PropertyAssignment(ModelClass.NameDomainPropertyId, data.Name),
+                                           new PropertyAssignment(ModelClass.NamespaceDomainPropertyId, data.Namespace),
+                                           new PropertyAssignment(ModelClass.CustomAttributesDomainPropertyId, data.CustomAttributes),
+                                           new PropertyAssignment(ModelClass.CustomInterfacesDomainPropertyId, data.CustomInterfaces),
+                                           new PropertyAssignment(ModelClass.IsAbstractDomainPropertyId, data.IsAbstract),
+                                           new PropertyAssignment(ModelClass.IsDatabaseViewDomainPropertyId, true),
+                                           new PropertyAssignment(ModelClass.ViewNameDomainPropertyId, data.ViewName),
+                                           new PropertyAssignment(ModelClass.IsDependentTypeDomainPropertyId, data.IsDependentType));
+               }
+               else
+               {
+                  element = new ModelClass(Store,
+                                           new PropertyAssignment(ModelClass.NameDomainPropertyId, data.Name),
+                                           new PropertyAssignment(ModelClass.NamespaceDomainPropertyId, data.Namespace),
+                                           new PropertyAssignment(ModelClass.CustomAttributesDomainPropertyId, data.CustomAttributes),
+                                           new PropertyAssignment(ModelClass.CustomInterfacesDomainPropertyId, data.CustomInterfaces),
+                                           new PropertyAssignment(ModelClass.IsAbstractDomainPropertyId, data.IsAbstract),
+                                           new PropertyAssignment(ModelClass.TableNameDomainPropertyId, data.TableName),
+                                           new PropertyAssignment(ModelClass.IsDependentTypeDomainPropertyId, data.IsDependentType));
+               }
 
                modelRoot.Classes.Add(element);
                result.Add(element);
@@ -274,7 +288,14 @@ namespace Sawczyn.EFDesigner.EFModel
                element.CustomAttributes = data.CustomAttributes;
                element.CustomInterfaces = data.CustomInterfaces;
                element.IsAbstract = data.IsAbstract;
-               element.TableName = data.TableName;
+               element.IsDatabaseView = !string.IsNullOrEmpty(data.ViewName);
+
+               if (element.IsDatabaseView)
+                  element.ViewName = data.ViewName;
+               else
+                  element.TableName = data.TableName;
+               
+               
                element.IsDependentType = data.IsDependentType;
             }
 
