@@ -74,10 +74,18 @@ namespace EFCore5Parser
          ConstructorInfo constructor = contextType.GetConstructor(new[] {optionsType});
 
          // ReSharper disable once UnthrowableException
-         if (constructor == null)
-            throw new MissingMethodException($"Can't find appropriate constructor - {contextType.Name}.{contextType.Name}(DbContextOptions<{contextType.Name}>)");
+         if (constructor != null)
+            dbContext = assembly.CreateInstance(contextType.FullName, true, BindingFlags.Default, null, new object[] {options}, null, null) as DbContext;
+         else
+         {
+            constructor = contextType.GetConstructor(Type.EmptyTypes);
+            if (constructor != null)
+               dbContext = assembly.CreateInstance(contextType.FullName, true, BindingFlags.Default, null, null, null, null) as DbContext;
+         }
 
-         dbContext = assembly.CreateInstance(contextType.FullName, true, BindingFlags.Default, null, new object[] {options}, null, null) as DbContext;
+         if (dbContext == null)
+            throw new MissingMethodException($"Can't find appropriate constructor - default or {contextType.Name}.{contextType.Name}(DbContextOptions<{contextType.Name}>)");
+
          model = dbContext.Model;
       }
 

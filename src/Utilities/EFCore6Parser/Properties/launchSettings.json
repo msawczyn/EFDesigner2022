@@ -2,7 +2,7 @@
   "profiles": {
     "EFCore6Parser": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Code\\_Clients\\AWH\\Apprisen\\ICM\\AppService\\Apprisen.ICM.Data.v2022\\bin\\Debug\\net6.0\\Apprisen.ICM.Data.v2022.dll c:\\temp\\parsertest.txt"
+      "commandLineArgs": "C:\\Code\\_Clients\\AWH\\Apprisen\\CreditApi\\CreditPullApi.Data\\bin\\Debug\\netstandard2.1\\CreditPullApi.Data.dll c:\\temp\\parsertest.txt"
     }
   }
 }
