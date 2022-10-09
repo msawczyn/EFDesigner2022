@@ -2,7 +2,7 @@
   "profiles": {
     "EFCore6Parser": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Code\\_Clients\\AWH\\Apprisen\\CreditApi\\CreditPullApi.Data\\bin\\Debug\\netstandard2.1\\CreditPullApi.Data.dll c:\\temp\\parsertest.txt"
+      "commandLineArgs": "[source assembly] [logfile]"
     }
   }
 }

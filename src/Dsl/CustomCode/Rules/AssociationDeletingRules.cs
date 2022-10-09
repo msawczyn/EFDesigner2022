@@ -19,19 +19,22 @@ namespace Sawczyn.EFDesigner.EFModel
          if (current.IsSerializing || ModelRoot.BatchUpdating)
             return;
 
-         List<ModelAttribute> unnecessaryProperties = element.Dependent?.AllAttributes?.Where(x => (x.IsForeignKeyFor == element.Id) && !x.IsIdentity).ToList();
+         List<ModelAttribute> unnecessaryProperties = element.Dependent?.AllAttributes?.Where(x => (x.IsForeignKeyFor == element.Id)).ToList();
 
          if (unnecessaryProperties?.Any() == true)
          {
-            WarningDisplay.Show($"{element.GetDisplayText()} doesn't specify defined foreign keys. Removing foreign key attribute(s) {string.Join(", ", unnecessaryProperties.Select(x => x.GetDisplayText()))}");
-
             foreach (ModelAttribute fkProperty in unnecessaryProperties)
             {
                fkProperty.ClearFKMods();
-               fkProperty.ModelClass.Attributes.Remove(fkProperty);
-               fkProperty.Delete();
+               if (!fkProperty.IsIdentity)
+               {
+                  fkProperty.ModelClass.Attributes.Remove(fkProperty);
+                  fkProperty.Delete();
+               }
             }
          }
+
+
       }
    }
 }
