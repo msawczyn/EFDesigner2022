@@ -5,9 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
 
-using log4net;
-using log4net.Config;
-using log4net.Repository;
+using ParsingModels;
 
 namespace EF6Parser
 {
@@ -20,7 +18,8 @@ namespace EF6Parser
       public const int CANNOT_CREATE_DBCONTEXT = 4;
       public const int CANNOT_FIND_APPROPRIATE_CONSTRUCTOR = 5;
       public const int AMBIGUOUS_REQUEST = 6;
-      private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+      private static Logger log = Logger.GetLogger("");
 
       private static List<string> Usage
       {
@@ -80,7 +79,7 @@ namespace EF6Parser
                   {
                      result = context.LoadFromAssemblyPath(pathInCurrentDirectory);
                   }
-                  catch 
+                  catch
                   {
                      result = null;
                   }
@@ -121,18 +120,8 @@ namespace EF6Parser
             log.Error($"Exiting with return code {returnCode}");
          }
 
+         log.Dispose();
          Environment.Exit(returnCode);
-      }
-
-      private static Stream GetLogStream()
-      {
-         MemoryStream stream = new MemoryStream();
-         StreamWriter writer = new StreamWriter(stream);
-         writer.Write(Resources.Log4netConfig);
-         writer.Flush();
-         stream.Position = 0;
-
-         return stream;
       }
 
       private static int Main(string[] args)
@@ -146,15 +135,15 @@ namespace EF6Parser
 
          try
          {
+            string exePath = Environment.GetCommandLineArgs()[0];
             string inputPath = args[0].Replace("\n", @"\n");
             string outputPath = args[1].Replace("\n", @"\n");
+            string logPath = Path.ChangeExtension(outputPath, "log");
 
-            GlobalContext.Properties["LogPath"] = Path.ChangeExtension(outputPath, "log");
-            ILoggerRepository logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-            XmlConfigurator.Configure(logRepository, GetLogStream());
+            log = Logger.GetLogger(logPath);
 
-            log.Info($"Starting {Assembly.GetEntryAssembly().Location}");
-            log.Info($"Log file at {GlobalContext.Properties["LogPath"]}");
+            log.Info($"Starting {exePath}");
+            log.Info($"Log file at {logPath}");
 
             using (StreamWriter output = new StreamWriter(outputPath))
             {
@@ -174,7 +163,7 @@ namespace EF6Parser
 
                   try
                   {
-                     parser = new Parser(assembly, contextClassName);
+                     parser = new Parser(assembly, log, contextClassName);
                   }
 
                   // ReSharper disable once UncatchableException
@@ -211,14 +200,18 @@ namespace EF6Parser
                   Exit(CANNOT_LOAD_ASSEMBLY, ex);
                }
             }
+
+            log.Info("Success");
          }
          catch (Exception ex)
          {
             log.Error(ex.Message);
             Exit(CANNOT_WRITE_OUTPUTFILE, ex);
          }
-
-         log.Info("Success");
+         finally
+         {
+            log.Dispose();
+         }
 
          return SUCCESS;
       }

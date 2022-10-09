@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using log4net;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,12 +18,11 @@ namespace EFCore6Parser
 {
    public class Parser : ParserBase
    {
-      private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
       private readonly DbContext dbContext;
 
       private IModel model;
 
-      public Parser(Assembly assembly, string dbContextTypeName = null)
+      public Parser(Assembly assembly, Logger logger, string dbContextTypeName = null) : base(logger)
       {
          Type contextType;
 

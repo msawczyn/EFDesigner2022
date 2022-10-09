@@ -9,8 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-using log4net;
-
 using Newtonsoft.Json;
 
 using ParsingModels;
@@ -21,13 +19,11 @@ namespace EF6Parser
 {
    public class Parser : ParserBase
    {
-      private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
       private readonly Assembly assembly;
       private readonly DbContext dbContext;
       private readonly MetadataWorkspace metadata;
 
-      public Parser(Assembly assembly, string dbContextTypeName = null)
+      public Parser(Assembly assembly, Logger logger, string dbContextTypeName = null) : base(logger)
       {
          this.assembly = assembly;
          Type contextType;

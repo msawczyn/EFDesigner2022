@@ -23,7 +23,6 @@
 
    <ItemGroup>
       <PackageReference Include="EntityFramework" Version="6.4.4" />
-      <PackageReference Include="log4net" Version="2.0.15" />
       <PackageReference Include="Microsoft.VisualStudio.RpcContracts" Version="17.3.19" />
       <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.3.44" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -40,27 +39,6 @@
 
    <ItemGroup>
       <ProjectReference Include="..\ParsingModels\ParsingModels.csproj" />
-   </ItemGroup>
-
-   <ItemGroup>
-      <Compile Update="Resources.Designer.cs">
-         <DesignTime>True</DesignTime>
-         <AutoGen>True</AutoGen>
-         <DependentUpon>Resources.resx</DependentUpon>
-      </Compile>
-   </ItemGroup>
-
-   <ItemGroup>
-      <EmbeddedResource Update="Resources.resx">
-         <Generator>ResXFileCodeGenerator</Generator>
-         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-   </ItemGroup>
-
-   <ItemGroup>
-     <None Update="log4net.config">
-       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-     </None>
    </ItemGroup>
 
 </Project>

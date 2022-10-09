@@ -8,6 +8,13 @@ namespace ParsingModels
 {
    public abstract class ParserBase
    {
+      protected readonly Logger log;
+
+      protected ParserBase(Logger logger)
+      {
+         log = logger;
+      }
+
       protected static readonly Regex TypeNameRegex = new Regex(@"([^`]+)`\d\[(\[[^\]]+\])(,(\[[^\]]+\]))*\]", RegexOptions.Compiled);
 
       protected static readonly List<string> IgnoreAttributes = new List<string>(new[]
