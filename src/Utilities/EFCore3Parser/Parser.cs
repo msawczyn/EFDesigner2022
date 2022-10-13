@@ -119,7 +119,7 @@ namespace EFCore3Parser
 
          result.BaseClass = GetTypeFullName(type.BaseType);
 
-         result.TableName = entityType.GetTableName();
+         result.TableName = result.ViewName == null ? entityType.GetTableName() : null;
          result.IsDependentType = entityType.IsOwned();
          result.CustomAttributes = GetCustomAttributes(type.CustomAttributes);
 

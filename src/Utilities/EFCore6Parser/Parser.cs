@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -68,11 +69,11 @@ namespace EFCore6Parser
                                                                                                      .BuildServiceProvider())
                                                   .Options;
 
-         ConstructorInfo constructor = contextType.GetConstructor(new[] {optionsType});
+         ConstructorInfo constructor = contextType.GetConstructor(new[] { optionsType });
 
          // ReSharper disable once UnthrowableException
          if (constructor != null)
-            dbContext = assembly.CreateInstance(contextType.FullName, true, BindingFlags.Default, null, new object[] {options}, null, null) as DbContext;
+            dbContext = assembly.CreateInstance(contextType.FullName, true, BindingFlags.Default, null, new object[] { options }, null, null) as DbContext;
          else
          {
             constructor = contextType.GetConstructor(Type.EmptyTypes);
@@ -118,7 +119,8 @@ namespace EFCore6Parser
 
          result.BaseClass = GetTypeFullName(type.BaseType);
 
-         result.TableName = entityType.GetTableName();
+         result.ViewName = entityType.GetViewName();
+         result.TableName = result.ViewName == null ? entityType.GetTableName() : null;
          result.IsDependentType = entityType.IsOwned();
          result.CustomAttributes = GetCustomAttributes(type.CustomAttributes);
 
@@ -157,7 +159,7 @@ namespace EFCore6Parser
                                          : null;
 
             result.Values = Enum.GetNames(enumType)
-                                .Select(name => new ModelEnumValue {Name = name, Value = Convert.ChangeType(Enum.Parse(enumType, name), underlyingType).ToString()})
+                                .Select(name => new ModelEnumValue { Name = name, Value = Convert.ChangeType(Enum.Parse(enumType, name), underlyingType).ToString() })
                                 .ToList();
 
             modelRoot.Enumerations.Add(result);
@@ -223,7 +225,7 @@ namespace EFCore6Parser
          return result;
       }
 
-#region Associations
+      #region Associations
 
       protected List<ModelUnidirectionalAssociation> GetUnidirectionalAssociations(IEntityType entityType)
       {
@@ -325,6 +327,6 @@ namespace EFCore6Parser
          return result;
       }
 
-#endregion
+      #endregion
    }
 }

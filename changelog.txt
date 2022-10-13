@@ -1,10 +1,10 @@
 4.2.3
-   - Fixed issues with string length and "required" detection in assembly import
+   - Views are handled better in assembly import
    - Ensured that a foreign key property's IsForeignKeyFor value is reset when the association is removed and that property is an Id property. (see https://github.com/msawczyn/EFDesigner2022/issues/47)
    - Replaced legacy EF6Designer.ttinclude and EFCoreDesigner.ttinclude files for legacy model file backward compatability. (see https://github.com/msawczyn/EFDesigner2022/issues/45)
    - Added HierarchyId as a property type
    - Added optional index name for indexed properties
-   - Assembly import is a bit smarter now in detecting and using indexes
+   - Assembly import is a bit smarter now in detecting and using indexes and views
 
 4.2.1
    - Added support for EFCore7
