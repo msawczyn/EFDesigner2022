@@ -45,9 +45,9 @@ target both EF6 and EFCore, and generate both a code-first DbContext class and
 POCO entity classes. The DbContext code is written to allow consumption in 
 ASP.Net Core in addition to any other project type, so you'll have flexibility in your development.
 
-**Note:** This tool does not reverse engineer from the database (i.e., "database-first"). Microsoft has provided
-tools for that, and there are other, well-maintained opensourced projects that provide that functionality as
-well. 
+**Note:** This tool does not reverse engineer from the database (i.e., "database-first"). There are other, quite well-maintained 
+open-sourced projects that provide that functionality. Once you've created an assembly from a reverse-engineered database,
+you can drop it onto an empty design surface and create a model from that, then evolve your code using that model.
 
 You can read more about how to use the designer in the [Documentation site](https://msawczyn.github.io/EFDesigner/).
 
@@ -75,7 +75,16 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 
 ### Change Log
 
-4.2.1
+4.2.3 (next release - see [nightly builds](https://github.com/msawczyn/EFDesigner2022/blob/master/dist/Sawczyn.EFDesigner.EFModel.DslPackage.vsix) if interested)
+   - Ensured that a foreign key property's IsForeignKeyFor value is reset when the association is removed and that property is an Id property. (see https://github.com/msawczyn/EFDesigner2022/issues/47)
+   - Replaced legacy EF6Designer.ttinclude and EFCoreDesigner.ttinclude files for legacy model file backward compatability. (see https://github.com/msawczyn/EFDesigner2022/issues/45)
+   - Added HierarchyId as a property type
+   - Added optional index name for indexed properties
+   - Assembly import is a bit smarter now in detecting and using indexes and views
+   - New glyphs in diagram and explorer to show transient and view entities
+   - Added properties to bidirectional associations allowing custom naming of FK columns in join table
+
+[4.2.1](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.1/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - Added support for EFCore7
    - Added ability to import EFCore7 assemblies
    - Added ability to use property types not available in the select list, along with a global option enabling this feature in Tools/Options/Entity Framework Visual Editor (see https://github.com/msawczyn/EFDesigner2022/issues/28)
@@ -84,7 +93,7 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
    - Fix for View->Other Windows->Entity Model Explorer not working (see https://github.com/msawczyn/EFDesigner2022/issues/29)
    - Fix error in code generation template for EFCore5+ projects
 
-4.2.0
+[4.2.0](https://github.com/msawczyn/EFDesigner2022/releases/download/4.2.0/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - Added ability to import EFCore6 assemblies
    - Added database default values to properties (see https://github.com/msawczyn/EFDesigner2022/issues/15)
    - Extension now obeys Visual Studio theme colors (see https://github.com/msawczyn/EFDesigner2022/issues/9)
@@ -93,7 +102,7 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
    - Fixed other Entity Framework assembly imports that broke with VS2022 moving to 64-bit (see https://github.com/msawczyn/EFDesigner2022/issues/14)
    - Fixed problem with generated Timestamp concurrency check (see https://github.com/msawczyn/EFDesigner2022/issues/20)
 
-4.1.2
+[4.1.2](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.1.2/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - Added ability to create association classes via drag and drop of an entity onto a bidirectional many-to-many association
    - Restored ability to open secondary diagrams
    - Compiler update to Visual Studio v17.1.0 fixes missing designer menu items
@@ -101,7 +110,7 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 4.0.1
    - Added validations preventing use of temporal tables in unsupported scenarios
 
-4.0.0
+[4.0.0](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.0.0/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - VS2022 extension
    - Added support for EFCore6
    - Added support for temporal tables
