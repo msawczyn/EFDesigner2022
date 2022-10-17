@@ -338,6 +338,10 @@ namespace Sawczyn.EFDesigner.EFModel
 			field9.DefaultImage = DslDiagrams::ImageHelper.GetImage(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel.SingletonResourceManager.GetObject("ClassShapeSQLGlyphDefaultImage"));
 			shapeFields.Add(field9);
 			
+			DslDiagrams::ImageField field10 = new DslDiagrams::ImageField("ViewGlyph");
+			field10.DefaultImage = DslDiagrams::ImageHelper.GetImage(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel.SingletonResourceManager.GetObject("ClassShapeViewGlyphDefaultImage"));
+			shapeFields.Add(field10);
+			
 		}
 		
 		/// <summary>
@@ -389,6 +393,10 @@ namespace Sawczyn.EFDesigner.EFModel
 			field10.DefaultImage = DslDiagrams::ImageHelper.GetImage(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel.SingletonResourceManager.GetObject("ClassShapeInterfaceDefaultImage"));
 			DslDiagrams::Decorator decorator10 = new DslDiagrams::ShapeDecorator(field10, DslDiagrams::ShapeDecoratorPosition.OuterTopLeft, new DslDiagrams::PointD(0.2, 0.1));
 			decorators.Add(decorator10);
+				
+			DslDiagrams::ShapeField field11 = DslDiagrams::ShapeElement.FindShapeField(shapeFields, "ViewGlyph");
+			DslDiagrams::Decorator decorator11 = new DslDiagrams::ShapeDecorator(field11, DslDiagrams::ShapeDecoratorPosition.InnerTopLeft, DslDiagrams::PointD.Empty);
+			decorators.Add(decorator11);
 				
 		}
 		

@@ -32,7 +32,7 @@
     <DocumentationFile>
     </DocumentationFile>
     <LangVersion>7.3</LangVersion>
-    <NoWarn>CS3001,VSTHRD010,CS3009</NoWarn>
+    <NoWarn>CS3001,VSTHRD010,CS3009;MSB3277</NoWarn>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -145,7 +145,6 @@
     <Compile Include="CustomCode\Extensions\PropertyDescriptorCollectionExtensions.cs" />
     <Compile Include="CustomCode\Extensions\StringExtensions.cs" />
     <Compile Include="CustomCode\Extensions\SyntaxNodeExtensions.cs" />
-    <Compile Include="CustomCode\Gestures\ClassDragMouseAction.cs" />
     <Compile Include="CustomCode\Gestures\ClassShapeDragData.cs" />
     <Compile Include="CustomCode\Gestures\CompartmentDragMouseAction.cs" />
     <Compile Include="CustomCode\ModelElement Interfaces\IThemeable.cs" />
@@ -488,6 +487,10 @@
     <Content Include="Resources\TransientClass.png" />
     <Content Include="Resources\TransientClassVisible-i.png" />
     <Content Include="Resources\TransientClassVisible.png" />
+    <Content Include="Resources\ViewGlyph-i.png" />
+    <Content Include="Resources\ViewGlyph.png" />
+    <Content Include="Resources\ViewGlyphVisible-i.png" />
+    <Content Include="Resources\ViewGlyphVisible.png" />
     <Content Include="Resources\Warning-i.png" />
     <Content Include="Resources\Warning.png" />
     <None Include="Templates\MonikerAmbiguityValidation.tt" />

@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 using ParsingModels;
+// ReSharper disable NotResolvedInText
 
 // ReSharper disable UseObjectOrCollectionInitializer
 #pragma warning disable IDE0017 // Simplify object initialization
@@ -90,8 +91,6 @@ namespace EFCore6Parser
       public string Process()
       {
          if (dbContext == null)
-
-            // ReSharper disable once NotResolvedInText
             throw new ArgumentNullException("dbContext");
 
          model = dbContext.Model;
@@ -108,6 +107,15 @@ namespace EFCore6Parser
          return JsonConvert.SerializeObject(modelRoot);
       }
 
+      private bool HasDbSet(IEntityType entityType)
+      {
+         Type clrType = entityType.ClrType;
+         Type dbSetType = typeof(DbSet<>).MakeGenericType(clrType);
+         bool result = dbContext.GetType().GetProperties().Any(p=>p.PropertyType == dbSetType);
+
+         return result;
+      }
+
       protected ModelClass ProcessEntity(IEntityType entityType, ModelRoot modelRoot)
       {
          ModelClass result = new ModelClass();
@@ -119,8 +127,16 @@ namespace EFCore6Parser
 
          result.BaseClass = GetTypeFullName(type.BaseType);
 
-         result.ViewName = entityType.GetViewName();
-         result.TableName = result.ViewName == null ? entityType.GetTableName() : null;
+         if (HasDbSet(entityType))
+         {
+            result.ViewName = entityType.GetViewName();
+            result.TableName = result.ViewName == null
+                                  ? entityType.GetTableName()
+                                  : null;
+         }
+         else
+            result.IsPersistent = false;
+
          result.IsDependentType = entityType.IsOwned();
          result.CustomAttributes = GetCustomAttributes(type.CustomAttributes);
 

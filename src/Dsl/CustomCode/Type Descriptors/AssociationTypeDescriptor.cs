@@ -25,9 +25,11 @@ namespace Sawczyn.EFDesigner.EFModel
             ModelRoot modelRoot = association.Source.ModelRoot;
             storeDomainDataDirectory = association.Store.DomainDataDirectory;
             BidirectionalAssociation bidirectionalAssociation = association as BidirectionalAssociation;
+            bool isManyToMany = association.SourceMultiplicity == Multiplicity.ZeroMany && association.TargetMultiplicity == Multiplicity.ZeroMany;
 
             // show FKPropertyName only when possible and required
             if (!modelRoot.ExposeForeignKeys
+             || isManyToMany
              || association.SourceRole != EndpointRole.Dependent && association.TargetRole != EndpointRole.Dependent)
                propertyDescriptors.Remove("FKPropertyName");
 
@@ -50,16 +52,20 @@ namespace Sawczyn.EFDesigner.EFModel
             }
 
             // only display delete behavior on the principal end
-            // except that owned types don't have deletiion behavior choices
+            // except that owned types don't have deletion behavior choices
             if (association.SourceRole != EndpointRole.Principal || association.Source.IsDependentType || association.Target.IsDependentType)
                propertyDescriptors.Remove("SourceDeleteAction");
 
             if (association.TargetRole != EndpointRole.Principal || association.Source.IsDependentType || association.Target.IsDependentType)
                propertyDescriptors.Remove("TargetDeleteAction");
 
-            // only show JoinTableName if is *..* association
-            if (association.SourceMultiplicity != Multiplicity.ZeroMany || association.TargetMultiplicity != Multiplicity.ZeroMany)
+            // only show join table details if is *..* association
+            if (!isManyToMany || !modelRoot.IsEFCore5Plus)
+            {
                propertyDescriptors.Remove("JoinTableName");
+               propertyDescriptors.Remove("SourceFKColumnName");
+               propertyDescriptors.Remove("TargetFKColumnName");
+            }
 
             // implementNotify implicitly defines autoproperty as false, so we don't display it
             if (association.TargetImplementNotify)
@@ -103,6 +109,8 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("ForeignKeyLocation");
                propertyDescriptors.Remove("FKPropertyName");
                propertyDescriptors.Remove("JoinTableName");
+               propertyDescriptors.Remove("SourceFKColumnName");
+               propertyDescriptors.Remove("TargetFKColumnName");
                propertyDescriptors.Remove("TargetAutoInclude");
             }
 

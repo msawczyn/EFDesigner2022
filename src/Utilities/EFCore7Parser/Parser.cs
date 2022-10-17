@@ -107,6 +107,15 @@ namespace EFCore7Parser
          return JsonConvert.SerializeObject(modelRoot);
       }
 
+      private bool HasDbSet(IEntityType entityType)
+      {
+         Type clrType = entityType.ClrType;
+         Type dbSetType = typeof(DbSet<>).MakeGenericType(clrType);
+         bool result = dbContext.GetType().GetProperties().Any(p=>p.PropertyType == dbSetType);
+
+         return result;
+      }
+
       protected ModelClass ProcessEntity(IEntityType entityType, ModelRoot modelRoot)
       {
          ModelClass result = new ModelClass();
@@ -118,8 +127,16 @@ namespace EFCore7Parser
 
          result.BaseClass = GetTypeFullName(type.BaseType);
 
-         result.ViewName = entityType.GetViewName();
-         result.TableName = result.ViewName == null ? entityType.GetTableName() : null;
+         if (HasDbSet(entityType))
+         {
+            result.ViewName = entityType.GetViewName();
+            result.TableName = result.ViewName == null
+                                  ? entityType.GetTableName()
+                                  : null;
+         }
+         else
+            result.IsPersistent = false;
+
          result.IsDependentType = entityType.IsOwned();
          result.CustomAttributes = GetCustomAttributes(type.CustomAttributes);
 

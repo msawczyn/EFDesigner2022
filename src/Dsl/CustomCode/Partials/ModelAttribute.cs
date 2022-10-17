@@ -143,7 +143,7 @@ namespace Sawczyn.EFDesigner.EFModel
                return byte.TryParse(initialValue, out _);
 
             case "DateTime":
-               switch (initialValue?.Trim())
+               switch (initialValue.Trim())
                {
                   case "DateTime.Now":
                   case "DateTime.UtcNow":
@@ -452,7 +452,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          this.SetLocks(Locks.None);
 
-         if (!string.IsNullOrWhiteSpace(summaryBoilerplate) && !Summary.StartsWith(summaryBoilerplate))
+         if (!string.IsNullOrWhiteSpace(summaryBoilerplate) && Summary?.StartsWith(summaryBoilerplate) != true)
             Summary = $"{summaryBoilerplate}. {Summary}";
 
          if (type != null)

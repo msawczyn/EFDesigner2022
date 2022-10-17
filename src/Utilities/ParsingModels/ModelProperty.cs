@@ -13,5 +13,6 @@
       public int MinStringLength { get; set; }
       public bool IsIdentity { get; set; }
       public bool IsIdentityGenerated { get; set; }
+      public string Summary { get; set; }
    }
 }

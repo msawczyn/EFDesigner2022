@@ -179,6 +179,12 @@ namespace Sawczyn.EFDesigner.EFModel
                               ? nameof(Resources.AbstractEntityGlyphVisible)
                               : nameof(Resources.AbstractEntityGlyph);
                }
+               else if (modelClass.IsDatabaseView)
+               {
+                  result = modelClass.IsVisible()
+                              ? nameof(Resources.ViewGlyphVisible)
+                              : nameof(Resources.ViewGlyph);
+               }
                else
                {
                   result = modelClass.IsVisible()
@@ -447,6 +453,10 @@ namespace Sawczyn.EFDesigner.EFModel
                                                {
                                                   {nameof(Resources.EntityGlyph), Resources.EntityGlyph},
                                                   {nameof(Resources.EntityGlyphVisible), Resources.EntityGlyphVisible},
+                                                  {nameof(Resources.ViewGlyph), Resources.ViewGlyph},
+                                                  {nameof(Resources.ViewGlyphVisible), Resources.ViewGlyphVisible},
+                                                  {nameof(Resources.TransientClass), Resources.TransientClass},
+                                                  {nameof(Resources.TransientClassVisible), Resources.TransientClassVisible},
                                                   {nameof(Resources.SQL), Resources.SQL},
                                                   {nameof(Resources.SQLVisible), Resources.SQLVisible},
                                                   {nameof(Resources.AbstractEntityGlyph), Resources.AbstractEntityGlyph},
@@ -460,6 +470,8 @@ namespace Sawczyn.EFDesigner.EFModel
                                                {
                                                   {nameof(Resources.EntityGlyph), Resources.EntityGlyph_i},
                                                   {nameof(Resources.EntityGlyphVisible), Resources.EntityGlyphVisible_i},
+                                                  {nameof(Resources.ViewGlyph), Resources.ViewGlyph_i},
+                                                  {nameof(Resources.ViewGlyphVisible), Resources.ViewGlyphVisible_i},
                                                   {nameof(Resources.TransientClass), Resources.TransientClass_i},
                                                   {nameof(Resources.TransientClassVisible), Resources.TransientClassVisible_i},
                                                   {nameof(Resources.SQL), Resources.SQL_i},
