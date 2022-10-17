@@ -107,6 +107,15 @@ namespace EFCore5Parser
          return JsonConvert.SerializeObject(modelRoot);
       }
 
+      private bool HasDbSet(IEntityType entityType)
+      {
+         Type clrType = entityType.ClrType;
+         Type dbSetType = typeof(DbSet<>).MakeGenericType(clrType);
+         bool result = dbContext.GetType().GetProperties().Any(p=>p.PropertyType == dbSetType);
+
+         return result;
+      }
+
       protected ModelClass ProcessEntity(IEntityType entityType, ModelRoot modelRoot)
       {
          ModelClass result = new ModelClass();
@@ -115,11 +124,20 @@ namespace EFCore5Parser
          result.Name = type.Name;
          result.Namespace = type.Namespace;
          result.IsAbstract = type.IsAbstract;
+         result.Summary = entityType.GetComment();
 
          result.BaseClass = GetTypeFullName(type.BaseType);
 
-         result.ViewName = entityType.GetViewName();
-         result.TableName = result.ViewName == null ? entityType.GetTableName() : null;
+         if (HasDbSet(entityType))
+         {
+            result.ViewName = entityType.GetViewName();
+            result.TableName = result.ViewName == null
+                                  ? entityType.GetTableName()
+                                  : null;
+         }
+         else
+            result.IsPersistent = false;
+
          result.IsDependentType = entityType.IsOwned();
          result.CustomAttributes = GetCustomAttributes(type.CustomAttributes);
 
@@ -187,6 +205,7 @@ namespace EFCore5Parser
          result.Name = propertyData.Name;
          result.IsIdentity = propertyData.IsKey();
          result.IsIdentityGenerated = result.IsIdentity && (propertyData.ValueGenerated == ValueGenerated.OnAdd);
+         result.Summary = propertyData.GetComment();
 
          CustomAttributeData requiredAttribute = attributes.FirstOrDefault(a => a.AttributeType.Name == "RequiredAttribute");
          result.Required = (bool)(requiredAttribute?.ConstructorArguments.FirstOrDefault().Value ?? !propertyData.IsNullable);

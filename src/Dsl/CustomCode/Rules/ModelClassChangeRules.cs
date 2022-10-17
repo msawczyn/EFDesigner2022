@@ -494,6 +494,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
                         foreach (ModelAttribute attribute in element.Attributes.Where(attr => attr.IsIdentity))
                            attribute.IsIdentity = false;
+
+                        element.TableName = null;
+                        element.ViewName = null;
                      }
                   }
                   else
@@ -528,7 +531,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "TableName":
                {
-                  if (!element.IsDatabaseView)
+                  if (!element.Persistent)
+                     element.TableName = null;
+                  else if (!element.IsDatabaseView)
                   {
                      string newTableName = (string)e.NewValue;
 
@@ -554,7 +559,12 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "ViewName":
                {
-                  if (element.IsDatabaseView)
+                  if (!element.Persistent)
+                  {
+                     element.ViewName = null;
+                     element.IsDatabaseView = false;
+                  }
+                  else if (element.IsDatabaseView)
                   {
                      string newViewName = (string)e.NewValue;
 
@@ -592,6 +602,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
          void VerifyKeylessTypeEFCore5()
          {
+            if (!element.Persistent)
+               return;
+
             // TODO: Find definitive documentation on query type restrictions in EFCore5+
             // Restrictions:
             // =================================
@@ -651,6 +664,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
          void VerifyKeylessType()
          {
+            if (!element.Persistent)
+               return;
+
             // Restrictions:
             // =================================
             // Cannot have a key defined.

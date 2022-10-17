@@ -41,11 +41,11 @@ namespace Sawczyn.EFDesigner.EFModel
 
             string[] parsers =
             {
-               @"Parsers\EF6Parser.exe", 
-               @"Parsers\EFCore2Parser.exe", 
-               @"Parsers\EFCore3Parser.exe", 
-               @"Parsers\EFCore5Parser.exe", 
-               @"Parsers\EFCore6Parser.exe", 
+               @"Parsers\EF6Parser.exe",
+               @"Parsers\EFCore2Parser.exe",
+               @"Parsers\EFCore3Parser.exe",
+               @"Parsers\EFCore5Parser.exe",
+               @"Parsers\EFCore6Parser.exe",
                @"Parsers\EFCore7Parser.exe"
             };
 
@@ -126,7 +126,7 @@ namespace Sawczyn.EFDesigner.EFModel
          return false;
       }
 
-#region ModelRoot
+      #region ModelRoot
 
       private List<ModelElement> ProcessRootData(ParsingModels.ModelRoot rootData)
       {
@@ -145,10 +145,12 @@ namespace Sawczyn.EFDesigner.EFModel
             AssociationChangedRules.FixupForeignKeys(association);
          }
 
+         // still a work-in-progress
+         //FixupAssociationClasses(modelRoot);
          return result;
       }
 
-#endregion
+      #endregion
 
       private int TryParseAssembly(string filename, string parserAssembly, string outputFilename, string contextName)
       {
@@ -157,13 +159,13 @@ namespace Sawczyn.EFDesigner.EFModel
          Debug.WriteLine($"Trying parser: {path} {arguments}");
 
          ProcessStartInfo processStartInfo = new ProcessStartInfo(path)
-                                             {
-                                                Arguments = arguments,
-                                                CreateNoWindow = true,
-                                                ErrorDialog = false,
-                                                WindowStyle = ProcessWindowStyle.Hidden,
-                                                UseShellExecute = true
-                                             };
+         {
+            Arguments = arguments,
+            CreateNoWindow = true,
+            ErrorDialog = false,
+            WindowStyle = ProcessWindowStyle.Hidden,
+            UseShellExecute = true
+         };
 
          using (Process process = System.Diagnostics.Process.Start(processStartInfo))
          {
@@ -237,7 +239,7 @@ namespace Sawczyn.EFDesigner.EFModel
          return false;
       }
 
-#region Classes
+      #region Classes
 
       private List<ModelElement> ProcessClasses(ModelRoot modelRoot, List<ParsingModels.ModelClass> classDataList)
       {
@@ -254,7 +256,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             if (element == null)
             {
-               if (!string.IsNullOrEmpty(data.ViewName))
+               if (!string.IsNullOrEmpty(data.ViewName) || !data.IsPersistent)
                {
                   element = new ModelClass(Store,
                                            new PropertyAssignment(ModelClass.NameDomainPropertyId, data.Name),
@@ -264,6 +266,8 @@ namespace Sawczyn.EFDesigner.EFModel
                                            new PropertyAssignment(ModelClass.IsAbstractDomainPropertyId, data.IsAbstract),
                                            new PropertyAssignment(ModelClass.IsDatabaseViewDomainPropertyId, true),
                                            new PropertyAssignment(ModelClass.ViewNameDomainPropertyId, data.ViewName),
+                                           new PropertyAssignment(ModelClass.PersistentDomainPropertyId, data.IsPersistent),
+                                           new PropertyAssignment(ModelClass.SummaryDomainPropertyId, data.Summary),
                                            new PropertyAssignment(ModelClass.IsDependentTypeDomainPropertyId, data.IsDependentType));
                }
                else
@@ -275,6 +279,8 @@ namespace Sawczyn.EFDesigner.EFModel
                                            new PropertyAssignment(ModelClass.CustomInterfacesDomainPropertyId, data.CustomInterfaces),
                                            new PropertyAssignment(ModelClass.IsAbstractDomainPropertyId, data.IsAbstract),
                                            new PropertyAssignment(ModelClass.TableNameDomainPropertyId, data.TableName),
+                                           new PropertyAssignment(ModelClass.PersistentDomainPropertyId, data.IsPersistent),
+                                           new PropertyAssignment(ModelClass.SummaryDomainPropertyId, data.Summary),
                                            new PropertyAssignment(ModelClass.IsDependentTypeDomainPropertyId, data.IsDependentType));
                }
 
@@ -288,14 +294,16 @@ namespace Sawczyn.EFDesigner.EFModel
                element.CustomAttributes = data.CustomAttributes;
                element.CustomInterfaces = data.CustomInterfaces;
                element.IsAbstract = data.IsAbstract;
-               element.IsDatabaseView = !string.IsNullOrEmpty(data.ViewName);
+               element.Persistent = data.IsPersistent;
+               element.Summary = element.Summary ?? data.Summary;
+               element.IsDatabaseView = !data.IsPersistent || !string.IsNullOrEmpty(data.ViewName);
 
                if (element.IsDatabaseView)
                   element.ViewName = data.ViewName;
                else
                   element.TableName = data.TableName;
-               
-               
+
+
                element.IsDependentType = data.IsDependentType;
             }
 
@@ -403,6 +411,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                             new PropertyAssignment(ModelAttribute.MaxLengthDomainPropertyId, data.MaxStringLength),
                                             new PropertyAssignment(ModelAttribute.MinLengthDomainPropertyId, data.MinStringLength),
                                             new PropertyAssignment(ModelAttribute.IsIdentityDomainPropertyId, data.IsIdentity),
+                                            new PropertyAssignment(ModelAttribute.SummaryDomainPropertyId, data.Summary),
                                             new PropertyAssignment(ModelAttribute.IdentityTypeDomainPropertyId,
                                                                    data.IsIdentity
                                                                       ? data.IsIdentityGenerated
@@ -425,6 +434,7 @@ namespace Sawczyn.EFDesigner.EFModel
                element.MaxLength = data.MaxStringLength;
                element.MinLength = data.MinStringLength;
                element.IsIdentity = data.IsIdentity;
+               element.Summary = element.Summary ?? data.Summary;
 
                element.IdentityType = data.IsIdentity
                                          ? data.IsIdentityGenerated
@@ -583,9 +593,75 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion
+      private void FixupAssociationClasses(ModelRoot modelRoot)
+      {
+         // find classes that look like N-N association classes. 
+         // turn them into association classes and add the bidirectional association
 
-#region Enumerations
+         using (Transaction tx = Store.TransactionManager.BeginTransaction("Convert to association class"))
+         {
+            // simple case - only foreign key fields (ignoring identity fields)
+            foreach (ModelClass associationClass in modelRoot.Classes
+                                                       .Where(c => c.Persistent
+                                                                && c.Attributes.Count(a => (!a.IsIdentity || a.IsForeignKeyProperty) && a.Required) == 2)
+                                                       .ToArray())
+            {
+               //// remove standalone identities
+               //foreach (ModelAttribute attribute in modelClass.Attributes.Where(a => a.IsIdentity && !a.IsForeignKeyProperty))
+               //   associationClass.Attributes.Remove(attribute);
+
+               //// add fk properties as identities (should only be 2 properties left)
+               //foreach (ModelAttribute attribute in associationClass.Attributes)
+               //   attribute.IsIdentity = true;
+
+               // get the entities we're serving
+
+
+               ModelClass[] entities = associationClass.UnidirectionalSources.Where(x => x != associationClass)
+                                                       .Union(associationClass.UnidirectionalTargets.Where(x => x != associationClass))
+                                                       .Union(associationClass.BidirectionalSources.Where(x => x != associationClass))
+                                                       .Union(associationClass.BidirectionalTargets.Where(x => x != associationClass))
+                                                       .ToArray();
+
+               if (entities.Length != 2)
+                  continue;
+
+
+               {
+                  // remove any association between those entities and the association class that might be there
+                  modelRoot.Store.ElementDirectory.AllElements
+                           .OfType<Association>()
+                           .Where(a => (entities.Contains(a.Source) && a.Target == associationClass)
+                                    || (entities.Contains(a.Target) && a.Source == associationClass))
+                           .ToList()
+                           .ForEach(a => a.Delete());
+
+                  // add the new bidirectional association
+                  BidirectionalAssociation bidirectional =
+                     new BidirectionalAssociation(Store,
+                                                  new[]
+                                                  {
+                                                     new RoleAssignment(Association.SourceDomainRoleId, entities[0]), 
+                                                     new RoleAssignment(Association.TargetDomainRoleId, entities[1])
+                                                  },
+                                                  new[]
+                                                  {
+                                                     new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, Multiplicity.ZeroMany),
+                                                     new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, Multiplicity.ZeroMany)
+                                                  });
+
+                  // turn the class of interest into a proper association class for that new bidirectional association
+                  associationClass.ConvertToAssociationClass(bidirectional);
+               }
+            }
+
+            tx.Commit();
+         }
+      }
+
+      #endregion
+
+      #region Enumerations
 
       private List<ModelElement> ProcessEnumerations(ModelRoot modelRoot, List<ParsingModels.ModelEnum> enumDataList)
       {
@@ -650,6 +726,6 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion
+      #endregion
    }
 }

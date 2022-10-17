@@ -317,7 +317,11 @@ namespace Sawczyn.EFDesigner.EFModel
             // ReSharper disable once UnusedVariable
             BidirectionalAssociation element1 =
                new BidirectionalAssociation(Store,
-                                            new[] {new RoleAssignment(Association.SourceDomainRoleId, bidirectionalAssociation.Source), new RoleAssignment(Association.TargetDomainRoleId, this)},
+                                            new[]
+                                            {
+                                               new RoleAssignment(Association.SourceDomainRoleId, bidirectionalAssociation.Source), 
+                                               new RoleAssignment(Association.TargetDomainRoleId, this)
+                                            },
                                             new[]
                                             {
                                                //  new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, $"{bidirectionalAssociation.TargetPropertyName}_{Name}")
@@ -335,7 +339,11 @@ namespace Sawczyn.EFDesigner.EFModel
             // ReSharper disable once UnusedVariable
             BidirectionalAssociation element2 =
                new BidirectionalAssociation(Store,
-                                            new[] {new RoleAssignment(Association.SourceDomainRoleId, bidirectionalAssociation.Target), new RoleAssignment(Association.TargetDomainRoleId, this)},
+                                            new[]
+                                            {
+                                               new RoleAssignment(Association.SourceDomainRoleId, bidirectionalAssociation.Target), 
+                                               new RoleAssignment(Association.TargetDomainRoleId, this)
+                                            },
                                             new[]
                                             {
                                                //  new PropertyAssignment(Association.TargetPropertyNameDomainPropertyId, $"{bidirectionalAssociation.SourcePropertyName}_{Name}")
@@ -356,11 +364,7 @@ namespace Sawczyn.EFDesigner.EFModel
             IsAssociationClass = true;
 
             // get rid of any identity attributes
-
-            ModelAttribute[] oldIdentityProperties = Attributes.Where(a => a.IsIdentity).ToArray();
-
-            foreach (ModelAttribute attribute in oldIdentityProperties)
-               attribute.IsIdentity = false;
+            Attributes.Where(a => a.IsIdentity).ToList().ForEach(attribute => attribute.IsIdentity = false);
 
             // add the new FK properties
 
@@ -380,6 +384,8 @@ namespace Sawczyn.EFDesigner.EFModel
             targetPropertyIdAttribute.IdentityType = IdentityType.Manual;
             targetPropertyIdAttribute.IndexedUnique = false;
             targetPropertyIdAttribute.SetLocks(Locks.Delete);
+
+            bidirectionalAssociation.JoinTableName = TableName;
 
             // and save it all
             tx.Commit();
@@ -678,6 +684,9 @@ namespace Sawczyn.EFDesigner.EFModel
          // ReSharper disable once ConvertIfStatementToReturnStatement
          if (IsAbstract)
             return "AbstractEntityGlyph";
+
+         if (IsDatabaseView)
+            return "ViewGlyph";
 
          return "EntityGlyph";
       }

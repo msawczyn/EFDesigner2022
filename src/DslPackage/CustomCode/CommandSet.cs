@@ -29,7 +29,7 @@ namespace Sawczyn.EFDesigner.EFModel
          get
          {
             return CurrentSelection.Count == 0
-                      ? new NodeShape[0]
+                      ? Array.Empty<NodeShape>()
                       : CurrentSelection.OfType<ClassShape>().Cast<NodeShape>()
                                         .Union(CurrentSelection.OfType<EnumShape>())
                                         .Union(CurrentSelection.OfType<CommentBoxShape>())
@@ -372,7 +372,10 @@ namespace Sawczyn.EFDesigner.EFModel
             return;
          }
 
-         base.ProcessOnMenuDeleteCommand();
+         using (WaitCursor _ = new WaitCursor())
+         {
+            base.ProcessOnMenuDeleteCommand();
+         }
       }
 
 #region Identifiers

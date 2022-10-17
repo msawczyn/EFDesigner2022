@@ -310,6 +310,8 @@ namespace Sawczyn.EFDesigner.EFModel
 	         new DomainMemberInfo(typeof(BidirectionalAssociation), "IsSourceAutoPropertyTracking", BidirectionalAssociation.IsSourceAutoPropertyTrackingDomainPropertyId, typeof(BidirectionalAssociation.IsSourceAutoPropertyTrackingPropertyHandler)),
 	         new DomainMemberInfo(typeof(BidirectionalAssociation), "IsSourceAbstract", BidirectionalAssociation.IsSourceAbstractDomainPropertyId, typeof(BidirectionalAssociation.IsSourceAbstractPropertyHandler)),
 	         new DomainMemberInfo(typeof(BidirectionalAssociation), "SourceAutoInclude", BidirectionalAssociation.SourceAutoIncludeDomainPropertyId, typeof(BidirectionalAssociation.SourceAutoIncludePropertyHandler)),
+	         new DomainMemberInfo(typeof(BidirectionalAssociation), "SourceFKColumnName", BidirectionalAssociation.SourceFKColumnNameDomainPropertyId, typeof(BidirectionalAssociation.SourceFKColumnNamePropertyHandler)),
+	         new DomainMemberInfo(typeof(BidirectionalAssociation), "TargetFKColumnName", BidirectionalAssociation.TargetFKColumnNameDomainPropertyId, typeof(BidirectionalAssociation.TargetFKColumnNamePropertyHandler)),
 	         new DomainMemberInfo(typeof(EFModelDiagram), "FillColor", EFModelDiagram.FillColorDomainPropertyId, typeof(EFModelDiagram.FillColorPropertyHandler)),
 	         new DomainMemberInfo(typeof(EFModelDiagram), "TextColor", EFModelDiagram.TextColorDomainPropertyId, typeof(EFModelDiagram.TextColorPropertyHandler)),
 	         new DomainMemberInfo(typeof(AssociationConnector), "Color", AssociationConnector.ColorDomainPropertyId, typeof(AssociationConnector.ColorPropertyHandler)),

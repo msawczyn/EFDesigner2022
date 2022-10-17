@@ -452,6 +452,10 @@ namespace Sawczyn.EFDesigner.EFModel
 		      propertyInfo.FilteringValues.Add("TransientGlyph");
 		      DslDiagrams::ShapeElement.FindDecorator(shape.Decorators, "TransientGlyph").AssociateVisibilityWith(shape.Store, propertyInfo);
 		
+		      propertyInfo = new DslDiagrams::AssociatedPropertyInfo(global::Sawczyn.EFDesigner.EFModel.ModelClass.GlyphTypeDomainPropertyId);
+		      propertyInfo.FilteringValues.Add("ViewGlyph");
+		      DslDiagrams::ShapeElement.FindDecorator(shape.Decorators, "ViewGlyph").AssociateVisibilityWith(shape.Store, propertyInfo);
+		
 		      propertyInfo = new DslDiagrams::AssociatedPropertyInfo(global::Sawczyn.EFDesigner.EFModel.ModelClass.GenerateCodeDomainPropertyId);
 		      propertyInfo.FilteringValues.Add("False");
 		      DslDiagrams::ShapeElement.FindDecorator(shape.Decorators, "NoGenGlyph").AssociateVisibilityWith(shape.Store, propertyInfo);

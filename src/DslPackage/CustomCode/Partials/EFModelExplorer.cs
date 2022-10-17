@@ -459,7 +459,7 @@ namespace Sawczyn.EFDesigner.EFModel
          ThreadHelper.Generic.BeginInvoke(() =>
                                           {
                                              // ReSharper disable once UnusedVariable
-                                             using (WaitCursor w = new WaitCursor())
+                                             using (WaitCursor _ = new WaitCursor())
                                              {
                                                 ObjectModelBrowser.BeginUpdate();
                                                 RefreshBrowserView();
@@ -554,7 +554,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                 {
                                                    // ReSharper disable once UnusedVariable
 
-                                                   using (WaitCursor w = new WaitCursor())
+                                                   using (WaitCursor _ = new WaitCursor())
                                                    {
                                                       treeView.SelectedNode = null;
                                                       treeView.BeginUpdate();
@@ -569,7 +569,7 @@ namespace Sawczyn.EFDesigner.EFModel
                ThreadHelper.Generic.BeginInvoke(() =>
                                                 {
                                                    // ReSharper disable once UnusedVariable
-                                                   using (WaitCursor w = new WaitCursor())
+                                                   using (WaitCursor _ = new WaitCursor())
                                                    {
                                                       treeView.SelectedNode = null;
                                                       treeView.BeginUpdate();

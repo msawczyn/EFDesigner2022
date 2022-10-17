@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<modelRoot xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="4.2.3.2" Id="cba47279-0950-4257-bb2c-e4d5e72a52a4" entityContainerName="ICMTestContext" namespace="Apprisen.ICM.Data" connectionString="Data Source=(LocalDb)\MSSQLLocalDb;Initial Catalog=Testing;Integrated Security=True" automaticMigrationsEnabled="false" entityOutputDirectory="Generated\Entities" contextOutputDirectory="Generated\Context" enumOutputDirectory="Generated\Enums" transformOnSave="false" showCascadeDeletes="false" databaseType="None" structOutputDirectory="Generated\Structs" exposeForeignKeys="true" generateDbContextFactory="false" showInterfaceIndicators="false" xmlns="http://schemas.microsoft.com/dsltools/EFModel">
+  <diagrams>
+    <modelRootHasModelDiagrams Id="f53c84e5-e685-4e6c-9a6c-bf296456e6f3">
+      <modelDiagramData name="EFModel1" />
+    </modelRootHasModelDiagrams>
+  </diagrams>
+</modelRoot>

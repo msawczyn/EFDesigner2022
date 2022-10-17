@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" MinorVersion="2" Build="3" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
+<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" MinorVersion="2" Build="3" Revision="2" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
   <Classes>
     <DomainClass Id="95532cb8-3452-4b09-a654-aeb2e2d0b3ad" Description="" Name="ModelRoot" DisplayName="Entity Model" Namespace="Sawczyn.EFDesigner.EFModel">
       <CustomTypeDescriptor>
@@ -1542,6 +1542,16 @@
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
         </DomainProperty>
+        <DomainProperty Id="695d0645-c6d9-416a-bc18-7967f8339ced" Description="Optional name of column holding foreign key value for this end of the association" Name="SourceFKColumnName" DisplayName="End1 Foreign Key Column Name" Category="Database">
+          <Type>
+            <ExternalTypeMoniker Name="/System/String" />
+          </Type>
+        </DomainProperty>
+        <DomainProperty Id="c687cd9e-c441-4d8e-9cf2-cba48066703b" Description="Optional name of column holding foreign key value for this end of the association" Name="TargetFKColumnName" DisplayName="End2 Foreign Key Column Name" Category="Database">
+          <Type>
+            <ExternalTypeMoniker Name="/System/String" />
+          </Type>
+        </DomainProperty>
       </Properties>
       <Source>
         <DomainRole Id="a775052d-a6a9-4916-8c4a-1bd7724b6e8b" Description="" Name="BidirectionalSource" DisplayName="Bidirectional Source" PropertyName="BidirectionalTargets" PropertyDisplayName="Bidirectional Targets">
@@ -1975,6 +1985,9 @@
       </ShapeHasDecorators>
       <ShapeHasDecorators Position="OuterTopLeft" HorizontalOffset="0.2" VerticalOffset="0.1">
         <IconDecorator Name="Interface" DisplayName="Interface" DefaultIcon="Resources\Interface.png" />
+      </ShapeHasDecorators>
+      <ShapeHasDecorators Position="InnerTopLeft" HorizontalOffset="0" VerticalOffset="0">
+        <IconDecorator Name="ViewGlyph" DisplayName="View Glyph" DefaultIcon="Resources\ViewGlyph.png" />
       </ShapeHasDecorators>
       <Compartment FillColor="Transparent" Name="AttributesCompartment" Title="Properties" />
       <Compartment FillColor="Transparent" Name="AssociationsCompartment" Title="Association Targets" />
@@ -2744,6 +2757,12 @@
           <XmlPropertyData XmlName="sourceAutoInclude">
             <DomainPropertyMoniker Name="BidirectionalAssociation/SourceAutoInclude" />
           </XmlPropertyData>
+          <XmlPropertyData XmlName="sourceFKColumnName">
+            <DomainPropertyMoniker Name="BidirectionalAssociation/SourceFKColumnName" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="targetFKColumnName">
+            <DomainPropertyMoniker Name="BidirectionalAssociation/TargetFKColumnName" />
+          </XmlPropertyData>
         </ElementData>
       </XmlClassData>
       <XmlClassData TypeName="ClassShape" MonikerAttributeName="" SerializeId="true" MonikerElementName="classShapeMoniker" ElementName="classShape" MonikerTypeName="ClassShapeMoniker">
@@ -3192,6 +3211,15 @@
             <DomainPropertyMoniker Name="ModelClass/GlyphType" />
             <PropertyFilters>
               <PropertyFilter FilteringValue="TransientGlyph" />
+            </PropertyFilters>
+          </VisibilityPropertyPath>
+        </DecoratorMap>
+        <DecoratorMap>
+          <IconDecoratorMoniker Name="ClassShape/ViewGlyph" />
+          <VisibilityPropertyPath>
+            <DomainPropertyMoniker Name="ModelClass/GlyphType" />
+            <PropertyFilters>
+              <PropertyFilter FilteringValue="ViewGlyph" />
             </PropertyFilters>
           </VisibilityPropertyPath>
         </DecoratorMap>

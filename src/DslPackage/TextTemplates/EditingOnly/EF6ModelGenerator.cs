@@ -12,7 +12,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.3.0
+      // EFDesigner v4.2.3.2
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -596,7 +596,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             Output("{");
 
             if (classesWithTables?.Any() == true)
-               WriteDbSets();
+               WriteDbSets(classesWithTables);
 
             WriteConstructors();
             WriteOnModelCreate(classesWithTables);
@@ -606,12 +606,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             EndNamespace(modelRoot.Namespace);
          }
 
-         private void WriteDbSets()
+         private void WriteDbSets(ModelClass[] classesWithTables)
          {
             Output("#region DbSets");
             PluralizationService pluralizationService = ModelRoot.PluralizationService;
 
-            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => !x.IsDependentType && x.Persistent).OrderBy(x => x.Name))
+            foreach (ModelClass modelClass in classesWithTables.OrderBy(x => x.Name))
             {
                string dbSetName;
 
@@ -686,7 +686,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             List<string> foreignKeyColumns = new List<string>();
             List<string> declaredShadowProperties = new List<string>();
 
-            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => x.Persistent).OrderBy(x => x.Name))
+            foreach (ModelClass modelClass in modelRoot.Classes.OrderBy(x => x.Name))
             {
                segments.Clear();
                foreignKeyColumns.Clear();
@@ -704,22 +704,27 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                if ((modelRoot.InheritanceStrategy == CodeStrategy.TablePerConcreteType) && (modelClass.Superclass != null))
                   segments.Add("Map(x => x.MapInheritedProperties())");
 
-               if (classesWithTables.Contains(modelClass))
+               if (!modelClass.Persistent)
+                  segments.Add("ToView()");
+               else
                {
-                  if ((modelRoot.InheritanceStrategy != CodeStrategy.TablePerConcreteType) || !modelClass.IsAbstract)
+                  if (classesWithTables.Contains(modelClass))
                   {
-                     segments.Add(string.IsNullOrEmpty(modelClass.DatabaseSchema) || (modelClass.DatabaseSchema == modelClass.ModelRoot.DatabaseSchema)
-                                     ? $"ToTable(\"{modelClass.TableName}\")"
-                                     : $"ToTable(\"{modelClass.TableName}\", \"{modelClass.DatabaseSchema}\")");
+                     if ((modelRoot.InheritanceStrategy != CodeStrategy.TablePerConcreteType) || !modelClass.IsAbstract)
+                     {
+                        segments.Add(string.IsNullOrEmpty(modelClass.DatabaseSchema) || (modelClass.DatabaseSchema == modelClass.ModelRoot.DatabaseSchema)
+                                        ? $"ToTable(\"{modelClass.TableName}\")"
+                                        : $"ToTable(\"{modelClass.TableName}\", \"{modelClass.DatabaseSchema}\")");
+                     }
+
+                     // primary key code segments must be output last, since HasKey returns a different type
+                     List<ModelAttribute> identityAttributes = modelClass.IdentityAttributes.ToList();
+
+                     if (identityAttributes.Count == 1)
+                        segments.Add($"HasKey(t => t.{identityAttributes[0].Name})");
+                     else if (identityAttributes.Count > 1)
+                        segments.Add($"HasKey(t => new {{ t.{string.Join(", t.", identityAttributes.Select(ia => ia.Name))} }})");
                   }
-
-                  // primary key code segments must be output last, since HasKey returns a different type
-                  List<ModelAttribute> identityAttributes = modelClass.IdentityAttributes.ToList();
-
-                  if (identityAttributes.Count == 1)
-                     segments.Add($"HasKey(t => t.{identityAttributes[0].Name})");
-                  else if (identityAttributes.Count > 1)
-                     segments.Add($"HasKey(t => new {{ t.{string.Join(", t.", identityAttributes.Select(ia => ia.Name))} }})");
                }
 
                Output(segments);

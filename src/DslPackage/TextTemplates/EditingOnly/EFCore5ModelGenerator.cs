@@ -13,7 +13,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.3.0
+      // EFDesigner v4.2.3.2
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -513,7 +513,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                      if (association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
                      {
-                        ModelClass associationClass = modelClass.Store.ElementDirectory.AllElements.OfType<ModelClass>().FirstOrDefault(m => m.DescribedAssociationElementId == association.Id);
+                        ModelClass associationClass = modelClass.Store.ElementDirectory.AllElements
+                                                                .OfType<ModelClass>()
+                                                                .FirstOrDefault(m => m.DescribedAssociationElementId == association.Id);
 
                         if (associationClass == null)
                            segments.AddRange(WriteStandardBidirectionalAssociation(association, foreignKeyColumns, required));
@@ -629,20 +631,37 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                                  ? $"{association.Target.Name}_{association.SourcePropertyName}_x_{association.Source.Name}_{association.TargetPropertyName}"
                                  : association.JoinTableName;
 
-            segments.Add($"UsingEntity(x => x.ToTable(\"{tableMap}\"))");
+            if (association.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany && association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
+            {
+               string targetFK = string.IsNullOrEmpty(association.TargetFKColumnName) ? association.Target.Name + "Id" : association.TargetFKColumnName;
+               string sourceFK = string.IsNullOrEmpty(association.SourceFKColumnName) ? association.Source.Name + "Id" : association.SourceFKColumnName;
+               string joinTable = string.IsNullOrEmpty(association.JoinTableName) ? $"{association.Target.Name}_x_{association.Source.Name}" : association.JoinTableName;
 
-            string foreignKeySegment = CreateForeignKeySegment(association, foreignKeyColumns);
+               string segment =
+                  "UsingEntity<Dictionary<string, object>>("
+                + $"right => right.HasOne<{association.Target.FullName}>().WithMany().HasForeignKey({targetFK}).OnDelete(DeleteBehavior.Cascade),"
+                + $"left => left.HasOne<{association.Source.FullName}>().WithMany().HasForeignKey({sourceFK}).OnDelete(DeleteBehavior.Cascade),"
+                + $"join => join.ToTable(\"{joinTable}\"))";
 
-            if (!string.IsNullOrEmpty(foreignKeySegment))
-               segments.Add(foreignKeySegment);
+               segments.Add(segment);
+            }
+            else
+            {
+               segments.Add($"UsingEntity(x => x.ToTable(\"{tableMap}\"))");
 
-            WriteSourceDeleteBehavior(association, segments);
-            WriteTargetDeleteBehavior(association, segments);
+               string foreignKeySegment = CreateForeignKeySegment(association, foreignKeyColumns);
 
-            if (required
-             && (association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One
-              || association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
-               segments.Add("IsRequired()");
+               if (!string.IsNullOrEmpty(foreignKeySegment))
+                  segments.Add(foreignKeySegment);
+
+               WriteSourceDeleteBehavior(association, segments);
+               WriteTargetDeleteBehavior(association, segments);
+
+               if (required
+                && (association.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One
+                 || association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
+                  segments.Add("IsRequired()");
+            }
 
             return segments;
          }

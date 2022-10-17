@@ -14867,6 +14867,40 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
+	      // SourceFKColumnName
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribSourceFKColumnName = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "sourceFKColumnName");
+	         if (attribSourceFKColumnName != null)
+	         {
+	            global::System.String valueOfSourceFKColumnName;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.String>(serializationContext, attribSourceFKColumnName, out valueOfSourceFKColumnName))
+	            {
+	               instanceOfBidirectionalAssociation.SourceFKColumnName = valueOfSourceFKColumnName;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "sourceFKColumnName", typeof(global::System.String), attribSourceFKColumnName);
+	            }
+	         }
+	      }
+	      // TargetFKColumnName
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribTargetFKColumnName = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "targetFKColumnName");
+	         if (attribTargetFKColumnName != null)
+	         {
+	            global::System.String valueOfTargetFKColumnName;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.String>(serializationContext, attribTargetFKColumnName, out valueOfTargetFKColumnName))
+	            {
+	               instanceOfBidirectionalAssociation.TargetFKColumnName = valueOfTargetFKColumnName;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "targetFKColumnName", typeof(global::System.String), attribTargetFKColumnName);
+	            }
+	         }
+	      }
 	   }
 	
 	   #region TryCreateInstance & TryCreateDerivedInstance
@@ -15475,6 +15509,28 @@ namespace Sawczyn.EFDesigner.EFModel
 	         if (!serializationContext.Result.Failed)
 	         {
 	            EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "sourceAutoInclude", serializedPropValue);
+	         }
+	      }
+	      // SourceFKColumnName
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.String propValue = instanceOfBidirectionalAssociation.SourceFKColumnName;
+	         if (!serializationContext.Result.Failed)
+	         {
+	            if (!string.IsNullOrEmpty(propValue))
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "sourceFKColumnName", propValue);
+	
+	         }
+	      }
+	      // TargetFKColumnName
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.String propValue = instanceOfBidirectionalAssociation.TargetFKColumnName;
+	         if (!serializationContext.Result.Failed)
+	         {
+	            if (!string.IsNullOrEmpty(propValue))
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "targetFKColumnName", propValue);
+	
 	         }
 	      }
 	   }
