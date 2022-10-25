@@ -200,10 +200,11 @@ namespace Sawczyn.EFDesigner.EFModel
 
       /// <summary>
       ///    Determines which glyph to display for a property on the diagram only. Model explorer uses GetExplorerNodeGlyphName instead.
+      ///    Making this method public allows MEF extensions to display the same glyphs.
       /// </summary>
       /// <param name="element"></param>
       /// <returns></returns>
-      private static Image GetPropertyGlyph(ModelElement element)
+      public static Image GetPropertyGlyph(ModelElement element)
       {
          ModelRoot modelRoot = element.Store.ModelRoot();
 
