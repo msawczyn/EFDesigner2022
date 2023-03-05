@@ -4,26 +4,26 @@ using System.Linq;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Sandbox_EFCore5NetCore3_Test
+namespace Credit.API.Domain_RE.Models_RE
 {
    /// <inheritdoc/>
-   partial class Context
+   partial class CreditContext
    {
-      public Context() : base(Options)
+      public CreditContext() : base(Options)
       {
          //System.Diagnostics.Debugger.Launch();
       }
 
-      partial void CustomInit(DbContextOptionsBuilder optionsBuilder)
+      public static void ConfigureOptions(DbContextOptionsBuilder optionsBuilder)
       {
-         //optionsBuilder.UseInMemoryDatabase("Sandbox");
-         //optionsBuilder.UseSqlite("Data Source=c:\\temp\\efcore5test.db");
          optionsBuilder.UseSqlServer(ConnectionString);
       }
 
-      public static DbContextOptions Options  
+      partial void CustomInit(DbContextOptionsBuilder optionsBuilder) => ConfigureOptions(optionsBuilder);
+
+      public static DbContextOptions Options
       {
-         get 
+         get
          {
             DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder();
             optionsBuilder.UseSqlServer(ConnectionString);

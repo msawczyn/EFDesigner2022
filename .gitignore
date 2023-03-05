@@ -11,3 +11,4 @@ docs/_site
 *.bak
 /src - Copy
 *.dtt
+/src/DslPackage/temp.cmd

@@ -48,8 +48,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Generated\Context\" />
-    <Folder Include="Generated\Entities\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

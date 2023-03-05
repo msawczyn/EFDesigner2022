@@ -8150,6 +8150,72 @@ namespace Sawczyn.EFDesigner.EFModel
 		}
 		
 		#endregion
+		#region ExplorerTooltip domain property code
+		
+		/// <summary>
+		/// ExplorerTooltip domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid ExplorerTooltipDomainPropertyId = new global::System.Guid(0xb8e3a0de, 0x3d75, 0x4bf9, 0x85, 0x79, 0x50, 0x9e, 0x9d, 0xf5, 0x94, 0x0a);
+		
+		/// <summary>
+		/// Gets or sets the value of ExplorerTooltip domain property.
+		/// Tooltip text shown in the model explorer
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/ExplorerTooltip.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelClass/ExplorerTooltip.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[global::System.ComponentModel.Browsable(false)]
+		[global::System.ComponentModel.ReadOnly(true)]
+		[DslModeling::DomainProperty(Kind = DslModeling::DomainPropertyKind.Calculated)]
+		[DslModeling::DomainObjectId("b8e3a0de-3d75-4bf9-8579-509e9df5940a")]
+		internal global::System.String ExplorerTooltip
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return ExplorerTooltipPropertyHandler.Instance.GetValue(this);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelClass.ExplorerTooltip domain property.
+		/// </summary>
+		internal sealed partial class ExplorerTooltipPropertyHandler : DslModeling::CalculatedPropertyValueHandler<ModelClass, global::System.String>
+		{
+			private ExplorerTooltipPropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelClass.ExplorerTooltip domain property value handler.
+			/// </summary>
+			public static readonly ExplorerTooltipPropertyHandler Instance = new ExplorerTooltipPropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelClass.ExplorerTooltip domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return ExplorerTooltipDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.String GetValue(ModelClass element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				// There is no storage for ExplorerTooltip because its Kind is
+				// set to Calculated. Please provide the GetExplorerTooltipValue()
+				// method on the domain class.
+				return element.GetExplorerTooltipValue();
+			}
+		
+		}
+		
+		#endregion
 		#region Targets opposite domain role accessor
 		
 		/// <summary>
@@ -14415,6 +14481,6 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
 	partial class ModelRoot
 	{
-		public const string DSLVersion = "4.2.3.2";
+		public const string DSLVersion = "4.2.3.3";
 	}
 }

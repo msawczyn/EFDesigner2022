@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EFCore7Parser": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Code\\_Clients\\AWH\\Apprisen\\R-and-D\\Apprisen\\ICM.Domain\\bin\\Debug\\net7.0\\ICM.Domain.dll\" \"c:\\temp\\foo.txt\""
+    }
+  }
+}

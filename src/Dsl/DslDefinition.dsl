@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" MinorVersion="2" Build="3" Revision="2" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
+<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" MinorVersion="2" Build="3" Revision="3" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
   <Classes>
     <DomainClass Id="95532cb8-3452-4b09-a654-aeb2e2d0b3ad" Description="" Name="ModelRoot" DisplayName="Entity Model" Namespace="Sawczyn.EFDesigner.EFModel">
       <CustomTypeDescriptor>
@@ -629,6 +629,11 @@
         <DomainProperty Id="49372566-67b9-44c9-bad4-d9601f2cd6ea" Description="Class will be stored in persistent storage" Name="Persistent" DisplayName="Persistent" DefaultValue="true" Category="Code Generation">
           <Type>
             <ExternalTypeMoniker Name="/System/Boolean" />
+          </Type>
+        </DomainProperty>
+        <DomainProperty Id="b8e3a0de-3d75-4bf9-8579-509e9df5940a" Description="Tooltip text shown in the model explorer" Name="ExplorerTooltip" DisplayName="Explorer Tooltip" Kind="Calculated" GetterAccessModifier="Assembly" SetterAccessModifier="Assembly" IsBrowsable="false" IsUIReadOnly="true">
+          <Type>
+            <ExternalTypeMoniker Name="/System/String" />
           </Type>
         </DomainProperty>
       </Properties>
@@ -2561,6 +2566,9 @@
           </XmlPropertyData>
           <XmlPropertyData XmlName="persistent">
             <DomainPropertyMoniker Name="ModelClass/Persistent" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="explorerTooltip" Representation="Ignore">
+            <DomainPropertyMoniker Name="ModelClass/ExplorerTooltip" />
           </XmlPropertyData>
         </ElementData>
       </XmlClassData>

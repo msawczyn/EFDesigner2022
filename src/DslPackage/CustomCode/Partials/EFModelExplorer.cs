@@ -53,6 +53,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
          modelElementTreeNode.UpdateNodeImage();
 
+         if (modelElement is ModelClass modelClass)
+            modelElementTreeNode.ToolTipText = modelClass.ExplorerTooltip;
+
          return modelElementTreeNode;
       }
 
@@ -282,7 +285,10 @@ namespace Sawczyn.EFDesigner.EFModel
             if (RepresentedElement is ModelAttribute modelAttribute)
                ThreadHelper.Generic.BeginInvoke(() => { SelectedImageKey = ImageKey = ClassShape.GetExplorerNodeGlyphName(modelAttribute) + suffix; });
             else if (RepresentedElement is ModelClass modelClass)
+            {
                ThreadHelper.Generic.BeginInvoke(() => { SelectedImageKey = ImageKey = ClassShape.GetExplorerNodeGlyphName(modelClass) + suffix; });
+               ThreadHelper.Generic.BeginInvoke(() => { ToolTipText = modelClass.ExplorerTooltip; });
+            }
             else if (RepresentedElement is ModelEnum modelEnum)
                ThreadHelper.Generic.BeginInvoke(() => { SelectedImageKey = ImageKey = EnumShape.GetExplorerNodeGlyphName(modelEnum) + suffix; });
          }

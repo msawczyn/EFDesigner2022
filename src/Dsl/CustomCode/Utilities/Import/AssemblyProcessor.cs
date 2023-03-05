@@ -45,8 +45,10 @@ namespace Sawczyn.EFDesigner.EFModel
                @"Parsers\EFCore2Parser.exe",
                @"Parsers\EFCore3Parser.exe",
                @"Parsers\EFCore5Parser.exe",
-               @"Parsers\EFCore6Parser.exe",
-               @"Parsers\EFCore7Parser.exe"
+               @"Parsers\EFCore6Parser6.exe",
+               @"Parsers\EFCore7Parser6.exe",
+               @"Parsers\EFCore6Parser7.exe",
+               @"Parsers\EFCore7Parser7.exe"
             };
 
             Dictionary<string, bool> contexts = new Dictionary<string, bool>();
@@ -154,56 +156,70 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private int TryParseAssembly(string filename, string parserAssembly, string outputFilename, string contextName)
       {
-         string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), parserAssembly);
-         string arguments = $@"""{filename.Trim('\"')}"" ""{outputFilename}""{(string.IsNullOrEmpty(contextName) ? string.Empty : $@" ""{contextName}""")}";
-         Debug.WriteLine($"Trying parser: {path} {arguments}");
-
-         ProcessStartInfo processStartInfo = new ProcessStartInfo(path)
+         try
          {
-            Arguments = arguments,
-            CreateNoWindow = true,
-            ErrorDialog = false,
-            WindowStyle = ProcessWindowStyle.Hidden,
-            UseShellExecute = true
-         };
+            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), parserAssembly);
+            string arguments = $@"""{filename.Trim('\"')}"" ""{outputFilename}""{(string.IsNullOrEmpty(contextName) ? string.Empty : $@" ""{contextName}""")}";
+            Debug.WriteLine($"Trying parser: {path} {arguments}");
 
-         using (Process process = System.Diagnostics.Process.Start(processStartInfo))
+            ProcessStartInfo processStartInfo = new ProcessStartInfo(path)
+                                                {
+                                                   Arguments = arguments,
+                                                   CreateNoWindow = true,
+                                                   ErrorDialog = false,
+                                                   WindowStyle = ProcessWindowStyle.Hidden,
+                                                   UseShellExecute = true
+                                                };
+
+            using (Process process = System.Diagnostics.Process.Start(processStartInfo))
+            {
+               process.WaitForExit();
+
+               return process.ExitCode;
+            }
+         }
+         catch 
          {
-            process.WaitForExit();
-
-            return process.ExitCode;
+            return 4;
          }
       }
 
       private bool TryProcess(string assemblyPath, ref List<ModelElement> newElements, string parserPath, string outputFilename, string logFilename, Dictionary<string, bool> contexts)
       {
-         string contextName = contexts.Any(kv => contexts[kv.Key])
-                                 ? contexts.First(kv => contexts[kv.Key]).Key
-                                 : null;
-
-         if (contexts.Any() && string.IsNullOrEmpty(contextName))
-            return false;
-
-         int parseResult = TryParseAssembly(assemblyPath, parserPath, outputFilename, contextName);
-
-         if (parseResult == 0)
-            return DoProcessing(outputFilename, out newElements);
-
-         if (!contexts.Any())
+         try
          {
-            string dupeContextTag = "Found more than one class derived from DbContext:";
-            string dupeContextLogEntry = File.ReadAllLines(logFilename).FirstOrDefault(logEntry => logEntry.Contains(dupeContextTag));
+            string contextName = contexts.Any(kv => contexts[kv.Key])
+                                    ? contexts.First(kv => contexts[kv.Key]).Key
+                                    : null;
 
-            if (dupeContextLogEntry != null)
+            if (contexts.Any() && string.IsNullOrEmpty(contextName))
+               return false;
+
+            int parseResult = TryParseAssembly(assemblyPath, parserPath, outputFilename, contextName);
+
+            if (parseResult == 0)
+               return DoProcessing(outputFilename, out newElements);
+
+            if (!contexts.Any())
             {
-               IEnumerable<string> contextNames = dupeContextLogEntry.Substring(dupeContextLogEntry.IndexOf(dupeContextTag, StringComparison.InvariantCulture) + dupeContextTag.Length).Split(',')
-                                                                     .Select(s => s.Trim().Split('.').Last());
+               string dupeContextTag = "Found more than one class derived from DbContext:";
+               string dupeContextLogEntry = File.ReadAllLines(logFilename).FirstOrDefault(logEntry => logEntry.Contains(dupeContextTag));
 
-               foreach (string context in contextNames)
-                  contexts.Add(context, BooleanQuestionDisplay.Show(Store, $"Found multiple DbContext classes. Process {context}?") == true);
+               if (dupeContextLogEntry != null)
+               {
+                  IEnumerable<string> contextNames = dupeContextLogEntry.Substring(dupeContextLogEntry.IndexOf(dupeContextTag, StringComparison.InvariantCulture) + dupeContextTag.Length).Split(',')
+                                                                        .Select(s => s.Trim().Split('.').Last());
 
-               return TryProcess(assemblyPath, ref newElements, parserPath, outputFilename, logFilename, contexts);
+                  foreach (string context in contextNames)
+                     contexts.Add(context, BooleanQuestionDisplay.Show(Store, $"Found multiple DbContext classes. Process {context}?") == true);
+
+                  return TryProcess(assemblyPath, ref newElements, parserPath, outputFilename, logFilename, contexts);
+               }
             }
+         }
+         catch (Exception ex)
+         {
+            Debug.WriteLine(ex.ToString());
          }
 
          return false;

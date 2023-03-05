@@ -249,10 +249,16 @@
     <Content Include="Parsers\EFCore5Parser.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Parsers\EFCore6Parser.exe">
+    <Content Include="Parsers\EFCore6Parser6.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Parsers\EFCore7Parser.exe">
+    <Content Include="Parsers\EFCore6Parser7.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Parsers\EFCore7Parser6.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Parsers\EFCore7Parser7.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\Commands.png" />
@@ -470,21 +476,28 @@
     <StartArguments>/rootsuffix Exp "..\..\..\Debugging\Debugging.sln"</StartArguments>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>
-         IF "$(ConfigurationName)"=="Release" copy /y "$(TargetDir)$(TargetName).vsix" "$(SolutionDir)..\dist\$(TargetName).vsix"
-      </PostBuildEvent>
+    <PostBuildEvent>IF "$(ConfigurationName)"=="Release" copy /y "$(TargetDir)$(TargetName).vsix" "$(SolutionDir)..\dist\$(TargetName).vsix"
+</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>
-         copy /y "$(SolutionDir)Dsl\GeneratedCode\EFModelSchema.xsd" "$(ProjectDir)ProjectItemTemplates\EFModel.xsd"
-
-         dotnet publish -c $(ConfigurationName) -r win-x64 -f netcoreapp3.1 --nologo --no-self-contained -o $(ProjectDir)Parsers /p:PublishSingleFile=true "$(SolutionDir)Utilities\EF6Parser\EF6Parser.csproj"
-         dotnet publish -c $(ConfigurationName) -r win-x64 -f netcoreapp3.1 --nologo --no-self-contained -o $(ProjectDir)Parsers /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore2Parser\EFCore2Parser.csproj"
-         dotnet publish -c $(ConfigurationName) -r win-x64 -f netcoreapp3.1 --nologo --no-self-contained -o $(ProjectDir)Parsers /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore3Parser\EFCore3Parser.csproj"
-         dotnet publish -c $(ConfigurationName) -r win-x64 -f netcoreapp3.1 --nologo --no-self-contained -o $(ProjectDir)Parsers /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore5Parser\EFCore5Parser.csproj"
-         dotnet publish -c $(ConfigurationName) -r win-x64 -f net6.0 --nologo --no-self-contained -o $(ProjectDir)Parsers /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore6Parser\EFCore6Parser.csproj"
-         dotnet publish -c $(ConfigurationName) -r win-x64 -f net6.0 --nologo --no-self-contained -o $(ProjectDir)Parsers /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore7Parser\EFCore7Parser.csproj"
-         if "$(ConfigurationName)"=="Release" del "$(ProjectDir)Parsers\*.pdb
+    <PreBuildEvent>copy /y "$(SolutionDir)Dsl\GeneratedCode\EFModelSchema.xsd" "$(ProjectDir)ProjectItemTemplates\EFModel.xsd"
+dotnet publish -c Debug -r win-x64 -f netcoreapp3.1 --nologo --self-contained -o "$(ProjectDir)Parsers" /p:PublishSingleFile=true "$(SolutionDir)Utilities\EF6Parser\EF6Parser.csproj"
+dotnet publish -c Debug -r win-x64 -f netcoreapp3.1 --nologo --self-contained -o "$(ProjectDir)Parsers" /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore2Parser\EFCore2Parser.csproj"
+dotnet publish -c Debug -r win-x64 -f netcoreapp3.1 --nologo --self-contained -o "$(ProjectDir)Parsers" /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore3Parser\EFCore3Parser.csproj"
+dotnet publish -c Debug -r win-x64 -f netcoreapp3.1 --nologo --self-contained -o "$(ProjectDir)Parsers" /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore5Parser\EFCore5Parser.csproj"
+dotnet publish -c Debug -r win-x64 -f net6.0 --nologo --self-contained -o "$(ProjectDir)Parsers" /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore6Parser\EFCore6Parser.csproj"
+if exist "$(ProjectDir)Parsers\EFCore6Parser6.exe" del "$(ProjectDir)Parsers\EFCore6Parser6.exe"
+rename "$(ProjectDir)Parsers\EFCore6Parser.exe" EFCore6Parser6.exe
+dotnet publish -c Debug -r win-x64 -f net6.0 --nologo --self-contained -o "$(ProjectDir)Parsers" /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore7Parser\EFCore7Parser.csproj"
+if exist "$(ProjectDir)Parsers\EFCore7Parser6.exe" del "$(ProjectDir)Parsers\EFCore7Parser6.exe"
+rename "$(ProjectDir)Parsers\EFCore7Parser.exe" EFCore7Parser6.exe
+dotnet publish -c Debug -r win-x64 -f net7.0 --nologo --self-contained -o "$(ProjectDir)Parsers" /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore6Parser\EFCore6Parser.csproj"
+if exist "$(ProjectDir)Parsers\EFCore6Parser7.exe" del "$(ProjectDir)Parsers\EFCore6Parser7.exe"
+rename "$(ProjectDir)Parsers\EFCore6Parser.exe" EFCore6Parser7.exe
+dotnet publish -c Debug -r win-x64 -f net7.0 --nologo --self-contained -o "$(ProjectDir)Parsers" /p:PublishSingleFile=true "$(SolutionDir)Utilities\EFCore7Parser\EFCore7Parser.csproj"
+if exist "$(ProjectDir)Parsers\EFCore7Parser7.exe" del "$(ProjectDir)Parsers\EFCore7Parser7.exe"
+rename "$(ProjectDir)Parsers\EFCore7Parser.exe" EFCore7Parser7.exe
+if "Debug"=="Release" del "$(ProjectDir)Parsers\*.pdb
 </PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>

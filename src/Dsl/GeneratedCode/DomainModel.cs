@@ -204,6 +204,7 @@ namespace Sawczyn.EFDesigner.EFModel
 	         new DomainMemberInfo(typeof(ModelClass), "DescribedAssociationElementId", ModelClass.DescribedAssociationElementIdDomainPropertyId, typeof(ModelClass.DescribedAssociationElementIdPropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelClass), "TableComment", ModelClass.TableCommentDomainPropertyId, typeof(ModelClass.TableCommentPropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelClass), "Persistent", ModelClass.PersistentDomainPropertyId, typeof(ModelClass.PersistentPropertyHandler)),
+	         new DomainMemberInfo(typeof(ModelClass), "ExplorerTooltip", ModelClass.ExplorerTooltipDomainPropertyId, typeof(ModelClass.ExplorerTooltipPropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelAttribute), "Type", ModelAttribute.TypeDomainPropertyId, typeof(ModelAttribute.TypePropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelAttribute), "InitialValue", ModelAttribute.InitialValueDomainPropertyId, typeof(ModelAttribute.InitialValuePropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelAttribute), "IsIdentity", ModelAttribute.IsIdentityDomainPropertyId, typeof(ModelAttribute.IsIdentityPropertyHandler)),

@@ -1,0 +1,9 @@
+DevExpress info on fixing the toolbox when it goes bad after installing their tools
+https://docs.devexpress.com/GeneralInformation/403588/support-debug-troubleshooting/visual-studio-toolbox
+
+Pretty much the same, but from Zendesk
+https://devdept.zendesk.com/hc/en-us/articles/217842718-Resetting-Toolbox-and-Clearing-the-Toolbox-Cache
+
+Community discussion of things to do to fix toolbox issues
+https://stackoverflow.com/questions/1268298/how-to-rebuild-the-visual-studio-toolbox
+

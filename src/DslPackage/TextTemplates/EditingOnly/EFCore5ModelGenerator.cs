@@ -13,7 +13,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.3.2
+      // EFDesigner v4.2.3.3
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -129,6 +129,16 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
              && (!modelClass.Subclasses.Any() || modelClass.ModelRoot.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
              && modelClass.Superclass == null)
                modifiers.Add("t.IsTemporal();");
+
+            if (modelRoot.IsEFCore7Plus)
+            {
+               bool hasTrigger = modelClass.AllNavigationProperties().Any(n =>
+                                                                             (n.AssociationObject.Source == modelClass && n.AssociationObject.Target == modelClass && (n.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One || n.AssociationObject.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One))
+                                                                          || (n.AssociationObject.Source == modelClass && (n.AssociationObject.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One || n.AssociationObject.TargetDeleteAction == DeleteAction.Cascade))
+                                                                          || (n.AssociationObject.Target == modelClass && (n.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One || n.AssociationObject.SourceDeleteAction == DeleteAction.Cascade)));
+               // for later - EFCore7, SqlServer and triggers don't work well. We need to tell it that the triggers exist.
+               // but how to know what they are at this stage of the game?
+            }
 
             string buildActions = modifiers.Any()
                                      ? $", t => {{ {string.Join(" ", modifiers)} }}"

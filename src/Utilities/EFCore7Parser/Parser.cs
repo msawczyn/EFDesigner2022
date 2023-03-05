@@ -25,7 +25,7 @@ namespace EFCore7Parser
       public Parser(Assembly assembly, Logger logger, string dbContextTypeName = null) : base(logger)
       {
          Type contextType;
-
+         
          if (dbContextTypeName != null)
          {
             log.Debug($"dbContextTypeName parameter is {dbContextTypeName}");
