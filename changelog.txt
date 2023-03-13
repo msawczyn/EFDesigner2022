@@ -7,6 +7,7 @@
    - New glyphs in diagram and explorer to show transient and view entities
    - Added properties to bidirectional associations allowing custom naming of FK columns in join table
    - Fix bad constructor generation when multiple associations exist between the same classes (see https://github.com/msawczyn/EFDesigner2022/issues/50)
+   - Class, property, enum and enum value names are now escaped if they match a reserved C# keyword
 
 4.2.1
    - Added support for EFCore7

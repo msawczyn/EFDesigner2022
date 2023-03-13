@@ -13,7 +13,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.3.3
+      // EFDesigner v4.2.3.4
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -227,12 +227,17 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                segments.Add($"UseCollation(\"{modelAttribute.DatabaseCollation.Trim('"')}\")");
 
             if (modelRoot.IsEFCore6Plus
-             && (modelAttribute.Type == "decimal" || modelAttribute.Type == "Decimal")
-             && !string.IsNullOrEmpty(modelAttribute.TypePrecision))
+             && (modelAttribute.Type == "decimal" || modelAttribute.Type == "Decimal"))
             {
-               segments.Add(!string.IsNullOrEmpty(modelAttribute.TypeScale)
-                               ? $"HasPrecision({modelAttribute.TypePrecision}, {modelAttribute.TypeScale})"
-                               : $"HasPrecision({modelAttribute.TypePrecision})");
+               string precision = string.IsNullOrEmpty(modelAttribute.TypePrecision)
+                                     ? "18"
+                                     : modelAttribute.TypePrecision;
+
+               string scale = string.IsNullOrEmpty(modelAttribute.TypeScale)
+                                 ? "2"
+                                 : modelAttribute.TypeScale;
+
+               segments.Add($"HasPrecision({precision}, {scale})");
             }
 
             int index = segments.IndexOf("IsRequired()");

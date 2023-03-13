@@ -456,13 +456,27 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                                                               && !x.IsConcurrencyToken
                                                               && ((x.SetterVisibility == SetterAccessModifier.Public) || !publicOnly)
                                                               && string.IsNullOrEmpty(x.InitialValue))
-                                                     .Select(x => $"{x.FQPrimitiveType} {x.Name.ToLower()}"));
+                                                     .Select(x =>
+                                                             {
+                                                                string name = x.ModelClass.ModelRoot.ReservedWords.Contains(x.Name.ToLower())
+                                                                                 ? "@" + x.Name.ToLower()
+                                                                                 : x.Name.ToLower();
+
+                                                                return $"{x.FQPrimitiveType} {name}";
+                                                             }));
 
                // don't use 1..1 associations in constructor parameters. Becomes a Catch-22 scenario.
                requiredParameters.AddRange(modelClass.AllRequiredNavigationProperties()
                                                      .Where(np => (np.AssociationObject.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)
                                                                || (np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
-                                                     .Select(x => $"{x.ClassType.FullName} {x.PropertyName.ToLower()}"));
+                                                     .Select(x =>
+                                                             {
+                                                                string name = x.ClassType.ModelRoot.ReservedWords.Contains(x.PropertyName.ToLower())
+                                                                                 ? "@" + x.PropertyName.ToLower()
+                                                                                 : x.PropertyName.ToLower();
+
+                                                                return $"{x.ClassType.FullName} {name}";
+                                                             }));
             }
 
             if (haveDefaults != false)
@@ -488,7 +502,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                                                                 if (x.FQPrimitiveType == "decimal")
                                                                    value += "m";
 
-                                                                return $"{x.FQPrimitiveType} {x.Name.ToLower()} = {quote}{value}{quote}";
+                                                                string name = x.ModelClass.ModelRoot.ReservedWords.Contains(x.Name.ToLower())
+                                                                                 ? "@" + x.Name.ToLower()
+                                                                                 : x.Name.ToLower();
+
+                                                                return $"{x.FQPrimitiveType} {name} = {quote}{value}{quote}";
                                                              }));
             }
 
@@ -497,7 +515,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
          public static bool IsNullable(ModelAttribute modelAttribute)
          {
-            return !modelAttribute.Required && !modelAttribute.IsIdentity && !modelAttribute.IsConcurrencyToken && !NonNullableTypes.Contains(modelAttribute.Type);
+            return !modelAttribute.Required && !modelAttribute.IsIdentity && !modelAttribute.IsConcurrencyToken && !modelAttribute.FQPrimitiveType.EndsWith("[]") && !NonNullableTypes.Contains(modelAttribute.Type);
          }
 
          // implementations delegated to the surrounding GeneratedTextTransformation for backward compatability
@@ -788,7 +806,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                                ? requiredAttribute.Name
                                : requiredAttribute.BackingFieldName;
 
-               Output($"this.{lhs} = {requiredAttribute.Name.ToLower()};");
+               string parameterName = requiredAttribute.ModelClass.ModelRoot.ReservedWords.Contains(requiredAttribute.Name.ToLower()) 
+                                         ? "@" + requiredAttribute.Name.ToLower() 
+                                         : requiredAttribute.Name.ToLower();
+
+               Output($"this.{lhs} = {parameterName};");
                NL();
             }
 
@@ -820,7 +842,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             foreach (NavigationProperty requiredNavigationProperty in requiredNavigationProperties)
             {
                NavigationProperty otherSide = requiredNavigationProperty.OtherSide;
-               string parameterName = requiredNavigationProperty.PropertyName.ToLower();
+               string parameterName = requiredNavigationProperty.ClassType.ModelRoot.ReservedWords.Contains(requiredNavigationProperty.PropertyName.ToLower()) 
+                                         ? "@" + requiredNavigationProperty.PropertyName.ToLower() 
+                                         : requiredNavigationProperty.PropertyName.ToLower();
+
                Output($"if ({parameterName} == null) throw new ArgumentNullException(nameof({parameterName}));");
 
                string targetObjectName = requiredNavigationProperty.IsAutoProperty

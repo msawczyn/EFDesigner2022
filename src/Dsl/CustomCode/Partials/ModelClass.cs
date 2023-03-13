@@ -827,7 +827,7 @@ namespace Sawczyn.EFDesigner.EFModel
          if (ModelRoot == null)
             return;
 
-         if (!IsDependentType && !IsDatabaseView && !IsQueryType && Persistent && !AllIdentityAttributes.Any())
+         if (!IsDependentType && !IsDatabaseView && !IsQueryType && Persistent && !AllIdentityAttributes.Any() && !IsKeylessType())
             context.LogError($"{Name}: Class has no identity property in inheritance chain", "MCENoIdentity", this);
       }
 

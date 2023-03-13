@@ -225,7 +225,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
                      if (element.IsQueryType)
                      {
-                        errorMessages.Add($"Can't base {element.Name} off a view since it's a query type");
+                        errorMessages.Add($"Don't define {element.Name} as both a query type and a view. Query type is sufficient.");
 
                         break;
                      }
@@ -467,6 +467,9 @@ namespace Sawczyn.EFDesigner.EFModel
                      if (element.TableName == oldDefaultName)
                         element.TableName = newDefaultName;
                   }
+
+                  if (modelRoot.ReservedWords.Contains(element.Name))
+                     element.Name = "@" + element.Name;
 
                   break;
                }

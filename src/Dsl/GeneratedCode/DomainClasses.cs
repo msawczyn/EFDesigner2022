@@ -11874,7 +11874,7 @@ namespace Sawczyn.EFDesigner.EFModel
 		/// <summary>
 		/// Storage for TypePrecision
 		/// </summary>
-		private global::System.String typePrecisionPropertyStorage = string.Empty;
+		private global::System.String typePrecisionPropertyStorage = "18";
 		
 		/// <summary>
 		/// Gets or sets the value of TypePrecision domain property.
@@ -11884,6 +11884,7 @@ namespace Sawczyn.EFDesigner.EFModel
 		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/TypePrecision.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/TypePrecision.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/TypePrecision.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[global::System.ComponentModel.DefaultValue("18")]
 		[DslModeling::DomainObjectId("105f2f87-83c1-4cfd-a01f-53879eb1d48f")]
 		public global::System.String TypePrecision
 		{
@@ -11963,7 +11964,7 @@ namespace Sawczyn.EFDesigner.EFModel
 		/// <summary>
 		/// Storage for TypeScale
 		/// </summary>
-		private global::System.String typeScalePropertyStorage = string.Empty;
+		private global::System.String typeScalePropertyStorage = "2";
 		
 		/// <summary>
 		/// Gets or sets the value of TypeScale domain property.
@@ -11972,6 +11973,7 @@ namespace Sawczyn.EFDesigner.EFModel
 		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/TypeScale.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/TypeScale.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelAttribute/TypeScale.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[global::System.ComponentModel.DefaultValue("2")]
 		[DslModeling::DomainObjectId("e6f584d3-4a4c-4ed0-92fc-0a0fa01ef684")]
 		public global::System.String TypeScale
 		{
@@ -14481,6 +14483,6 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
 	partial class ModelRoot
 	{
-		public const string DSLVersion = "4.2.3.3";
+		public const string DSLVersion = "4.2.3.4";
 	}
 }

@@ -6121,9 +6121,10 @@ namespace Sawczyn.EFDesigner.EFModel
 	         global::System.String propValue = instanceOfModelAttribute.TypePrecision;
 	         if (!serializationContext.Result.Failed)
 	         {
-	            if (!string.IsNullOrEmpty(propValue))
+	            if (propValue != null && (serializationContext.WriteOptionalPropertiesWithDefaultValue || string.CompareOrdinal(propValue, "18") != 0))
+	            {   // No need to write the value out if it's the same as default value.
 	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "typePrecision", propValue);
-	
+	            }
 	         }
 	      }
 	      // TypeScale
@@ -6132,9 +6133,10 @@ namespace Sawczyn.EFDesigner.EFModel
 	         global::System.String propValue = instanceOfModelAttribute.TypeScale;
 	         if (!serializationContext.Result.Failed)
 	         {
-	            if (!string.IsNullOrEmpty(propValue))
+	            if (propValue != null && (serializationContext.WriteOptionalPropertiesWithDefaultValue || string.CompareOrdinal(propValue, "2") != 0))
+	            {   // No need to write the value out if it's the same as default value.
 	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "typeScale", propValue);
-	
+	            }
 	         }
 	      }
 	      // IndexName

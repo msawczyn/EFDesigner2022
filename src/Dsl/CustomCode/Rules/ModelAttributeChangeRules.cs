@@ -54,6 +54,14 @@ namespace Sawczyn.EFDesigner.EFModel
 
                break;
 
+            case "BackingFieldName":
+               {
+                  if (modelRoot.ReservedWords.Contains(element.BackingFieldName))
+                     element.BackingFieldName = "@" + element.BackingFieldName;
+               }
+
+               break;
+
             case "IdentityType":
                {
                   if (element.IsIdentity)
@@ -226,6 +234,9 @@ namespace Sawczyn.EFDesigner.EFModel
                {
                   if (string.IsNullOrEmpty(element.Name) || !CodeGenerator.IsValidLanguageIndependentIdentifier(element.Name))
                      errorMessages.Add($"{modelClass.Name}: Property name '{element.Name}' isn't a valid .NET identifier");
+
+                  if (modelRoot.ReservedWords.Contains(element.Name))
+                     element.Name = "@" + element.Name;
 
                   if (modelClass.AllAttributes.Except(new[] { element }).Any(x => x.Name == element.Name)
                    || modelClass.AllNavigationProperties().Any(p => p.PropertyName == element.Name))

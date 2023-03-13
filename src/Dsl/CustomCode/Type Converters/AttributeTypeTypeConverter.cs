@@ -63,6 +63,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                  .OfType<ModelAttribute>()
                                  .Select(x => x.Type)
                                  .Where(x => !values.Contains(x))
+                                 .Distinct()
                                  .OrderBy(x => x));
          }
 

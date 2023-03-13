@@ -22,7 +22,7 @@
 #><#@ import namespace="System.Data.Entity.Design.PluralizationServices"
 #><#@ import namespace="Microsoft.VisualStudio.TextTemplating"
 #><#+
-      // EFDesigner v4.2.3.3
+      // EFDesigner v4.2.3.4
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -587,6 +587,9 @@
                case CodeStrategy.TablePerConcreteType:
                   classesWithTables = modelRoot.Classes
                                                .Where(mc => (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName))
+                                                         && mc.Persistent
+                                                         && !mc.IsQueryType
+                                                         && !mc.CustomAttributes.Contains("NotMapped")
                                                          && mc.GenerateCode)
                                                .OrderBy(x => x.Name)
                                                .ToArray();
@@ -606,6 +609,9 @@
                   classesWithTables = modelRoot.Classes
                                                .Where(mc => (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName))
                                                          && (mc.Superclass == null)
+                                                         && mc.Persistent
+                                                         && !mc.IsQueryType
+                                                         && !mc.CustomAttributes.Contains("NotMapped")
                                                          && mc.GenerateCode)
                                                .OrderBy(x => x.Name)
                                                .ToArray();

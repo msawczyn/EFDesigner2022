@@ -16,6 +16,7 @@ namespace Sawczyn.EFDesigner.EFModel
          base.ElementPropertyChanged(e);
 
          ModelEnum element = (ModelEnum)e.ModelElement;
+         ModelRoot modelRoot = element.ModelRoot;
 
          if (element.IsDeleted)
             return;
@@ -46,6 +47,9 @@ namespace Sawczyn.EFDesigner.EFModel
                   errorMessage = "Enum name already in use by another enum";
                else
                {
+                  if (modelRoot.ReservedWords.Contains(element.Name))
+                     element.Name = "@" + element.Name;
+
                   // rename type names for ModelAttributes that reference this enum
                   foreach (ModelAttribute modelAttribute in store.GetAll<ModelAttribute>().Where(a => a.Type == (string)e.OldValue))
                   {

@@ -13,12 +13,16 @@ namespace Sawczyn.EFDesigner.EFModel
 
          ModelEnumValue element = (ModelEnumValue)e.ModelElement;
          ModelEnum enumElement = element.Enum;
+         ModelRoot modelRoot = enumElement.ModelRoot;
 
          Store store = element.Store;
          Transaction current = store.TransactionManager.CurrentTransaction;
 
          if (current.IsSerializing || ModelRoot.BatchUpdating)
             return;
+
+         if (modelRoot.ReservedWords.Contains(element.Name))
+            element.Name = "@" + element.Name;
 
          enumElement.SetFlagValue(element);
 

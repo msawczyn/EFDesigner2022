@@ -21,6 +21,7 @@ namespace Sawczyn.EFDesigner.EFModel
             return;
 
          ModelEnum modelEnum = element.Enum;
+         ModelRoot modelRoot = modelEnum.ModelRoot;
 
          Store store = element.Store;
          Transaction current = store.TransactionManager.CurrentTransaction;
@@ -36,26 +37,28 @@ namespace Sawczyn.EFDesigner.EFModel
          switch (e.DomainProperty.Name)
          {
             case "Name":
-               string newName = (string)e.NewValue;
-               Match match = Regex.Match(newName, @"(.+)\s*=\s*(\d+)");
+               Match match = Regex.Match(modelEnum.Name, @"(.+)\s*=\s*(\d+)");
 
                if (match != Match.Empty)
                {
-                  newName = match.Groups[1].Value;
+                  modelEnum.Name = match.Groups[1].Value;
                   element.Value = match.Groups[2].Value;
                }
 
-               if (string.IsNullOrWhiteSpace(newName) || !CodeGenerator.IsValidLanguageIndependentIdentifier(newName))
-                  errorMessage = $"{modelEnum.Name}.{newName}: Name must be a valid .NET identifier";
-               else if (modelEnum.Values.Except(new[] {element}).Any(v => v.Name == newName))
-                  errorMessage = $"{modelEnum.Name}.{newName}: Name already in use";
+               if (string.IsNullOrWhiteSpace(modelEnum.Name) || !CodeGenerator.IsValidLanguageIndependentIdentifier(modelEnum.Name))
+                  errorMessage = $"{modelEnum.Name}.{modelEnum.Name}: Name must be a valid .NET identifier";
+               else if (modelEnum.Values.Except(new[] {element}).Any(v => v.Name == modelEnum.Name))
+                  errorMessage = $"{modelEnum.Name}.{modelEnum.Name}: Name already in use";
                else
                {
+                  if (modelRoot.ReservedWords.Contains(element.Name))
+                     element.Name = "@" + element.Name;
+
                   // find ModelAttributes where the default value is this ModelEnumValue and change it to the new name
                   foreach (ModelAttribute modelAttribute in store.GetAll<ModelAttribute>().Where(a => a.InitialValue == $"{modelEnum.Name}.{(string)e.OldValue}"))
                   {
                      string[] parts = modelAttribute.InitialValue.Split('.');
-                     parts[1] = newName;
+                     parts[1] = modelEnum.Name;
                      modelAttribute.InitialValue = string.Join(".", parts);
                   }
                }
