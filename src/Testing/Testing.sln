@@ -59,7 +59,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox_EF6_Test", "Sandbox
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore5Net5", "EFCoreV5\EFCore5Net5\EFCore5Net5.csproj", "{B2F26FB8-0492-4117-AC94-9FD640900AFE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sandbox_EFCore5Net5_Test", "Sandbox\Sandbox_EFCore5Net5_Test\Sandbox_EFCore5Net5_Test.csproj", "{00FCE402-231F-4912-B7D6-8C71EA878B23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sandbox_EFCore_Test", "Sandbox\Sandbox_EFCore5Net5_Test\Sandbox_EFCore_Test.csproj", "{00FCE402-231F-4912-B7D6-8C71EA878B23}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

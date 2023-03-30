@@ -4,12 +4,12 @@ using System.Linq;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Credit.API.Domain_RE.Models_RE
+namespace Sandbox_EFCore_Test
 {
    /// <inheritdoc/>
-   partial class CreditContext
+   partial class EFModel1
    {
-      public CreditContext() : base(Options)
+      public EFModel1() : base(Options)
       {
          //System.Diagnostics.Debugger.Launch();
       }

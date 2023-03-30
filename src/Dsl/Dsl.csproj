@@ -43,6 +43,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Sawczyn.EFDesigner.EFModel.Dsl.xml</DocumentationFile>
+    <NoWarn>CS3001,VSTHRD010,CS3009;MSB3277</NoWarn>
   </PropertyGroup>
   <!-- Project specific properties to control T4/DSL targets -->
   <PropertyGroup>

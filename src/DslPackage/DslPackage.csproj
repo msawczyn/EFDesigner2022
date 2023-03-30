@@ -48,6 +48,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>CS1762,VSTHRD010,VSTHRD001;MSB3277</NoWarn>
+    <DocumentationFile>bin\Release\Sawczyn.EFDesigner.EFModel.DslPackage.xml</DocumentationFile>
   </PropertyGroup>
   <!-- Properties for VSSDK/DSL Targets: Must be defined before importing the targets -->
   <PropertyGroup>
@@ -286,18 +288,6 @@
     <Content Include="TextTemplates\EFModelGenerator.ttinclude">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Compile Include="TextTemplates\EditingOnly\EF6Designer.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EF6ModelGenerator.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFCore2ModelGenerator.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFCore3ModelGenerator.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFCore5ModelGenerator.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFCoreDesigner.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFCoreModelGenerator.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFDesigner.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFModelFileManager.cs" />
-    <Compile Include="TextTemplates\EditingOnly\EFModelGenerator.cs" />
-    <Compile Include="TextTemplates\EditingOnly\MultipleOutputHelper.cs" />
-    <Compile Include="TextTemplates\EditingOnly\VSIntegration.cs" />
     <Compile Include="VSPackage.Designer.cs" />
     <Content Include="Logo.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -396,7 +386,6 @@
     <Content Include="TextTemplates\VSIntegration.ttinclude">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="TextTemplates\EditingOnly\_ReadMe.md" />
     <None Include="TextTemplates\EF6Designer.ttinclude" />
     <None Include="TextTemplates\EFCoreDesigner.ttinclude" />
   </ItemGroup>

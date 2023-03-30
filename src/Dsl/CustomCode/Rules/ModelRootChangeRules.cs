@@ -57,17 +57,18 @@ namespace Sawczyn.EFDesigner.EFModel
 
                if (element.EntityFrameworkVersion == EFVersion.EFCore)
                {
-                  if (element.IsEFCore5Plus)
-                  {
-                     if (element.InheritanceStrategy == CodeStrategy.TablePerConcreteType)
-                        element.InheritanceStrategy = CodeStrategy.TablePerType;
-                  }
-                  else
-                  {
+                  // if we're not going to at least EFCore 5 we can only use the TablePerHierarchy strategy
+                  if (!element.IsEFCore5Plus && element.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
                      element.InheritanceStrategy = CodeStrategy.TablePerHierarchy;
+
+                  // if we're not going to at least EFCore 7 we can't use the TablePerConcreteType strategy. Devolve to TablePerType.
+                  else if (!element.IsEFCore7Plus && element.InheritanceStrategy == CodeStrategy.TablePerConcreteType)
+                     element.InheritanceStrategy = CodeStrategy.TablePerType;
+
+                  if (!element.IsEFCore5Plus)
                      store.ElementDirectory.AllElements.OfType<ModelClass>().Where(c => c.IsPropertyBag).ToList().ForEach(c => c.IsPropertyBag = false);
-                  }
                }
+
 
                break;
 
@@ -78,14 +79,16 @@ namespace Sawczyn.EFDesigner.EFModel
                {
                   case EFVersion.EFCore:
                      {
-                        if (element.IsEFCore5Plus)
-                        {
-                           if (element.InheritanceStrategy == CodeStrategy.TablePerConcreteType)
-                              element.InheritanceStrategy = CodeStrategy.TablePerType;
-                        }
-                        else
-                        {
+                        // if we're not going to at least EFCore 5 we can only use the TablePerHierarchy strategy
+                        if (!element.IsEFCore5Plus && element.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
                            element.InheritanceStrategy = CodeStrategy.TablePerHierarchy;
+
+                        // if we're not going to at least EFCore 7 we can't use the TablePerConcreteType strategy. Devolve to TablePerType.
+                        else if (!element.IsEFCore7Plus && element.InheritanceStrategy == CodeStrategy.TablePerConcreteType)
+                           element.InheritanceStrategy = CodeStrategy.TablePerType;
+
+                        if (!element.IsEFCore5Plus)
+                        {
                            store.ElementDirectory.AllElements.OfType<ModelClass>().Where(c => c.IsPropertyBag).ToList().ForEach(c => c.IsPropertyBag = false);
 
                            switch (element.PropertyAccessModeDefault)
@@ -194,11 +197,11 @@ namespace Sawczyn.EFDesigner.EFModel
 
                if (element.EntityFrameworkVersion == EFVersion.EFCore)
                {
-                  if (element.IsEFCore5Plus && (element.InheritanceStrategy == CodeStrategy.TablePerConcreteType))
-                     element.InheritanceStrategy = CodeStrategy.TablePerType;
-
                   if (!element.IsEFCore5Plus)
                      element.InheritanceStrategy = CodeStrategy.TablePerHierarchy;
+
+                  if (!element.IsEFCore7Plus && element.InheritanceStrategy == CodeStrategy.TablePerConcreteType)
+                     element.InheritanceStrategy = CodeStrategy.TablePerType;
                }
 
                break;
