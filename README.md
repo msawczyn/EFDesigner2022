@@ -6,7 +6,7 @@
 
 Model and generate code for both Entity Framework v6.x and Entity Framework Core 2 through 6.
 
-**[Install with NuGet](https://docs.microsoft.com/en-us/visualstudio/ide/finding-and-using-visual-studio-extensions) from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner2022)** (currently available as a pre-release extension)
+**[Install with NuGet](https://docs.microsoft.com/en-us/visualstudio/ide/finding-and-using-visual-studio-extensions) from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner2022)** 
 
 **Complete documentation in the [project's documentation site](https://msawczyn.github.io/EFDesigner/)**
 
