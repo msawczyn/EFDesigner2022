@@ -336,8 +336,26 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                ProjectSync(generatedFileNames);
             }
 
+            private bool ShouldDelete(string[] targetFileNames, string fileName)
+            {
+               Dictionary<string, string> directories = new Dictionary<string, string>();
+
+               foreach (string targetFilename in targetFileNames)
+               {
+                  string directory = Path.GetDirectoryName(targetFilename);
+                  if (directory != null)
+                  {
+                     if (!directories.ContainsKey(directory))
+                        directories.Add(directory, targetFilename);
+                  }
+               }
+               return directories.ContainsKey(Path.GetDirectoryName(fileName));
+            }
+
             private void ProjectSync(IEnumerable<string> keepFileNames)
             {
+               // thanks to Sancho-Lee (https://github.com/Sancho-Lee) for the fix here
+
                Dictionary<ProjectItem, List<string>> current = GetCurrentState();
 
                string[] fileNames = keepFileNames as string[] ?? keepFileNames.ToArray();
@@ -350,7 +368,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                {
                   foreach (string filename in current[parentItem])
                   {
-                     if (!allTargetFiles.Contains(filename) && !fileNames.Contains(filename))
+                     if (!allTargetFiles.Contains(filename) && ShouldDelete(fileNames, filename))
                         dte.Solution.FindProjectItem(filename)?.Delete();
                      else
                         existingFiles.Add(filename);

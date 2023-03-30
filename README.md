@@ -76,13 +76,17 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 ### Change Log
 
 4.2.3 (next release - see [nightly builds](https://github.com/msawczyn/EFDesigner2022/blob/master/dist/Sawczyn.EFDesigner.EFModel.DslPackage.vsix) if interested)
-   - Ensured that a foreign key property's IsForeignKeyFor value is reset when the association is removed and that property is an Id property. (see https://github.com/msawczyn/EFDesigner2022/issues/47)
-   - Replaced legacy EF6Designer.ttinclude and EFCoreDesigner.ttinclude files for legacy model file backward compatability. (see https://github.com/msawczyn/EFDesigner2022/issues/45)
    - Added HierarchyId as a property type
    - Added optional index name for indexed properties
+   - Added properties to bidirectional associations allowing custom naming of FK columns in join table
+   - Class, property, enum and enum value names are now escaped if they match a reserved C# keyword
+   - Ensured that a foreign key property's IsForeignKeyFor value is reset when the association is removed and that property is an Id property. (see https://github.com/msawczyn/EFDesigner2022/issues/47)
+   - Replaced legacy EF6Designer.ttinclude and EFCoreDesigner.ttinclude files for legacy model file backward compatability. (see https://github.com/msawczyn/EFDesigner2022/issues/45)
    - Assembly import is a bit smarter now in detecting and using indexes and views
    - New glyphs in diagram and explorer to show transient and view entities
-   - Added properties to bidirectional associations allowing custom naming of FK columns in join table
+   - Fix bad constructor generation when multiple associations exist between the same classes (see https://github.com/msawczyn/EFDesigner2022/issues/50)
+   - Removed modeling restriction on unidirectional many-to-many properties in EFCore7+ projects (see https://github.com/msawczyn/EFDesigner2022/issues/54)
+   - Updated file sync logic for generated files. Thanks to [Sancho-Lee](https://github.com/Sancho-Lee) for the pull request. (see https://github.com/msawczyn/EFDesigner2022/issues/57)
 
 [4.2.1](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.1/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - Added support for EFCore7

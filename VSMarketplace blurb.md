@@ -51,6 +51,19 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
 
 **ChangeLog**
 
+**4.2.3**
+   - **[NEW]** Added HierarchyId as a property type
+   - **[NEW]** Added optional index name for indexed properties
+   - **[NEW]** Added properties to bidirectional associations allowing custom naming of FK columns in join table
+   - **[NEW]** Class, property, enum and enum value names are now escaped if they match a reserved C# keyword
+   - Ensured that a foreign key property's IsForeignKeyFor value is reset when the association is removed and that property is an Id property. (see https://github.com/msawczyn/EFDesigner2022/issues/47)
+   - Replaced legacy EF6Designer.ttinclude and EFCoreDesigner.ttinclude files for legacy model file backward compatability. (see https://github.com/msawczyn/EFDesigner2022/issues/45)
+   - Assembly import is a bit smarter now in detecting and using indexes and views
+   - New glyphs in diagram and explorer to show transient and view entities
+   - Fix bad constructor generation when multiple associations exist between the same classes (see https://github.com/msawczyn/EFDesigner2022/issues/50)
+   - Removed modeling restriction on unidirectional many-to-many properties in EFCore7+ projects (see https://github.com/msawczyn/EFDesigner2022/issues/54)
+   - Updated file sync logic for generated files. Thanks to [Sancho-Lee](https://github.com/Sancho-Lee) for the pull request. (see https://github.com/msawczyn/EFDesigner2022/issues/57)
+
 **4.2.1**
    - **[NEW]** Added support for EFCore7
    - **[NEW]** Added ability to import EFCore7 assemblies
