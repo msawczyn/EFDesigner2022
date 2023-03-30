@@ -56,6 +56,7 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
    - **[NEW]** Added optional index name for indexed properties
    - **[NEW]** Added properties to bidirectional associations allowing custom naming of FK columns in join table
    - **[NEW]** Class, property, enum and enum value names are now escaped if they match a reserved C# keyword
+   - **[NEW]** New example code for EF6 and EFCore. Thanks to [David V](https://github.com/Opzet) for the pull request.
    - Ensured that a foreign key property's IsForeignKeyFor value is reset when the association is removed and that property is an Id property. (see https://github.com/msawczyn/EFDesigner2022/issues/47)
    - Replaced legacy EF6Designer.ttinclude and EFCoreDesigner.ttinclude files for legacy model file backward compatability. (see https://github.com/msawczyn/EFDesigner2022/issues/45)
    - Assembly import is a bit smarter now in detecting and using indexes and views

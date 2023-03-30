@@ -79,6 +79,7 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
    - Added HierarchyId as a property type
    - Added optional index name for indexed properties
    - Added properties to bidirectional associations allowing custom naming of FK columns in join table
+   - New example code for EF6 and EFCore. Thanks to [David V](https://github.com/Opzet) for the pull request.
    - Class, property, enum and enum value names are now escaped if they match a reserved C# keyword
    - Ensured that a foreign key property's IsForeignKeyFor value is reset when the association is removed and that property is an Id property. (see https://github.com/msawczyn/EFDesigner2022/issues/47)
    - Replaced legacy EF6Designer.ttinclude and EFCoreDesigner.ttinclude files for legacy model file backward compatability. (see https://github.com/msawczyn/EFDesigner2022/issues/45)
