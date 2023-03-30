@@ -149,18 +149,21 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                             : $"ToTable(\"{tableName}\"{schema}{buildActions})");
 
             if (modelClass.Superclass != null)
+            {
                segments.Add($"HasBaseType<{modelClass.Superclass.FullName}>()");
+            }
+            else  // if there's a base class, we can't have new identifiers
+            {
+               // primary key code segments must be output last, since HasKey returns a different type
+               List<ModelAttribute> allIdentityAttributes = modelClass.AllIdentityAttributes.ToList();
 
-            // primary key code segments must be output last, since HasKey returns a different type
-            List<ModelAttribute> identityAttributes = modelClass.IdentityAttributes.ToList();
-
-            if (identityAttributes.Count == 1)
-               segments.Add($"HasKey(t => t.{identityAttributes[0].Name})");
-            else if (identityAttributes.Count > 1)
-               segments.Add($"HasKey(t => new {{ t.{string.Join(", t.", identityAttributes.Select(ia => ia.Name))} }})");
-            else
-               segments.Add("HasNoKey()");
-         }
+               if (allIdentityAttributes.Count == 1)
+                  segments.Add($"HasKey(t => t.{allIdentityAttributes[0].Name})");
+               else if (allIdentityAttributes.Count > 1)
+                  segments.Add($"HasKey(t => new {{ t.{string.Join(", t.", allIdentityAttributes.Select(ia => ia.Name))} }})");
+               else
+                  segments.Add("HasNoKey()");
+            }         }
 
          [SuppressMessage("ReSharper", "RedundantNameQualifier")]
          protected override void ConfigureUnidirectionalAssociations(ModelClass modelClass, List<Association> visited, List<string> foreignKeyColumns, List<string> declaredShadowProperties)

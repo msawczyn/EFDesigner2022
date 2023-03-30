@@ -67,7 +67,6 @@
             throw new InvalidOperationException("Unsupported Entity Framework version");
       }
 
-      System.Diagnostics.Debugger.Launch();
       generator.Generate(manager);
    }
 

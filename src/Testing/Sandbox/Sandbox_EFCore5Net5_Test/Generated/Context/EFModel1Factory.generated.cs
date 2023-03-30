@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.3.2
+//     Produced by Entity Framework Visual Editor v4.2.3.4
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace Credit.API.Domain_RE.Models_RE
+namespace Sandbox_EFCore_Test
 {
    /// <summary>
    /// A factory for creating derived DbContext instances. Implement this interface to enable design-time services for context 
@@ -30,27 +30,27 @@ namespace Credit.API.Domain_RE.Models_RE
    /// to enable specific design-time experiences such as Migrations. Design-time services will automatically discover 
    /// implementations of this interface that are in the startup assembly or the same assembly as the derived context.
    /// </summary>
-   public partial class CreditContextDesignTimeFactory: IDesignTimeDbContextFactory<CreditContext>
+   public partial class EFModel1DesignTimeFactory: IDesignTimeDbContextFactory<EFModel1>
    {
       /// <summary>
       /// Partial method to allow post-creation configuration of the DbContext after it's created
       /// but before it's returned.
       /// </summary>
-      partial void Initialize(CreditContext dbContext);
+      partial void Initialize(EFModel1 dbContext);
 
       /// <summary>Creates a new instance of a derived context.</summary>
       /// <param name="args"> Arguments provided by the design-time service. </param>
-      /// <returns> An instance of <see cref="Credit.API.Domain_RE.Models_RE.CreditContext" />.</returns>
-      public CreditContext CreateDbContext(string[] args)
+      /// <returns> An instance of <see cref="Sandbox_EFCore_Test.EFModel1" />.</returns>
+      public EFModel1 CreateDbContext(string[] args)
       {
-         DbContextOptionsBuilder<CreditContext> optionsBuilder = new DbContextOptionsBuilder<CreditContext>();
+         DbContextOptionsBuilder<EFModel1> optionsBuilder = new DbContextOptionsBuilder<EFModel1>();
 
-         // Please provide the CreditContext.ConfigureOptions(optionsBuilder) in the partial class as
+         // Please provide the EFModel1.ConfigureOptions(optionsBuilder) in the partial class as
          //    public static void ConfigureOptions(DbContextOptionsBuilder optionsBuilder) {{ ... }}
          // If you have custom initialization for the context, you can then consolidate the code by defining the CustomInit partial as
          //    partial void CustomInit(DbContextOptionsBuilder optionsBuilder) => ConfigureOptions(optionsBuilder);
-         CreditContext.ConfigureOptions(optionsBuilder);
-         CreditContext result = new CreditContext(optionsBuilder.Options);
+         EFModel1.ConfigureOptions(optionsBuilder);
+         EFModel1 result = new EFModel1(optionsBuilder.Options);
          Initialize(result);
 
          return result;
@@ -63,13 +63,13 @@ namespace Credit.API.Domain_RE.Models_RE
    /// <remarks>
    ///     See <see href="https://aka.ms/efcore-docs-dbcontext-factory">Using DbContextFactory</see> for more information.
    /// </remarks>
-   public partial class CreditContextFactory: IDbContextFactory<CreditContext>
+   public partial class EFModel1Factory: IDbContextFactory<EFModel1>
    {
       /// <summary>
       /// Partial method to allow post-creation configuration of the DbContext after it's created
       /// but before it's returned.
       /// </summary>
-      partial void Initialize(CreditContext dbContext);
+      partial void Initialize(EFModel1 dbContext);
 
       /// <summary>
       ///     <para>
@@ -80,16 +80,16 @@ namespace Credit.API.Domain_RE.Models_RE
       ///     </para>
       /// </summary>
       /// <returns>A new context instance.</returns>
-      public CreditContext CreateDbContext()
+      public EFModel1 CreateDbContext()
       {
-         DbContextOptionsBuilder<CreditContext> optionsBuilder = new DbContextOptionsBuilder<CreditContext>();
+         DbContextOptionsBuilder<EFModel1> optionsBuilder = new DbContextOptionsBuilder<EFModel1>();
 
-         // Please provide the CreditContext.ConfigureOptions(optionsBuilder) in the partial class as
+         // Please provide the EFModel1.ConfigureOptions(optionsBuilder) in the partial class as
          //    public static void ConfigureOptions(DbContextOptionsBuilder optionsBuilder) {{ ... }}
          // If you have custom initialization for the context, you can then consolidate the code by defining the CustomInit partial as
          //    partial void CustomInit(DbContextOptionsBuilder optionsBuilder) => ConfigureOptions(optionsBuilder);
-         CreditContext.ConfigureOptions(optionsBuilder);
-         CreditContext result = new CreditContext(optionsBuilder.Options);
+         EFModel1.ConfigureOptions(optionsBuilder);
+         EFModel1 result = new EFModel1(optionsBuilder.Options);
          Initialize(result);
 
          return result;

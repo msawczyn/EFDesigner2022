@@ -64,6 +64,7 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
    - Fix bad constructor generation when multiple associations exist between the same classes (see https://github.com/msawczyn/EFDesigner2022/issues/50)
    - Removed modeling restriction on unidirectional many-to-many properties in EFCore7+ projects (see https://github.com/msawczyn/EFDesigner2022/issues/54)
    - Updated file sync logic for generated files. Thanks to [Sancho-Lee](https://github.com/Sancho-Lee) for the pull request. (see https://github.com/msawczyn/EFDesigner2022/issues/57)
+   - Fix bad code re: key fields in derived types. (see https://github.com/msawczyn/EFDesigner2022/issues/55)
 
 **4.2.1**
    - **[NEW]** Added support for EFCore7

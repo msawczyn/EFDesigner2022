@@ -75,7 +75,7 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 
 ### Change Log
 
-4.2.3 (next release - see [nightly builds](https://github.com/msawczyn/EFDesigner2022/blob/master/dist/Sawczyn.EFDesigner.EFModel.DslPackage.vsix) if interested)
+[4.2.3](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.3/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - Added HierarchyId as a property type
    - Added optional index name for indexed properties
    - Added properties to bidirectional associations allowing custom naming of FK columns in join table
@@ -88,6 +88,7 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
    - Fix bad constructor generation when multiple associations exist between the same classes (see https://github.com/msawczyn/EFDesigner2022/issues/50)
    - Removed modeling restriction on unidirectional many-to-many properties in EFCore7+ projects (see https://github.com/msawczyn/EFDesigner2022/issues/54)
    - Updated file sync logic for generated files. Thanks to [Sancho-Lee](https://github.com/Sancho-Lee) for the pull request. (see https://github.com/msawczyn/EFDesigner2022/issues/57)
+   - Fix bad code re: key fields in derived types. (see https://github.com/msawczyn/EFDesigner2022/issues/55)
 
 [4.2.1](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.1/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - Added support for EFCore7
