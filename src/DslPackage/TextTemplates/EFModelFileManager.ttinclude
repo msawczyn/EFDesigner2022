@@ -22,7 +22,7 @@
 #><#@ import namespace="System.Data.Entity.Design.PluralizationServices"
 #><#@ import namespace="Microsoft.VisualStudio.TextTemplating"
 #><#+
-      // EFDesigner v4.2.3.5
+      // EFDesigner v4.2.4.1
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -186,6 +186,7 @@
 
             internal VSManager(ITextTemplatingEngineHost host, StringBuilder template) : base(host, template)
             {
+               ThreadHelper.ThrowIfNotOnUIThread();
                IServiceProvider hostServiceProvider = (IServiceProvider)host;
 
                if (hostServiceProvider == null)
@@ -199,6 +200,7 @@
             {
                get
                {
+                  ThreadHelper.ThrowIfNotOnUIThread();
                   return templateProjectItem.ContainingProject.Properties.Item("DefaultNamespace").Value.ToString();
                }
             }
@@ -207,12 +209,14 @@
             {
                get
                {
+                  ThreadHelper.ThrowIfNotOnUIThread();
                   return Path.GetDirectoryName(templateProjectItem.ContainingProject.FullName);
                }
             }
 
             private void CheckoutFileIfRequired(string fileName)
             {
+               ThreadHelper.ThrowIfNotOnUIThread();
                SourceControl sc = dte.SourceControl;
 
                if ((sc != null) && sc.IsItemUnderSCC(fileName) && !sc.IsItemCheckedOut(fileName))
@@ -221,6 +225,7 @@
 
             protected override void CreateFile(string fileName, string content)
             {
+               ThreadHelper.ThrowIfNotOnUIThread();
                string directory = Path.GetDirectoryName(fileName);
 
                if (!Directory.Exists(directory))
@@ -235,6 +240,7 @@
 
             private Dictionary<ProjectItem, List<string>> GetCurrentState()
             {
+               ThreadHelper.ThrowIfNotOnUIThread();
                Dictionary<ProjectItem, List<string>> result = new Dictionary<ProjectItem, List<string>>();
                Project currentProject = templateProjectItem.ContainingProject;
                string projectDirectory = Path.GetDirectoryName(currentProject.FullName);
@@ -265,6 +271,7 @@
 
             private ProjectItem GetOrCreateParentItem(string filePath)
             {
+               ThreadHelper.ThrowIfNotOnUIThread();
                if (string.IsNullOrEmpty(filePath))
                   return templateProjectItem;
 
@@ -318,6 +325,7 @@
 
             private Dictionary<ProjectItem, List<string>> GetTargetState(string[] fileNames)
             {
+               ThreadHelper.ThrowIfNotOnUIThread();
                Dictionary<ProjectItem, List<string>> result = new Dictionary<ProjectItem, List<string>> {{templateProjectItem, new List<string>()}};
 
                foreach (string fileName in fileNames)
@@ -335,6 +343,7 @@
 
             public override void Process(bool split)
             {
+               ThreadHelper.ThrowIfNotOnUIThread();
                if (templateProjectItem.ProjectItems == null)
                   return;
 
@@ -362,6 +371,7 @@
             {
                // thanks to Sancho-Lee (https://github.com/Sancho-Lee) for the fix here
 
+               ThreadHelper.ThrowIfNotOnUIThread();
                Dictionary<ProjectItem, List<string>> current = GetCurrentState();
 
                string[] fileNames = keepFileNames as string[] ?? keepFileNames.ToArray();

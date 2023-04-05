@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Sawczyn.EFDesigner.EFModel
@@ -19,6 +20,7 @@ namespace Sawczyn.EFDesigner.EFModel
       /// </summary>
       protected override bool LoadView()
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          bool result = base.LoadView();
 
          if (result)
@@ -33,6 +35,7 @@ namespace Sawczyn.EFDesigner.EFModel
       /// </summary>
       protected override void OnClose()
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          bool dirty = (DocData.IsDirty(out int isDirty) == 0) && (isDirty == 1);
 
          if (!DocData.DocViews.Except(new[] {this}).Any() && dirty && DocData.QuerySaveFile().CanSaveFile)
@@ -43,6 +46,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       public override void SetInfo()
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          base.SetInfo();
          Messages.AddStatus(Messages.LastStatusMessage);
       }

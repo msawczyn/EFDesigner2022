@@ -52,6 +52,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return _dte ?? (_dte = Package.GetGlobalService(typeof(DTE)) as DTE);
          }
       }
@@ -78,6 +79,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return Dte.ActiveSolutionProjects is Array activeSolutionProjects && (activeSolutionProjects.Length > 0)
                       ? activeSolutionProjects.GetValue(0) as Project
                       : null;
@@ -123,6 +125,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       protected override void CleanupOldDiagramFiles()
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          string diagramsFileName = FileName + DiagramExtension;
 
          if (diagramsFileName.EndsWith("x"))
@@ -138,6 +141,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void CloseDiagram(EFModelDiagram diagram)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          DocViews.OfType<EFModelDocView>().FirstOrDefault(d => d.Diagram == diagram)?.Frame
                 ?.CloseFrame((uint)__FRAMECLOSE.FRAMECLOSE_SaveIfDirty);
       }
@@ -149,11 +153,13 @@ namespace Sawczyn.EFDesigner.EFModel
 
       internal static void GenerateCode()
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          GenerateCode(null);
       }
 
       internal static void GenerateCode(string filepath)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          ProjectItem modelProjectItem = Dte2.Solution.FindProjectItem(filepath ?? Dte2.ActiveDocument.FullName);
 
          if (Guid.Parse(modelProjectItem.Kind) == VSConstants.GUID_ItemType_PhysicalFile)
@@ -255,6 +261,7 @@ namespace Sawczyn.EFDesigner.EFModel
       /// </summary>
       protected override void OnDocumentLoaded()
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          base.OnDocumentLoaded();
 
          if (!(RootElement is ModelRoot modelRoot))
@@ -404,6 +411,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       protected override void OnDocumentSaved(EventArgs e)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          base.OnDocumentSaved(e);
 
          if (RootElement is ModelRoot modelRoot)
@@ -425,6 +433,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          try
          {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Project activeProject = ActiveProject;
 
             if (activeProject != null)
@@ -458,6 +467,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          try
          {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Project activeProject = ActiveProject;
 
             if (activeProject != null)
@@ -486,6 +496,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void RenameWindow(EFModelDiagram diagram)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          DocViews.OfType<EFModelDocView>().FirstOrDefault(d => d.Diagram == diagram)?.Frame
                 ?.SetProperty((int)__VSFPROPID.VSFPROPID_EditorCaption, $" [{diagram.Name}]");
       }
@@ -497,12 +508,14 @@ namespace Sawczyn.EFDesigner.EFModel
 
       internal static void ShowError(IServiceProvider serviceProvider, string message)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          Messages.AddError(message);
          PackageUtility.ShowError(serviceProvider, message);
       }
 
       internal static void ShowMessage(string message)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          Messages.AddMessage(message);
       }
 
@@ -517,11 +530,13 @@ namespace Sawczyn.EFDesigner.EFModel
 
       internal static void ShowStatus(string message)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          Messages.AddStatus(message);
       }
 
       internal static void ShowWarning(string message)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          Messages.AddWarning(message);
       }
 

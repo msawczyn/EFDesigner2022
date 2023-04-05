@@ -34,6 +34,7 @@ namespace Sawczyn.EFDesigner.EFModel
       // parameter must be EntityContainer file path
       public static void GenerateCode(string entityContainerFilepath)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          DTE Dte = Package.GetGlobalService(typeof(DTE)) as DTE;
          DTE2 Dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2;
 
@@ -89,6 +90,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       public static string GetSingleFileSelectedPath()
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          if (!IsSingleProjectItemSelection(out IVsHierarchy hierarchy, out uint itemid))
             return null;
 
@@ -106,6 +108,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private static bool IsSingleProjectItemSelection(out IVsHierarchy hierarchy, out uint itemid)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          hierarchy = null;
          itemid = VSConstants.VSITEMID_NIL;
 

@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using Microsoft.VisualStudio.Modeling;
 using Microsoft.VisualStudio.Modeling.Diagrams;
 using Microsoft.VisualStudio.Modeling.Shell;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using Sawczyn.EFDesigner.EFModel.Extensions;
@@ -478,6 +479,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void OnMenuAddProperties(object sender, EventArgs e)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
+
          NodeShape shapeElement = CurrentSelection.OfType<ClassShape>().FirstOrDefault();
 
          if (shapeElement?.ModelElement is ModelClass element)
@@ -578,6 +581,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void OnMenuAddValues(object sender, EventArgs e)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          NodeShape shapeElement = CurrentSelection.OfType<EnumShape>().FirstOrDefault();
 
          if (shapeElement?.ModelElement is ModelEnum element)
@@ -766,6 +770,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void OnMenuGenerateCode(object sender, EventArgs e)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          EFModelDocData.GenerateCode();
          CurrentDocView.Frame.Show();
       }
@@ -1714,6 +1719,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void OnStatusSolutionExplorerGenerateCode(object sender, EventArgs e)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          if (sender is MenuCommand menuCommand)
          {
             // Get selected file
@@ -1726,6 +1732,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void OnMenuSolutionExplprerGenerateCode(object sender, EventArgs e)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          CommandHelper.GenerateCode(solutionExplorerSelectedFileInfo.FullName);
       }
 
