@@ -90,6 +90,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
       partial void Init()
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
+
          // this sets up the images for use in the model explorer. They don't come out of Dsl::Resources.resx directly, but are named the same
          // See EFModelElementTreeNode.GetExplorerNodeImageName (below) for how this happens.
          List<KeyValuePair<string, Image>> glyphs = ClassShape.PropertyGlyphCache.Union(ClassShape.ClassGlyphCache).ToList();
@@ -367,6 +369,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void OnMenuGoToCode(object sender, EventArgs e)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          if (ObjectModelBrowser.SelectedNode is EFModelElementTreeNode elementNode)
          {
             switch (elementNode.RepresentedElement)
@@ -441,6 +444,7 @@ namespace Sawczyn.EFDesigner.EFModel
       /// </summary>
       protected void InitSearch()
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          if (ServiceProvider.GetService(typeof(SVsWindowSearchHostFactory)) is IVsWindowSearchHostFactory windowSearchHostFactory)
          {
             IVsWindowSearchHost windowSearchHost = windowSearchHostFactory.CreateWindowSearchHost(SearchControlHost);
@@ -551,50 +555,45 @@ namespace Sawczyn.EFDesigner.EFModel
             // note that this will be run from a background thread. Must context switch to the UI thread to manipulate the tree.
             // use ThreadHelper.Generic.BeginInvoke for that 
 
-            TreeView treeView = modelExplorer.ObjectModelBrowser;
-            List<string> searchTexts = SearchUtilities.ExtractSearchTokens(SearchQuery).Select(token => token.ParsedTokenText).ToList();
+            ThreadHelper.Generic.BeginInvoke(() =>
+                                             {
+                                                ThreadHelper.ThrowIfNotOnUIThread();
+                                                TreeView treeView = modelExplorer.ObjectModelBrowser;
+                                                List<string> searchTexts = SearchUtilities.ExtractSearchTokens(SearchQuery).Select(token =>
+                                                                                                                                   {
+                                                                                                                                      ThreadHelper.ThrowIfNotOnUIThread();
+                                                                                                                                      return token.ParsedTokenText;
+                                                                                                                                   }).ToList();
 
-            if (!searchTexts.Any())
-            {
-               ThreadHelper.Generic.BeginInvoke(() =>
+                                                using (WaitCursor _ = new WaitCursor())
                                                 {
-                                                   // ReSharper disable once UnusedVariable
+                                                   treeView.SelectedNode = null;
+                                                   treeView.BeginUpdate();
+                                                   modelExplorer.RefreshBrowserView();
 
-                                                   using (WaitCursor _ = new WaitCursor())
-                                                   {
-                                                      treeView.SelectedNode = null;
-                                                      treeView.BeginUpdate();
-                                                      modelExplorer.RefreshBrowserView();
+                                                   if (!searchTexts.Any())
                                                       treeView.CollapseAll();
-                                                      treeView.EndUpdate();
-                                                   }
-                                                });
-            }
-            else
-            {
-               ThreadHelper.Generic.BeginInvoke(() =>
-                                                {
-                                                   // ReSharper disable once UnusedVariable
-                                                   using (WaitCursor _ = new WaitCursor())
-                                                   {
-                                                      treeView.SelectedNode = null;
-                                                      treeView.BeginUpdate();
-                                                      modelExplorer.RefreshBrowserView();
+                                                   else
                                                       PerformSearch(treeView);
-                                                      treeView.EndUpdate();
-                                                   }
-                                                });
-            }
 
-            SearchResults = (uint)treeView.GetAllNodes().Count(n => n is ExplorerTreeNode explorerNode && (explorerNode.RepresentedElement != null));
+                                                   treeView.EndUpdate();
+                                                }
 
-            // Call to base will report completion
-            base.OnStartSearch();
+                                                SearchResults = (uint)treeView.GetAllNodes().Count(n => n is ExplorerTreeNode explorerNode && (explorerNode.RepresentedElement != null));
+
+                                                // Call to base will report completion
+                                                base.OnStartSearch();
+                                             });
          }
 
          private void PerformSearch(TreeView treeView)
          {
-            List<string> searchTexts = SearchUtilities.ExtractSearchTokens(SearchQuery).Select(token => token.ParsedTokenText).ToList();
+            ThreadHelper.ThrowIfNotOnUIThread();
+            List<string> searchTexts = SearchUtilities.ExtractSearchTokens(SearchQuery).Select(token =>
+                                                                                               {
+                                                                                                  ThreadHelper.ThrowIfNotOnUIThread();
+                                                                                                  return token.ParsedTokenText;
+                                                                                               }).ToList();
 
             // if nothing to search for, everything's a hit
             if (!searchTexts.Any())
@@ -668,7 +667,7 @@ namespace Sawczyn.EFDesigner.EFModel
                EFModelRoleGroupTreeNode groupNode = node.Parent as EFModelRoleGroupTreeNode;
                elementNode.Remove();
 
-               if ((groupNode.Nodes.Count == 0)
+               if (groupNode.Nodes.Count == 0
                 && (elementNode.RepresentedElement is ModelAttribute
                  || elementNode.RepresentedElement is ModelEnumValue))
                   groupNode.Remove();

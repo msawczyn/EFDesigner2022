@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 
 using Mexedge.VisualStudio.Modeling;
 
@@ -10,6 +11,7 @@ namespace Sawczyn.EFDesigner.EFModel
 {
    internal partial class EFModelExplorerToolWindow
    {
+      [HandleProcessCorruptedStateExceptions]
       protected override void OnSelectionChanged(EventArgs e)
       {
          base.OnSelectionChanged(e);
@@ -116,7 +118,16 @@ namespace Sawczyn.EFDesigner.EFModel
                // make sure the explorer window is still visible
                Show();
 
-               t.Commit();
+               try
+               {
+                  t.Commit();
+               }
+               catch (AccessViolationException exception)
+               {
+                  Console.WriteLine(exception);
+
+                  throw;
+               }
             }
          }
       }

@@ -9,6 +9,38 @@
       <LangVersion>default</LangVersion>
    </PropertyGroup>
 
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+     <NoWarn>1701;1702;NETSDK1138</NoWarn>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+     <NoWarn>1701;1702;NETSDK1138</NoWarn>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
+     <NoWarn>1701;1702;NETSDK1138</NoWarn>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.1|AnyCPU'">
+     <NoWarn>1701;1702;NETSDK1138</NoWarn>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0-windows|AnyCPU'">
+     <NoWarn>1701;1702;NETSDK1138</NoWarn>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0-windows|AnyCPU'">
+     <NoWarn>1701;1702;NETSDK1138</NoWarn>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
+     <NoWarn>1701;1702;NETSDK1138</NoWarn>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+     <NoWarn>1701;1702;NETSDK1138</NoWarn>
+   </PropertyGroup>
+
    <ItemGroup>
      <Compile Include="..\..\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
    </ItemGroup>

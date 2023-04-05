@@ -1,3 +1,5 @@
+4.2.4
+
 4.2.3
    - Added HierarchyId as a property type
    - Added optional index name for indexed properties

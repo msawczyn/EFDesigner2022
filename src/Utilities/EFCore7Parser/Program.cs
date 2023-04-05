@@ -56,7 +56,14 @@ namespace EFCore7Parser
             return null;
 
          // check cached assemblies first
-         RuntimeLibrary library = DependencyContext.Default.RuntimeLibraries.FirstOrDefault(runtimeLibrary => runtimeLibrary.Name == assemblyName.Name);
+
+         // disable warning IL3002 for the next line
+         // IL3002: Using member 'DependencyContext.Default' which has 'RequiresAssemblyFilesAttribute' can break functionality when trimming application code. The member might be removed.
+         // This is a false positive.  The code is not being trimmed, and the attribute is not relevant.
+         // The attribute is on the property, not the method, so it is not relevant to the code.
+#pragma warning disable IL3002 
+         RuntimeLibrary library = DependencyContext.Default?.RuntimeLibraries.FirstOrDefault(runtimeLibrary => runtimeLibrary.Name == assemblyName.Name);
+#pragma warning restore IL3002 
 
          if (library != null)
             return context.LoadFromAssemblyName(new AssemblyName(library.Name));

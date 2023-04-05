@@ -5,6 +5,7 @@ using System.ComponentModel;
 using EnvDTE;
 
 using Microsoft.VisualStudio.Modeling;
+using Microsoft.VisualStudio.Shell;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
@@ -12,6 +13,7 @@ namespace Sawczyn.EFDesigner.EFModel
    {
       private List<string> GetProjectDirectories(ProjectItems projectItems, string root)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          List<string> result = new List<string>();
 
          if (projectItems != null)
@@ -37,13 +39,14 @@ namespace Sawczyn.EFDesigner.EFModel
 
       public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          Store store = GetStore(context.Instance);
-         DTE dte = store?.GetService(typeof(DTE)) as DTE;
+         DTE dte = store?.GetService(typeof( DTE )) as DTE;
          Array projects = dte?.ActiveSolutionProjects as Array;
 
          if (projects?.GetValue(0) is Project currentProject)
          {
-            List<string> result = new List<string> {string.Empty};
+            List<string> result = new List<string> { string.Empty };
             result.AddRange(GetProjectDirectories(currentProject.ProjectItems, ""));
 
             return new StandardValuesCollection(result);

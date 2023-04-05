@@ -17,6 +17,22 @@
       <DefineConstants />
    </PropertyGroup>
 
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
+     <NoWarn>1701;1702;NETSDK1138</NoWarn>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
+     <NoWarn>1701;1702;NETSDK1138</NoWarn>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0-windows|AnyCPU'">
+     <NoWarn>1701;1702;NETSDK1138</NoWarn>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0-windows|AnyCPU'">
+     <NoWarn>1701;1702;NETSDK1138</NoWarn>
+   </PropertyGroup>
+
    <ItemGroup>
      <Compile Include="..\..\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
    </ItemGroup>

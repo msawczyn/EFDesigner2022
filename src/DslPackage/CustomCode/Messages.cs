@@ -23,6 +23,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return _outputWindow ?? (_outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow);
          }
       }
@@ -31,6 +32,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (_outputWindowPane == null)
             {
                Guid paneGuid = new Guid(Constants.EFDesignerOutputPane);
@@ -51,6 +53,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return _statusBar ?? (_statusBar = Package.GetGlobalService(typeof(SVsStatusbar)) as IVsStatusbar);
          }
       }
@@ -63,11 +66,13 @@ namespace Sawczyn.EFDesigner.EFModel
 
       public static void AddError(string message)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          AddMessage(message, ERROR);
       }
 
       public static void AddMessage(string message, string prefix = null)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          OutputWindowPane?.OutputStringThreadSafe($"{(string.IsNullOrWhiteSpace(prefix) ? string.Empty : prefix + ": ")}{message}{(message.EndsWith("\n") ? string.Empty : "\n")}");
 
          if ((prefix == ERROR) || (prefix == WARNING))
@@ -76,6 +81,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       public static void AddStatus(string message, Microsoft.VisualStudio.Shell.Interop.Constants? glyph = null)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          StatusBar.IsFrozen(out int frozen);
 
          if (frozen == 0)
@@ -100,6 +106,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       public static void AddWarning(string message)
       {
+         ThreadHelper.ThrowIfNotOnUIThread();
          AddMessage(message, WARNING);
       }
 
