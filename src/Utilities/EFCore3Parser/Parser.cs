@@ -5,7 +5,6 @@ using System.Reflection;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
 using Newtonsoft.Json;
@@ -185,6 +184,7 @@ namespace EFCore3Parser
                               : type.Name;
 
          result.Name = propertyData.Name;
+         result.ColumnName = propertyData.GetColumnName();
          result.IsIdentity = propertyData.IsKey();
          result.IsIdentityGenerated = result.IsIdentity && (propertyData.ValueGenerated == ValueGenerated.OnAdd);
 
@@ -192,9 +192,11 @@ namespace EFCore3Parser
          result.Required = (bool)(requiredAttribute?.ConstructorArguments.FirstOrDefault().Value ?? !propertyData.IsNullable);
          attributes.RemoveAll(a => a.AttributeType.Name == "RequiredAttribute");
 
+         IIndex index = propertyData.GetContainingIndexes().FirstOrDefault(i => i.Properties.Count == 1 && i.Properties.Contains(propertyData));
          result.Indexed = propertyData.IsIndex();
-         //result.IndexedUnique = result.Indexed && propertyData.IsUniqueIndex();
-         //result.IndexName = propertyData.GetContainingIndexes().FirstOrDefault(i => i.Properties.Count == 1)?.Name;
+         result.IndexName = index?.GetName();
+         result.IndexedUnique = index?.IsUnique == true;
+
          result.MaxStringLength = type == typeof(string) ? (propertyData.GetMaxLength() ?? 0) : 0;
 
          attributes.RemoveAll(a => (a.AttributeType.Name == "MaxLengthAttribute")

@@ -2,11 +2,14 @@
 
    <PropertyGroup>
       <OutputType>Exe</OutputType>
-      <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
       <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
       <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
       <RuntimeIdentifier>win-x64</RuntimeIdentifier>
       <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+      <TargetFramework>net7.0</TargetFramework>
+      <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+      <PublishSingleFile>true</PublishSingleFile>
+      <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
    </PropertyGroup>
 
    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -17,11 +20,11 @@
       <DefineConstants />
    </PropertyGroup>
 
-   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
      <NoWarn>1701;1702;IL3002</NoWarn>
    </PropertyGroup>
 
-   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
      <NoWarn>1701;1702;IL3002</NoWarn>
    </PropertyGroup>
 
@@ -48,12 +51,6 @@
 
    <ItemGroup>
       <ProjectReference Include="..\ParsingModels\ParsingModels.csproj" />
-   </ItemGroup>
-
-   <ItemGroup>
-     <None Update="App.config">
-       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-     </None>
    </ItemGroup>
 
 </Project>

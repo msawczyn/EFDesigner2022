@@ -13,7 +13,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.0.0
+      // EFDesigner v4.2.4.3
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -583,8 +583,13 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             string customAttributes = modelClass.CustomAttributes ?? string.Empty;
 
-            if (!modelClass.Persistent && !customAttributes.Contains("NotMapped"))
-               Output("[NotMapped]");
+            if (modelClass.ModelRoot.EntityFrameworkVersion == EFVersion.EFCore
+             && !modelClass.Persistent
+             && !customAttributes.Contains("NotMapped")
+             && !modelClass.AllIdentityAttributes.Any())
+            {
+               Output("[Microsoft.EntityFrameworkCore.Keyless]");
+            }
 
             if (!string.IsNullOrWhiteSpace(customAttributes))
                Output($"[{customAttributes.Trim('[', ']')}]");
@@ -1212,6 +1217,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                if (modelAttribute.MaxLength > 0)
                   segments.Add($"Max length = {modelAttribute.MaxLength}");
+
+               if (!string.IsNullOrEmpty(modelAttribute.ColumnName) && (modelAttribute.ColumnName != modelAttribute.Name))
+                  segments.Add($"HasColumnName(\"{modelAttribute.ColumnName}\")");
 
                if (!string.IsNullOrEmpty(modelAttribute.InitialValue))
                {

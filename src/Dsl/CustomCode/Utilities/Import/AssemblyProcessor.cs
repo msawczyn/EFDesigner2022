@@ -45,10 +45,8 @@ namespace Sawczyn.EFDesigner.EFModel
                @"Parsers\EFCore2Parser.exe",
                @"Parsers\EFCore3Parser.exe",
                @"Parsers\EFCore5Parser.exe",
-               @"Parsers\EFCore6Parser6.exe",
-               @"Parsers\EFCore7Parser6.exe",
-               @"Parsers\EFCore6Parser7.exe",
-               @"Parsers\EFCore7Parser7.exe"
+               @"Parsers\EFCore6Parser.exe",
+               @"Parsers\EFCore7Parser.exe",
             };
 
             Dictionary<string, bool> contexts = new Dictionary<string, bool>();
@@ -583,6 +581,7 @@ namespace Sawczyn.EFDesigner.EFModel
             elementLink.SourcePropertyName = data.SourcePropertyName;
             elementLink.SourceSummary = data.SourceSummary;
             elementLink.SourceDescription = data.SourceDescription;
+            elementLink.JoinTableName = data.JoinTableName;
 
             AssociationChangedRules.SetEndpointRoles(elementLink);
             AssociationChangedRules.FixupForeignKeys(elementLink);

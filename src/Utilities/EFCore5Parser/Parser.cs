@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
@@ -203,6 +204,7 @@ namespace EFCore5Parser
                               : type.Name;
 
          result.Name = propertyData.Name;
+         result.ColumnName = propertyData.GetColumnName();
          result.IsIdentity = propertyData.IsKey();
          result.IsIdentityGenerated = result.IsIdentity && (propertyData.ValueGenerated == ValueGenerated.OnAdd);
          result.Summary = propertyData.GetComment();
@@ -212,7 +214,7 @@ namespace EFCore5Parser
          attributes.RemoveAll(a => a.AttributeType.Name == "RequiredAttribute");
 
          result.Indexed = propertyData.IsIndex();
-         result.IndexedUnique = result.Indexed && propertyData.IsUniqueIndex();
+         result.IndexedUnique = propertyData.IsUniqueIndex();
          result.IndexName = propertyData.GetContainingIndexes().FirstOrDefault(i => i.Properties.Count == 1)?.Name;
          result.MaxStringLength = type == typeof(string) ? (propertyData.GetMaxLength() ?? 0) : 0;
 
@@ -347,4 +349,5 @@ namespace EFCore5Parser
 
 #endregion
    }
+
 }

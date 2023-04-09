@@ -1,13 +1,16 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ParsingModels
 {
+   [DebuggerDisplay("{SourceClassName}.{SourcePropertyName} <--> {TargetClassName}.{TargetPropertyName}")]
    public class ModelBidirectionalAssociation : ModelUnidirectionalAssociation
    {
       public string SourcePropertyTypeName { get; set; }
       public string SourcePropertyName { get; set; }
       public string SourceSummary { get; set; }
       public string SourceDescription { get; set; }
+      public string JoinTableName { get; set; }
 
       /// <summary>Determines whether the specified object is equal to the current object.</summary>
       /// <param name="obj">The object to compare with the current object.</param>

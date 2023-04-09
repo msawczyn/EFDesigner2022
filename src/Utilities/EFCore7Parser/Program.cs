@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Reflection;
 using System.Runtime.Loader;
 
@@ -22,7 +23,7 @@ namespace EFCore7Parser
       public const int CANNOT_FIND_APPROPRIATE_CONSTRUCTOR = 5;
       public const int AMBIGUOUS_REQUEST = 6;
 
-      private static Logger log = Logger.GetLogger("");
+      private static Logger log;
 
       private static List<string> Usage
       {
@@ -51,6 +52,8 @@ namespace EFCore7Parser
 
       private static Assembly Context_Resolving(AssemblyLoadContext context, AssemblyName assemblyName)
       {
+         Console.Out.WriteLine($"Looking for {assemblyName.Name}");
+         log.Info($"Looking for {assemblyName.Name}");
          // avoid loading *.resources dlls, because of: https://github.com/dotnet/coreclr/issues/8416
          if (assemblyName.Name.EndsWith("resources"))
             return null;
@@ -66,20 +69,35 @@ namespace EFCore7Parser
 #pragma warning restore IL3002 
 
          if (library != null)
+         {
+            Console.Out.WriteLine($"Found in cache");
+            log.Info($"Found {assemblyName.Name} in cache");
+
             return context.LoadFromAssemblyName(new AssemblyName(library.Name));
+         }
 
          // try known directories
 
          string pathInAppDirectory = Path.Combine(AppContext.BaseDirectory, $"{assemblyName.Name}.dll");
 
          if (File.Exists(pathInAppDirectory))
+         {
+            Console.Out.WriteLine($"Found at {pathInAppDirectory}");
+            log.Info($"Found {assemblyName.Name} at {pathInAppDirectory}");
+
             return context.LoadFromAssemblyPath(pathInAppDirectory);
+         }
 
          // try the current directory
          string pathInCurrentDirectory = Path.Combine(Directory.GetCurrentDirectory(), $"{assemblyName.Name}.dll");
 
          if (File.Exists(pathInCurrentDirectory))
+         {
+            Console.Out.WriteLine($"Found at {pathInCurrentDirectory}");
+            log.Info($"Found {assemblyName.Name} at {pathInCurrentDirectory}");
+
             return context.LoadFromAssemblyPath(pathInCurrentDirectory);
+         }
 
          // try gac
          string found = Directory.GetFileSystemEntries(Environment.ExpandEnvironmentVariables("%windir%\\Microsoft.NET\\assembly"),
@@ -87,9 +105,20 @@ namespace EFCore7Parser
                                                        SearchOption.AllDirectories)
                                  .FirstOrDefault();
 
-         return found == null
-                   ? null
-                   : context.LoadFromAssemblyPath(found);
+         if (found == null)
+         {
+            Console.Out.WriteLine($"Not found");
+            log.Info($"Not found - {assemblyName.Name}");
+
+            return null;
+         }
+         else
+         {
+            Console.Out.WriteLine($"Found at {found}");
+            log.Info($"Found {assemblyName.Name} at {found}");
+
+            return context.LoadFromAssemblyPath(found);
+         }
       }
 
       private static void Exit(int returnCode, Exception ex = null)
@@ -110,6 +139,9 @@ namespace EFCore7Parser
 
       private static int Main(string[] args)
       {
+         //Debugger.Launch();
+         //Debugger.Break();
+
          if ((args.Length < 2) || (args.Length > 3))
          {
             Usage.ForEach(x => Console.Error.WriteLine(x));
@@ -187,10 +219,12 @@ namespace EFCore7Parser
             }
 
             log.Info("Success");
+            Console.WriteLine("Success");
          }
          catch (Exception ex)
          {
             log.Error(ex.Message);
+            Console.WriteLine(ex.Message);
             Exit(CANNOT_WRITE_OUTPUTFILE, ex);
          }
          finally

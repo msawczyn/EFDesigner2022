@@ -1,5 +1,8 @@
-﻿namespace ParsingModels
+﻿using System.Diagnostics;
+
+namespace ParsingModels
 {
+   [DebuggerDisplay("{Name} = {Value")]
    public class ModelEnumValue
    {
       public string Name { get; set; }

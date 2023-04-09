@@ -202,6 +202,7 @@ namespace EFCore6Parser
                               : type.Name;
 
          result.Name = propertyData.Name;
+         result.ColumnName = propertyData.GetColumnName();
          result.IsIdentity = propertyData.IsKey();
          result.IsIdentityGenerated = result.IsIdentity && (propertyData.ValueGenerated == ValueGenerated.OnAdd);
 

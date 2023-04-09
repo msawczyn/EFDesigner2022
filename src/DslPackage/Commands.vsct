@@ -216,6 +216,15 @@
             </Strings>
          </Button>
 
+         <Button guid="guidEFDiagramMenuCmdSet" id="cmdidSelectStructs" priority="0x010F" type="Button">
+            <Parent guid="guidEFDiagramMenuCmdSet" id="grpidSelect"/>
+            <CommandFlag>DynamicVisibility</CommandFlag>
+            <Strings>
+               <ButtonText>Select All Structs...</ButtonText>
+               <CommandName>SelectStructs</CommandName>
+            </Strings>
+         </Button>
+
          <Button guid="guidEFDiagramMenuCmdSet" id="cmdidSelectEnums" priority="0x0110" type="Button">
             <Parent guid="guidEFDiagramMenuCmdSet" id="grpidSelect"/>
             <CommandFlag>DynamicVisibility</CommandFlag>
@@ -477,9 +486,9 @@
 
       <!-- Model explorer menu -->
       <GuidSymbol name="guidMenuExplorerCmdSet"          value="{922EC20C-4054-4E96-8C10-2405A1F91486}" >
-         <IDSymbol name="cmdidGoToCode"                  value="0x00203"/>
-         <IDSymbol name="cmdidExpandAll"                 value="0x00201"/>
-         <IDSymbol name="cmdidCollapseAll"               value="0x00202"/>
+         <IDSymbol name="cmdidGoToCode"                  value="0x00303"/>
+         <IDSymbol name="cmdidExpandAll"                 value="0x00301"/>
+         <IDSymbol name="cmdidCollapseAll"               value="0x00302"/>
       </GuidSymbol>
 
       <!-- Diagram menu -->
@@ -512,21 +521,22 @@
          <IDSymbol name="cmdidSelectAssocs"              value="0x00103"/>
          <IDSymbol name="cmdidSelectUnidir"              value="0x00104"/>
          <IDSymbol name="cmdidSelectBidir"               value="0x00105"/>
+         <IDSymbol name="cmdidSelectStructs"             value="0x00106"/>
 
          <IDSymbol name="menuidAlign"                    value="0x01200"/>
          <IDSymbol name="grpidAlign"                     value="0x01250"/>
          <IDSymbol name="grpidResize"                    value="0x01251"/>
 
-         <IDSymbol name="cmdidAlignLeft"                 value="0x00106"/>
-         <IDSymbol name="cmdidAlignRight"                value="0x00107"/>
-         <IDSymbol name="cmdidAlignTop"                  value="0x00108"/>
-         <IDSymbol name="cmdidAlignBottom"               value="0x00109"/>
-         <IDSymbol name="cmdidAlignHCenter"              value="0x0010A"/>
-         <IDSymbol name="cmdidAlignVCenter"              value="0x0010B"/>
-         <IDSymbol name="cmdidResizeWidest"              value="0x0010C"/>
-         <IDSymbol name="cmdidResizeNarrowest"           value="0x0010D"/>
-         <IDSymbol name="cmdidEqualSpaceHoriz"           value="0x0010E"/>
-         <IDSymbol name="cmdidEqualSpaceVert"            value="0x0010F"/>
+         <IDSymbol name="cmdidAlignLeft"                 value="0x00206"/>
+         <IDSymbol name="cmdidAlignRight"                value="0x00207"/>
+         <IDSymbol name="cmdidAlignTop"                  value="0x00208"/>
+         <IDSymbol name="cmdidAlignBottom"               value="0x00209"/>
+         <IDSymbol name="cmdidAlignHCenter"              value="0x0020A"/>
+         <IDSymbol name="cmdidAlignVCenter"              value="0x0020B"/>
+         <IDSymbol name="cmdidResizeWidest"              value="0x0020C"/>
+         <IDSymbol name="cmdidResizeNarrowest"           value="0x0020D"/>
+         <IDSymbol name="cmdidEqualSpaceHoriz"           value="0x0020E"/>
+         <IDSymbol name="cmdidEqualSpaceVert"            value="0x0020F"/>
       </GuidSymbol>
    </Symbols>
    

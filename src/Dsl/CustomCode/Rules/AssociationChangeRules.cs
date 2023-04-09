@@ -138,7 +138,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
                case "SourceMultiplicity":
                   {
-                     if (!ValidateMultiplicity(element, modelRoot, errorMessages, store, ref doForeignKeyFixup))
+                     if (!ValidateMultiplicity(element, modelRoot, errorMessages, ref doForeignKeyFixup))
                         break;
 
                      Multiplicity priorSourceMultiplicity = (Multiplicity)e.OldValue;
@@ -218,7 +218,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
                case "TargetMultiplicity":
                   {
-                     if (!ValidateMultiplicity(element, modelRoot, errorMessages, store, ref doForeignKeyFixup))
+                     if (!ValidateMultiplicity(element, modelRoot, errorMessages, ref doForeignKeyFixup))
                         break;
 
                      Multiplicity priorTargetMultiplicity = (Multiplicity)e.OldValue;
@@ -538,7 +538,7 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      private bool ValidateMultiplicity(Association element, ModelRoot modelRoot, List<string> errorMessages, Store store, ref bool doForeignKeyFixup)
+      private bool ValidateMultiplicity(Association element, ModelRoot modelRoot, List<string> errorMessages, ref bool doForeignKeyFixup)
       {
          if (!element.AllCardinalitiesAreValid(out string errorMessage))
          {
@@ -571,7 +571,7 @@ namespace Sawczyn.EFDesigner.EFModel
             doForeignKeyFixup = true;
          }
 
-         if (((store.ModelRoot().EntityFrameworkVersion == EFVersion.EF6) || store.ModelRoot().IsEFCore5Plus)
+         if ((modelRoot.EntityFrameworkVersion == EFVersion.EF6 || modelRoot.IsEFCore5Plus)
           && (element.SourceMultiplicity != Multiplicity.ZeroMany)
           && (element.TargetMultiplicity != Multiplicity.ZeroMany))
          {

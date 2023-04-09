@@ -189,6 +189,8 @@ namespace EFCore2Parser
                               : type.Name;
 
          result.Name = propertyData.Name;
+         result.ColumnName = propertyData.GetColumnName();
+
          result.IsIdentity = propertyData.IsKey();
          result.IsIdentityGenerated = result.IsIdentity && (propertyData.ValueGenerated == ValueGenerated.OnAdd);
 
@@ -197,8 +199,12 @@ namespace EFCore2Parser
          attributes.RemoveAll(a => a.AttributeType.Name == "RequiredAttribute");
 
          result.Indexed = propertyData.IsIndex();
-         //result.IndexedUnique = result.Indexed && propertyData.IsUniqueIndex();
-         //result.IndexName = propertyData.GetContainingIndexes().FirstOrDefault(i => i.Properties.Count == 1)?.Name;
+
+         IIndex index = propertyData.GetContainingIndexes().FirstOrDefault(i => i.Properties.Count == 1 && i.Properties.Contains(propertyData));
+
+         result.IndexedUnique = result.Indexed && index?.IsUnique == true;
+
+         //result.IndexName = index?.Name;
          result.MaxStringLength = type == typeof(string) ? (propertyData.GetMaxLength() ?? 0) : 0;
 
          attributes.RemoveAll(a => (a.AttributeType.Name == "MaxLengthAttribute")

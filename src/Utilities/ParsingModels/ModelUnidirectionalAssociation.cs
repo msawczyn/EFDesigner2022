@@ -1,7 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ParsingModels
 {
+   [DebuggerDisplay("{SourceClassName} <--> {TargetClassName}.{TargetPropertyName}")]
    public class ModelUnidirectionalAssociation
    {
       public string SourceClassName { get; set; }

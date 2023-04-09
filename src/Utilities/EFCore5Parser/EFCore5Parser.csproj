@@ -1,12 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
    <PropertyGroup>
       <OutputType>Exe</OutputType>
-      <TargetFrameworks>netcoreapp3.1;net5.0-windows</TargetFrameworks>
       <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
       <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
       <RuntimeIdentifier>win-x64</RuntimeIdentifier>
       <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+      <TargetFramework>net7.0</TargetFramework>
+      <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+      <PublishSingleFile>true</PublishSingleFile>
+      <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
    </PropertyGroup>
 
    <PropertyGroup Condition="'$(Configuration)'=='Debug'">

@@ -338,7 +338,7 @@ namespace Sawczyn.EFDesigner.EFModel
                         }
                      }
 
-                     if ((element.ModelRoot.EntityFrameworkVersion == EFVersion.EF6) || (element.ModelRoot.GetEntityFrameworkPackageVersionNum() < 2.2))
+                     if ((modelRoot.EntityFrameworkVersion == EFVersion.EF6) || (modelRoot.GetEntityFrameworkPackageVersionNum() < 2.2))
                      {
                         if (store.GetAll<Association>().Any(a => (a.Target == element) && (a.TargetMultiplicity == Multiplicity.ZeroMany)))
                         {

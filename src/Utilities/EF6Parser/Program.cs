@@ -54,7 +54,7 @@ namespace EF6Parser
          if (!assemblyName.Name.EndsWith("resources"))
          {
             // try known directories
-            string found = context.Assemblies.Select(x => Path.Combine(Path.GetDirectoryName(x.Location), $"{assemblyName.Name}.dll")).Distinct().FirstOrDefault(File.Exists);
+            string found = context.Assemblies.Select(x => Path.Combine(AppContext.BaseDirectory, $"{assemblyName.Name}.dll")).Distinct().FirstOrDefault(File.Exists);
 
             if (found != null)
             {
@@ -71,7 +71,7 @@ namespace EF6Parser
             if (result == null)
             {
                // try the current directory
-               string pathInCurrentDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), $"{assemblyName.Name}.dll");
+               string pathInCurrentDirectory = Path.Combine(AppContext.BaseDirectory, $"{assemblyName.Name}.dll");
 
                if (File.Exists(pathInCurrentDirectory))
                {

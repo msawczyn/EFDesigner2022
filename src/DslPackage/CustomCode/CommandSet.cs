@@ -168,6 +168,15 @@ namespace Sawczyn.EFDesigner.EFModel
 
 #endregion
 
+#region selectStructsCommand
+
+         DynamicStatusMenuCommand selectStructsCommand =
+            new DynamicStatusMenuCommand(OnStatusSelectStructs, OnMenuSelectStructs, new CommandID(guidEFDiagramMenuCmdSet, cmdidSelectStructs));
+
+         commands.Add(selectStructsCommand);
+
+#endregion
+
 #region selectEnumsCommand
 
          DynamicStatusMenuCommand selectEnumsCommand =
@@ -409,22 +418,23 @@ namespace Sawczyn.EFDesigner.EFModel
       private const int cmdidSelectAssocs = 0x0103;
       private const int cmdidSelectUnidir = 0x0104;
       private const int cmdidSelectBidir = 0x0105;
-      private const int cmdidAlignLeft = 0x0106;
-      private const int cmdidAlignRight = 0x0107;
-      private const int cmdidAlignTop = 0x0108;
-      private const int cmdidAlignBottom = 0x0109;
-      private const int cmdidAlignHCenter = 0x010A;
-      private const int cmdidAlignVCenter = 0x010B;
-      private const int cmdidResizeWidest = 0x010C;
-      private const int cmdidResizeNarrowest = 0x010D;
-      private const int cmdidEqualSpaceHoriz = 0x010E;
-      private const int cmdidEqualSpaceVert = 0x010F;
+      private const int cmdidSelectStructs = 0x0106;
+      private const int cmdidAlignLeft = 0x0206;
+      private const int cmdidAlignRight = 0x0207;
+      private const int cmdidAlignTop = 0x0208;
+      private const int cmdidAlignBottom = 0x0209;
+      private const int cmdidAlignHCenter = 0x020A;
+      private const int cmdidAlignVCenter = 0x020B;
+      private const int cmdidResizeWidest = 0x020C;
+      private const int cmdidResizeNarrowest = 0x020D;
+      private const int cmdidEqualSpaceHoriz = 0x020E;
+      private const int cmdidEqualSpaceVert = 0x020F;
 
       // Model Explorer menu items
 
-      internal const int cmdidExpandAll = 0x0201;
-      internal const int cmdidCollapseAll = 0x0202;
-      internal const int cmdidGoToCode = 0x0203;
+      internal const int cmdidExpandAll = 0x0301;
+      internal const int cmdidCollapseAll = 0x0302;
+      internal const int cmdidGoToCode = 0x0303;
 
       internal static readonly Guid guidEFDiagramMenuCmdSet = new Guid("31178ecb-5da7-46cc-bd4a-ce4e5420bd3e");
       internal static readonly Guid guidMenuExplorerCmdSet = new Guid("922EC20C-4054-4E96-8C10-2405A1F91486");
@@ -1185,6 +1195,33 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
 #endregion Select classes
+
+#region Select structs
+
+      private void OnStatusSelectStructs(object sender, EventArgs e)
+      {
+         if (sender is MenuCommand command)
+         {
+            command.Visible = true;
+
+            LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+            command.Enabled = childShapes.OfType<ClassShape>().Any(x => ((x.ModelElement as ModelClass)?.Persistent == false 
+                                                                      || (x.ModelElement as ModelClass)?.IsDependentType == true) 
+                                                                     && x.IsVisible());
+         }
+      }
+
+      private void OnMenuSelectStructs(object sender, EventArgs e)
+      {
+         LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+
+         foreach (ClassShape shape in childShapes.OfType<ClassShape>().Where(x => ((x.ModelElement as ModelClass)?.Persistent == false 
+                                                                                || (x.ModelElement as ModelClass)?.IsDependentType == true) 
+                                                                               && x.IsVisible()))
+            shape.Diagram.ActiveDiagramView.Selection.Add(new DiagramItem(shape));
+      }
+
+#endregion Select structs
 
 #region Select enums
 

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ParsingModels
 {
+   [DebuggerDisplay("{FullName}")]
    public class ModelClass
    {
       public ModelClass()

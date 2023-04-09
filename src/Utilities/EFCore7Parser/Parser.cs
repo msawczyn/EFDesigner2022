@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -10,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 using ParsingModels;
+
+using PluralizeService.Core;
 
 // ReSharper disable UseObjectOrCollectionInitializer
 #pragma warning disable IDE0017 // Simplify object initialization
@@ -103,8 +107,41 @@ namespace EFCore7Parser
                                               .ToList();
 
          modelRoot.Classes.AddRange(modelClasses);
+         ProcessShadowClasses(modelRoot); 
 
          return JsonConvert.SerializeObject(modelRoot);
+      }
+
+      private void ProcessShadowClasses(ModelRoot modelRoot)
+      {
+         foreach (PossibleAssociationMerge mergeData in PossibleAssociationMerges)
+         {
+            ModelClass sourceType = modelRoot.Classes.FirstOrDefault(x => x.Name == mergeData.SourceClassName);
+            ModelClass targetType = modelRoot.Classes.FirstOrDefault(x => x.Name == mergeData.TargetClassName);
+
+            if (sourceType != null && targetType != null)
+            {
+               ModelBidirectionalAssociation association = new ModelBidirectionalAssociation();
+
+               association.SourceClassName = sourceType.Name;
+               association.SourceClassNamespace = sourceType.Namespace;
+               association.SourceMultiplicity = Multiplicity.ZeroMany;
+               association.SourcePropertyName = PluralizationProvider.Pluralize(sourceType.Name);
+
+               association.TargetClassName = targetType.Name;
+               association.TargetClassNamespace = targetType.Namespace;
+               association.TargetMultiplicity = Multiplicity.ZeroMany;
+               association.TargetPropertyName = PluralizationProvider.Pluralize(targetType.Name);
+
+               association.JoinTableName = mergeData.JoinClass.TableName;
+
+               sourceType.BidirectionalAssociations.Remove(mergeData.AssociationToSource);
+               sourceType.BidirectionalAssociations.Remove(mergeData.AssociationToTarget);
+               sourceType.BidirectionalAssociations.Add(association);
+
+               modelRoot.Classes.Remove(mergeData.JoinClass);
+            }
+         }
       }
 
       private bool HasDbSet(IEntityType entityType)
@@ -153,6 +190,7 @@ namespace EFCore7Parser
          result.UnidirectionalAssociations = GetUnidirectionalAssociations(entityType);
          result.BidirectionalAssociations = GetBidirectionalAssociations(entityType);
 
+         CheckForShadowClass(result);
          return result;
       }
 
@@ -202,6 +240,7 @@ namespace EFCore7Parser
                               : type.Name;
 
          result.Name = propertyData.Name;
+         result.ColumnName = propertyData.GetColumnName();
          result.IsIdentity = propertyData.IsKey();
          result.IsIdentityGenerated = result.IsIdentity && (propertyData.ValueGenerated == ValueGenerated.OnAdd);
 
@@ -342,6 +381,64 @@ namespace EFCore7Parser
 
          return result;
       }
+
+      protected void CheckForShadowClass(ModelClass modelClass)
+      {
+         ModelClass result = modelClass;
+
+         if (result.Properties.Count == 2 && result.Properties.All(p => p.IsIdentity) && result.BidirectionalAssociations.Count == 2)
+         {
+            PossibleAssociationMerge possibleMerge = new PossibleAssociationMerge();
+
+            possibleMerge.JoinClass = result;
+            possibleMerge.AssociationToSource = result.BidirectionalAssociations[0];
+            possibleMerge.AssociationToTarget = result.BidirectionalAssociations[1];
+
+            if (possibleMerge.AssociationToSource.SourceClassName == result.Name)
+            {
+               possibleMerge.SourceClassName = possibleMerge.AssociationToSource.TargetClassName;
+
+               if (possibleMerge.AssociationToSource.TargetMultiplicity != Multiplicity.One || possibleMerge.AssociationToSource.SourceMultiplicity != Multiplicity.ZeroMany)
+                  return;
+            }
+            else
+            {
+               possibleMerge.SourceClassName = possibleMerge.AssociationToSource.SourceClassName;
+               if (possibleMerge.AssociationToSource.SourceMultiplicity != Multiplicity.One || possibleMerge.AssociationToSource.TargetMultiplicity != Multiplicity.ZeroMany)
+                  return;
+            }
+
+
+            if (possibleMerge.AssociationToTarget.SourceClassName == result.Name)
+            {
+               possibleMerge.TargetClassName = possibleMerge.AssociationToTarget.TargetClassName;
+               if (possibleMerge.AssociationToTarget.TargetMultiplicity != Multiplicity.One || possibleMerge.AssociationToTarget.SourceMultiplicity != Multiplicity.ZeroMany)
+                  return;
+            }
+            else
+            {
+               possibleMerge.TargetClassName = possibleMerge.AssociationToTarget.SourceClassName;
+               if (possibleMerge.AssociationToTarget.SourceMultiplicity != Multiplicity.One || possibleMerge.AssociationToTarget.TargetMultiplicity != Multiplicity.ZeroMany)
+                  return;
+            }
+
+            PossibleAssociationMerges.Add(possibleMerge);
+         }
+
+      }
+
+      public class PossibleAssociationMerge
+      {
+         public ModelClass JoinClass { get; set; }
+         public string SourceClassName { get; set; }
+         public ModelClass SourceClass { get; set; }
+         public string TargetClassName { get; set; }
+         public ModelClass TargetClass { get; set;}
+         public ModelBidirectionalAssociation AssociationToSource { get; set; }
+         public ModelBidirectionalAssociation AssociationToTarget { get; set; }
+      }
+
+      protected readonly List<PossibleAssociationMerge> PossibleAssociationMerges = new List<PossibleAssociationMerge>();
 
 #endregion
    }

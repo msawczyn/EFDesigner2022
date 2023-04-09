@@ -2,11 +2,14 @@
 
    <PropertyGroup>
       <OutputType>Exe</OutputType>
-      <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
       <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
       <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
       <RuntimeIdentifier>win-x64</RuntimeIdentifier>
       <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+      <TargetFramework>net7.0</TargetFramework>
+      <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+      <PublishSingleFile>true</PublishSingleFile>
+      <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
    </PropertyGroup>
 
    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -17,11 +20,11 @@
       <DefineConstants />
    </PropertyGroup>
 
-   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
      <NoWarn>1701;1702;IL3002</NoWarn>
    </PropertyGroup>
 
-   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
      <NoWarn>1701;1702;IL3002</NoWarn>
    </PropertyGroup>
 
@@ -30,7 +33,7 @@
    </ItemGroup>
 
    <ItemGroup>
-      <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.0" />
+      <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
       <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="7.0.0" />
       <PackageReference Include="Microsoft.VisualStudio.RpcContracts" Version="17.4.9" />
       <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.5.22" />
@@ -42,18 +45,13 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.3" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.3" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.3" />
+      <PackageReference Include="PluralizeService.Core" Version="1.2.21147.2" />
       <PackageReference Include="StreamJsonRpc" Version="2.13.33" />
       <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
    </ItemGroup>
 
    <ItemGroup>
       <ProjectReference Include="..\ParsingModels\ParsingModels.csproj" />
-   </ItemGroup>
-
-   <ItemGroup>
-     <None Update="App.config">
-       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-     </None>
    </ItemGroup>
 
 </Project>

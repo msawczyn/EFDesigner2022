@@ -65,7 +65,7 @@ namespace Sawczyn.EFDesigner.EFModel
             if (sourceModelClass.IsEntity() && targetModelClass.IsDependent())
                return true;
          }
-         else if ((modelRoot.EntityFrameworkVersion == EFVersion.EFCore) && modelRoot.IsEFCore5Plus)
+         else if (modelRoot.IsEFCore5Plus)
          {
             if (sourceModelClass.IsEntity() && targetModelClass.IsEntity())
                return true;
@@ -103,7 +103,7 @@ namespace Sawczyn.EFDesigner.EFModel
             if (candidate.IsEntity())
                return true;
          }
-         else if ((entityFrameworkVersion == EFVersion.EFCore) && modelRoot.IsEFCore5Plus)
+         else if (modelRoot.IsEFCore5Plus)
          {
             if (candidate.IsEntity())
                return true;
@@ -144,7 +144,7 @@ namespace Sawczyn.EFDesigner.EFModel
             if (candidate.IsDependent())
                return true;
          }
-         else if ((entityFrameworkVersion == EFVersion.EFCore) && modelRoot.IsEFCore5Plus)
+         else if (modelRoot.IsEFCore5Plus)
          {
             if (candidate.IsEntity())
                return true;

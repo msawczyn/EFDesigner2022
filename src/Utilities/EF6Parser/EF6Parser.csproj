@@ -2,11 +2,15 @@
 
    <PropertyGroup>
       <OutputType>Exe</OutputType>
-      <TargetFramework>netcoreapp3.1</TargetFramework>
       <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
       <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
       <RuntimeIdentifier>win-x64</RuntimeIdentifier>
       <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+      <TargetFramework>netcoreapp3.1</TargetFramework>
+      <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+      <PublishSingleFile>true</PublishSingleFile>
+      <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+      <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
    </PropertyGroup>
 
    <PropertyGroup Condition="'$(Configuration)'=='Debug'">

@@ -7,7 +7,6 @@ using System.Text;
 
 using EnvDTE;
 
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TextTemplating;
 
 namespace Sawczyn.EFDesigner.EFModel.EditingOnly
@@ -17,7 +16,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
 #region Template
 
-      // EFDesigner v4.2.4.1
+      // EFDesigner v4.2.4.3
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -181,7 +180,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             internal VSManager(ITextTemplatingEngineHost host, StringBuilder template) : base(host, template)
             {
-               ThreadHelper.ThrowIfNotOnUIThread();
                IServiceProvider hostServiceProvider = (IServiceProvider)host;
 
                if (hostServiceProvider == null)
@@ -195,7 +193,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             {
                get
                {
-                  ThreadHelper.ThrowIfNotOnUIThread();
                   return templateProjectItem.ContainingProject.Properties.Item("DefaultNamespace").Value.ToString();
                }
             }
@@ -204,14 +201,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             {
                get
                {
-                  ThreadHelper.ThrowIfNotOnUIThread();
                   return Path.GetDirectoryName(templateProjectItem.ContainingProject.FullName);
                }
             }
 
             private void CheckoutFileIfRequired(string fileName)
             {
-               ThreadHelper.ThrowIfNotOnUIThread();
                SourceControl sc = dte.SourceControl;
 
                if ((sc != null) && sc.IsItemUnderSCC(fileName) && !sc.IsItemCheckedOut(fileName))
@@ -220,7 +215,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             protected override void CreateFile(string fileName, string content)
             {
-               ThreadHelper.ThrowIfNotOnUIThread();
                string directory = Path.GetDirectoryName(fileName);
 
                if (!Directory.Exists(directory))
@@ -235,7 +229,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             private Dictionary<ProjectItem, List<string>> GetCurrentState()
             {
-               ThreadHelper.ThrowIfNotOnUIThread();
                Dictionary<ProjectItem, List<string>> result = new Dictionary<ProjectItem, List<string>>();
                Project currentProject = templateProjectItem.ContainingProject;
                string projectDirectory = Path.GetDirectoryName(currentProject.FullName);
@@ -266,7 +259,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             private ProjectItem GetOrCreateParentItem(string filePath)
             {
-               ThreadHelper.ThrowIfNotOnUIThread();
                if (string.IsNullOrEmpty(filePath))
                   return templateProjectItem;
 
@@ -320,7 +312,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             private Dictionary<ProjectItem, List<string>> GetTargetState(string[] fileNames)
             {
-               ThreadHelper.ThrowIfNotOnUIThread();
                Dictionary<ProjectItem, List<string>> result = new Dictionary<ProjectItem, List<string>> {{templateProjectItem, new List<string>()}};
 
                foreach (string fileName in fileNames)
@@ -338,7 +329,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             public override void Process(bool split)
             {
-               ThreadHelper.ThrowIfNotOnUIThread();
                if (templateProjectItem.ProjectItems == null)
                   return;
 
@@ -366,7 +356,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             {
                // thanks to Sancho-Lee (https://github.com/Sancho-Lee) for the fix here
 
-               ThreadHelper.ThrowIfNotOnUIThread();
                Dictionary<ProjectItem, List<string>> current = GetCurrentState();
 
                string[] fileNames = keepFileNames as string[] ?? keepFileNames.ToArray();

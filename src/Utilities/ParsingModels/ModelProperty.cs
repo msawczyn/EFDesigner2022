@@ -1,9 +1,13 @@
-﻿namespace ParsingModels
+﻿using System.Diagnostics;
+
+namespace ParsingModels
 {
+   [DebuggerDisplay("{Name}")]
    public class ModelProperty
    {
       public string TypeName { get; set; }
       public string Name { get; set; }
+      public string ColumnName { get; set; }
       public string CustomAttributes { get; set; }
       public bool Indexed { get; set; }
       public bool IndexedUnique { get; set; }

@@ -13,7 +13,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.4.1
+      // EFDesigner v4.2.4.3
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -132,10 +132,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             if (modelRoot.IsEFCore7Plus)
             {
-               bool hasTrigger = modelClass.AllNavigationProperties().Any(n =>
-                                                                             (n.AssociationObject.Source == modelClass && n.AssociationObject.Target == modelClass && (n.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One || n.AssociationObject.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One))
-                                                                          || (n.AssociationObject.Source == modelClass && (n.AssociationObject.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One || n.AssociationObject.TargetDeleteAction == DeleteAction.Cascade))
-                                                                          || (n.AssociationObject.Target == modelClass && (n.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One || n.AssociationObject.SourceDeleteAction == DeleteAction.Cascade)));
+               bool hasTrigger = modelClass.AllNavigationProperties()
+                                           .Any(n =>
+                                                   (n.AssociationObject.Source == modelClass && n.AssociationObject.Target == modelClass && (n.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One || n.AssociationObject.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One))
+                                                || (n.AssociationObject.Source == modelClass && (n.AssociationObject.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One || n.AssociationObject.TargetDeleteAction == DeleteAction.Cascade))
+                                                || (n.AssociationObject.Target == modelClass && (n.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One || n.AssociationObject.SourceDeleteAction == DeleteAction.Cascade)));
+
                // for later - EFCore7, SqlServer and triggers don't work well. We need to tell it that the triggers exist.
                // but how to know what they are at this stage of the game?
             }
@@ -651,14 +653,14 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             if (association.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany && association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
             {
-               string targetFK = string.IsNullOrEmpty(association.TargetFKColumnName) ? association.Target.Name + "Id" : association.TargetFKColumnName;
-               string sourceFK = string.IsNullOrEmpty(association.SourceFKColumnName) ? association.Source.Name + "Id" : association.SourceFKColumnName;
+               string targetFK = association.Target.IdentityAttributes.FirstOrDefault().Name;
+               string sourceFK = association.Source.IdentityAttributes.FirstOrDefault().Name;
                string joinTable = string.IsNullOrEmpty(association.JoinTableName) ? $"{association.Target.Name}_x_{association.Source.Name}" : association.JoinTableName;
 
                string segment =
                   "UsingEntity<Dictionary<string, object>>("
-                + $"right => right.HasOne<{association.Target.FullName}>().WithMany().HasForeignKey({targetFK}).OnDelete(DeleteBehavior.Cascade),"
-                + $"left => left.HasOne<{association.Source.FullName}>().WithMany().HasForeignKey({sourceFK}).OnDelete(DeleteBehavior.Cascade),"
+                + $"right => right.HasOne<{association.Target.FullName}>().WithMany().HasForeignKey(\"{targetFK}\").OnDelete(DeleteBehavior.Cascade),"
+                + $"left => left.HasOne<{association.Source.FullName}>().WithMany().HasForeignKey(\"{sourceFK}\").OnDelete(DeleteBehavior.Cascade),"
                 + $"join => join.ToTable(\"{joinTable}\"))";
 
                segments.Add(segment);

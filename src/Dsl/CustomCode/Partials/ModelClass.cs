@@ -57,10 +57,10 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
-            if (IsDependentType && !string.IsNullOrWhiteSpace(ModelRoot?.StructOutputDirectory))
+            if ((IsDependentType || !Persistent) && !string.IsNullOrWhiteSpace(ModelRoot?.StructOutputDirectory))
                return ModelRoot.StructOutputDirectory;
 
-            if (!IsDependentType && !string.IsNullOrWhiteSpace(ModelRoot?.EntityOutputDirectory))
+            if ((!IsDependentType && Persistent) && !string.IsNullOrWhiteSpace(ModelRoot?.EntityOutputDirectory))
                return ModelRoot.EntityOutputDirectory;
 
             return ModelRoot?.ContextOutputDirectory;

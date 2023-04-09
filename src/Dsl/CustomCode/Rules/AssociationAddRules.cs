@@ -98,7 +98,7 @@ namespace Sawczyn.EFDesigner.EFModel
                element.TargetMultiplicity = Multiplicity.One;
             }
          }
-         else if ((entityFrameworkVersion == EFVersion.EFCore) && modelRoot.IsEFCore5Plus)
+         else if (modelRoot.IsEFCore5Plus)
          {
             if (element.Source.IsEntity() && element.Target.IsEntity())
             {
@@ -158,7 +158,7 @@ namespace Sawczyn.EFDesigner.EFModel
                element.TargetMultiplicity = Multiplicity.ZeroOne;
             }
          }
-         else if ((entityFrameworkVersion == EFVersion.EFCore) && modelRoot.IsEFCore5Plus)
+         else if (modelRoot.IsEFCore5Plus)
          {
             if (element.Source.IsEntity() && element.Target.IsEntity())
             {
