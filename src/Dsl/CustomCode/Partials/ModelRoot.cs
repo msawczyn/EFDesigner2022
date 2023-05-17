@@ -196,9 +196,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          return Store
                .DefaultPartitionForClass(EFModelDiagram.DomainClassId)
-               .ElementDirectory
-               .AllElements
-               .OfType<EFModelDiagram>()
+               .GetAll<EFModelDiagram>()
                .ToArray();
       }
 
@@ -400,9 +398,7 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             List<string> baseResult = ValidIdentityTypeAttributesBaseList;
 
-            baseResult.AddRange(Store.ElementDirectory
-                                     .AllElements
-                                     .OfType<ModelEnum>()
+            baseResult.AddRange(Store.GetAll<ModelEnum>()
                                      .Where(e => baseResult.Contains(e.ValueType.ToString()))
                                      .Select(e => e.Name)
                                      .OrderBy(n => n));

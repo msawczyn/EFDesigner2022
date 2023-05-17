@@ -211,16 +211,12 @@ namespace Sawczyn.EFDesigner.EFModel
             XMLDocumentation xmlDocumentation = new XMLDocumentation(propertyDecl);
 
             // if the association doesn't yet exist, create it
-            if (!Store.ElementDirectory
-                      .AllElements
-                      .OfType<UnidirectionalAssociation>()
+            if (!Store.GetAll<UnidirectionalAssociation>()
                       .Any(a => (a.Source == source) && (a.Target == target) && (a.TargetPropertyName == propertyName)))
             {
                // if there's a unidirectional going the other direction, we'll whack that one and make a bidirectional
                // otherwise, proceed as planned
-               UnidirectionalAssociation compliment = Store.ElementDirectory
-                                                           .AllElements
-                                                           .OfType<UnidirectionalAssociation>()
+               UnidirectionalAssociation compliment = Store.GetAll<UnidirectionalAssociation>()
                                                            .FirstOrDefault(a => (a.Source == target) && (a.Target == source));
 
                if (compliment == null)

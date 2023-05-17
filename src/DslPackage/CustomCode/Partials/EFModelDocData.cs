@@ -325,9 +325,7 @@ namespace Sawczyn.EFDesigner.EFModel
             {
                using (Transaction tx = Store.TransactionManager.BeginTransaction())
                {
-                  Store.ElementDirectory
-                       .AllElements
-                       .OfType<Association>()
+                  Store.GetAll<Association>()
                        .Where(a => (a.SourceMultiplicity != Multiplicity.ZeroMany)
                                 && (a.TargetMultiplicity != Multiplicity.ZeroMany)
                                 && !string.IsNullOrEmpty(a.FKPropertyName))
@@ -374,11 +372,9 @@ namespace Sawczyn.EFDesigner.EFModel
          using (Transaction tx = Store.TransactionManager.BeginTransaction("ValidateOnChanges"))
          {
             // validate classes that show warnings, so that we can change glyphs accordingly
-            List<DomainClassInfo> classesWithWarnings = Store.ElementDirectory
-                                                             .AllElements
+            List<DomainClassInfo> classesWithWarnings = Store.GetAll<ModelElement>()
                                                              .OfType<IDisplaysWarning>()
-                                                             .OfType<ModelElement>()
-                                                             .Select(e => e.GetDomainClass())
+                                                             .Select(e => ((ModelElement)e).GetDomainClass())
                                                              .Distinct()
                                                              .ToList();
 
@@ -600,7 +596,7 @@ namespace Sawczyn.EFDesigner.EFModel
       private void ValidateAll()
       {
          ValidationCategories allCategories = ValidationCategories.Menu | ValidationCategories.Open | ValidationCategories.Save | ValidationCategories.Custom | ValidationCategories.Load;
-         Store.GetAll<IDisplaysWarning>().ToList().ForEach(e => e.ResetWarning());
+         Store.GetAll<ModelElement>().OfType<IDisplaysWarning>().ToList().ForEach(e => e.ResetWarning());
          ValidationController?.ClearMessages();
          ValidationController?.Validate(Store.ElementDirectory.AllElements, allCategories);
       }
@@ -641,25 +637,25 @@ namespace Sawczyn.EFDesigner.EFModel
 
          if (Store != null)
          {
-            foreach (GeneralizationConnector connector in Store.ElementDirectory.AllElements.OfType<GeneralizationConnector>().ToArray())
+            foreach (GeneralizationConnector connector in Store.GetAll<GeneralizationConnector>().ToArray())
                connector.SetThemeColors(diagramColors);
 
-            foreach (AssociationConnector connector in Store.ElementDirectory.AllElements.OfType<AssociationConnector>().ToArray())
+            foreach (AssociationConnector connector in Store.GetAll<AssociationConnector>().ToArray())
                connector.SetThemeColors(diagramColors);
 
-            foreach (CommentConnector connector in Store.ElementDirectory.AllElements.OfType<CommentConnector>().ToArray())
+            foreach (CommentConnector connector in Store.GetAll<CommentConnector>().ToArray())
                connector.SetThemeColors(diagramColors);
 
-            foreach (ClassShape classShape in Store.ElementDirectory.AllElements.OfType<ClassShape>().ToArray())
+            foreach (ClassShape classShape in Store.GetAll<ClassShape>().ToArray())
                classShape.SetThemeColors(diagramColors);
 
-            foreach (EnumShape enumShape in Store.ElementDirectory.AllElements.OfType<EnumShape>().ToArray())
+            foreach (EnumShape enumShape in Store.GetAll<EnumShape>().ToArray())
                enumShape.SetThemeColors(diagramColors);
 
-            foreach (CommentBoxShape commentShape in Store.ElementDirectory.AllElements.OfType<CommentBoxShape>().ToArray())
+            foreach (CommentBoxShape commentShape in Store.GetAll<CommentBoxShape>().ToArray())
                commentShape.SetThemeColors(diagramColors);
 
-            foreach (EFModelDiagram diagram in Store.ElementDirectory.AllElements.OfType<EFModelDiagram>().ToArray())
+            foreach (EFModelDiagram diagram in Store.GetAll<EFModelDiagram>().ToArray())
                diagram.SetThemeColors(diagramColors);
          }
       }

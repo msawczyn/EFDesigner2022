@@ -22,9 +22,9 @@ namespace Sawczyn.EFDesigner.EFModel
             return;
 
          Store store = element.Store;
-         Transaction currentTransaction = store.TransactionManager.CurrentTransaction;
+         Transaction current = store.TransactionManager.CurrentTransaction;
 
-         if (currentTransaction.IsSerializing)
+         if (current.IsSerializing || ModelRoot.BatchUpdating)
             return;
 
          if (Equals(e.NewValue, e.OldValue))
@@ -36,7 +36,7 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             case "Name":
 
-               if (currentTransaction.Name.ToLowerInvariant() == "paste")
+               if (current.Name.ToLowerInvariant() == "paste")
                   return;
 
                if (string.IsNullOrWhiteSpace(element.Name) || !CodeGenerator.IsValidLanguageIndependentIdentifier(element.Name))
@@ -68,7 +68,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "Namespace":
 
-               if (currentTransaction.Name.ToLowerInvariant() != "paste")
+               if (current.Name.ToLowerInvariant() != "paste")
                   errorMessage = CommonRules.ValidateNamespace(element.Namespace, CodeGenerator.IsValidLanguageIndependentIdentifier);
 
                break;
@@ -83,9 +83,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
                EnumValueType newValueType = (EnumValueType)e.NewValue;
 
-               List<ModelAttribute> modelAttributes = store.ElementDirectory
-                                                           .AllElements
-                                                           .OfType<ModelAttribute>()
+               List<ModelAttribute> modelAttributes = store.GetAll<ModelAttribute>()
                                                            .Where(a => (a.Type == element.Name) && a.IsIdentity)
                                                            .ToList();
 
@@ -100,7 +98,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
          if (errorMessage != null)
          {
-            currentTransaction.Rollback();
+            current.Rollback();
             ErrorDisplay.Show(store, errorMessage);
          }
       }

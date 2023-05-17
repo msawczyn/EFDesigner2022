@@ -73,12 +73,14 @@ namespace Sawczyn.EFDesigner.EFModel
             // things unavailable for views
             if (modelClass.IsDatabaseView)
             {
+               propertyDescriptors.Remove("DbSetName");
                propertyDescriptors.Remove("IsAssociationClass");
                propertyDescriptors.Remove("IsDependentType");
                propertyDescriptors.Remove("IsQueryType");
-               propertyDescriptors.Remove("UseTemporalTables");
-               propertyDescriptors.Remove("TableName");
+               propertyDescriptors.Remove("Persistent");
                propertyDescriptors.Remove("TableComment");
+               propertyDescriptors.Remove("TableName");
+               propertyDescriptors.Remove("UseTemporalTables");
             }
             else
                propertyDescriptors.Remove("ViewName");
@@ -86,32 +88,34 @@ namespace Sawczyn.EFDesigner.EFModel
             // things unavailable for query types
             if (modelClass.IsQueryType)
             {
-               propertyDescriptors.Remove("UseTemporalTables");
-               propertyDescriptors.Remove("IsAssociationClass");
-               propertyDescriptors.Remove("ViewName");
-               propertyDescriptors.Remove("IsDatabaseView");
                propertyDescriptors.Remove("Concurrency");
-               propertyDescriptors.Remove("TableName");
-               propertyDescriptors.Remove("TableComment");
                propertyDescriptors.Remove("DatabaseSchema");
+               propertyDescriptors.Remove("DbSetName");
+               propertyDescriptors.Remove("IsAssociationClass");
+               propertyDescriptors.Remove("IsDatabaseView");
+               propertyDescriptors.Remove("Persistent");
+               propertyDescriptors.Remove("TableComment");
+               propertyDescriptors.Remove("TableName");
+               propertyDescriptors.Remove("UseTemporalTables");
+               propertyDescriptors.Remove("ViewName");
             }
 
             // things unavailable for transient classes
             if (!modelClass.Persistent)
             {
-               propertyDescriptors.Remove("TableName");
                propertyDescriptors.Remove("Concurrency");
                propertyDescriptors.Remove("DbSetName");
+               propertyDescriptors.Remove("DescribedAssociationElementId");
+               propertyDescriptors.Remove("ExcludeFromMigrations");
+               propertyDescriptors.Remove("IsAssociationClass");
+               propertyDescriptors.Remove("IsDatabaseView");
                propertyDescriptors.Remove("IsDependentType");
                propertyDescriptors.Remove("IsPropertyBag");
                propertyDescriptors.Remove("IsQueryType");
-               propertyDescriptors.Remove("ExcludeFromMigrations");
-               propertyDescriptors.Remove("IsDatabaseView");
-               propertyDescriptors.Remove("ViewName");
-               propertyDescriptors.Remove("UseTemporalTables");
-               propertyDescriptors.Remove("IsAssociationClass");
-               propertyDescriptors.Remove("DescribedAssociationElementId");
                propertyDescriptors.Remove("TableComment");
+               propertyDescriptors.Remove("TableName");
+               propertyDescriptors.Remove("UseTemporalTables");
+               propertyDescriptors.Remove("ViewName");
             }
 
             //Add the descriptors for the tracking properties 

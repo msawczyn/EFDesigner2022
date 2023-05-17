@@ -346,6 +346,13 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                      Output($"[StringLength({modelAttribute.MaxLength})]");
                   }
                }
+
+               if (modelAttribute.ModelClass.ModelRoot.EntityFrameworkVersion == EFVersion.EFCore
+                && modelAttribute.FQPrimitiveType == "decimal"
+                && !modelAttribute.ModelClass.AllIdentityAttributes.Any())
+               {
+                  Output($"[Microsoft.EntityFrameworkCore.Precision({modelAttribute.TypePrecision}, {modelAttribute.TypeScale})]");
+               }
             }
 
             if (!string.IsNullOrWhiteSpace(modelAttribute.DisplayText))

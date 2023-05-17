@@ -66,7 +66,12 @@ namespace Sawczyn.EFDesigner.EFModel
                      element.InheritanceStrategy = CodeStrategy.TablePerType;
 
                   if (!element.IsEFCore5Plus)
-                     store.ElementDirectory.AllElements.OfType<ModelClass>().Where(c => c.IsPropertyBag).ToList().ForEach(c => c.IsPropertyBag = false);
+                  {
+                     store.GetAll<ModelClass>()
+                          .Where(c => c.IsPropertyBag)
+                          .ToList()
+                          .ForEach(c => c.IsPropertyBag = false);
+                  }
                }
 
 
@@ -89,7 +94,10 @@ namespace Sawczyn.EFDesigner.EFModel
 
                         if (!element.IsEFCore5Plus)
                         {
-                           store.ElementDirectory.AllElements.OfType<ModelClass>().Where(c => c.IsPropertyBag).ToList().ForEach(c => c.IsPropertyBag = false);
+                           store.GetAll<ModelClass>()
+                                .Where(c => c.IsPropertyBag)
+                                .ToList()
+                                .ForEach(c => c.IsPropertyBag = false);
 
                            switch (element.PropertyAccessModeDefault)
                            {
@@ -98,7 +106,7 @@ namespace Sawczyn.EFDesigner.EFModel
                               case PropertyAccessMode.PreferProperty:
                                  element.PropertyAccessModeDefault = PropertyAccessMode.FieldDuringConstruction;
 
-                                 store.ElementDirectory.AllElements.OfType<ModelAttribute>()
+                                 store.GetAll<ModelAttribute>()
                                       .Where(a => !a.IsPropertyAccessModeTracking
                                                && ((a.PropertyAccessMode == PropertyAccessMode.PreferField)
                                                 || (a.PropertyAccessMode == PropertyAccessMode.PreferProperty)
@@ -115,11 +123,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
                   case EFVersion.EF6:
                      {
-                        store.ElementDirectory.AllElements.OfType<ModelClass>().Where(c => c.IsPropertyBag).ToList().ForEach(c => c.IsPropertyBag = false);
+                        store.GetAll<ModelClass>().Where(c => c.IsPropertyBag).ToList().ForEach(c => c.IsPropertyBag = false);
 
-                        List<Association> associations = store.ElementDirectory
-                                                              .AllElements
-                                                              .OfType<Association>()
+                        List<Association> associations = store.GetAll<Association>()
                                                               .Where(a => !string.IsNullOrEmpty(a.FKPropertyName)
                                                                        && (a.SourceMultiplicity != Multiplicity.ZeroMany)
                                                                        && (a.TargetMultiplicity != Multiplicity.ZeroMany))

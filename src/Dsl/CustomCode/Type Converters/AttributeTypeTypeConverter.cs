@@ -59,8 +59,7 @@ namespace Sawczyn.EFDesigner.EFModel
                values.AddRange(store.ElementDirectory.FindElements<ModelEnum>().OrderBy(e => e.Name).Select(e => e.Name));
             }
 
-            values.AddRange(store.ElementDirectory.AllElements
-                                 .OfType<ModelAttribute>()
+            values.AddRange(store.GetAll<ModelAttribute>()
                                  .Select(x => x.Type)
                                  .Where(x => !values.Contains(x))
                                  .Distinct()

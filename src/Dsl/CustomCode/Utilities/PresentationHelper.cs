@@ -144,8 +144,8 @@ namespace Sawczyn.EFDesigner.EFModel
             return;
 
          // ensure foreign key attributes have the proper setting to surface the right glyph
-         foreach (var data in element.Store.ElementDirectory.AllElements
-                                     .OfType<Association>()
+         foreach (var data in element.Store
+                                     .GetAll<Association>()
                                      .Where(a => (a.Dependent == element) && !string.IsNullOrEmpty(a.FKPropertyName))
                                      .SelectMany(association => association.FKPropertyName.Split(',')
                                                                            .Where(propertyName => element.Attributes.Any(attr => attr.Name == propertyName))
@@ -162,8 +162,7 @@ namespace Sawczyn.EFDesigner.EFModel
             classShape.Invalidate();
 
          // ensure any associations have the correct end for composition ownership
-         foreach (AssociationConnector connector in element.Store.ElementDirectory
-                                                           .AllElements.OfType<Association>()
+         foreach (AssociationConnector connector in element.Store.GetAll<Association>()
                                                            .Where(a => a.Dependent == element)
                                                            .SelectMany(association => PresentationViewsSubject.GetPresentation(association)
                                                                                                               .OfType<AssociationConnector>()))

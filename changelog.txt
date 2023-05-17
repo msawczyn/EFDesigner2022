@@ -1,5 +1,5 @@
 4.2.4
-
+   - Reduced model load time by 98%
 4.2.3
    - Added HierarchyId as a property type
    - Added optional index name for indexed properties

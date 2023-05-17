@@ -7,6 +7,8 @@ using Mexedge.VisualStudio.Modeling;
 using Microsoft.VisualStudio.Modeling;
 using Microsoft.VisualStudio.Modeling.Diagrams;
 
+using Sawczyn.EFDesigner.EFModel.Extensions;
+
 namespace Sawczyn.EFDesigner.EFModel
 {
    internal partial class EFModelExplorerToolWindow
@@ -71,8 +73,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
                      // so do generalizations, as long as both classes are available
                      // ReSharper disable once LoopCanBePartlyConvertedToQuery
-                     foreach (Generalization generalization in modelClass.Store.ElementDirectory.AllElements
-                                                                         .OfType<Generalization>()
+                     foreach (Generalization generalization in modelClass.Store
+                                                                         .GetAll<Generalization>()
                                                                          .Where(g => (g.Superclass == modelClass)
                                                                                   || (g.Subclass == modelClass)))
                      {

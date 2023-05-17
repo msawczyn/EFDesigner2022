@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.VisualStudio.Modeling.Diagrams;
 
 using Sawczyn.EFDesigner.EFModel.Annotations;
+using Sawczyn.EFDesigner.EFModel.Extensions;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
@@ -45,14 +46,14 @@ namespace Sawczyn.EFDesigner.EFModel
 
          RectangleD boundingBox = BoundingBoxWithMouseAt(mousePosition);
 
-         List<Guid> connectionObjectsWithAssociationClass = modelClass.Store.ElementDirectory.AllElements
-                                                                      .OfType<ModelClass>()
+         List<Guid> connectionObjectsWithAssociationClass = modelClass.Store
+                                                                      .GetAll<ModelClass>()
                                                                       .Where(x => x.IsAssociationClass)
                                                                       .Select(x => x.DescribedAssociationElementId)
                                                                       .ToList();
 
-         List<BidirectionalConnector> connectors = ClassShape.Store.ElementDirectory.AllElements
-                                                             .OfType<BidirectionalConnector>()
+         List<BidirectionalConnector> connectors = ClassShape.Store
+                                                             .GetAll<BidirectionalConnector>()
                                                              .Where(c => (((BidirectionalAssociation)c.ModelElement).SourceMultiplicity == Multiplicity.ZeroMany)
                                                                       && (((BidirectionalAssociation)c.ModelElement).TargetMultiplicity == Multiplicity.ZeroMany)
                                                                       && !connectionObjectsWithAssociationClass.Contains(((BidirectionalAssociation)c.ModelElement).Id)

@@ -620,8 +620,7 @@ namespace Sawczyn.EFDesigner.EFModel
             // Only support a subset of navigation mapping capabilities, specifically:
             //    - They may never act as the principal end of a relationship.
             string badAssociations = string.Join(", ",
-                                                 store.ElementDirectory.AllElements
-                                                      .OfType<Association>()
+                                                 store.GetAll<Association>()
                                                       .Where(a => a.Principal == element)
                                                       .Select(a => a.GetDisplayText()));
 
@@ -630,8 +629,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             //    - They may not have navigations to owned entities 
             badAssociations = string.Join(", ",
-                                          store.ElementDirectory.AllElements
-                                               .OfType<Association>()
+                                          store.GetAll<Association>()
                                                .Where(a => (a is UnidirectionalAssociation && (a.Source == element) && a.Target.IsDependentType)
                                                         || (a is BidirectionalAssociation b && (b.Source == element) && b.Target.IsDependentType)
                                                         || (a is BidirectionalAssociation c && (c.Target == element) && c.Source.IsDependentType))
@@ -642,8 +640,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             //    - Entities cannot contain navigation properties to query types.
             badAssociations = string.Join(", ",
-                                          store.ElementDirectory.AllElements
-                                               .OfType<Association>()
+                                          store.GetAll<Association>()
                                                .Where(a => (a is UnidirectionalAssociation && (a.Source == element) && a.Target.IsQueryType)
                                                         || (a is BidirectionalAssociation b && (b.Source == element) && b.Target.IsQueryType)
                                                         || (a is BidirectionalAssociation c && (c.Target == element) && c.Source.IsQueryType))
@@ -654,8 +651,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             //    - They can only contain reference navigation properties pointing to regular entities.
             badAssociations = string.Join(", ",
-                                          store.ElementDirectory.AllElements
-                                               .OfType<Association>()
+                                          store.GetAll<Association>()
                                                .Where(a => (a is UnidirectionalAssociation && (a.Source == element) && (a.TargetMultiplicity == Multiplicity.ZeroMany))
                                                         || (a is BidirectionalAssociation b && (b.Source == element) && (b.TargetMultiplicity == Multiplicity.ZeroMany))
                                                         || (a is BidirectionalAssociation c && (c.Target == element) && (c.SourceMultiplicity == Multiplicity.ZeroMany)))
@@ -681,8 +677,7 @@ namespace Sawczyn.EFDesigner.EFModel
             // Only support a subset of navigation mapping capabilities, specifically:
             //    - They may never act as the principal end of a relationship.
             string badAssociations = string.Join(", ",
-                                                 store.ElementDirectory.AllElements
-                                                      .OfType<Association>()
+                                                 store.GetAll<Association>()
                                                       .Where(a => a.Principal == element)
                                                       .Select(a => a.GetDisplayText()));
 
@@ -691,8 +686,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             //    - They may not have navigations to owned entities 
             badAssociations = string.Join(", ",
-                                          store.ElementDirectory.AllElements
-                                               .OfType<Association>()
+                                          store.GetAll<Association>()
                                                .Where(a => (a is UnidirectionalAssociation && (a.Source == element) && a.Target.IsDependentType)
                                                         || (a is BidirectionalAssociation b && (b.Source == element) && b.Target.IsDependentType)
                                                         || (a is BidirectionalAssociation c && (c.Target == element) && c.Source.IsDependentType))
@@ -703,8 +697,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             //    - Entities cannot contain navigation properties to query types.
             badAssociations = string.Join(", ",
-                                          store.ElementDirectory.AllElements
-                                               .OfType<Association>()
+                                          store.GetAll<Association>()
                                                .Where(a => (a is UnidirectionalAssociation && (a.Source == element) && a.Target.IsQueryType)
                                                         || (a is BidirectionalAssociation b && (b.Source == element) && b.Target.IsQueryType)
                                                         || (a is BidirectionalAssociation c && (c.Target == element) && c.Source.IsQueryType))
@@ -715,8 +708,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             //    - They can only contain reference navigation properties pointing to regular entities.
             badAssociations = string.Join(", ",
-                                          store.ElementDirectory.AllElements
-                                               .OfType<Association>()
+                                          store.GetAll<Association>()
                                                .Where(a => (a is UnidirectionalAssociation && (a.Source == element) && (a.TargetMultiplicity == Multiplicity.ZeroMany))
                                                         || (a is BidirectionalAssociation b && (b.Source == element) && (b.TargetMultiplicity == Multiplicity.ZeroMany))
                                                         || (a is BidirectionalAssociation c && (c.Target == element) && (c.SourceMultiplicity == Multiplicity.ZeroMany)))

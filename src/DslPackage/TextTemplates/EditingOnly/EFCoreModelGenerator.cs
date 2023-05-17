@@ -580,6 +580,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                                                .Where(mc => (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName))
                                                          && mc.Persistent
                                                          && !mc.IsQueryType
+                                                         && !mc.IsKeyless()
                                                          && !mc.CustomAttributes.Contains("NotMapped")
                                                          && mc.GenerateCode)
                                                .OrderBy(x => x.Name)

@@ -5,7 +5,7 @@ namespace Sawczyn.EFDesigner.EFModel
 {
    public partial class EFModelDomainModel
    {
-      private static readonly Type[] RuleClasses =
+      internal static readonly Type[] RuleClasses =
       {
          typeof(AssociationAddRules),
          typeof(AssociationChangedRules),

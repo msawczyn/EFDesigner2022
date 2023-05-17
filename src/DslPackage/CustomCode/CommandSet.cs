@@ -51,311 +51,311 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          IList<MenuCommand> commands = base.GetMenuCommands();
 
-#region findCommand
+         #region findCommand
 
          DynamicStatusMenuCommand findCommand =
             new DynamicStatusMenuCommand(OnStatusFind, OnMenuFind, new CommandID(guidEFDiagramMenuCmdSet, cmdidFind));
 
          commands.Add(findCommand);
 
-#endregion
+         #endregion
 
-#region addAttributesCommand
+         #region addAttributesCommand
 
          DynamicStatusMenuCommand addAttributesCommand =
             new DynamicStatusMenuCommand(OnStatusAddProperties, OnMenuAddProperties, new CommandID(guidEFDiagramMenuCmdSet, cmdidAddCodeProperties));
 
          commands.Add(addAttributesCommand);
 
-#endregion
+         #endregion
 
-#region addValuesCommand
+         #region addValuesCommand
 
          DynamicStatusMenuCommand addValuesCommand =
             new DynamicStatusMenuCommand(OnStatusAddValues, OnMenuAddValues, new CommandID(guidEFDiagramMenuCmdSet, cmdidAddCodeValues));
 
          commands.Add(addValuesCommand);
 
-#endregion
+         #endregion
 
-#region layoutDiagramCommand
+         #region layoutDiagramCommand
 
          DynamicStatusMenuCommand layoutDiagramCommand =
             new DynamicStatusMenuCommand(OnStatusLayoutDiagram, OnMenuLayoutDiagram, new CommandID(guidEFDiagramMenuCmdSet, cmdidLayoutDiagram));
 
          commands.Add(layoutDiagramCommand);
 
-#endregion
+         #endregion
 
-#region hideShapeCommand
+         #region hideShapeCommand
 
          DynamicStatusMenuCommand hideShapeCommand =
             new DynamicStatusMenuCommand(OnStatusHideShape, OnMenuHideShape, new CommandID(guidEFDiagramMenuCmdSet, cmdidHideShape));
 
          commands.Add(hideShapeCommand);
 
-#endregion
+         #endregion
 
-#region showShapeCommand
+         #region showShapeCommand
 
          DynamicStatusMenuCommand showShapeCommand =
             new DynamicStatusMenuCommand(OnStatusShowShape, OnMenuShowShape, new CommandID(guidEFDiagramMenuCmdSet, cmdidShowShape));
 
          commands.Add(showShapeCommand);
 
-#endregion
+         #endregion
 
-#region removeShapeCommand
+         #region removeShapeCommand
 
          DynamicStatusMenuCommand removeShapeCommand =
             new DynamicStatusMenuCommand(OnStatusRemoveShape, OnMenuRemoveShape, new CommandID(guidEFDiagramMenuCmdSet, cmdidRemoveShape));
 
          commands.Add(removeShapeCommand);
 
-#endregion
+         #endregion
 
-#region addForeignKeysCommand
+         #region addForeignKeysCommand
 
          DynamicStatusMenuCommand addForeignKeysCommand =
             new DynamicStatusMenuCommand(OnStatusAddForeignKeys, OnMenuAddForeignKeys, new CommandID(guidEFDiagramMenuCmdSet, cmdidAddForeignKeys));
 
          commands.Add(addForeignKeysCommand);
 
-#endregion
+         #endregion
 
-#region removeForeignKeysCommand
+         #region removeForeignKeysCommand
 
          DynamicStatusMenuCommand removeForeignKeysCommand =
             new DynamicStatusMenuCommand(OnStatusRemoveForeignKeys, OnMenuRemoveForeignKeys, new CommandID(guidEFDiagramMenuCmdSet, cmdidDelForeignKeys));
 
          commands.Add(removeForeignKeysCommand);
 
-#endregion
+         #endregion
 
-#region generateCodeCommand
+         #region generateCodeCommand
 
          DynamicStatusMenuCommand generateCodeCommand =
             new DynamicStatusMenuCommand(OnStatusGenerateCode, OnMenuGenerateCode, new CommandID(guidEFDiagramMenuCmdSet, cmdidGenerateCode));
 
          commands.Add(generateCodeCommand);
 
-#endregion
+         #endregion
 
-#region saveAsImageCommand
+         #region saveAsImageCommand
 
          DynamicStatusMenuCommand saveAsImageCommand =
             new DynamicStatusMenuCommand(OnStatusSaveAsImage, OnMenuSaveAsImage, new CommandID(guidEFDiagramMenuCmdSet, cmdidSaveAsImage));
 
          commands.Add(saveAsImageCommand);
 
-#endregion
+         #endregion
 
-#region imageToClipboard
+         #region imageToClipboard
 
          DynamicStatusMenuCommand imageToClipboard =
             new DynamicStatusMenuCommand(OnStatusImageToClipboard, OnMenuImageToClipboard, new CommandID(guidEFDiagramMenuCmdSet, cmdidImageToClipboard));
 
          commands.Add(imageToClipboard);
 
-#endregion
+         #endregion
 
-#region selectClassesCommand
+         #region selectClassesCommand
 
          DynamicStatusMenuCommand selectClassesCommand =
             new DynamicStatusMenuCommand(OnStatusSelectClasses, OnMenuSelectClasses, new CommandID(guidEFDiagramMenuCmdSet, cmdidSelectClasses));
 
          commands.Add(selectClassesCommand);
 
-#endregion
+         #endregion
 
-#region selectStructsCommand
+         #region selectStructsCommand
 
          DynamicStatusMenuCommand selectStructsCommand =
             new DynamicStatusMenuCommand(OnStatusSelectStructs, OnMenuSelectStructs, new CommandID(guidEFDiagramMenuCmdSet, cmdidSelectStructs));
 
          commands.Add(selectStructsCommand);
 
-#endregion
+         #endregion
 
-#region selectEnumsCommand
+         #region selectEnumsCommand
 
          DynamicStatusMenuCommand selectEnumsCommand =
             new DynamicStatusMenuCommand(OnStatusSelectEnums, OnMenuSelectEnums, new CommandID(guidEFDiagramMenuCmdSet, cmdidSelectEnums));
 
          commands.Add(selectEnumsCommand);
 
-#endregion
+         #endregion
 
-#region selectAssocsCommand
+         #region selectAssocsCommand
 
          DynamicStatusMenuCommand selectAssocsCommand =
             new DynamicStatusMenuCommand(OnStatusSelectAssocs, OnMenuSelectAssocs, new CommandID(guidEFDiagramMenuCmdSet, cmdidSelectAssocs));
 
          commands.Add(selectAssocsCommand);
 
-#endregion
+         #endregion
 
-#region selectUnidirCommand
+         #region selectUnidirCommand
 
          DynamicStatusMenuCommand selectUnidirCommand =
             new DynamicStatusMenuCommand(OnStatusSelectUnidir, OnMenuSelectUnidir, new CommandID(guidEFDiagramMenuCmdSet, cmdidSelectUnidir));
 
          commands.Add(selectUnidirCommand);
 
-#endregion
+         #endregion
 
-#region selectBidirCommand
+         #region selectBidirCommand
 
          DynamicStatusMenuCommand selectBidirCommand =
             new DynamicStatusMenuCommand(OnStatusSelectBidir, OnMenuSelectBidir, new CommandID(guidEFDiagramMenuCmdSet, cmdidSelectBidir));
 
          commands.Add(selectBidirCommand);
 
-#endregion
+         #endregion
 
-#region expandSelectedCommand
+         #region expandSelectedCommand
 
          DynamicStatusMenuCommand expandSelectedCommand =
             new DynamicStatusMenuCommand(OnStatusExpandSelected, OnMenuExpandSelected, new CommandID(guidEFDiagramMenuCmdSet, cmdidExpandSelected));
 
          commands.Add(expandSelectedCommand);
 
-#endregion
+         #endregion
 
-#region collapseSelectedCommand
+         #region collapseSelectedCommand
 
          DynamicStatusMenuCommand collapseSelectedCommand =
             new DynamicStatusMenuCommand(OnStatusCollapseSelected, OnMenuCollapseSelected, new CommandID(guidEFDiagramMenuCmdSet, cmdidCollapseSelected));
 
          commands.Add(collapseSelectedCommand);
 
-#endregion
+         #endregion
 
-#region mergeAssociationsCommand
+         #region mergeAssociationsCommand
 
          DynamicStatusMenuCommand mergeAssociationsCommand =
             new DynamicStatusMenuCommand(OnStatusMergeAssociations, OnMenuMergeAssociations, new CommandID(guidEFDiagramMenuCmdSet, cmdidMergeAssociations));
 
          commands.Add(mergeAssociationsCommand);
 
-#endregion
+         #endregion
 
-#region splitAssociationCommand
+         #region splitAssociationCommand
 
          DynamicStatusMenuCommand splitAssociationCommand =
             new DynamicStatusMenuCommand(OnStatusSplitAssociation, OnMenuSplitAssociation, new CommandID(guidEFDiagramMenuCmdSet, cmdidSplitAssociation));
 
          commands.Add(splitAssociationCommand);
 
-#endregion
+         #endregion
 
-#region alignLeftCommand
+         #region alignLeftCommand
 
          DynamicStatusMenuCommand alignLeftCommand =
             new DynamicStatusMenuCommand(OnStatusAlignLeft, OnMenuAlignLeft, new CommandID(guidEFDiagramMenuCmdSet, cmdidAlignLeft));
 
          commands.Add(alignLeftCommand);
 
-#endregion
+         #endregion
 
-#region alignRightCommand
+         #region alignRightCommand
 
          DynamicStatusMenuCommand alignRightCommand =
             new DynamicStatusMenuCommand(OnStatusAlignRight, OnMenuAlignRight, new CommandID(guidEFDiagramMenuCmdSet, cmdidAlignRight));
 
          commands.Add(alignRightCommand);
 
-#endregion
+         #endregion
 
-#region alignTopCommand
+         #region alignTopCommand
 
          DynamicStatusMenuCommand alignTopCommand =
             new DynamicStatusMenuCommand(OnStatusAlignTop, OnMenuAlignTop, new CommandID(guidEFDiagramMenuCmdSet, cmdidAlignTop));
 
          commands.Add(alignTopCommand);
 
-#endregion
+         #endregion
 
-#region alignLeftCommand
+         #region alignLeftCommand
 
          DynamicStatusMenuCommand alignBottomCommand =
             new DynamicStatusMenuCommand(OnStatusAlignBottom, OnMenuAlignBottom, new CommandID(guidEFDiagramMenuCmdSet, cmdidAlignBottom));
 
          commands.Add(alignBottomCommand);
 
-#endregion
+         #endregion
 
-#region alignHCenterCommand
+         #region alignHCenterCommand
 
          DynamicStatusMenuCommand alignHCenterCommand =
             new DynamicStatusMenuCommand(OnStatusAlignHCenter, OnMenuAlignHCenter, new CommandID(guidEFDiagramMenuCmdSet, cmdidAlignHCenter));
 
          commands.Add(alignHCenterCommand);
 
-#endregion
+         #endregion
 
-#region alignVCenterCommand
+         #region alignVCenterCommand
 
          DynamicStatusMenuCommand alignVCenterCommand =
             new DynamicStatusMenuCommand(OnStatusAlignVCenter, OnMenuAlignVCenter, new CommandID(guidEFDiagramMenuCmdSet, cmdidAlignVCenter));
 
          commands.Add(alignVCenterCommand);
 
-#endregion
+         #endregion
 
-#region resizeWidestCommand
+         #region resizeWidestCommand
 
          DynamicStatusMenuCommand resizeWidestCommand =
             new DynamicStatusMenuCommand(OnStatusResizeWidest, OnMenuResizeWidest, new CommandID(guidEFDiagramMenuCmdSet, cmdidResizeWidest));
 
          commands.Add(resizeWidestCommand);
 
-#endregion
+         #endregion
 
-#region resizeNarrowestCommand
+         #region resizeNarrowestCommand
 
          DynamicStatusMenuCommand resizeNarrowestCommand =
             new DynamicStatusMenuCommand(OnStatusResizeNarrowest, OnMenuResizeNarrowest, new CommandID(guidEFDiagramMenuCmdSet, cmdidResizeNarrowest));
 
          commands.Add(resizeNarrowestCommand);
 
-#endregion
+         #endregion
 
-#region equalSpaceHorizCommand
+         #region equalSpaceHorizCommand
 
          DynamicStatusMenuCommand equalSpaceHorizCommand =
             new DynamicStatusMenuCommand(OnStatusEqualSpaceHoriz, OnMenuEqualSpaceHoriz, new CommandID(guidEFDiagramMenuCmdSet, cmdidEqualSpaceHoriz));
 
          commands.Add(equalSpaceHorizCommand);
 
-#endregion
+         #endregion
 
-#region equalSpaceVertCommand
+         #region equalSpaceVertCommand
 
          DynamicStatusMenuCommand equalSpaceVertCommand =
             new DynamicStatusMenuCommand(OnStatusEqualSpaceVert, OnMenuEqualSpaceVert, new CommandID(guidEFDiagramMenuCmdSet, cmdidEqualSpaceVert));
 
          commands.Add(equalSpaceVertCommand);
 
-#endregion
+         #endregion
 
-#region addEntityCommand
+         #region addEntityCommand
 
          DynamicStatusMenuCommand addEntityCommand =
             new DynamicStatusMenuCommand(OnStatusAddEntity, OnMenuAddEntity, new CommandID(guidEFDiagramMenuCmdSet, cmdidAddEntity));
 
          commands.Add(addEntityCommand);
 
-#endregion
+         #endregion
 
-#region solutionExplorerGenerateCodeCommand
+         #region solutionExplorerGenerateCodeCommand
 
          DynamicStatusMenuCommand solutionExplorerGenerateCodeCommand =
             new DynamicStatusMenuCommand(OnStatusSolutionExplorerGenerateCode, OnMenuSolutionExplprerGenerateCode, new CommandID(guidSolutionExplorerContextMenuCmdSet, cmdidEFModelCommand1));
 
          commands.Add(solutionExplorerGenerateCodeCommand);
 
-#endregion solutionExplorerGenerateCodeCommand
+         #endregion solutionExplorerGenerateCodeCommand
 
          // Additional commands go here.  
          return commands;
@@ -388,7 +388,7 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#region Identifiers
+      #region Identifiers
 
       // Designer menu items
 
@@ -439,7 +439,7 @@ namespace Sawczyn.EFDesigner.EFModel
       internal static readonly Guid guidEFDiagramMenuCmdSet = new Guid("31178ecb-5da7-46cc-bd4a-ce4e5420bd3e");
       internal static readonly Guid guidMenuExplorerCmdSet = new Guid("922EC20C-4054-4E96-8C10-2405A1F91486");
 
-#region Solution Explorer context menu
+      #region Solution Explorer context menu
 
       // Solution explorer context menu
       internal static readonly Guid guidSolutionExplorerContextMenuCmdSet = new Guid("ac476e6f-82e2-482b-b514-e58e152c1c44");
@@ -448,11 +448,11 @@ namespace Sawczyn.EFDesigner.EFModel
       internal const string guidEFModelUIContextGuidString = "{A9878D04-9B94-4FE0-9E18-8874CD56B187}";
       internal const int cmdidEFModelCommand1 = 0x0301;
 
-#endregion Solution Explorer context menu
+      #endregion Solution Explorer context menu
 
-#endregion Identifiers
+      #endregion Identifiers
 
-#region Find
+      #region Find
 
       private void OnStatusFind(object sender, EventArgs e)
       {
@@ -473,9 +473,9 @@ namespace Sawczyn.EFDesigner.EFModel
          // bind data to each line of output so can highlight proper shape when entry is clicked (or double clicked)
       }
 
-#endregion Find
+      #endregion Find
 
-#region Add Properties
+      #region Add Properties
 
       private void OnStatusAddProperties(object sender, EventArgs e)
       {
@@ -575,9 +575,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Add Properties
+      #endregion Add Properties
 
-#region Add Values
+      #region Add Values
 
       private void OnStatusAddValues(object sender, EventArgs e)
       {
@@ -611,7 +611,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      {
                         string[] parts = codeFormLine.Replace(",", string.Empty)
                                                      .Replace(";", string.Empty)
-                                                     .Split(new[] {"="}, StringSplitOptions.RemoveEmptyEntries)
+                                                     .Split(new[] { "=" }, StringSplitOptions.RemoveEmptyEntries)
                                                      .Select(x => x.Trim())
                                                      .ToArray();
 
@@ -683,9 +683,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Add Properties
+      #endregion Add Properties
 
-#region Add Foreign Keys
+      #region Add Foreign Keys
 
       private void OnStatusAddForeignKeys(object sender, EventArgs e)
       {
@@ -696,8 +696,7 @@ namespace Sawczyn.EFDesigner.EFModel
             // TODO: Need to implement this
             command.Visible = false;
 
-            IEnumerable<Association> associations = store.ElementDirectory.AllElements
-                                                         .OfType<Association>()
+            IEnumerable<Association> associations = store.GetAll<Association>()
                                                          .Where(a => (a.Principal?.AllIdentityAttributes?.Any() == true)
                                                                   && string.IsNullOrEmpty(a.FKPropertyName));
 
@@ -709,8 +708,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          Store store = CurrentEFModelDocData.Store;
 
-         List<Association> associations = store.ElementDirectory.AllElements
-                                               .OfType<Association>()
+         List<Association> associations = store.GetAll<Association>()
                                                .Where(a => (a.Principal?.AllIdentityAttributes?.Any() == true)
                                                         && string.IsNullOrEmpty(a.FKPropertyName))
                                                .ToList();
@@ -724,9 +722,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Add Foreign Keys
+      #endregion Add Foreign Keys
 
-#region Remove Foreign Keys
+      #region Remove Foreign Keys
 
       private void OnStatusRemoveForeignKeys(object sender, EventArgs e)
       {
@@ -735,8 +733,7 @@ namespace Sawczyn.EFDesigner.EFModel
             command.Visible = true;
             Store store = CurrentEFModelDocData.Store;
 
-            IEnumerable<Association> associations = store.ElementDirectory.AllElements
-                                                         .OfType<Association>()
+            IEnumerable<Association> associations = store.GetAll<Association>()
                                                          .Where(a => (a.Principal?.AllIdentityAttributes?.Any() == true)
                                                                   && !string.IsNullOrEmpty(a.FKPropertyName));
 
@@ -748,8 +745,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          Store store = CurrentEFModelDocData.Store;
 
-         List<Association> associations = store.ElementDirectory.AllElements
-                                               .OfType<Association>()
+         List<Association> associations = store.GetAll<Association>()
                                                .Where(a => !string.IsNullOrEmpty(a.FKPropertyName))
                                                .ToList();
 
@@ -765,9 +761,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Remove Foreign Keys
+      #endregion Remove Foreign Keys
 
-#region Generate Code
+      #region Generate Code
 
       private void OnStatusGenerateCode(object sender, EventArgs e)
       {
@@ -785,9 +781,9 @@ namespace Sawczyn.EFDesigner.EFModel
          CurrentDocView.Frame.Show();
       }
 
-#endregion Generate Code
+      #endregion Generate Code
 
-#region Show Shape
+      #region Show Shape
 
       private void OnStatusShowShape(object sender, EventArgs e)
       {
@@ -825,9 +821,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Show Shape
+      #endregion Show Shape
 
-#region Hide Shape
+      #region Hide Shape
 
       private void OnStatusHideShape(object sender, EventArgs e)
       {
@@ -860,9 +856,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Hide Shape
+      #endregion Hide Shape
 
-#region Remove Shape
+      #region Remove Shape
 
       private void OnStatusRemoveShape(object sender, EventArgs e)
       {
@@ -909,9 +905,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Remove Shape
+      #endregion Remove Shape
 
-#region Expand Selected Shapes
+      #region Expand Selected Shapes
 
       private void OnStatusExpandSelected(object sender, EventArgs e)
       {
@@ -936,9 +932,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Expand Selected Shapes
+      #endregion Expand Selected Shapes
 
-#region Collapse Selected Shapes
+      #region Collapse Selected Shapes
 
       private void OnStatusCollapseSelected(object sender, EventArgs e)
       {
@@ -965,9 +961,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Collapse Selected Shapes
+      #endregion Collapse Selected Shapes
 
-#region Layout Diagram
+      #region Layout Diagram
 
       private void OnStatusLayoutDiagram(object sender, EventArgs e)
       {
@@ -988,9 +984,9 @@ namespace Sawczyn.EFDesigner.EFModel
          Commands.LayoutDiagram(diagram);
       }
 
-#endregion Layout Diagram
+      #endregion Layout Diagram
 
-#region Save as Image
+      #region Save as Image
 
       private void OnStatusSaveAsImage(object sender, EventArgs e)
       {
@@ -1011,9 +1007,19 @@ namespace Sawczyn.EFDesigner.EFModel
          //bool oldShowGrid = currentDiagram.ShowGrid;
          //currentDiagram.ShowGrid = false;
          //currentDiagram.Invalidate();
+         Bitmap bitmap = null;
+         try
+         {
+            bitmap = currentDiagram.CreateBitmap(currentDiagram.NestedChildShapes,
+                                                        Diagram.CreateBitmapPreference.FavorClarityOverSmallSize);
+         }
+         catch (ArgumentException)
+         {
+            string errorMessage = $"Can't create the image; it might be too big. Try selecting fewer elements to display.";
+            PackageUtility.ShowMessageBox(ServiceProvider, errorMessage, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL);
 
-         Bitmap bitmap = currentDiagram.CreateBitmap(currentDiagram.NestedChildShapes,
-                                                     Diagram.CreateBitmapPreference.FavorClarityOverSmallSize);
+            return;
+         }
 
          using (SaveFileDialog dlg = new SaveFileDialog())
          {
@@ -1029,11 +1035,6 @@ namespace Sawczyn.EFDesigner.EFModel
                try
                {
                   bitmap.Save(dlg.FileName, GetFormat(dlg.FileName));
-               }
-               catch (ArgumentException)
-               {
-                  string errorMessage = $"Can't create a {Path.GetExtension(dlg.FileName)} image";
-                  PackageUtility.ShowMessageBox(ServiceProvider, errorMessage, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL);
                }
                catch
                {
@@ -1079,9 +1080,9 @@ namespace Sawczyn.EFDesigner.EFModel
          throw new ArgumentException();
       }
 
-#endregion
+      #endregion
 
-#region Image to Clipboard
+      #region Image to Clipboard
 
       private void OnStatusImageToClipboard(object sender, EventArgs e)
       {
@@ -1105,9 +1106,9 @@ namespace Sawczyn.EFDesigner.EFModel
          Clipboard.SetImage(bitmap);
       }
 
-#endregion
+      #endregion
 
-#region Merge Unidirectional Associations
+      #region Merge Unidirectional Associations
 
       private void OnStatusMergeAssociations(object sender, EventArgs e)
       {
@@ -1140,9 +1141,9 @@ namespace Sawczyn.EFDesigner.EFModel
          ((EFModelDocData)CurrentDocData).Merge(selected);
       }
 
-#endregion
+      #endregion
 
-#region Split Bidirectional Association
+      #region Split Bidirectional Association
 
       private void OnStatusSplitAssociation(object sender, EventArgs e)
       {
@@ -1171,9 +1172,9 @@ namespace Sawczyn.EFDesigner.EFModel
          ((EFModelDocData)CurrentDocData).Split(selected);
       }
 
-#endregion
+      #endregion
 
-#region Select classes
+      #region Select classes
 
       private void OnStatusSelectClasses(object sender, EventArgs e)
       {
@@ -1194,9 +1195,9 @@ namespace Sawczyn.EFDesigner.EFModel
             shape.Diagram.ActiveDiagramView.Selection.Add(new DiagramItem(shape));
       }
 
-#endregion Select classes
+      #endregion Select classes
 
-#region Select structs
+      #region Select structs
 
       private void OnStatusSelectStructs(object sender, EventArgs e)
       {
@@ -1205,8 +1206,8 @@ namespace Sawczyn.EFDesigner.EFModel
             command.Visible = true;
 
             LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
-            command.Enabled = childShapes.OfType<ClassShape>().Any(x => ((x.ModelElement as ModelClass)?.Persistent == false 
-                                                                      || (x.ModelElement as ModelClass)?.IsDependentType == true) 
+            command.Enabled = childShapes.OfType<ClassShape>().Any(x => ((x.ModelElement as ModelClass)?.Persistent == false
+                                                                      || (x.ModelElement as ModelClass)?.IsDependentType == true)
                                                                      && x.IsVisible());
          }
       }
@@ -1215,15 +1216,15 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
 
-         foreach (ClassShape shape in childShapes.OfType<ClassShape>().Where(x => ((x.ModelElement as ModelClass)?.Persistent == false 
-                                                                                || (x.ModelElement as ModelClass)?.IsDependentType == true) 
+         foreach (ClassShape shape in childShapes.OfType<ClassShape>().Where(x => ((x.ModelElement as ModelClass)?.Persistent == false
+                                                                                || (x.ModelElement as ModelClass)?.IsDependentType == true)
                                                                                && x.IsVisible()))
             shape.Diagram.ActiveDiagramView.Selection.Add(new DiagramItem(shape));
       }
 
-#endregion Select structs
+      #endregion Select structs
 
-#region Select enums
+      #region Select enums
 
       private void OnStatusSelectEnums(object sender, EventArgs e)
       {
@@ -1244,9 +1245,9 @@ namespace Sawczyn.EFDesigner.EFModel
             shape.Diagram.ActiveDiagramView.Selection.Add(new DiagramItem(shape));
       }
 
-#endregion Select enums
+      #endregion Select enums
 
-#region Select associations
+      #region Select associations
 
       private void OnStatusSelectAssocs(object sender, EventArgs e)
       {
@@ -1267,9 +1268,9 @@ namespace Sawczyn.EFDesigner.EFModel
             shape.Diagram.ActiveDiagramView.Selection.Add(new DiagramItem(shape));
       }
 
-#endregion Select associations
+      #endregion Select associations
 
-#region Select unidirectional associations
+      #region Select unidirectional associations
 
       private void OnStatusSelectUnidir(object sender, EventArgs e)
       {
@@ -1290,9 +1291,9 @@ namespace Sawczyn.EFDesigner.EFModel
             shape.Diagram.ActiveDiagramView.Selection.Add(new DiagramItem(shape));
       }
 
-#endregion Find
+      #endregion Find
 
-#region Select bidirectional associations
+      #region Select bidirectional associations
 
       private void OnStatusSelectBidir(object sender, EventArgs e)
       {
@@ -1313,9 +1314,9 @@ namespace Sawczyn.EFDesigner.EFModel
             shape.Diagram.ActiveDiagramView.Selection.Add(new DiagramItem(shape));
       }
 
-#endregion Find
+      #endregion Find
 
-#region Align Left
+      #region Align Left
 
       private void OnStatusAlignLeft(object sender, EventArgs e)
       {
@@ -1345,9 +1346,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion
+      #endregion
 
-#region Align Right
+      #region Align Right
 
       private void OnStatusAlignRight(object sender, EventArgs e)
       {
@@ -1379,9 +1380,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion
+      #endregion
 
-#region Align Top
+      #region Align Top
 
       private void OnStatusAlignTop(object sender, EventArgs e)
       {
@@ -1411,9 +1412,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion
+      #endregion
 
-#region Align Bottom
+      #region Align Bottom
 
       private void OnStatusAlignBottom(object sender, EventArgs e)
       {
@@ -1445,9 +1446,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion
+      #endregion
 
-#region Align Horiz Center
+      #region Align Horiz Center
 
       private void OnStatusAlignHCenter(object sender, EventArgs e)
       {
@@ -1464,7 +1465,7 @@ namespace Sawczyn.EFDesigner.EFModel
             return;
 
          // use the middle hCenter
-         var temp = selected.Select(n => new {Node = n, CenterX = n.AbsoluteBounds.X + (n.AbsoluteBounds.Width / 2)}).OrderBy(x => x.CenterX).ToArray();
+         var temp = selected.Select(n => new { Node = n, CenterX = n.AbsoluteBounds.X + (n.AbsoluteBounds.Width / 2) }).OrderBy(x => x.CenterX).ToArray();
          double centerX = temp[(int)((temp.Length / 2.0) + .5)].CenterX;
 
          using (Transaction tx = store.TransactionManager.BeginTransaction("AlignHCenter"))
@@ -1485,9 +1486,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion
+      #endregion
 
-#region Align Vert Center
+      #region Align Vert Center
 
       private void OnStatusAlignVCenter(object sender, EventArgs e)
       {
@@ -1504,7 +1505,7 @@ namespace Sawczyn.EFDesigner.EFModel
             return;
 
          // use the middle vCenter
-         var temp = selected.Select(n => new {Node = n, CenterY = n.AbsoluteBounds.Y + (n.AbsoluteBounds.Height / 2)}).OrderBy(x => x.CenterY).ToArray();
+         var temp = selected.Select(n => new { Node = n, CenterY = n.AbsoluteBounds.Y + (n.AbsoluteBounds.Height / 2) }).OrderBy(x => x.CenterY).ToArray();
          double centerY = temp[(int)((temp.Length / 2.0) + .5)].CenterY;
 
          using (Transaction tx = store.TransactionManager.BeginTransaction("AlignVCenter"))
@@ -1525,9 +1526,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion
+      #endregion
 
-#region Resize Widest
+      #region Resize Widest
 
       private void OnStatusResizeWidest(object sender, EventArgs e)
       {
@@ -1561,9 +1562,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion
+      #endregion
 
-#region Resize Narrowest
+      #region Resize Narrowest
 
       private void OnStatusResizeNarrowest(object sender, EventArgs e)
       {
@@ -1597,9 +1598,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion
+      #endregion
 
-#region Equal Spacing Horiz
+      #region Equal Spacing Horiz
 
       private void OnStatusEqualSpaceHoriz(object sender, EventArgs e)
       {
@@ -1647,9 +1648,9 @@ namespace Sawczyn.EFDesigner.EFModel
          return spacing;
       }
 
-#endregion
+      #endregion
 
-#region Equal Spacing Vert
+      #region Equal Spacing Vert
 
       private void OnStatusEqualSpaceVert(object sender, EventArgs e)
       {
@@ -1697,9 +1698,9 @@ namespace Sawczyn.EFDesigner.EFModel
          return spacing;
       }
 
-#endregion
+      #endregion
 
-#region Add Entity
+      #region Add Entity
 
       private void OnStatusAddEntity(object sender, EventArgs e)
       {
@@ -1732,7 +1733,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   // Create a new shape that represents the new element,
                   // associate it with the new element, 
                   // size it, position it and link it to the diagram.
-                  ClassShape newShape = new ClassShape(diagram.Partition) {ModelElement = modelClass};
+                  ClassShape newShape = new ClassShape(diagram.Partition) { ModelElement = modelClass };
 
                   if (diagram.MouseDownPosition != default)
                   {
@@ -1748,9 +1749,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Add Entity
+      #endregion Add Entity
 
-#region Solution Explorer Generate Code
+      #region Solution Explorer Generate Code
 
       private FileInfo solutionExplorerSelectedFileInfo;
 
@@ -1773,6 +1774,6 @@ namespace Sawczyn.EFDesigner.EFModel
          CommandHelper.GenerateCode(solutionExplorerSelectedFileInfo.FullName);
       }
 
-#endregion Solution Explorer Generate Code
+      #endregion Solution Explorer Generate Code
    }
 }

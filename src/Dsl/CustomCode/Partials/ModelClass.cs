@@ -519,7 +519,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       internal bool IsKeylessType()
       {
-         return IsQueryType || IsDatabaseView;
+         return IsQueryType || IsDatabaseView || !AllIdentityAttributes.Any();
       }
 
       /// <summary>

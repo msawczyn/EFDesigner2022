@@ -644,8 +644,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
                {
                   // remove any association between those entities and the association class that might be there
-                  modelRoot.Store.ElementDirectory.AllElements
-                           .OfType<Association>()
+                  modelRoot.Store
+                           .GetAll<Association>()
                            .Where(a => (entities.Contains(a.Source) && a.Target == associationClass)
                                     || (entities.Contains(a.Target) && a.Source == associationClass))
                            .ToList()

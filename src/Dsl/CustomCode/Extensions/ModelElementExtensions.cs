@@ -19,9 +19,14 @@ namespace Sawczyn.EFDesigner.EFModel.Extensions
          return shapeElement?.Diagram;
       }
 
-      public static IEnumerable<T> GetAll<T>(this Store store)
+      public static IEnumerable<T> GetAll<T>(this Store store) where T : ModelElement
       {
-         return store?.ElementDirectory?.AllElements?.OfType<T>() ?? new T[0];
+         return store?.ElementDirectory?.FindElements<T>(true) ?? new ReadOnlyCollection<T>(new List<T>());
+      }
+
+      public static IEnumerable<T> GetAll<T>(this Partition partition) where T : ModelElement
+      {
+         return partition?.ElementDirectory?.FindElements<T>(true) ?? new ReadOnlyCollection<T>(new List<T>());
       }
 
       /// <summary>
@@ -133,9 +138,7 @@ namespace Sawczyn.EFDesigner.EFModel.Extensions
          {
             List<EFModelDiagram> diagrams = element.Store
                                                    .DefaultPartitionForClass(EFModelDiagram.DomainClassId)
-                                                   .ElementDirectory
-                                                   .AllElements
-                                                   .OfType<EFModelDiagram>()
+                                                   .GetAll<EFModelDiagram>()
                                                    .ToList();
 
             foreach (EFModelDiagram diagram in diagrams)

@@ -12,8 +12,13 @@ namespace Sawczyn.EFDesigner.EFModel
          base.ElementAdded(e);
 
          ModelAttribute element = (ModelAttribute)e.ModelElement;
+         Store store = element.Store;
+         Transaction current = store.TransactionManager.CurrentTransaction;
          ModelClass modelClass = element.ModelClass;
          ModelRoot modelRoot = modelClass.ModelRoot;
+
+         if (current.IsSerializing || ModelRoot.BatchUpdating)
+            return;
 
          // set a new default value if we want to implement notify, to reduce the chance of forgetting to change it
          if (element.ImplementNotify)
