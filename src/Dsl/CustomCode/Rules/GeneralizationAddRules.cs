@@ -54,17 +54,24 @@ namespace Sawczyn.EFDesigner.EFModel
          // remove attributes in subclass that are present in superclass IF they are completely identical (except for ModelClass, of course)
          for (int i = 0; i < nameClashes.Count; i++)
          {
-            ModelAttribute subclassAttribute = element.Subclass.Attributes.First(a => a.Name == nameClashes[i]);
-            ModelAttribute superclassAttribute = element.Superclass.AllAttributes.First(a => a.Name == nameClashes[i]);
-            List<(string propertyName, object thisValue, object otherValue)> differences = superclassAttribute.GetDifferences(subclassAttribute);
+            ModelAttribute subclassAttribute = element.Subclass.Attributes.FirstOrDefault(a => a.Name == nameClashes[i]);
+            ModelAttribute superclassAttribute = element.Superclass.AllAttributes.FirstOrDefault(a => a.Name == nameClashes[i]);
+            List<(string propertyName, object thisValue, object otherValue)> differences = 
+               subclassAttribute != null && superclassAttribute != null 
+                  ? superclassAttribute.GetDifferences(subclassAttribute)
+                  : new List<(string propertyName, object thisValue, object otherValue)>();
 
             // ignore these differences if found
             differences.RemoveAll(x => (x.propertyName == "ModelClass") || (x.propertyName == "Summary") || (x.propertyName == "Description"));
 
             if (!differences.Any())
             {
-               element.Subclass.Attributes.Remove(element.Subclass.Attributes.Single(a => a.Name == nameClashes[i]));
-               nameClashes.RemoveAt(i--);
+               ModelAttribute attribute = element.Subclass.Attributes.SingleOrDefault(a => a.Name == nameClashes[i]);
+               if (attribute != null)
+               {
+                  element.Subclass.Attributes.Remove(attribute);
+                  nameClashes.RemoveAt(i--);
+               }
             }
          }
 

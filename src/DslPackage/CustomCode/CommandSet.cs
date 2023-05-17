@@ -1007,18 +1007,33 @@ namespace Sawczyn.EFDesigner.EFModel
          //bool oldShowGrid = currentDiagram.ShowGrid;
          //currentDiagram.ShowGrid = false;
          //currentDiagram.Invalidate();
-         Bitmap bitmap = null;
+         Bitmap bitmap;
+         DiagramThemeColors currentColors = (currentDiagram as EFModelDiagram)?.GetThemeColors();
+
          try
          {
-            bitmap = currentDiagram.CreateBitmap(currentDiagram.NestedChildShapes,
-                                                        Diagram.CreateBitmapPreference.FavorClarityOverSmallSize);
+            if (currentColors != null)
+            {
+               ((EFModelDiagram)currentDiagram).SetThemeColors(new DiagramThemeColors(Color.White));
+               currentDiagram.Invalidate();
+            }
+
+            bitmap = currentDiagram.CreateBitmap(currentDiagram.NestedChildShapes, Diagram.CreateBitmapPreference.FavorClarityOverSmallSize);
          }
          catch (ArgumentException)
          {
-            string errorMessage = $"Can't create the image; it might be too big. Try selecting fewer elements to display.";
+            string errorMessage = "Can't create the image; it might be too big. Try selecting fewer elements to display.";
             PackageUtility.ShowMessageBox(ServiceProvider, errorMessage, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL);
 
             return;
+         }
+         finally
+         {
+            if (currentColors != null)
+            {
+               ((EFModelDiagram)currentDiagram).SetThemeColors(currentColors);
+               currentDiagram.Invalidate();
+            }
          }
 
          using (SaveFileDialog dlg = new SaveFileDialog())
@@ -1100,10 +1115,28 @@ namespace Sawczyn.EFDesigner.EFModel
          if (currentDiagram == null)
             return;
 
-         Bitmap bitmap = currentDiagram.CreateBitmap(currentDiagram.NestedChildShapes,
-                                                     Diagram.CreateBitmapPreference.FavorClarityOverSmallSize);
+         DiagramThemeColors currentColors = (currentDiagram as EFModelDiagram)?.GetThemeColors();
 
-         Clipboard.SetImage(bitmap);
+         try
+         {
+            if (currentColors != null)
+               ((EFModelDiagram)currentDiagram).SetThemeColors(new DiagramThemeColors(Color.White));
+
+            Bitmap bitmap = currentDiagram.CreateBitmap(currentDiagram.NestedChildShapes,
+                                                        Diagram.CreateBitmapPreference.FavorClarityOverSmallSize);
+
+            Clipboard.SetImage(bitmap);
+         }
+         catch (ArgumentException)
+         {
+            string errorMessage = "Can't create the image; it might be too big. Try selecting fewer elements to display.";
+            PackageUtility.ShowMessageBox(ServiceProvider, errorMessage, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL);
+         }
+         finally
+         {
+            if (currentColors != null)
+               ((EFModelDiagram)currentDiagram).SetThemeColors(currentColors);
+         }
       }
 
       #endregion

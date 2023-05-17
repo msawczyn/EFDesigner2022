@@ -32,6 +32,11 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      public DiagramThemeColors GetThemeColors()
+      {
+         return new DiagramThemeColors(FillColor);
+      }
+
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
          Transaction tx = Store.TransactionManager.InTransaction

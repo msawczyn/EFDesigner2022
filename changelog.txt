@@ -1,5 +1,7 @@
 4.2.4
    - Reduced model load time by 98%
+   - Exposed "Collapse Selected Elements" context menu choice for diagrams
+   - Fixed colors in saved diagram images (see https://github.com/msawczyn/EFDesigner2022/issues/62)
 4.2.3
    - Added HierarchyId as a property type
    - Added optional index name for indexed properties

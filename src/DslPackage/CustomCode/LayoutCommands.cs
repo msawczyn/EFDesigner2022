@@ -83,7 +83,9 @@ namespace Sawczyn.EFDesigner.EFModel
                                 };
 
          // generate the commands
-         string dotCommands = graphviz.Generate(new DotEngine(), Path.Combine(Path.GetTempPath(), Path.GetTempFileName()));
+         string dotFileName = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
+         string dotCommands = graphviz.Generate(new DotEngine(), dotFileName);
+         Debug.WriteLine(dotFileName);
          Debug.WriteLine(dotCommands);
 
          ProcessStartInfo dotStartInfo = new ProcessStartInfo(EFModelPackage.Options.DotExePath, "-T plain")
