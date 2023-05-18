@@ -32,6 +32,48 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      public static void UpdateColors(Store store, DiagramThemeColors diagramColors)
+      {
+         if (store != null)
+         {
+            Transaction tx = store.TransactionManager.InTransaction
+                                ? null
+                                : store.TransactionManager.BeginTransaction("Set diagram colors");
+
+            try
+            {
+               foreach (GeneralizationConnector connector in store.GetAll<GeneralizationConnector>().ToArray())
+                  connector.SetThemeColors(diagramColors);
+
+               foreach (AssociationConnector connector in store.GetAll<AssociationConnector>().ToArray())
+                  connector.SetThemeColors(diagramColors);
+
+               foreach (CommentConnector connector in store.GetAll<CommentConnector>().ToArray())
+                  connector.SetThemeColors(diagramColors);
+
+               foreach (ClassShape classShape in store.GetAll<ClassShape>().ToArray())
+                  classShape.SetThemeColors(diagramColors);
+
+               foreach (EnumShape enumShape in store.GetAll<EnumShape>().ToArray())
+                  enumShape.SetThemeColors(diagramColors);
+
+               foreach (CommentBoxShape commentShape in store.GetAll<CommentBoxShape>().ToArray())
+                  commentShape.SetThemeColors(diagramColors);
+
+               foreach (EFModelDiagram diagram in store.GetAll<EFModelDiagram>().ToArray())
+                  diagram.SetThemeColors(diagramColors);
+            }
+            finally
+            {
+               if (tx != null)
+               {
+                  tx.Commit();
+                  tx.Dispose();
+               }
+            }
+         }
+      }
+
       public DiagramThemeColors GetThemeColors()
       {
          return new DiagramThemeColors(FillColor);
@@ -47,8 +89,6 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             FillColor = diagramColors.Background;
             TextColor = diagramColors.Text;
-
-            Invalidate();
          }
          finally
          {

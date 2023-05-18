@@ -999,68 +999,71 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void OnMenuSaveAsImage(object sender, EventArgs e)
       {
-         Diagram currentDiagram = CurrentDocView?.CurrentDiagram;
+         ThreadHelper.Generic
+                     .BeginInvoke(() =>
+                                  {
+                                     ThreadHelper.ThrowIfNotOnUIThread();
+                                     EFModelDiagram currentDiagram = CurrentDocView?.CurrentDiagram as EFModelDiagram;
 
-         if (currentDiagram == null)
-            return;
+                                     if (currentDiagram == null)
+                                        return;
 
-         //bool oldShowGrid = currentDiagram.ShowGrid;
-         //currentDiagram.ShowGrid = false;
-         //currentDiagram.Invalidate();
-         Bitmap bitmap;
-         DiagramThemeColors currentColors = (currentDiagram as EFModelDiagram)?.GetThemeColors();
+                                     DiagramThemeColors cachedColors = currentDiagram.GetThemeColors();
 
-         try
-         {
-            if (currentColors != null)
-            {
-               ((EFModelDiagram)currentDiagram).SetThemeColors(new DiagramThemeColors(Color.White));
-               currentDiagram.Invalidate();
-            }
+                                     try
+                                     {
+                                        EFModelDiagram.UpdateColors(currentDiagram.Store, new DiagramThemeColors(Color.White));
 
-            bitmap = currentDiagram.CreateBitmap(currentDiagram.NestedChildShapes, Diagram.CreateBitmapPreference.FavorClarityOverSmallSize);
-         }
-         catch (ArgumentException)
-         {
-            string errorMessage = "Can't create the image; it might be too big. Try selecting fewer elements to display.";
-            PackageUtility.ShowMessageBox(ServiceProvider, errorMessage, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL);
+                                        using (WaitCursor.Create())
+                                        {
+                                           Bitmap bitmap = currentDiagram.CreateBitmap(currentDiagram.NestedChildShapes, Diagram.CreateBitmapPreference.FavorClarityOverSmallSize);
 
-            return;
-         }
-         finally
-         {
-            if (currentColors != null)
-            {
-               ((EFModelDiagram)currentDiagram).SetThemeColors(currentColors);
-               currentDiagram.Invalidate();
-            }
-         }
+                                           using (SaveFileDialog dlg = new SaveFileDialog())
+                                           {
+                                              dlg.Filter =
+                                                 "BMP files (*.bmp)|*.bmp|GIF files (*.gif)|*.gif|JPG files (*.jpg)|*.jpg|PNG files (*.png)|*.png|TIFF files (*.tiff)|*.tiff|WMF files (*.wmf)|*.wmf";
 
-         using (SaveFileDialog dlg = new SaveFileDialog())
-         {
-            dlg.Filter = "BMP files (*.bmp)|*.bmp|GIF files (*.gif)|*.gif|JPG files (*.jpg)|*.jpg|PNG files (*.png)|*.png|TIFF files (*.tiff)|*.tiff|WMF files (*.wmf)|*.wmf";
-            dlg.FilterIndex = 4;
-            dlg.OverwritePrompt = true;
-            dlg.AddExtension = true;
-            dlg.CheckPathExists = true;
-            dlg.DefaultExt = "png";
+                                              dlg.FilterIndex = 4;
+                                              dlg.OverwritePrompt = true;
+                                              dlg.AddExtension = true;
+                                              dlg.CheckPathExists = true;
+                                              dlg.DefaultExt = "png";
 
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-               try
-               {
-                  bitmap.Save(dlg.FileName, GetFormat(dlg.FileName));
-               }
-               catch
-               {
-                  string errorMessage = $"Error saving {dlg.FileName}";
-                  PackageUtility.ShowMessageBox(ServiceProvider, errorMessage, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL);
-               }
-            }
-         }
+                                              if (dlg.ShowDialog() == DialogResult.OK)
+                                              {
+                                                 try
+                                                 {
+                                                    bitmap.Save(dlg.FileName, GetFormat(dlg.FileName));
+                                                 }
+                                                 catch
+                                                 {
+                                                    string errorMessage = $"Error saving {dlg.FileName}";
 
-         //currentDiagram.ShowGrid = oldShowGrid;
-         //currentDiagram.Invalidate();
+                                                    PackageUtility.ShowMessageBox(ServiceProvider
+                                                                                , errorMessage
+                                                                                , OLEMSGBUTTON.OLEMSGBUTTON_OK
+                                                                                , OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST
+                                                                                , OLEMSGICON.OLEMSGICON_CRITICAL);
+                                                 }
+                                              }
+                                           }
+                                        }
+                                     }
+                                     catch (ArgumentException)
+                                     {
+                                        string errorMessage = "Can't create the image; it might be too big. Try selecting a smaller area.";
+
+                                        PackageUtility.ShowMessageBox(ServiceProvider
+                                                                    , errorMessage
+                                                                    , OLEMSGBUTTON.OLEMSGBUTTON_OK
+                                                                    , OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST
+                                                                    , OLEMSGICON.OLEMSGICON_CRITICAL);
+                                     }
+                                     finally
+                                     {
+                                        EFModelDiagram.UpdateColors(currentDiagram.Store, cachedColors);
+                                     }
+                                  });
       }
 
       private ImageFormat GetFormat(string fileName)
@@ -1110,36 +1113,46 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void OnMenuImageToClipboard(object sender, EventArgs e)
       {
-         Diagram currentDiagram = CurrentDocView?.CurrentDiagram;
+         ThreadHelper.Generic
+                     .BeginInvoke(() =>
+                                  {
+                                     ThreadHelper.ThrowIfNotOnUIThread();
+                                     EFModelDiagram currentDiagram = CurrentDocView?.CurrentDiagram as EFModelDiagram;
 
-         if (currentDiagram == null)
-            return;
+                                     if (currentDiagram == null)
+                                        return;
 
-         DiagramThemeColors currentColors = (currentDiagram as EFModelDiagram)?.GetThemeColors();
+                                     DiagramThemeColors cachedColors = currentDiagram.GetThemeColors();
 
-         try
-         {
-            if (currentColors != null)
-               ((EFModelDiagram)currentDiagram).SetThemeColors(new DiagramThemeColors(Color.White));
+                                     try
+                                     {
+                                        EFModelDiagram.UpdateColors(currentDiagram.Store, new DiagramThemeColors(Color.White));
 
-            Bitmap bitmap = currentDiagram.CreateBitmap(currentDiagram.NestedChildShapes,
-                                                        Diagram.CreateBitmapPreference.FavorClarityOverSmallSize);
+                                        using (WaitCursor.Create())
+                                        {
+                                           Bitmap bitmap = currentDiagram.CreateBitmap(currentDiagram.NestedChildShapes, Diagram.CreateBitmapPreference.FavorClarityOverSmallSize);
 
-            Clipboard.SetImage(bitmap);
-         }
-         catch (ArgumentException)
-         {
-            string errorMessage = "Can't create the image; it might be too big. Try selecting fewer elements to display.";
-            PackageUtility.ShowMessageBox(ServiceProvider, errorMessage, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL);
-         }
-         finally
-         {
-            if (currentColors != null)
-               ((EFModelDiagram)currentDiagram).SetThemeColors(currentColors);
-         }
+                                           Clipboard.SetImage(bitmap);
+                                        }
+                                     }
+                                     catch (ArgumentException)
+                                     {
+                                        string errorMessage = "Can't create the image; it might be too big. Try selecting a smaller area.";
+
+                                        PackageUtility.ShowMessageBox(ServiceProvider
+                                                                    , errorMessage
+                                                                    , OLEMSGBUTTON.OLEMSGBUTTON_OK
+                                                                    , OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST
+                                                                    , OLEMSGICON.OLEMSGICON_CRITICAL);
+                                     }
+                                     finally
+                                     {
+                                        EFModelDiagram.UpdateColors(currentDiagram.Store, cachedColors);
+                                     }
+                                  });
       }
 
-      #endregion
+#endregion
 
       #region Merge Unidirectional Associations
 

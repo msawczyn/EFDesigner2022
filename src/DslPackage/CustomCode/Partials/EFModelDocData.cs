@@ -635,29 +635,7 @@ namespace Sawczyn.EFDesigner.EFModel
          modelExplorer?.SetThemeColors(diagramColors);
          modelExplorer?.Show();
 
-         if (Store != null)
-         {
-            foreach (GeneralizationConnector connector in Store.GetAll<GeneralizationConnector>().ToArray())
-               connector.SetThemeColors(diagramColors);
-
-            foreach (AssociationConnector connector in Store.GetAll<AssociationConnector>().ToArray())
-               connector.SetThemeColors(diagramColors);
-
-            foreach (CommentConnector connector in Store.GetAll<CommentConnector>().ToArray())
-               connector.SetThemeColors(diagramColors);
-
-            foreach (ClassShape classShape in Store.GetAll<ClassShape>().ToArray())
-               classShape.SetThemeColors(diagramColors);
-
-            foreach (EnumShape enumShape in Store.GetAll<EnumShape>().ToArray())
-               enumShape.SetThemeColors(diagramColors);
-
-            foreach (CommentBoxShape commentShape in Store.GetAll<CommentBoxShape>().ToArray())
-               commentShape.SetThemeColors(diagramColors);
-
-            foreach (EFModelDiagram diagram in Store.GetAll<EFModelDiagram>().ToArray())
-               diagram.SetThemeColors(diagramColors);
-         }
+         EFModelDiagram.UpdateColors(Store, diagramColors);
       }
    }
 }

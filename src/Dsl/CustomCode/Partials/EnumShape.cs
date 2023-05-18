@@ -35,7 +35,11 @@ namespace Sawczyn.EFDesigner.EFModel
 
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
-         using (Transaction tx = Store.TransactionManager.BeginTransaction("Set diagram colors"))
+         Transaction tx = Store.TransactionManager.InTransaction
+                             ? null
+                             : Store.TransactionManager.BeginTransaction("Set diagram colors");
+
+         try
          {
             foreach (ListCompartment compartment in NestedChildShapes.OfType<ListCompartment>())
             {
@@ -43,12 +47,17 @@ namespace Sawczyn.EFDesigner.EFModel
                compartment.ItemTextColor = diagramColors.Text;
                compartment.TitleFillColor = diagramColors.HeaderBackground;
                compartment.TitleTextColor = diagramColors.HeaderText;
-
-               compartment.Invalidate();
             }
 
             Invalidate();
-            tx.Commit();
+         }
+         finally
+         {
+            if (tx != null)
+            {
+               tx.Commit();
+               tx.Dispose();
+            }
          }
       }
 

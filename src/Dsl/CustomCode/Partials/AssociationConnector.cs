@@ -97,13 +97,21 @@ namespace Sawczyn.EFDesigner.EFModel
 
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
-         using (Transaction tx = Store.TransactionManager.BeginTransaction("Set diagram colors"))
+         Transaction tx = Store.TransactionManager.InTransaction
+                             ? null
+                             : Store.TransactionManager.BeginTransaction("Set diagram colors");
+         try
          {
             Color = diagramColors.Background.LegibleTextColor();
             TextColor = diagramColors.Text;
-            Invalidate();
-
-            tx.Commit();
+         }
+         finally
+         {
+            if (tx != null)
+            {
+               tx.Commit();
+               tx.Dispose();
+            }
          }
       }
 
