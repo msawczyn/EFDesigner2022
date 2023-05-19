@@ -51,6 +51,11 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
 
 **ChangeLog**
 
+**4.2.4**
+   - **[NEW]** Exposed "Collapse Selected Elements" context menu choice for diagrams
+   - Reduced model load time by 98%
+   - Fixed colors in saved diagram images (see https://github.com/msawczyn/EFDesigner2022/issues/62)
+
 **4.2.3**
    - **[NEW]** Added HierarchyId as a property type
    - **[NEW]** Added optional index name for indexed properties

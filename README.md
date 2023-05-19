@@ -75,6 +75,11 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 
 ### Change Log
 
+[4.2.4](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.4/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
+   - Reduced model load time by 98%
+   - Exposed "Collapse Selected Elements" context menu choice for diagrams
+   - Fixed colors in saved diagram images (see https://github.com/msawczyn/EFDesigner2022/issues/62)
+
 [4.2.3](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.3/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - Added HierarchyId as a property type
    - Added optional index name for indexed properties
