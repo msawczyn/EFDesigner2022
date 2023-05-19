@@ -13,7 +13,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
 #region Template
 
-      // EFDesigner v4.2.4.3
+      // EFDesigner v4.2.4.4
       // Copyright (c) 2017-2022 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -577,10 +577,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                case CodeStrategy.TablePerType:
                case CodeStrategy.TablePerConcreteType:
                   classesWithTables = modelRoot.Classes
-                                               .Where(mc => (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName))
+                                               .Where(mc => (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
                                                          && mc.Persistent
                                                          && !mc.IsQueryType
-                                                         && !mc.IsKeyless()
+                                                         && (!mc.IsKeyless() || mc.IsDatabaseView)
                                                          && !mc.CustomAttributes.Contains("NotMapped")
                                                          && mc.GenerateCode)
                                                .OrderBy(x => x.Name)
