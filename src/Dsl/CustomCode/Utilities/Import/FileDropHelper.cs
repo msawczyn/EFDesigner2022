@@ -8,15 +8,42 @@ using Microsoft.VisualStudio.Modeling;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Provides helper methods for working with files dropped onto a UI element.
+   /// </summary>
    public static class FileDropHelper
    {
+      /// <summary>
+      /// Represents a constant integer that is used when there is a bad argument count.
+      /// </summary>
       public const int BAD_ARGUMENT_COUNT = 1;
+      /// <summary>
+      /// Constant representing the error code when an assembly cannot be loaded.
+      /// </summary>
       public const int CANNOT_LOAD_ASSEMBLY = 2;
+      /// <summary>
+      /// Constant that represents the error code used when the program cannot write to the output file.
+      /// </summary>
       public const int CANNOT_WRITE_OUTPUTFILE = 3;
+      /// <summary>
+      /// Constant integer value used to indicate failure in creating a database context.
+      /// </summary>
       public const int CANNOT_CREATE_DBCONTEXT = 4;
+      /// <summary>
+      /// Represents the error code for when an appropriate constructor cannot be found.
+      /// </summary>
       public const int CANNOT_FIND_APPROPRIATE_CONSTRUCTOR = 5;
+      /// <summary>
+      /// Represents a constant value indicating an ambiguous request.
+      /// </summary>
       public const int AMBIGUOUS_REQUEST = 6;
 
+      /// <summary>
+      /// Handles multiple file drops in the Store and returns an IEnumerable of ModelElements.
+      /// </summary>
+      /// <param name="store">The Store object that represents the model to which the files are added.</param>
+      /// <param name="filenames">The IEnumerable of file names to be added to the Store.</param>
+      /// <returns>An IEnumerable of ModelElements representing the files added to the Store.</returns>
       public static IEnumerable<ModelElement> HandleMultiDrop(Store store, IEnumerable<string> filenames)
       {
          List<ModelElement> newElements = new List<ModelElement>();

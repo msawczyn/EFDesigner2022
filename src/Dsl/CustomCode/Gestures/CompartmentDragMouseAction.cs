@@ -17,8 +17,14 @@ namespace Sawczyn.EFDesigner.EFModel
       private readonly T sourceShape;
       private RectangleD sourceCompartmentBounds;
 
+      /// <summary>
+      /// Initializes a new instance of the CompartmentDragMouseAction class.
+      /// </summary>
+      /// <param name="sourceChildElement">The child Element</param>
+      /// <param name="sourceParentShape">The Parent Shape</param>
+      /// <param name="bounds">The bounds of the rectangle</param>
       public CompartmentDragMouseAction(ModelElement sourceChildElement, T sourceParentShape, RectangleD bounds)
-         : base(sourceParentShape.Diagram)
+               : base(sourceParentShape.Diagram)
       {
          sourceChild = sourceChildElement;
          sourceShape = sourceParentShape;

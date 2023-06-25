@@ -38,8 +38,16 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       // ReSharper disable once MemberCanBePrivate.Global
+      /// <summary>
+      /// Gets or sets the fail message.
+      /// </summary>
       public static string FailMessage { get; private set; }
 
+      /// <summary>
+      /// Parses the given text and returns a ParseResult object.
+      /// </summary>
+      /// <param name="txt">The text to be parsed</param>
+      /// <returns>A ParseResult object</returns>
       public static ParseResult Parse(string txt)
       {
          if (txt == null)
@@ -330,15 +338,42 @@ namespace Sawczyn.EFDesigner.EFModel
 #endregion
    }
 
+   /// <summary>
+   /// Represents the result of parsing a string into a ModelAttribute value.
+   /// </summary>
    public class ParseResult
    {
+      /// <summary>
+      /// Gets or sets the access modifier of the ModelAttribute setter.
+      /// </summary>
       public SetterAccessModifier? SetterVisibility { get; set; }
+      /// <summary>
+      /// Gets or sets the name of the ModelAttribute.
+      /// </summary>
       public string Name { get; set; }
+      /// <summary>
+      /// Gets or sets the type of the ModelAttribute.
+      /// </summary>
       public string Type { get; set; }
+      /// <summary>
+      /// Specifies whether the ModelAttribute is required or not.
+      /// </summary>
       public bool? Required { get; set; }
+      /// <summary>
+      /// Gets or sets the minimum length allowed for the ModelAttribute, if it's a string.
+      /// </summary>
       public int? MinLength { get; set; }
+      /// <summary>
+      /// Gets or sets the maximum length allowed for the ModelAttribute, if it's a string.
+      /// </summary>
       public int? MaxLength { get; set; }
+      /// <summary>
+      /// Gets or sets the initial value of the ModelAttribute.
+      /// </summary>
       public string InitialValue { get; set; }
+      /// <summary>
+      /// Gets or sets a value indicating whether the current ModelAttribute represents an identity or not.
+      /// </summary>
       public bool IsIdentity { get; set; }
    }
 }

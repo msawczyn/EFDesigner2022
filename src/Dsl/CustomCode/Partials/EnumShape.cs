@@ -33,6 +33,10 @@ namespace Sawczyn.EFDesigner.EFModel
       /// </summary>
       public static Func<ModelEnum, bool> OpenCodeFile { get; set; }
 
+      /// <summary>
+      /// Sets this object's colors in the diagram, based on the current theme
+      /// </summary>
+      /// <param name="diagramColors">The colors to use.</param>
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
          Transaction tx = Store.TransactionManager.InTransaction
@@ -79,6 +83,12 @@ namespace Sawczyn.EFDesigner.EFModel
             SetIsExpandedValue(true);
       }
 
+      /// <summary>
+      /// Gets an array of CompartmentMappings for all compartments displayed on this shape
+      /// (including compartment maps defined on base shapes). 
+      /// </summary>
+      /// <param name="melType">The type of the DomainClass that this shape is mapped to</param>
+      /// <returns></returns>
       protected override CompartmentMapping[] GetCompartmentMappings(Type melType)
       {
          CompartmentMapping[] mappings = base.GetCompartmentMappings(melType);
@@ -93,6 +103,11 @@ namespace Sawczyn.EFDesigner.EFModel
          return mappings;
       }
 
+      /// <summary>
+      /// Gets the name of the specified model enum for the explorer node glyph.
+      /// </summary>
+      /// <param name="modelEnum">The model enum.</param>
+      /// <returns>The name of the explorer node glyph.</returns>
       public static string GetExplorerNodeGlyphName(ModelEnum modelEnum)
       {
          string result = modelEnum.IsVisible()

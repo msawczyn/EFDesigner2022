@@ -13,15 +13,22 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.4.4
-      // Copyright (c) 2017-2022 Michael Sawczyn
+      // EFDesigner v4.2.4.5
+      // Copyright (c) 2017-2023 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
+      /// <summary>
+      /// Inserts a new line in the output.
+      /// </summary>
       protected void NL()
       {
          WriteLine(string.Empty);
       }
 
+      /// <summary>
+      /// Outputs a list of string segments to the output stream.
+      /// </summary>
+      /// <param name="segments">The list of string segments to be outputted.</param>
       protected void Output(List<string> segments)
       {
          if (ModelRoot.ChopMethodChains)
@@ -32,6 +39,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          segments.Clear();
       }
 
+      /// <summary>
+      /// Outputs the given list of string segments to the output stream without a line terminator at the end.
+      /// </summary>
+      /// <param name="segments">The list of string segments to output.</param>
       protected void OutputNoTerminator(List<string> segments)
       {
          if (ModelRoot.ChopMethodChains)
@@ -42,6 +53,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          segments.Clear();
       }
 
+      /// <summary>
+      /// Outputs the specified text to the output stream
+      /// </summary>
+      /// <param name="text">The text to output</param>
       protected void Output(string text)
       {
          if (text == "}")
@@ -50,17 +65,28 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          WriteLine(text);
 
          if (text == "{")
+         {
             PushIndent(ModelRoot.UseTabs
                           ? "\t"
                           : "   ");
+         }
       }
 
+      /// <summary>
+      /// Outputs a string to the output stream using the given template and parameters.
+      /// </summary>
+      /// <param name="template">The string template to use for formatting.</param>
+      /// <param name="items">The objects to include in the formatted string.</param>
       protected void Output(string template, params object[] items)
       {
          string text = string.Format(template, items);
          Output(text);
       }
 
+      /// <summary>
+      /// Outputs the chopped segments of text to the output stream.
+      /// </summary>
+      /// <param name="segments">The list of text segments to output.</param>
       protected void OutputChopped(List<string> segments)
       {
          string[] segmentArray = segments?.ToArray() ?? Array.Empty<string>();
@@ -92,6 +118,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          segments.Clear();
       }
 
+      /// <summary>
+      /// Outputs a list of string segments without a terminator character to the output stream.
+      /// </summary>
+      /// <param name="segments">The segments to output.</param>
       protected void OutputChoppedNoTerminator(List<string> segments)
       {
          string[] segmentArray = segments?.ToArray() ?? Array.Empty<string>();
@@ -120,86 +150,103 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          segments.Clear();
       }
 
+      /// <summary>
+      /// Represents a base class for all Entity Framework model generators.
+      /// </summary>
       public abstract class EFModelGenerator
       {
+         /// <summary>
+         /// Array of XML documentation tag regular expressions to be used for matching.
+         /// </summary>
          protected static string[] xmlDocTags =
          {
-            @"<([\s]*c[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*c[\s]*)>",
-            @"<([\s]*code[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*code[\s]*)>",
-            @"<([\s]*description[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*description[\s]*)>",
-            @"<([\s]*example[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*example[\s]*)>",
-            @"<([\s]*exception cref=""[^""]+""[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*exception[\s]*)>",
-            @"<([\s]*include file='[^']+' path='tagpath\[@name=""[^""]+""\]'[\s]*/)>",
-            @"<([\s]*inheritdoc/[\s]*)>",
-            @"<([\s]*item[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*item[\s]*)>",
-            @"<([\s]*list type=""[^""]+""[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*list[\s]*)>",
-            @"<([\s]*listheader[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*listheader[\s]*)>",
-            @"<([\s]*para[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*para[\s]*)>",
-            @"<([\s]*param name=""[^""]+""[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*param[\s]*)>",
-            @"<([\s]*paramref name=""[^""]+""/[\s]*)>",
-            @"<([\s]*permission cref=""[^""]+""[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*permission[\s]*)>",
-            @"<([\s]*remarks[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*remarks[\s]*)>",
-            @"<([\s]*returns[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*returns[\s]*)>",
-            @"<([\s]*see cref=""[^""]+""/[\s]*)>",
-            @"<([\s]*seealso cref=""[^""]+""/[\s]*)>",
-            @"<([\s]*summary[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*summary[\s]*)>",
-            @"<([\s]*term[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*term[\s]*)>",
-            @"<([\s]*typeparam name=""[^""]+""[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*typeparam[\s]*)>",
-            @"<([\s]*typeparamref name=""[^""]+""/[\s]*)>",
-            @"<([\s]*value[\s]*[/]?[\s]*)>",
-            @"<(/[\s]*value[\s]*)>"
+            @"<([\s]*c[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*c[\s]*)>"
+          , @"<([\s]*code[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*code[\s]*)>"
+          , @"<([\s]*description[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*description[\s]*)>"
+          , @"<([\s]*example[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*example[\s]*)>"
+          , @"<([\s]*exception cref=""[^""]+""[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*exception[\s]*)>"
+          , @"<([\s]*include file='[^']+' path='tagpath\[@name=""[^""]+""\]'[\s]*/)>"
+          , @"<([\s]*inheritdoc/[\s]*)>"
+          , @"<([\s]*item[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*item[\s]*)>"
+          , @"<([\s]*list type=""[^""]+""[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*list[\s]*)>"
+          , @"<([\s]*listheader[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*listheader[\s]*)>"
+          , @"<([\s]*para[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*para[\s]*)>"
+          , @"<([\s]*param name=""[^""]+""[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*param[\s]*)>"
+          , @"<([\s]*paramref name=""[^""]+""/[\s]*)>"
+          , @"<([\s]*permission cref=""[^""]+""[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*permission[\s]*)>"
+          , @"<([\s]*remarks[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*remarks[\s]*)>"
+          , @"<([\s]*returns[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*returns[\s]*)>"
+          , @"<([\s]*see cref=""[^""]+""/[\s]*)>"
+          , @"<([\s]*seealso cref=""[^""]+""/[\s]*)>"
+          , @"<([\s]*summary[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*summary[\s]*)>"
+          , @"<([\s]*term[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*term[\s]*)>"
+          , @"<([\s]*typeparam name=""[^""]+""[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*typeparam[\s]*)>"
+          , @"<([\s]*typeparamref name=""[^""]+""/[\s]*)>"
+          , @"<([\s]*value[\s]*[/]?[\s]*)>"
+          , @"<(/[\s]*value[\s]*)>"
          };
 
+         /// <summary>
+         /// Initializes a new instance of the EFModelGenerator class with the specified host.
+         /// </summary>
+         /// <param name="host">The host of the generator.</param>
          protected EFModelGenerator(GeneratedTextTransformation host)
          {
             this.host = host;
             modelRoot = host.ModelRoot;
          }
 
+         /// <summary>
+         /// The list of non-nullable model types.
+         /// </summary>
          public static string[] NonNullableTypes
          {
             get
             {
                return new[]
-                      {
-                         "Binary",
-                         "Geography",
-                         "GeographyCollection",
-                         "GeographyLineString",
-                         "GeographyMultiLineString",
-                         "GeographyMultiPoint",
-                         "GeographyMultiPolygon",
-                         "GeographyPoint",
-                         "GeographyPolygon",
-                         "Geometry",
-                         "GeometryCollection",
-                         "GeometryLineString",
-                         "GeometryMultiLineString",
-                         "GeometryMultiPoint",
-                         "GeometryMultiPolygon",
-                         "GeometryPoint",
-                         "GeometryPolygon",
-                         "String"
-                      };
+                   {
+                "Binary",
+                "Geography",
+                "GeographyCollection",
+                "GeographyLineString",
+                "GeographyMultiLineString",
+                "GeographyMultiPoint",
+                "GeographyMultiPolygon",
+                "GeographyPoint",
+                "GeographyPolygon",
+                "Geometry",
+                "GeometryCollection",
+                "GeometryLineString",
+                "GeometryMultiLineString",
+                "GeometryMultiPoint",
+                "GeometryMultiPolygon",
+                "GeometryPoint",
+                "GeometryPolygon",
+                "String"
+            };
             }
          }
-
+         /// <summary>
+         /// Checks if all superclasses of a ModelClass are either null or abstract
+         /// </summary>
+         /// <param name="modelClass">The ModelClass to check</param>
+         /// <returns>Returns true if all superclasses are null or abstract, otherwise false</returns>
          protected bool AllSuperclassesAreNullOrAbstract(ModelClass modelClass)
          {
             ModelClass superClass = modelClass.Superclass;
@@ -215,6 +262,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             return true;
          }
 
+         /// <summary>
+         /// Begins the definition of a namespace with the specified name.
+         /// </summary>
+         /// <param name="ns">The name of the namespace being defined.</param>
          protected void BeginNamespace(string ns)
          {
             if (!string.IsNullOrEmpty(ns))
@@ -224,8 +275,18 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
 
+         /// <summary>
+         /// Clears the indent of the host.
+         /// </summary>
          protected void ClearIndent() { host.ClearIndent(); }
 
+         /// <summary>
+         /// Creates a shadow property name for the given association, foreign key columns, and identity attribute.
+         /// </summary>
+         /// <param name="association">The association.</param>
+         /// <param name="foreignKeyColumns">The list of foreign key columns.</param>
+         /// <param name="identityAttribute">The identity attribute.</param>
+         /// <returns>A string representing the shadow property.</returns>
          protected static string CreateShadowPropertyName(Association association, List<string> foreignKeyColumns, ModelAttribute identityAttribute)
          {
             string separator = identityAttribute.ModelClass.ModelRoot.ShadowKeyNamePattern == ShadowKeyPattern.TableColumn
@@ -259,12 +320,21 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             return shadowPropertyName;
          }
 
+         /// <summary>
+         /// Closes the current namespace scope.
+         /// </summary>
+         /// <param name="ns">The name of the namespace to close.</param>
          protected void EndNamespace(string ns)
          {
             if (!string.IsNullOrEmpty(ns))
                Output("}");
          }
 
+         /// <summary>
+         /// Returns the fully qualified type name for the specified type name.
+         /// </summary>
+         /// <param name="typeName">The name of the type.</param>
+         /// <returns>The fully qualified type name.</returns>
          protected string FullyQualified(string typeName)
          {
             string[] parts = typeName.Split('.');
@@ -280,8 +350,20 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                       : typeName;
          }
 
+         /// <summary>
+         /// Generates all necessary files using the specified EF model file manager.
+         /// </summary>
+         /// <param name="efModelFileManager">The EF model file manager to use.</param>
          public abstract void Generate(Manager efModelFileManager);
 
+         /// <summary>
+         /// Takes in a comment string and generates an array of strings that represent
+         /// a valid comment in C#. This includes the opening and closing comment 
+         /// characters as well as the comment delimiter for each line where the 
+         /// delimiter for the first line is the same as commentStartDelimiter.
+         /// </summary>
+         /// <param name="comment">Comment string to convert.</param>
+         /// <returns>Array of strings representing the C# comment.</returns>
          protected string[] GenerateCommentBody(string comment)
          {
             List<string> result = new List<string>();
@@ -318,6 +400,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             return result.ToArray();
          }
 
+         /// <summary>
+         /// Generates annotations for a model property.
+         /// </summary>
+         /// <param name="modelAttribute">The model attribute containing property information.</param>
          protected void GeneratePropertyAnnotations(ModelAttribute modelAttribute)
          {
             string customAttributes = modelAttribute.CustomAttributes ?? string.Empty;
@@ -347,6 +433,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   }
                }
 
+               // ReSharper disable once RemoveRedundantBraces
                if (modelAttribute.ModelClass.ModelRoot.EntityFrameworkVersion == EFVersion.EFCore
                 && modelAttribute.FQPrimitiveType == "decimal"
                 && !modelAttribute.ModelClass.AllIdentityAttributes.Any())
@@ -362,8 +449,16 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                Output($"[System.ComponentModel.Description(\"{modelAttribute.Summary.Trim('\r', '\n').Replace("\"", "\\\"")}\")]");
          }
 
+         /// <summary>
+         /// Gets the list of additional using statements.
+         /// </summary>
          protected abstract List<string> GetAdditionalUsingStatements();
 
+         /// <summary>
+         /// Gets the visibility of the default constructor for a given model class.
+         /// </summary>
+         /// <param name="modelClass">The model class to get the default default constructor visibility for.</param>
+         /// <returns>The visibility of the default constructor.</returns>
          protected string GetDefaultConstructorVisibility(ModelClass modelClass)
          {
             if (modelClass.DefaultConstructorVisibility == TypeAccessModifierExt.Default)
@@ -380,6 +475,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             return modelClass.DefaultConstructorVisibility.ToString().ToLowerInvariant();
          }
 
+         /// <summary>
+         /// Gets the full container name by concatenating the container type and payload type.
+         /// </summary>
+         /// <param name="containerType">The type of the container.</param>
+         /// <param name="payloadType">The type of the payload.</param>
+         /// <returns>The concatenated container type and payload type.</returns>
          protected string GetFullContainerName(string containerType, string payloadType)
          {
             string result;
@@ -433,6 +534,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             return result;
          }
 
+         /// <summary>
+         /// Returns the namespace for the migrations
+         /// </summary>
          protected string GetMigrationNamespace()
          {
             List<string> nsParts = modelRoot.Namespace.Split('.').ToList();
@@ -442,6 +546,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             return string.Join(".", nsParts);
          }
 
+         /// <summary>
+         /// Obtains the names of the required parameters of a given ModelClass constructors. 
+         /// </summary>
+         /// <param name="modelClass">The ModelClass from which to obtain the required parameter names.</param>
+         /// <param name="publicOnly">Whether to only consider public parameters or not. Default: false.</param>
+         /// <returns>A List of strings, each containing the name of a required parameter of the given ModelClass.</returns>
          protected List<string> GetRequiredParameterNames(ModelClass modelClass, bool publicOnly = false)
          {
             return GetRequiredParameters(modelClass, null, publicOnly).Select(p => p.Split(' ')[1]).ToList();
@@ -520,26 +630,68 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             return requiredParameters;
          }
 
+         /// <summary>
+         /// Determines if a ModelAttribute is nullable.
+         /// </summary>
+         /// <param name="modelAttribute">The ModelAttribute to check.</param>
+         /// <returns>True if the attribute is nullable, otherwise false.</returns>
          public static bool IsNullable(ModelAttribute modelAttribute)
          {
             return !modelAttribute.Required && !modelAttribute.IsIdentity && !modelAttribute.IsConcurrencyToken && !modelAttribute.FQPrimitiveType.EndsWith("[]") && !NonNullableTypes.Contains(modelAttribute.Type);
          }
 
-         // implementations delegated to the surrounding GeneratedTextTransformation for backward compatability
+         ///<summary>
+         ///Adds a new line character to the output.
+         /// implementations delegated to the surrounding GeneratedTextTransformation for backward compatability
+         ///</summary>
          protected void NL() { host.NL(); }
 
-         protected void Output(List<string> segments) { host.Output(segments); }
+         /// <summary>
+         /// Outputs a list of string segments.
+         /// </summary>
+         /// <param name="segments">The segments to output.</param>
+         protected void Output(List<string> segments)
+         {
+            host.Output(segments);
+         }
 
+         /// <summary>
+         /// Outputs the specified text using the given host object.
+         /// </summary>
+         /// <param name="text">The text to output.</param>
          protected void Output(string text) { host.Output(text); }
 
+         ///<summary>
+         ///Outputs the specified message along with the specified template
+         ///</summary>
+         ///<param name="template">The specified template for the message</param>
+         ///<param name="items">The message items to be output</param>
          protected void Output(string template, params object[] items) { host.Output(template, items); }
 
+         /// <summary>
+         /// Outputs segments without a terminator using the host's OutputNoTerminator method.
+         /// </summary>
+         /// <param name="segments">The list of segments to output.</param>
          protected void OutputNoTerminator(List<string> segments) { host.OutputNoTerminator(segments); }
 
+         /// <summary>
+         /// Pops out the current indentation level.
+         /// </summary>
          protected void PopIndent() { host.PopIndent(); }
 
-         protected void PushIndent(string indent) { host.PushIndent(indent); }
+         /// <summary>
+         /// Pushes an indentation on the host.
+         /// </summary>
+         /// <param name="indent">The indentation to be pushed.</param>
+         protected void PushIndent(string indent)
+         {
+            host.PushIndent(indent);
+         }
 
+         /// <summary>
+         /// Writes a model class to the output stream.
+         /// </summary>
+         /// <param name="modelClass">The model class to write.</param>
          protected virtual void WriteClass(ModelClass modelClass)
          {
             Output("using System;");
@@ -590,6 +742,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             string customAttributes = modelClass.CustomAttributes ?? string.Empty;
 
+            // ReSharper disable once RemoveRedundantBraces
             if (modelClass.ModelRoot.EntityFrameworkVersion == EFVersion.EFCore
              && !modelClass.Persistent
              && !customAttributes.Contains("NotMapped")
@@ -620,12 +773,20 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             NL();
          }
 
+         /// <summary>
+         /// Writes the body of a comment.
+         /// </summary>
+         /// <param name="comment">The comment to write.</param>
          protected void WriteCommentBody(string comment)
          {
             foreach (string s in GenerateCommentBody(comment))
                Output($"/// {s}");
          }
 
+         /// <summary>
+         /// Writes the constructor(s) for a ModelClass object.
+         /// </summary>
+         /// <param name="modelClass">The ModelClass object to generate the constructor(s) for.</param>
          protected void WriteConstructor(ModelClass modelClass)
          {
             Output("partial void Init();");
@@ -769,6 +930,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
 
+         /// <summary>
+         /// Writes the constructor comments for the constructor parameters of the given modelClass.
+         /// </summary>
+         /// <param name="modelClass">The modelClass to write the comments for.</param>
          protected void WriteConstructorComments(ModelClass modelClass)
          {
             foreach (ModelAttribute requiredAttribute in modelClass.AllRequiredAttributes.Where(x => (!x.IsIdentity || (x.IdentityType == IdentityType.Manual))
@@ -888,6 +1053,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             NL();
          }
 
+         /// <summary>
+         /// Writes comments describing the generated DbContext
+         /// </summary> 
          protected void WriteDbContextComments()
          {
             if (!string.IsNullOrEmpty(modelRoot.Summary))
@@ -907,6 +1075,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                Output("/// <inheritdoc/>");
          }
 
+         /// <summary>
+         /// Writes the body of the default constructor for the specified model class.
+         /// </summary>
+         /// <param name="modelClass">The model class.</param>
          protected void WriteDefaultConstructorBody(ModelClass modelClass)
          {
             int lineCount = 0;
@@ -945,6 +1117,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             Output("Init();");
          }
 
+         /// <summary>
+         /// Writes the contents of the file containing the definition of an enum value.
+         /// </summary>
+         /// <param name="modelEnum">The enum value to write.</param>
          protected void WriteEnum(ModelEnum modelEnum)
          {
             Output("using System;");
@@ -1050,6 +1226,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             return lineCount;
          }
 
+         /// <summary>
+         /// Writes the navigation properties for the specified model class.
+         /// </summary>
+         /// <param name="modelClass">The model class to write the navigation properties for.</param>
          [SuppressMessage("ReSharper", "ConvertIfStatementToConditionalTernaryExpression")]
          protected void WriteNavigationProperties(ModelClass modelClass)
          {
@@ -1194,6 +1374,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
 
+         /// <summary>
+         /// Writes the properties of a given ModelClass object.
+         /// </summary>
+         /// <param name="modelClass">The ModelClass object to write the properties for.</param>
          protected void WriteProperties(ModelClass modelClass)
          {
             if (!modelClass.Attributes.Any())
@@ -1351,7 +1535,13 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          }
 
 #pragma warning disable IDE1006 // Naming Styles
+         /// <summary>
+         /// A property representing the root model.
+         /// </summary>
          protected ModelRoot modelRoot { get; set; }
+         /// <summary>
+         /// Gets or sets the host for the generated text transformation.
+         /// </summary>
          protected GeneratedTextTransformation host { get; set; }
 #pragma warning restore IDE1006 // Naming Styles
       }

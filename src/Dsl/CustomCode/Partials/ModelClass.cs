@@ -549,6 +549,11 @@ namespace Sawczyn.EFDesigner.EFModel
          return sourceProperties.Concat(targetProperties);
       }
 
+      /// <summary>
+      /// Returns a list of navigation properties where the current object is the source of the relationship.
+      /// </summary>
+      /// <param name="except">An array of associations to exclude from the result.</param>
+      /// <returns>A list of navigation properties.</returns>
       public List<NavigationProperty> LocalNavigationsFromThisAsSource(Association[] except)
       {
          return Association.GetLinksToTargets(this)
@@ -557,6 +562,12 @@ namespace Sawczyn.EFDesigner.EFModel
                            .ToList();
       }
 
+      /// <summary>
+      /// Returns a list of NavigationProperty objects representing associations 
+      /// where the current object is the target and ignoring any specified in the 'except' array.
+      /// </summary>
+      /// <param name="except">Array of Association objects to ignore</param>
+      /// <returns>List of NavigationProperty objects</returns>
       public List<NavigationProperty> LocalNavigationsFromThisAsTarget(Association[] except)
       {
          return Association.GetLinksToSources(this)

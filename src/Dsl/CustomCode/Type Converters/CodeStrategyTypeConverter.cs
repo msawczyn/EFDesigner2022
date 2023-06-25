@@ -9,6 +9,9 @@ using Sawczyn.EFDesigner.EFModel.Extensions;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// This class represents a type converter for the CodeStrategy enumeration
+   /// </summary>
    public class CodeStrategyTypeConverter : TypeConverterBase
    {
       /// <summary>Returns whether this converter can convert an object of the given type to the type of this converter, using the specified context.</summary>
@@ -85,20 +88,14 @@ namespace Sawczyn.EFDesigner.EFModel
 
             // Value set changes at EFCore5
             if (modelRoot.IsEFCore6Plus)
-            {
                values.AddRange(new[] {"TablePerConcreteType", "TablePerHierarchy", "TablePerType"});
-            }
             else if (modelRoot.IsEFCore5Plus)
-            {
                values.AddRange(new[] {"TablePerHierarchy", "TablePerType"});
-            }
             else
                values.Add("TablePerHierarchy");
          }
          else
-         {
             values.AddRange(new[] {"TablePerConcreteType", "TablePerHierarchy", "TablePerType"});
-         }
 
          return new StandardValuesCollection(values);
       }

@@ -202,7 +202,9 @@ namespace EFCore6Parser
                               : type.Name;
 
          result.Name = propertyData.Name;
+#pragma warning disable CS0618
          result.ColumnName = propertyData.GetColumnName();
+#pragma warning restore CS0618
          result.IsIdentity = propertyData.IsKey();
          result.IsIdentityGenerated = result.IsIdentity && (propertyData.ValueGenerated == ValueGenerated.OnAdd);
 

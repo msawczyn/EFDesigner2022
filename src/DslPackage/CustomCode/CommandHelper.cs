@@ -15,23 +15,29 @@ using VSLangProj;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
-   // NOTE: This could go into the existing partial file if desired.  Might be more tidy and keep it all in one place.
-   // Uncomment the following line if the extension is converted to an async package.
+   /// <summary>
+   /// Provides helper methods for working with menu commands.
+   /// </summary>
    [ProvideAutoLoad(EFModelCommandSet.guidEFModelUIContextGuidString, PackageAutoLoadFlags.BackgroundLoad)]
    [ProvideUIContextRule(EFModelCommandSet.guidEFModelUIContextGuidString,
                          "EFModel auto load",
                          "EFModel",
                          new[] {"EFModel"},
                          new[] {"HierSingleSelectionName:.efmodel$"})]
-
-   //internal sealed partial class EFModelPackage { }
-
    public static class CommandHelper
    {
       private const string TextTransformationFileExtension = ".tt";
+
+      /// <summary>
+      /// Represents the file extension used for EF Modeler files.
+      /// </summary>
       public static string EFModelerFileNameExtension = ".efmodel";
 
-      // parameter must be EntityContainer file path
+
+      /// <summary>
+      /// Generates code based on the provided entity container file path.
+      /// </summary>
+      /// <param name="entityContainerFilepath">The file path of the entity container.</param>
       public static void GenerateCode(string entityContainerFilepath)
       {
          ThreadHelper.ThrowIfNotOnUIThread();
@@ -88,6 +94,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      /// Displays an Open File dialog and returns the selected file path.
+      /// </summary>
       public static string GetSingleFileSelectedPath()
       {
          ThreadHelper.ThrowIfNotOnUIThread();
@@ -101,6 +110,12 @@ namespace Sawczyn.EFDesigner.EFModel
          return itemFullPath;
       }
 
+      /// <summary>
+      /// Checks if the specified file has the given extension.
+      /// </summary>
+      /// <param name="fileInfo">The file to check</param>
+      /// <param name="extension">The extension to look for</param>
+      /// <returns>True if the file has the extension, otherwise false</returns>
       public static bool HasExtension(this FileInfo fileInfo, string extension)
       {
          return string.Compare(fileInfo.Extension, extension, StringComparison.OrdinalIgnoreCase) == 0;
@@ -161,6 +176,11 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      /// Sets the visibility and enabled state of the specified MenuCommand.
+      /// </summary>
+      /// <param name="menuCommand">The MenuCommand to modify.</param>
+      /// <param name="visibleAndEnabled">The visibility and enabled state to set.</param>
       public static void VisibleAndEnabled(this MenuCommand menuCommand, bool visibleAndEnabled)
       {
          menuCommand.Visible = visibleAndEnabled;

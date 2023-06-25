@@ -1,3 +1,4 @@
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -12,10 +13,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    [SuppressMessage("ReSharper", "UnusedMember.Global")]
    public partial class GeneratedTextTransformation
    {
-#region Template
+      #region Template
 
-      // EFDesigner v4.2.4.4
-      // Copyright (c) 2017-2022 Michael Sawczyn
+      // EFDesigner v4.2.4.5
+      // Copyright (c) 2017-2023 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
       // this bit is based on EntityFramework Reverse POCO Code First Generator
@@ -27,6 +28,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
        * Interactions with Visual Studio
        */
 
+      /// <summary>
+      /// Retrieves all projects from the current solution.
+      /// </summary>
       public IEnumerable<Project> GetAllProjects()
       {
          foreach (Project project in GetSolution().Projects.OfType<Project>())
@@ -41,6 +45,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          }
       }
 
+      /// <summary>
+      /// Gets the currently active project.
+      /// </summary>
+      /// <returns>The current project.</returns>
       public Project GetCurrentProject()
       {
          DTE dte = GetDTE();
@@ -117,6 +125,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          return targetProjectItem;
       }
 
+      /// <summary>
+      /// Gets the instance of the Visual Studio development environment.
+      /// </summary>
+      /// <returns>The instance of the development environment.</returns>
       public DTE GetDTE()
       {
          IServiceProvider serviceProvider = (IServiceProvider)Host;
@@ -155,6 +167,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          }
       }
 
+      /// <summary>
+      /// This method returns a Solution object
+      /// </summary>
       public Solution GetSolution()
       {
          return GetDTE().Solution;

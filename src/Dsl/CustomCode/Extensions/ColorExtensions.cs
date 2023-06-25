@@ -7,6 +7,7 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
    public static class ColorExtensions
    {
+      ///<summary>Returns true if the color is considered dark, otherwise false.</summary>
       public static bool IsDark(this Color color)
       {
          // Counting the perceptive luminance - human eye favors green color... 
@@ -18,7 +19,8 @@ namespace Sawczyn.EFDesigner.EFModel
          return a >= 0.5;
       }
 
-      public static bool IsLight(this Color color)
+///<summary>Returns true if the color is considered light, otherwise false.</summary>
+public static bool IsLight(this Color color)
       {
          return !color.IsDark();
       }

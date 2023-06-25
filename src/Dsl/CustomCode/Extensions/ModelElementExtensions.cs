@@ -12,6 +12,11 @@ namespace Sawczyn.EFDesigner.EFModel.Extensions
    /// </summary>
    public static class ModelElementExtensions
    {
+      /// <summary>
+      /// Returns the active diagram associated with the given ModelElement.
+      /// </summary>
+      /// <param name="element">The ModelElement to get the active diagram for.</param>
+      /// <returns>The active diagram associated with the given ModelElement.</returns>
       public static Diagram GetActiveDiagram(this ModelElement element)
       {
          ShapeElement shapeElement = element.GetShapeElement();
@@ -19,11 +24,23 @@ namespace Sawczyn.EFDesigner.EFModel.Extensions
          return shapeElement?.Diagram;
       }
 
+      /// <summary>
+      /// Retrieves all items of a certain type from the given store.
+      /// </summary>
+      /// <typeparam name="T">The type of the items to retrieve.</typeparam>
+      /// <param name="store">The store from which to retrieve items.</param>
+      /// <returns>An enumerable collection of items of the specified type.</returns>
       public static IEnumerable<T> GetAll<T>(this Store store) where T : ModelElement
       {
          return store?.ElementDirectory?.FindElements<T>(true) ?? new ReadOnlyCollection<T>(new List<T>());
       }
 
+      ///<summary>
+      ///Returns all the ModelElement objects of type T in the specified partition.
+      ///</summary>
+      ///<typeparam name="T">The type of the ModelElement object.</typeparam>
+      ///<param name="partition">The partition that contains the ModelElement objects.</param>
+      ///<returns>An IEnumerable of all the ModelElement objects of type T in the specified partition.</returns>
       public static IEnumerable<T> GetAll<T>(this Partition partition) where T : ModelElement
       {
          return partition?.ElementDirectory?.FindElements<T>(true) ?? new ReadOnlyCollection<T>(new List<T>());
@@ -70,6 +87,14 @@ namespace Sawczyn.EFDesigner.EFModel.Extensions
          return null;
       }
 
+      /// <summary>
+      /// Compares two objects of a specified type and returns a list of tuples containing
+      /// the names of properties that are different along with their values from the two objects.
+      /// </summary>
+      /// <typeparam name="T">The type of object to compare.</typeparam>
+      /// <param name="This">The first object to compare.</param>
+      /// <param name="Other">The second object to compare.</param>
+      /// <returns>A list of tuples containing the names of properties that are different along with their values from the two objects.</returns>
       public static List<(string propertyName, object thisValue, object otherValue)> GetDifferences<T>(this T This, T Other) where T : ModelElement
       {
          List<(string propertyName, object thisValue, object otherValue)> result = new List<(string propertyName, object thisValue, object otherValue)>();
@@ -92,6 +117,11 @@ namespace Sawczyn.EFDesigner.EFModel.Extensions
          return result;
       }
 
+      /// <summary>
+      /// Returns the first ShapeElement of a ModelElement.
+      /// </summary>
+      /// <param name="element">The ModelElement to search.</param>
+      /// <returns>The first ShapeElement of the ModelElement.</returns>
       public static ShapeElement GetFirstShapeElement(this ModelElement element)
       {
          return PresentationViewsSubject.GetPresentation(element)
@@ -196,6 +226,10 @@ namespace Sawczyn.EFDesigner.EFModel.Extensions
          return store.GetAll<ModelRoot>().FirstOrDefault();
       }
 
+      /// <summary>
+      /// Redraws the specified <paramref name="element"/>.
+      /// </summary>
+      /// <param name="element">The element to redraw.</param>
       public static void Redraw(this ModelElement element)
       {
          // redraw on every diagram

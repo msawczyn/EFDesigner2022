@@ -5,7 +5,13 @@
    /// </summary>
    public interface IModelElementInCompartment
    {
+      ///<summary>
+      ///Gets the parent model element of the current model element.
+      ///</summary>
       IModelElementWithCompartments ParentModelElement { get; }
+      /// <summary>
+      /// Gets the name of the compartment.
+      /// </summary>
       string CompartmentName { get; }
    }
 }

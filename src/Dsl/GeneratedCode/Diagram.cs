@@ -27,10 +27,13 @@ namespace Sawczyn.EFDesigner.EFModel
 	[DslModeling::DomainObjectId("4bd5b7e6-86b6-43d2-962d-b6e87ac4690a")]
 	public partial class EFModelDiagram : DslDiagrams::Diagram
 	{
-		#region Fixup
-		
-		protected internal virtual void OnSynchronized()
-		{
+      #region Fixup
+
+      /// <summary>
+      /// Raises the Synchronized event.
+      /// </summary>
+      protected internal virtual void OnSynchronized()
+      {
 		}
 		
 		#endregion
@@ -73,10 +76,16 @@ namespace Sawczyn.EFDesigner.EFModel
 		         new global::System.ComponentModel.ToolboxItemFilterAttribute(global::Sawczyn.EFDesigner.EFModel.EFModelToolboxHelperBase.ToolboxFilterString, global::System.ComponentModel.ToolboxItemFilterType.Require) };
 		
 		private readonly global::System.Collections.Generic.List<global::System.ComponentModel.ToolboxItemFilterAttribute> targetToolboxItemFilterAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.ToolboxItemFilterAttribute>(); // HACK : MEXEDGE
-		
-		protected virtual bool GetToolSupported(string toolName) // HACK : MEXEDGE
-		{
-		    return true;
+
+      /// <summary>
+      /// Determines if a given tool is supported.
+      /// </summary>
+      /// <param name="toolName">The name of the tool to be checked</param>
+      /// <returns>Returns true if the tool is supported, false otherwise.</returns>
+      protected virtual bool GetToolSupported(string toolName) // HACK : MEXEDGE
+
+      {
+         return true;
 		}
 		
 		/// <summary>

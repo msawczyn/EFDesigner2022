@@ -15,6 +15,9 @@ namespace Sawczyn.EFDesigner.EFModel
 {
    public partial class EFModelDiagram : IHasStore, IThemeable
    {
+      /// <summary>
+      /// The position of the mouse when a MouseDown event occurs.
+      /// </summary>
       public PointD MouseDownPosition;
 
       /// <summary>
@@ -32,6 +35,11 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      /// Updates the color theme for a store's diagram
+      /// </summary>
+      /// <param name="store">The store to update the color theme for</param>
+      /// <param name="diagramColors">The colors to use for the diagram</param>
       public static void UpdateColors(Store store, DiagramThemeColors diagramColors)
       {
          if (store != null)
@@ -74,11 +82,19 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      /// Gets the color scheme for a diagram theme.
+      /// </summary>
+      /// <returns>A DiagramThemeColors object containing the color scheme.</returns>
       public DiagramThemeColors GetThemeColors()
       {
          return new DiagramThemeColors(FillColor);
       }
 
+      /// <summary>
+      /// Sets this object's colors in the diagram, based on the current theme
+      /// </summary>
+      /// <param name="diagramColors">The colors to use.</param>
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
          Transaction tx = Store.TransactionManager.InTransaction
@@ -113,6 +129,12 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      /// Adds an existing model element to the given EFModelDiagram.
+      /// </summary>
+      /// <param name="diagram">The EFModelDiagram to add the element to.</param>
+      /// <param name="element">The ModelElement to add to the diagram.</param>
+      /// <returns>The generated ShapeElement.</returns>
       public static ShapeElement AddExistingModelElement(EFModelDiagram diagram, ModelElement element)
       {
          if (diagram?.NestedChildShapes?.Any(s => s.ModelElement == element) != false)
@@ -140,6 +162,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      /// Disables diagram rules.
+      /// </summary>
       public void DisableDiagramRules()
       {
          RuleManager ruleManager = Store.RuleManager;
@@ -153,6 +178,9 @@ namespace Sawczyn.EFDesigner.EFModel
          ruleManager.DisableRule(typeof(CompartmentItemChangeRule));
       }
 
+      /// <summary>
+      /// Enables the rules for the diagram.
+      /// </summary>
       public void EnableDiagramRules()
       {
          RuleManager ruleManager = Store.RuleManager;
@@ -166,6 +194,10 @@ namespace Sawczyn.EFDesigner.EFModel
          ruleManager.EnableRule(typeof(CompartmentItemChangeRule));
       }
 
+      ///<summary>
+      ///Highlights the specified ShapeElement.
+      ///</summary>
+      ///<param name="shape">The ShapeElement to be highlighted.</param>
       public void Highlight(ShapeElement shape)
       {
          ShapeElement highlightShape = DetermineHighlightShape(shape);
@@ -191,6 +223,13 @@ namespace Sawczyn.EFDesigner.EFModel
          return IsDroppingExternal || isDroppingAssociationClass;
       }
 
+      /// <summary>
+      /// Event raised when an IDataObject is dragged over and then dropped into the ShapeElement.
+      /// </summary>
+      /// <param name="diagramDragEventArgs">The drag arguments to be used to update the model with the IDataObject dropped.</param>
+      /// <remarks>
+      /// A hit test is performed and the event is fired to the most relevant ShapeElement.
+      /// </remarks>
       public override void OnDragDrop(DiagramDragEventArgs diagramDragEventArgs)
       {
          ModelElement element = diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelClass") as ModelElement
@@ -362,6 +401,13 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      /// Event raised when an IDataObject is dragged over the ShapeElement's bounds.
+      /// </summary>
+      /// <param name="diagramDragEventArgs">The drag arguments to be set to indicate how to handle the drag.</param>
+      /// <remarks>
+      /// A hit test is performed by the DiagramClientView and the event is fired to the most relevant ShapeElement.
+      /// </remarks>
       public override void OnDragOver(DiagramDragEventArgs diagramDragEventArgs)
       {
          base.OnDragOver(diagramDragEventArgs);
@@ -388,6 +434,10 @@ namespace Sawczyn.EFDesigner.EFModel
          diagramDragEventArgs.Handled = true;
       }
 
+      /// <summary>
+      /// This method is called when a shape is inititially created, derived classes can
+      /// override to perform shape instance initialization.  This method is always called within a transaction.
+      /// </summary>
       public override void OnInitialize()
       {
          base.OnInitialize();
@@ -452,6 +502,10 @@ namespace Sawczyn.EFDesigner.EFModel
          return result;
       }
 
+      /// <summary>
+      /// Removes the highlight from the specified shape
+      /// </summary>
+      /// <param name="shape">The shape to remove the highlight from</param>
       public void Unhighlight(ShapeElement shape)
       {
          ShapeElement highlightShape = DetermineHighlightShape(shape);

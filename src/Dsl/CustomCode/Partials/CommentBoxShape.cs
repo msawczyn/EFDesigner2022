@@ -6,6 +6,10 @@ namespace Sawczyn.EFDesigner.EFModel
 {
    public partial class CommentBoxShape : IHasStore, IThemeable
    {
+      /// <summary>
+      /// Sets this object's colors in the diagram, based on the current theme
+      /// </summary>
+      /// <param name="diagramColors">The colors to use.</param>
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
          //using (Transaction tx = Store.TransactionManager.BeginTransaction("Set diagram colors"))
@@ -19,9 +23,14 @@ namespace Sawczyn.EFDesigner.EFModel
          //}
       }
 
-      //Called once for each shape instance. 
+      /// <summary>
+      /// Initializes decorator objects for the specified shape fields.
+      /// </summary>
+      /// <param name="shapeFields">List of shape fields.</param>
+      /// <param name="decorators">List of decorators to initialize.</param>
       protected override void InitializeDecorators(IList<ShapeField> shapeFields, IList<Decorator> decorators)
       {
+         //Called once for each shape instance. 
          base.InitializeDecorators(shapeFields, decorators);
 
          //Look up the shape field, which is called "Comment." 

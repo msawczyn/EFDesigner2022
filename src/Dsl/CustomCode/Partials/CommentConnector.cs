@@ -5,6 +5,10 @@ namespace Sawczyn.EFDesigner.EFModel
 {
    public partial class CommentConnector : IHasStore, IThemeable
    {
+      /// <summary>
+      /// Sets this object's colors in the diagram, based on the current theme
+      /// </summary>
+      /// <param name="diagramColors">The colors to use.</param>
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
          Transaction tx = Store.TransactionManager.InTransaction
@@ -26,6 +30,12 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      /// Modifies the current luminosity of the connector in a diagram client's view. 
+      /// </summary>
+      /// <param name="currentLuminosity">The current luminosity of the connector.</param>
+      /// <param name="view">The diagram client's view.</param>
+      /// <returns>The modified luminosity of the connector.</returns>
       protected override int ModifyLuminosity(int currentLuminosity, DiagramClientView view)
       {
          if (!view.HighlightedShapes.Contains(new DiagramItem(this)))

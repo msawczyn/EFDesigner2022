@@ -11,24 +11,49 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       // stubs for methods provided by the EFModelDirectiveProcessor
 
+      /// <summary>
+      /// Gets or sets the root model object.
+      /// </summary>
       public ModelRoot ModelRoot { get; set; }
 
+      /// <summary>
+      /// Gets or sets the <see cref="ITextTemplatingEngineHost"/> used by the text templating engine.
+      /// </summary>
       public ITextTemplatingEngineHost Host { get; set; }
 
+      /// <summary>
+      /// Clears the indentation.
+      /// </summary>
       public void ClearIndent() { }
 
+      /// <summary>
+      /// Removes one indentation level and returns an empty string.
+      /// </summary>
       public string PopIndent() { return string.Empty; }
 
+      /// <summary>
+      /// Increments the indent level.
+      /// </summary>
+      /// <param name="indent">The string to add to the current indent level.</param>
       public void PushIndent(string indent) { }
 
+      /// <summary>
+      /// Writes a line of text to the output.
+      /// </summary>
+      /// <param name="textToAppend">The text to be written.</param>
       public void WriteLine(string textToAppend) { }
 
-#region Template
+      #region Template
 
-      // EFDesigner v4.2.4.4
-      // Copyright (c) 2017-2022 Michael Sawczyn
+      // EFDesigner v4.2.4.5
+      // Copyright (c) 2017-2023 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
+      /// <summary>
+      /// Generates Entity Framework 6 classes based on manager and modelRoot objects
+      /// </summary>
+      /// <param name="manager">Manager object</param>
+      /// <param name="modelRoot">ModelRoot object</param>
       public void GenerateEF6(Manager manager, ModelRoot modelRoot)
       {
          if (modelRoot.EntityFrameworkVersion != EFVersion.EF6)
@@ -38,6 +63,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          generator.Generate(manager);
       }
 
+      /// <summary>
+      /// Generates Entity Framework Core classes based on the manager and model root provided
+      /// </summary>
+      /// <param name="manager">The manager containing the data source information</param>
+      /// <param name="modelRoot">The model root containing the entity information</param>
       public void GenerateEFCore(Manager manager, ModelRoot modelRoot)
       {
          if (modelRoot.EntityFrameworkVersion != EFVersion.EFCore)

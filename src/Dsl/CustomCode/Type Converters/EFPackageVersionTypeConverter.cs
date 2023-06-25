@@ -7,6 +7,9 @@ using Microsoft.VisualStudio.Modeling;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Provides a way to convert an EFPackageVersion object to and from other representations.
+   /// </summary>
    public class EFPackageVersionTypeConverter : TypeConverterBase
    {
       /// <summary>

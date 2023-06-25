@@ -20,6 +20,10 @@ namespace Sawczyn.EFDesigner.EFModel
    {
       private readonly List<Type> nodeEventHandlersAdded = new List<Type>();
 
+      /// <summary>
+      /// Sets the browser's colors, based on the current theme
+      /// </summary>
+      /// <param name="diagramColors">The colors to use.</param>
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
          ObjectModelBrowser.BackColor = diagramColors.Background;

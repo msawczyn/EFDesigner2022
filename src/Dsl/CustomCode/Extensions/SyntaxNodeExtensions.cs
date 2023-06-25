@@ -8,9 +8,18 @@ using Sawczyn.EFDesigner.EFModel.Annotations;
 
 namespace Sawczyn.EFDesigner.EFModel.Extensions
 {
+   /// <summary>
+   ///    Extension methods for Microsoft.CodeAnalysis.SyntaxNode
+   /// </summary>
    public static class SyntaxNodeExtensions
    {
 #pragma warning disable CS3001 // Argument type is not CLS-compliant
+      /// <summary>
+      /// Checks whether or not a syntax node has the specified attribute.
+      /// </summary>
+      /// <param name="node">The syntax node to check.</param>
+      /// <param name="attributeName">The name of the attribute to check for.</param>
+      /// <returns>True if the syntax node has the specified attribute, otherwise false.</returns>
       public static bool HasAttribute([NotNull] this SyntaxNode node, string attributeName)
 #pragma warning restore CS3001 // Argument type is not CLS-compliant
       {
@@ -29,6 +38,12 @@ namespace Sawczyn.EFDesigner.EFModel.Extensions
 
 #pragma warning disable CS3001 // Argument type is not CLS-compliant
 #pragma warning disable CS3002 // Return type is not CLS-compliant
+      /// <summary>
+      /// Retrieves the attribute syntax of the specified name from the given syntax node.
+      /// </summary>
+      /// <param name="node">The syntax node to retrieve the attribute syntax from.</param>
+      /// <param name="attributeName">The name of the attribute syntax to retrieve.</param>
+      /// <returns>The attribute syntax with the specified name, null if the attribute syntax is not found.</returns>
       public static AttributeSyntax GetAttribute([NotNull] this SyntaxNode node, string attributeName)
       {
          string longName = attributeName.EndsWith("Attribute")
@@ -44,11 +59,22 @@ namespace Sawczyn.EFDesigner.EFModel.Extensions
                     .FirstOrDefault(x => (x.Name.ToString() == shortName) || (x.Name.ToString() == longName));
       }
 
+      /// <summary>
+      /// Returns the argument list of an attribute.
+      /// </summary>
+      /// <param name="node">The attribute node to find argument list of.</param>
+      /// <returns>An IEnumerable of AttributeArgumentSyntax representing the argument list of the attribute node.</returns>
       public static IEnumerable<AttributeArgumentSyntax> GetAttributeArguments([NotNull] this AttributeSyntax node)
       {
          return node.DescendantNodes().OfType<AttributeArgumentSyntax>();
       }
 
+      /// <summary>
+      /// Returns the value of a named argument in the given attribute syntax node.
+      /// </summary>
+      /// <param name="node">The attribute syntax node.</param>
+      /// <param name="argumentName">The name of the named argument.</param>
+      /// <returns>The value of the named argument.</returns>
       public static string GetNamedArgumentValue([NotNull] this AttributeSyntax node, string argumentName)
       {
          AttributeArgumentSyntax namedArgument =

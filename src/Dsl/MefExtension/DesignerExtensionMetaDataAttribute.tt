@@ -1,2 +1,4 @@
 ﻿<#@ Dsl processor="DslDirectiveProcessor" requires="fileName='..\..\Dsl\DslDefinition.dsl'" #>  
+#pragma warning disable CS1591
+// ReSharper disable RedundantNameQualifier
 <#@ include file="Dsl\DesignerExtensionMetadataAttribute.tt" #>

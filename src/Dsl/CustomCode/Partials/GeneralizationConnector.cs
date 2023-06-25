@@ -5,6 +5,9 @@ namespace Sawczyn.EFDesigner.EFModel
 {
    public partial class GeneralizationConnector : IHasStore, IThemeable
    {
+      /// <summary>
+      /// Get/Set whether or not the Shape shows a mouse hover tooltip by default
+      /// </summary>
       public override bool HasToolTip
       {
          get
@@ -13,6 +16,10 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      /// Sets this object's colors in the diagram, based on the current theme
+      /// </summary>
+      /// <param name="diagramColors">The colors to use.</param>
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
          Transaction tx = Store.TransactionManager.InTransaction
@@ -33,6 +40,11 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      /// Gets the tooltip text for the PEL element under the cursor
+      /// </summary>
+      /// <param name="item">this contains the shape,field, and subfield under the cursor</param>
+      /// <returns></returns>
       public override string GetToolTipText(DiagramItem item)
       {
          return item.Shape.ModelElement is Generalization generalization
@@ -40,6 +52,14 @@ namespace Sawczyn.EFDesigner.EFModel
                    : string.Empty;
       }
 
+      /// <summary>
+      /// Calculates highlight luminosity based on:
+      /// 	if L &gt;= 160, then L = L * 0.9
+      /// 	else, L += 40.
+      /// </summary>
+      /// <param name="currentLuminosity">The current luminosity of the element.</param>
+      /// <param name="view">The client view of the diagram.</param>
+      /// <returns>Returns the modified luminosity value.</returns>
       protected override int ModifyLuminosity(int currentLuminosity, DiagramClientView view)
       {
          if (!view.HighlightedShapes.Contains(new DiagramItem(this)))

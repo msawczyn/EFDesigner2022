@@ -29,8 +29,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>bin\Debug\Sawczyn.EFDesigner.EFModel.Dsl.xml</DocumentationFile>
     <LangVersion>7.3</LangVersion>
     <NoWarn>CS3001,CS3009,MSB3277</NoWarn>
     <PlatformTarget>x64</PlatformTarget>

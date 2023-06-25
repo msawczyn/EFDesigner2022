@@ -3,8 +3,14 @@ using Microsoft.VisualStudio.Modeling.Diagrams;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Represents the base class for all association connectors in the diagram.
+   /// </summary>
    public abstract partial class AssociationConnector : IHasStore, IThemeable
    {
+      /// <summary>
+      /// Gets a value indicating whether this object has a tool tip.
+      /// </summary>
       public override bool HasToolTip
       {
          get
@@ -95,6 +101,10 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      /// Sets this object's colors in the diagram, based on the current theme
+      /// </summary>
+      /// <param name="diagramColors">The colors to use.</param>
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
          Transaction tx = Store.TransactionManager.InTransaction

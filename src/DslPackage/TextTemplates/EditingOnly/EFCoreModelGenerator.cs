@@ -9,19 +9,33 @@ using System.Linq;
 
 namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 {
+   /// <summary>
+   /// Represents a text transformation.
+   /// </summary>
    public partial class GeneratedTextTransformation
    {
-#region Template
+      #region Template
 
-      // EFDesigner v4.2.4.4
-      // Copyright (c) 2017-2022 Michael Sawczyn
+      // EFDesigner v4.2.4.5
+      // Copyright (c) 2017-2023 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
+      /// <summary>
+      /// Abstract class representing the EF Core model generator.
+      /// </summary>
       public abstract class EFCoreModelGenerator : EFModelGenerator
+
       {
+         /// <summary>
+         /// Protected constructor for the EFCoreModelGenerator class.
+         /// </summary>
+         /// <param name="host">The GeneratedTextTransformation instance.</param>
          protected EFCoreModelGenerator(GeneratedTextTransformation host) : base(host) { }
 
-         public static string[] SpatialTypes
+         /// <summary>
+         /// Gets the list of spatial types supported by the database provider.
+         /// </summary>
+         public static string[] SpatialTypes 
          {
             get
             {
@@ -29,6 +43,13 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
 
+         /// <summary>
+         /// Configures bidirectional associations for a given ModelClass object.
+         /// </summary>
+         /// <param name="modelClass">The ModelClass object for which bidirectional associations need to be configured.</param>
+         /// <param name="visited">A list of visited Associations to avoid infinite recursion.</param>
+         /// <param name="foreignKeyColumns">A list of foreign key columns.</param>
+         /// <param name="declaredShadowProperties">A list of shadow properties declared for the current ModelClass object.</param>
          [SuppressMessage("ReSharper", "RedundantNameQualifier")]
          protected virtual void ConfigureBidirectionalAssociations(ModelClass modelClass, List<Association> visited, List<string> foreignKeyColumns, List<string> declaredShadowProperties)
          {
@@ -36,6 +57,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             WriteBidirectionalDependentAssociations(modelClass, $"modelBuilder.Entity<{modelClass.FullName}>()", visited);
          }
 
+         /// <summary>
+         /// Creates the code segments configuring the attributes of a model class.
+         /// </summary>
+         /// <param name="segments">Container holding the new code segments.</param>
+         /// <param name="modelClass">The model class to be configured.</param>
          protected virtual void ConfigureModelAttributes(List<string> segments, ModelClass modelClass)
          {
             foreach (ModelAttribute modelAttribute in modelClass.Attributes.Where(x => x.Persistent && !SpatialTypes.Contains(x.Type)))
@@ -68,6 +94,14 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
 
+         /// <summary>
+         /// Creates the code segments configuring a model class.
+         /// </summary>
+         /// <param name="segments">Container holding the new code segments.</param>
+         /// <param name="classesWithTables">The array of classes with tables.</param>
+         /// <param name="foreignKeyColumns">The list of foreign key columns.</param>
+         /// <param name="visited">The list of already-visited associations.</param>
+         /// <param name="modelClass">The model class to be configured.</param>
          protected virtual void ConfigureModelClass(List<string> segments, ModelClass[] classesWithTables, List<string> foreignKeyColumns, List<Association> visited, ModelClass modelClass)
          {
             segments.Clear();
@@ -138,12 +172,24 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
 
+         /// <summary>
+         /// Creates the code segments configuring a collection of model classes.
+         /// </summary>
+         /// <param name="segments">Container holding the new code segments.</param>
+         /// <param name="classesWithTables">The array of model classes with tables.</param>
+         /// <param name="foreignKeyColumns">The list of foreign key columns.</param>
+         /// <param name="visited">The list of already-visited associations.</param>
          protected virtual void ConfigureModelClasses(List<string> segments, ModelClass[] classesWithTables, List<string> foreignKeyColumns, List<Association> visited)
          {
             foreach (ModelClass modelClass in modelRoot.Classes.Where(x => x.Persistent).OrderBy(x => x.Name))
                ConfigureModelClass(segments, classesWithTables, foreignKeyColumns, visited, modelClass);
          }
 
+         /// <summary>
+         /// Creates the code segments configuring the database table backing a model class.
+         /// </summary>
+         /// <param name="segments">Container holding the new code segments.</param>
+         /// <param name="modelClass">The model class to base the table configuration on.</param>
          protected virtual void ConfigureTable(List<string> segments, ModelClass modelClass)
          {
             string tableName = string.IsNullOrEmpty(modelClass.TableName)
@@ -165,12 +211,24 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                segments.Add($"HasKey(t => new {{ t.{string.Join(", t.", identityAttributes.Select(ia => ia.Name))} }})");
          }
 
+         /// <summary>
+         /// Creates the code segments configuring the transient (non-persistent) attributes of a model class.
+         /// </summary>
+         /// <param name="segments">Container holding the new code segments.</param>
+         /// <param name="modelClass">The ModelClass object to be configured.</param>
          protected static void ConfigureTransientProperties(List<string> segments, ModelClass modelClass)
          {
             foreach (ModelAttribute transient in modelClass.Attributes.Where(x => !x.Persistent))
                segments.Add($"Ignore(t => t.{transient.Name})");
          }
 
+         /// <summary>
+         /// Configures and writes the unidirectional associations of a model class.
+         /// </summary>
+         /// <param name="modelClass">The model class to configure.</param>
+         /// <param name="visited">A list of already visited associations.</param>
+         /// <param name="foreignKeyColumns">A list of foreign key columns.</param>
+         /// <param name="declaredShadowProperties">A list of declared shadow properties.</param>
          [SuppressMessage("ReSharper", "RedundantNameQualifier")]
          protected virtual void ConfigureUnidirectionalAssociations(ModelClass modelClass, List<Association> visited, List<string> foreignKeyColumns, List<string> declaredShadowProperties)
          {
@@ -178,6 +236,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             WriteUnidirectionalDependentAssociations(modelClass, $"modelBuilder.Entity<{modelClass.FullName}>()", visited);
          }
 
+         /// <summary>
+         /// Creates a string representing a foreign key configuration for the given association and foreign key column(s).
+         /// </summary>
+         /// <param name="association">The association for which the foreign key segment should be created.</param>
+         /// <param name="foreignKeyColumns">The foreign key columns to be included in the segment.</param>
+         /// <returns>A string representing the foreign key segment of an SQL statement.</returns>
          [SuppressMessage("ReSharper", "RedundantNameQualifier")]
          protected virtual string CreateForeignKeySegment(Association association, List<string> foreignKeyColumns)
          {
@@ -214,6 +278,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             return result;
          }
 
+         /// <summary>
+         /// Creates the code segments of a model attribute.
+         /// </summary>
+         /// <param name="modelAttribute">The model attribute.</param>
+         /// <returns>A list of strings representing the segments of the model attribute.</returns>
          protected virtual List<string> GatherModelAttributeSegments(ModelAttribute modelAttribute)
          {
             List<string> segments = new List<string>();
@@ -256,6 +325,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             return segments;
          }
 
+         /// <summary>
+         /// Generates all necessary files using the specified EF model file manager.
+         /// </summary>
+         /// <param name="manager">The EF model file manager to use.</param>
          public override void Generate(Manager manager)
          {
             // Entities
@@ -292,6 +365,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
 
+         /// <summary>
+         /// Gets the list of additional using statements.
+         /// </summary>
          protected override List<string> GetAdditionalUsingStatements()
          {
             List<string> result = new List<string>();
@@ -303,6 +379,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             return result;
          }
 
+         /// <summary>
+         /// Gets the foreign keys of the association based on the provided list of foreign key columns
+         /// </summary>
+         /// <param name="association">The association to retrieve foreign keys from</param>
+         /// <param name="foreignKeyColumns">The list of foreign key columns</param>
+         /// <returns>An IEnumerable of the foreign keys</returns>
          protected virtual IEnumerable<string> GetForeignKeys(Association association, List<string> foreignKeyColumns)
          {
             // final collection of foreign key property names, real or shadow
@@ -329,6 +411,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             return result;
          }
 
+         /// <summary>
+         /// Writes bidirectional dependent associations
+         /// </summary>
+         /// <param name="sourceInstance">The source instance</param>
+         /// <param name="baseSegment">The base segment</param>
+         /// <param name="visited">The visited associations list</param>
          protected virtual void WriteBidirectionalDependentAssociations(ModelClass sourceInstance, string baseSegment, List<Association> visited)
          {
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
@@ -454,6 +542,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
 
+         /// <summary>
+         /// Writes bidirectional non-dependent association elements for the given model class.
+         /// </summary>
+         /// <param name="modelClass">The model class for which to write the associations.</param>
+         /// <param name="visited">A list of associations that have already been visited to avoid infinite recursion.</param>
+         /// <param name="foreignKeyColumns">A list of foreign key columns.</param>
          protected virtual void WriteBidirectionalNonDependentAssociations(ModelClass modelClass, List<Association> visited, List<string> foreignKeyColumns)
          {
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
@@ -534,6 +628,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
 
+         /// <summary>
+         /// Writes the DbContext constructors.
+         /// </summary>
          protected void WriteContextConstructors()
          {
             if (!string.IsNullOrEmpty(modelRoot.ConnectionString) || !string.IsNullOrEmpty(modelRoot.ConnectionStringName))
@@ -566,6 +663,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             NL();
          }
 
+         /// <summary>
+         /// Writes the DbContext file.
+         /// </summary>
          protected virtual void WriteDbContext()
          {
             List<string> segments = new List<string>();
@@ -644,6 +744,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             EndNamespace(modelRoot.Namespace);
          }
 
+         /// <summary>
+         /// Writes the DbContextFactory file.
+         /// </summary>
          protected void WriteDbContextFactory()
          {
             Output("using System;");
@@ -743,6 +846,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             EndNamespace(modelRoot.Namespace);
          }
 
+         /// <summary>
+         /// Writes the DbSet code for the DbContext.
+         /// </summary>
          protected void WriteDbSets()
          {
             Output("#region DbSets");
@@ -777,6 +883,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             NL();
          }
 
+         /// <summary>
+         /// Writes the OnConfiguring method for the DbContext into the segments collection.
+         /// </summary>
+         /// <param name="segments">Container for output code</param>
          protected void WriteOnConfiguring(List<string> segments)
          {
             Output("/// <inheritdoc />");
@@ -801,6 +911,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             NL();
          }
 
+         /// <summary>
+         /// Writes the necessary code for initializing the entity framework model on creation.
+         /// </summary>
+         /// <param name="segments">The list of code segments to append to.</param>
+         /// <param name="classesWithTables">The array of classes with associated database tables.</param>
          protected virtual void WriteOnModelCreate(List<string> segments, ModelClass[] classesWithTables)
          {
             Output("partial void OnModelCreatingImpl(ModelBuilder modelBuilder);");
@@ -841,6 +956,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             Output("}");
          }
 
+         /// <summary>
+         /// Writes the delete behavior for a bidirectional association's source role to the list of segments.
+         /// </summary>
+         /// <param name="association">The bidirectional association.</param>
+         /// <param name="segments">The list of segments to add the delete behavior to.</param>
          protected virtual void WriteSourceDeleteBehavior(BidirectionalAssociation association, List<string> segments)
          {
             if (!association.Source.IsDependentType
@@ -866,6 +986,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
 
+         /// <summary>
+         /// Writes the delete behavior for the target class of the given association into a list of segments.
+         /// </summary>
+         /// <param name="association">The Association object to write delete behavior for.</param>
+         /// <param name="segments">The list of segments to contain the generated code.</param>
          protected virtual void WriteTargetDeleteBehavior(Association association, List<string> segments)
          {
             if (!association.Source.IsDependentType
@@ -891,6 +1016,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
 
+         /// <summary>
+         /// Writes the unidirectional dependent associations of a given ModelClass instance.
+         /// </summary>
+         /// <param name="sourceInstance">The ModelClass instance to search the unidirectional dependent associations.</param>
+         /// <param name="baseSegment">The base segment to prepend the association's property segment.</param>
+         /// <param name="visited">List of visited associations to avoid circular references.</param>
          protected virtual void WriteUnidirectionalDependentAssociations(ModelClass sourceInstance, string baseSegment, List<Association> visited)
          {
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
@@ -979,6 +1110,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
 
+         /// <summary>
+         /// Writes unidirectional non-dependent associations
+         /// </summary>
+         /// <param name="modelClass">The model class</param>
+         /// <param name="visited">The list of already-visited association</param>
+         /// <param name="foreignKeyColumns">The list of foreign key columns</param>
          protected virtual void WriteUnidirectionalNonDependentAssociations(ModelClass modelClass, List<Association> visited, List<string> foreignKeyColumns)
          {
             // ReSharper disable once LoopCanBePartlyConvertedToQuery

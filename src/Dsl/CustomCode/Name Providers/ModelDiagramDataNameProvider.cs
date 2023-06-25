@@ -4,6 +4,9 @@ using Microsoft.VisualStudio.Modeling;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Provides names for model diagram elements based on the element's data object name.
+   /// </summary>
    public class ModelDiagramDataNameProvider : ElementNameProvider
    {
       /// <summary>Sets unique name on an element.</summary>

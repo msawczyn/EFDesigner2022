@@ -17,15 +17,28 @@ using Sawczyn.EFDesigner.EFModel.Extensions;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Processes assembly files
+   /// </summary>
    public class AssemblyProcessor : IFileProcessor
    {
       private readonly Store Store;
 
+      /// <summary>
+      /// Constructs a new instance of the AssemblyProcessor class with the given store.
+      /// </summary>
+      /// <param name="store">The store used for processing assembly information.</param>
       public AssemblyProcessor(Store store)
       {
          Store = store;
       }
 
+      /// <summary>
+      /// Processes the input file and returns a list of new model elements.
+      /// </summary>
+      /// <param name="inputFile">The path of the input file to be processed.</param>
+      /// <param name="newElements">The list of new model elements created during the processing.</param>
+      /// <returns>Returns true if the processing was successful; false otherwise.</returns>
       public bool Process(string inputFile, out List<ModelElement> newElements)
       {
          try

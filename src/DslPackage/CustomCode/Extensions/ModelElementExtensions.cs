@@ -8,8 +8,17 @@ using Sawczyn.EFDesigner.EFModel.Extensions;
 namespace Sawczyn.EFDesigner.EFModel
 {
    // ReSharper disable once UnusedMember.Global
+
+   /// <summary>
+   /// Provides extension methods for working with model elements.
+   /// </summary>
    public static class ModelElementExtensions
    {
+      /// <summary>
+      /// Gets the active diagram view for the specified model element.
+      /// </summary>
+      /// <param name="element">The model element for which to get the active diagram view.</param>
+      /// <returns>The active diagram view for the specified model element.</returns>
       public static DiagramView GetActiveDiagramView(this ModelElement element)
       {
          ShapeElement shapeElement = element.GetShapeElement();
@@ -17,6 +26,11 @@ namespace Sawczyn.EFDesigner.EFModel
          return shapeElement?.GetActiveDiagramView();
       }
 
+      /// <summary>
+      /// Retrieves the active diagram view for a given ShapeElement.
+      /// </summary>
+      /// <param name="shape">The ShapeElement to get the active diagram view for.</param>
+      /// <returns>The active DiagramView for the specified ShapeElement.</returns>
       public static DiagramView GetActiveDiagramView(this ShapeElement shape)
       {
          return shape.Diagram?.ActiveDiagramView;
@@ -54,6 +68,11 @@ namespace Sawczyn.EFDesigner.EFModel
          return null;
       }
 
+      /// <summary>
+      /// Gets the ShapeElement of a given ModelElement
+      /// </summary>
+      /// <param name="element">ModelElement to get the ShapeElement for</param>
+      /// <returns>ShapeElement of the given ModelElement</returns>
       public static ShapeElement GetShapeElement(this ModelElement element)
       {
          // If the model element is in a compartment the result will be null
@@ -79,6 +98,12 @@ namespace Sawczyn.EFDesigner.EFModel
 
       // the following is based on code at https://stackoverflow.com/questions/44876242/center-a-dsl-shape-on-diagram-screen
 
+      /// <summary>
+      /// Locates the given model element in the active diagram.
+      /// </summary>
+      /// <param name="element">The model element to locate.</param>
+      /// <param name="ensureVisible">Indicates whether the element should be made visible in the diagram.</param>
+      /// <returns>True if the element was found and located in the diagram; false otherwise.</returns>
       public static bool LocateInActiveDiagram(this ModelElement element, bool ensureVisible)
       {
          DiagramView diagramView = element?.GetActiveDiagramView();
@@ -86,6 +111,13 @@ namespace Sawczyn.EFDesigner.EFModel
          return (diagramView != null) && diagramView.SelectModelElement(element, ensureVisible);
       }
 
+      /// <summary>
+      /// Selects a model element within a diagram view.
+      /// </summary>
+      /// <param name="diagramView">The DiagramView where the selection should take place.</param>
+      /// <param name="modelElement">The ModelElement to be selected.</param>
+      /// <param name="ensureVisible">A Boolean value indicating whether to make the selected element visible.</param>
+      /// <returns>A Boolean value indicating whether the ModelElement was successfully selected.</returns>
       public static bool SelectModelElement(this DiagramView diagramView, ModelElement modelElement, bool ensureVisible)
       {
          // Get the shape element in diagramView that corresponds to the model element 

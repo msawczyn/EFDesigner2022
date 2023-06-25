@@ -29,6 +29,8 @@ namespace Sawczyn.EFDesigner.EFModel
          typeof(ModelRootChangeRules)
       };
 
+      /// <summary>Gets the list of non-generated domain model types.</summary>
+      /// <returns>List of types.</returns>
       protected override Type[] GetCustomDomainModelTypes()
       {
          return base.GetCustomDomainModelTypes().Concat(RuleClasses).ToArray();

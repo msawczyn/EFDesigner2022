@@ -5,6 +5,9 @@ using System.Globalization;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Provides conversion from <see cref="string"/> to <see cref="EndpointRole"/>.
+   /// </summary>
    public class EndpointRoleTypeConverter : TypeConverterBase
    {
       /// <summary>

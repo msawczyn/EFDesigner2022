@@ -40,6 +40,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      /// Gets the class glyphs as a read-only dictionary.
+      /// </summary>
       public static ReadOnlyDictionary<string, Image> ClassGlyphs
       {
          get
@@ -50,6 +53,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      /// Gets a read-only dictionary of property glyphs where the key is the property name and the value is the corresponding glyph image.
+      /// </summary>
       public static ReadOnlyDictionary<string, Image> PropertyGlyphs
       {
          get
@@ -65,6 +71,10 @@ namespace Sawczyn.EFDesigner.EFModel
       /// </summary>
       public static Func<ModelClass, bool> OpenCodeFile { get; set; }
 
+      /// <summary>
+      /// Sets this object's colors in the diagram, based on the current theme
+      /// </summary>
+      /// <param name="diagramColors">The colors to use.</param>
       public void SetThemeColors(DiagramThemeColors diagramColors)
       {
          Transaction tx = Store.TransactionManager.InTransaction

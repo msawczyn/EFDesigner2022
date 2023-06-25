@@ -9,13 +9,23 @@ namespace Sawczyn.EFDesigner
    /// </summary>
    public static class ModelDisplay
    {
+      /// <summary>
+      /// Gets the diagram theme colors.
+      /// </summary>
       public static Func<DiagramThemeColors> GetDiagramColors;
 
       private static LayoutDiagramAction LayoutDiagramMethod;
 
-      // executes autolayout on the diagram passed in
+      /// <summary>
+      ///   Executes autolayout on the diagram passed in
+      /// </summary>
+      /// <param name="diagram">EFModelDiagram instance to perform action upon.</param>
       public delegate void LayoutDiagramAction(EFModelDiagram diagram);
 
+      /// <summary>
+      /// Applies a layout algorithm to the given EFModelDiagram object
+      /// </summary>
+      /// <param name="diagram">The EFModelDiagram object to be laid out</param>
       public static void LayoutDiagram(EFModelDiagram diagram)
       {
          if (LayoutDiagramMethod != null)
@@ -31,6 +41,10 @@ namespace Sawczyn.EFDesigner
          }
       }
 
+      /// <summary>
+      /// Registers a LayoutDiagramAction method.
+      /// </summary>
+      /// <param name="method">The LayoutDiagramAction method to register.</param>
       public static void RegisterLayoutDiagramAction(LayoutDiagramAction method)
       {
          LayoutDiagramMethod = method;
