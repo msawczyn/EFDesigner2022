@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v3.0.6.4
+//     Produced by Entity Framework Visual Editor v4.2.5.1
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -30,8 +30,14 @@ namespace Testing
    /// to enable specific design-time experiences such as Migrations. Design-time services will automatically discover 
    /// implementations of this interface that are in the startup assembly or the same assembly as the derived context.
    /// </summary>
-   public class EFModel1Factory: IDesignTimeDbContextFactory<EFModel1>
+   public partial class EFModel1DesignTimeFactory: IDesignTimeDbContextFactory<EFModel1>
    {
+      /// <summary>
+      /// Partial method to allow post-creation configuration of the DbContext after it's created
+      /// but before it's returned.
+      /// </summary>
+      partial void Initialize(EFModel1 dbContext);
+
       /// <summary>Creates a new instance of a derived context.</summary>
       /// <param name="args"> Arguments provided by the design-time service. </param>
       /// <returns> An instance of <see cref="Testing.EFModel1" />.</returns>
@@ -44,7 +50,49 @@ namespace Testing
          // If you have custom initialization for the context, you can then consolidate the code by defining the CustomInit partial as
          //    partial void CustomInit(DbContextOptionsBuilder optionsBuilder) => ConfigureOptions(optionsBuilder);
          EFModel1.ConfigureOptions(optionsBuilder);
-         return new EFModel1(optionsBuilder.Options);
+         EFModel1 result = new EFModel1(optionsBuilder.Options);
+         Initialize(result);
+
+         return result;
+      }
+   }
+
+   /// <summary>
+   ///     Defines a factory for creating derived DbContext instances.
+   /// </summary>
+   /// <remarks>
+   ///     See <see href="https://aka.ms/efcore-docs-dbcontext-factory">Using DbContextFactory</see> for more information.
+   /// </remarks>
+   public partial class EFModel1Factory: IDbContextFactory<EFModel1>
+   {
+      /// <summary>
+      /// Partial method to allow post-creation configuration of the DbContext after it's created
+      /// but before it's returned.
+      /// </summary>
+      partial void Initialize(EFModel1 dbContext);
+
+      /// <summary>
+      ///     <para>
+      ///         Creates a new <see cref="T:Microsoft.EntityFrameworkCore.DbContext" /> instance.
+      ///     </para>
+      ///     <para>
+      ///         The caller is responsible for disposing the context; it will not be disposed by any dependency injection container.
+      ///     </para>
+      /// </summary>
+      /// <returns>A new context instance.</returns>
+      public EFModel1 CreateDbContext()
+      {
+         DbContextOptionsBuilder<EFModel1> optionsBuilder = new DbContextOptionsBuilder<EFModel1>();
+
+         // Please provide the EFModel1.ConfigureOptions(optionsBuilder) in the partial class as
+         //    public static void ConfigureOptions(DbContextOptionsBuilder optionsBuilder) {{ ... }}
+         // If you have custom initialization for the context, you can then consolidate the code by defining the CustomInit partial as
+         //    partial void CustomInit(DbContextOptionsBuilder optionsBuilder) => ConfigureOptions(optionsBuilder);
+         EFModel1.ConfigureOptions(optionsBuilder);
+         EFModel1 result = new EFModel1(optionsBuilder.Options);
+         Initialize(result);
+
+         return result;
       }
    }
 }

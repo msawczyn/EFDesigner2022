@@ -5,8 +5,16 @@ using Microsoft.VisualStudio.Modeling;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Provides a base class for implementing type converters.
+   /// </summary>
    public class TypeConverterBase : TypeConverter
    {
+      /// <summary>
+      /// Retrieves the selected elements from a grid selection.
+      /// </summary>
+      /// <param name="gridSelection">The grid selection object containing selected elements.</param>
+      /// <returns>An array of elements implementing the IHasStore interface.</returns>
       protected IHasStore[] GetSelectedElements(object gridSelection)
       {
          object[] objects = gridSelection as object[];

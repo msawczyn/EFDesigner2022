@@ -1,13 +1,14 @@
-<#@ include file="Dsl\DomainClassCodeGenerator.tt" #>
 <#@ Dsl processor="DslDirectiveProcessor"  requires="fileName='..\DslDefinition.dsl'" #>
-
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1570 // XML comment has badly formed XML
+<#@ include file="Dsl\DomainClassCodeGenerator.tt" #>
 namespace <#= CodeGenerationUtilities.GetPackageNamespace(this.Dsl) #>
 {
    /// <summary>
    /// Current designer version
    /// </summary>
-	partial class ModelRoot
-	{
-		public const string DSLVersion = "<#= this.Dsl.MajorVersion #>.<#= this.Dsl.MinorVersion #>.<#= this.Dsl.Build #>.<#= this.Dsl.Revision #>";
-	}
+   partial class ModelRoot
+   {
+      public const string DSLVersion = "<#= this.Dsl.MajorVersion #>.<#= this.Dsl.MinorVersion #>.<#= this.Dsl.Build #>.<#= this.Dsl.Revision #>";
+   }
 }

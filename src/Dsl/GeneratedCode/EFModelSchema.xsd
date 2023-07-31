@@ -1,4 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1570 // XML comment has badly formed XML
+<?xml version="1.0" encoding="utf-8"?>
 <xsd:schema id="EFModelSchema" targetNamespace="http://schemas.microsoft.com/dsltools/EFModel" elementFormDefault="qualified" xmlns="http://schemas.microsoft.com/dsltools/EFModel" xmlns:core="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <xsd:import id="CoreSchema" namespace="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" />
   <!-- ModelRoot -->

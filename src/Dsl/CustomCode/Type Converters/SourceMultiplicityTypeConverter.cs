@@ -7,6 +7,9 @@ using Microsoft.VisualStudio.Modeling.Diagrams;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Converts the source <see cref="Multiplicity"/> to a string and vice versa.
+   /// </summary>
    public class SourceMultiplicityTypeConverter : MultiplicityTypeConverter
    {
       /// <summary>Converts the given value object to the specified type, using the specified context and culture information.</summary>

@@ -1,4 +1,6 @@
 ﻿<#@ Dsl processor="DslDirectiveProcessor"  requires="fileName='..\DslDefinition.dsl'" #>
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1570 // XML comment has badly formed XML
 <#@ template inherits="Microsoft.VisualStudio.TextTemplating.VSHost.ModelingTextTransformation" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Collections.ObjectModel" #>

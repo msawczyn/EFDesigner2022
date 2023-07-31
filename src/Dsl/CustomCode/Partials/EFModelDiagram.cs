@@ -235,25 +235,28 @@ namespace Sawczyn.EFDesigner.EFModel
          ModelElement element = diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelClass") as ModelElement
                              ?? diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelEnum") as ModelElement;
 
-         List<BidirectionalConnector> candidates = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
+         // TODO: This isn't ready for prime time. Need to handle multiple identity properties
+         //List<BidirectionalConnector> candidates = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
 
          // are we creating an association class?
-         if (candidates?.Any() == true)
-         {
-            MakeAssociationClass(candidates);
 
-            try
-            {
-               base.OnDragDrop(diagramDragEventArgs);
-            }
-            catch (ArgumentException)
-            {
-               // ignore. byproduct of multiple diagrams
-            }
-         }
+         //if (candidates?.Any() == true)
+         //{
+         //   MakeAssociationClass(candidates);
 
-         // came from model explorer?
-         else if (element != null)
+         //   try
+         //   {
+         //      base.OnDragDrop(diagramDragEventArgs);
+         //   }
+         //   catch (ArgumentException)
+         //   {
+         //      // ignore. byproduct of multiple diagrams
+         //   }
+         //}
+
+         //// came from model explorer?
+         //else 
+         if (element != null)
             AddToDiagram(element, diagramDragEventArgs.MousePosition);
 
          else if (IsDroppingExternal)
@@ -293,30 +296,30 @@ namespace Sawczyn.EFDesigner.EFModel
             return $"Import dropped files: added {(messageParts.Count > 1 ? string.Join(", ", messageParts.Take(messageParts.Count - 1)) + " and " + messageParts.Last() : messageParts.First())}";
          }
 
-         void MakeAssociationClass(List<BidirectionalConnector> possibleConnectors)
-         {
-            ModelClass modelClass = (ModelClass)ClassShape.ClassShapeDragData.ClassShape.ModelElement;
+         //void MakeAssociationClass(List<BidirectionalConnector> possibleConnectors)
+         //{
+         //   ModelClass modelClass = (ModelClass)ClassShape.ClassShapeDragData.ClassShape.ModelElement;
 
-            using (Transaction t = modelClass.Store.TransactionManager.BeginTransaction("Creating association class"))
-            {
-               foreach (BidirectionalConnector candidate in possibleConnectors)
-               {
-                  BidirectionalAssociation association = (BidirectionalAssociation)candidate.ModelElement;
+         //   using (Transaction t = modelClass.Store.TransactionManager.BeginTransaction("Creating association class"))
+         //   {
+         //      foreach (BidirectionalConnector candidate in possibleConnectors)
+         //      {
+         //         BidirectionalAssociation association = (BidirectionalAssociation)candidate.ModelElement;
 
-                  if (BooleanQuestionDisplay.Show(Store, $"Make {modelClass.Name} an association class for {association.GetDisplayText()}?") == true)
-                  {
-                     modelClass.ConvertToAssociationClass(association);
-                     ClassShape.ClassShapeDragData = null;
+         //         if (BooleanQuestionDisplay.Show(Store, $"Make {modelClass.Name} an association class for {association.GetDisplayText()}?") == true)
+         //         {
+         //            modelClass.ConvertToAssociationClass(association);
+         //            ClassShape.ClassShapeDragData = null;
 
-                     break;
-                  }
-               }
+         //            break;
+         //         }
+         //      }
 
-               t.Commit();
-            }
+         //      t.Commit();
+         //   }
 
-            ClassShape.ClassShapeDragData = null;
-         }
+         //   ClassShape.ClassShapeDragData = null;
+         //}
 
          void AddToDiagram(ModelElement elementToAdd, PointD atPosition)
          {

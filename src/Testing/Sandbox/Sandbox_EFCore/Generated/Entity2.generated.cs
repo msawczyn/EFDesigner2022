@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.0.1
+//     Produced by Entity Framework Visual Editor v4.2.4.5
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -22,48 +22,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace SureImpact.Data.Framework
+namespace TestData
 {
    public partial class Entity2
    {
       partial void Init();
 
       /// <summary>
-      /// Default constructor. Protected due to required properties, but present because EF needs it.
+      /// Default constructor
       /// </summary>
-      protected Entity2()
+      public Entity2()
       {
-         Init();
-      }
-
-      /// <summary>
-      /// Replaces default constructor, since it's protected. Caller assumes responsibility for setting all required values before saving.
-      /// </summary>
-      public static Entity2 CreateEntity2Unsafe()
-      {
-         return new Entity2();
-      }
-
-      /// <summary>
-      /// Public constructor with required data
-      /// </summary>
-      /// <param name="entity1"></param>
-      public Entity2(global::SureImpact.Data.Framework.Entity1 entity1)
-      {
-         if (entity1 == null) throw new ArgumentNullException(nameof(entity1));
-         this.Entity1 = entity1;
-         entity1.Entity2 = this;
+         Entity1 = new System.Collections.Generic.HashSet<global::TestData.Entity1>();
 
          Init();
-      }
-
-      /// <summary>
-      /// Static create function (for use in LINQ queries, etc.)
-      /// </summary>
-      /// <param name="entity1"></param>
-      public static Entity2 Create(global::SureImpact.Data.Framework.Entity1 entity1)
-      {
-         return new Entity2(entity1);
       }
 
       /*************************************************************************
@@ -83,10 +55,7 @@ namespace SureImpact.Data.Framework
        * Navigation properties
        *************************************************************************/
 
-      /// <summary>
-      /// Required
-      /// </summary>
-      public virtual global::SureImpact.Data.Framework.Entity1 Entity1 { get; set; }
+      public virtual ICollection<global::TestData.Entity1> Entity1 { get; private set; }
 
    }
 }

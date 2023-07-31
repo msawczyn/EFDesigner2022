@@ -88,9 +88,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.VisualStudio.Modeling.Components">
-      <HintPath>..\..\..\..\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\Modeling\17.0\Microsoft.VisualStudio.Modeling.Components.dll</HintPath>
-    </Reference>
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.3.32804.24" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

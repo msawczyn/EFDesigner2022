@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v3.0.6.4
+//     Produced by Entity Framework Visual Editor v4.2.5.1
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -24,19 +24,16 @@ using System.Runtime.CompilerServices;
 
 namespace Testing
 {
-   public partial class EntityImplementation: global::Testing.EntityAbstract
+   public partial class Entity2
    {
       partial void Init();
 
       /// <summary>
       /// Default constructor
       /// </summary>
-      public EntityImplementation(): base()
+      public Entity2()
       {
-         Test = "default string";
-         Property1 = DateTime.UtcNow;
-         Property11 = 3;
-         Property12 = true;
+         Entity1 = new System.Collections.Generic.HashSet<global::Testing.Entity1>();
 
          Init();
       }
@@ -46,32 +43,19 @@ namespace Testing
        *************************************************************************/
 
       /// <summary>
-      /// Max length = 255, Default value = &quot;default string&quot;
+      /// Identity, Indexed, Required
+      /// Unique identifier
       /// </summary>
-      [MaxLength(255)]
-      [StringLength(255)]
-      public string Test { get; set; }
-
-      /// <summary>
-      /// Default value = DateTime.UtcNow
-      /// </summary>
-      public DateTime? Property1 { get; set; }
-
-      /// <summary>
-      /// Default value = 3
-      /// </summary>
-      public int? Property11 { get; set; }
-
-      /// <summary>
-      /// Default value = true
-      /// </summary>
-      public bool? Property12 { get; set; }
+      [Key]
+      [Required]
+      [System.ComponentModel.Description("Unique identifier")]
+      public long Id { get; set; }
 
       /*************************************************************************
        * Navigation properties
        *************************************************************************/
 
-      public virtual global::Testing.Entity1 Entity1 { get; set; }
+      public virtual ICollection<global::Testing.Entity1> Entity1 { get; private set; }
 
    }
 }

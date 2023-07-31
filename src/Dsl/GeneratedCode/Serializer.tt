@@ -1,2 +1,4 @@
-<#@ include file="..\Templates\DomainSerializer.tt" #>
 <#@ Dsl processor="DslDirectiveProcessor"  requires="fileName='..\DslDefinition.dsl'" #>
+<#@ include file="..\Templates\DomainSerializer.tt" #>
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1570 // XML comment has badly formed XML

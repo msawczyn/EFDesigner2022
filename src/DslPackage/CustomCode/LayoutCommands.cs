@@ -88,7 +88,7 @@ namespace Sawczyn.EFDesigner.EFModel
    {
       // Set to public to allow MEF extension to perform layout
       // ReSharper disable once UnusedParameter.Local
-      private static void DoGraphvizLayout(List<DotNode> vertices, List<DotEdge> edges, EFModelDiagram diagram)
+      private static void DoGraphvizLayout(List<DotNode> vertices, List<DotEdge> edges)
       {
          // set up to be a bidirectional graph with the edges we found
          BidirectionalGraph<DotNode, DotEdge> graph = edges.ToBidirectionalGraph<DotNode, DotEdge>();
@@ -287,7 +287,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             // use graphviz as the default if available
             if (File.Exists(EFModelPackage.Options.DotExePath))
-               DoGraphvizLayout(vertices, edges, diagram);
+               DoGraphvizLayout(vertices, edges);
             else
                DoStandardLayout(edges.Select(edge => edge.Shape).ToList(), diagram);
 

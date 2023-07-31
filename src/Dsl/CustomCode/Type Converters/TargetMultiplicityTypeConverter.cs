@@ -7,6 +7,9 @@ using Microsoft.VisualStudio.Modeling.Diagrams;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Converts a string into a Multiplicity object that is used in the Entity Framework as the TargetMultiplicity
+   /// </summary>
    public class TargetMultiplicityTypeConverter : MultiplicityTypeConverter
    {
       /// <summary>Converts the given value object to the specified type, using the specified context and culture information.</summary>

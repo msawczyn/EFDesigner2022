@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1570 // XML comment has badly formed XML
+using System;
 using System.Linq;
 using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.Modeling;

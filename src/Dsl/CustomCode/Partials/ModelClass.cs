@@ -672,7 +672,6 @@ namespace Sawczyn.EFDesigner.EFModel
       /// Gets the text of the tooptip that will be shown when hovering over the explorer node for this class
       /// </summary>
       /// <returns>Tooltip text</returns>
-      [SuppressMessage( "ReSharper", "ConvertIfStatementToReturnStatement" )]
       protected string GetExplorerTooltipValue()
       {
          if (IsAssociationClass)
@@ -703,7 +702,6 @@ namespace Sawczyn.EFDesigner.EFModel
       ///    Gets the glyph type value for the diagram. This determines the visibilities of the class shape decorators
       /// </summary>
       /// <returns>The type of glyph that should be displayed</returns>
-      [SuppressMessage( "ReSharper", "ConvertIfStatementToReturnStatement" )]
       protected string GetGlyphTypeValue()
       {
          if (ModelRoot.ShowWarningsInDesigner && GetHasWarningValue())
@@ -727,6 +725,7 @@ namespace Sawczyn.EFDesigner.EFModel
          if (IsAbstract)
             return "AbstractEntityGlyph";
 
+         // ReSharper disable once ConvertIfStatementToReturnStatement
          if (IsDatabaseView)
             return "ViewGlyph";
 

@@ -30,6 +30,9 @@ namespace Sawczyn.EFDesigner.EFModel
       /// </summary>
       public static bool LimitModelAttributeTypeChoices { get; set; }
 
+      /// <summary>
+      /// Represents an array of C# reserved words.
+      /// </summary>
       public readonly string[] ReservedWords =
       {
          "abstract",
@@ -529,6 +532,11 @@ namespace Sawczyn.EFDesigner.EFModel
 
       #region DatabaseSchema tracking property
 
+      /// <summary>
+      /// Raises the DatabaseSchemaChanged event.
+      /// </summary>
+      /// <param name="oldValue">The old value of the database schema.</param>
+      /// <param name="newValue">The new value of the database schema.</param>
       protected virtual void OnDatabaseSchemaChanged(string oldValue, string newValue)
       {
          TrackingHelper.UpdateTrackingCollectionProperty(Store,
@@ -552,6 +560,11 @@ namespace Sawczyn.EFDesigner.EFModel
 
       #region DatabaseCollationDefault tracking property
 
+      /// <summary>
+      /// Raises the DatabaseCollationDefaultChanged event when the default collation of a database is changed.
+      /// </summary>
+      /// <param name="oldValue">The previous collation value.</param>
+      /// <param name="newValue">The new collation value.</param>
       protected virtual void OnDatabaseCollationDefaultChanged(string oldValue, string newValue)
       {
          TrackingHelper.UpdateTrackingCollectionProperty(Store,
@@ -575,6 +588,11 @@ namespace Sawczyn.EFDesigner.EFModel
 
       #region DefaultCollectionClass tracking property
 
+      /// <summary>
+      /// Raises the CollectionClassChanged event.
+      /// </summary>
+      /// <param name="oldValue">The old value of the collection class.</param>
+      /// <param name="newValue">The new value of the collection class.</param>
       protected virtual void OnCollectionClassChanged(string oldValue, string newValue)
       {
          TrackingHelper.UpdateTrackingCollectionProperty(Store,
@@ -598,6 +616,11 @@ namespace Sawczyn.EFDesigner.EFModel
 
       #region Entity Output Directory tracking property
 
+      /// <summary>
+      ///  Raises the EntityOutputDirectoryChanged event when the Entity Output Directory is changed.
+      /// </summary>
+      /// <param name="oldValue">The old value of the Entity Output Directory.</param>
+      /// <param name="newValue">The new value of the Entity Output Directory.</param>
       protected virtual void OnEntityOutputDirectoryChanged(string oldValue, string newValue)
       {
          TrackingHelper.UpdateTrackingCollectionProperty(Store, Classes, ModelClass.OutputDirectoryDomainPropertyId, ModelClass.IsOutputDirectoryTrackingDomainPropertyId);
@@ -618,6 +641,11 @@ namespace Sawczyn.EFDesigner.EFModel
 
       #region Enum Output Directory tracking property
 
+      /// <summary>
+      /// Raises the event when the output directory for an enumeration has changed.
+      /// </summary>
+      /// <param name="oldValue">The old output directory.</param>
+      /// <param name="newValue">The new output directory.</param>
       protected virtual void OnEnumOutputDirectoryChanged(string oldValue, string newValue)
       {
          TrackingHelper.UpdateTrackingCollectionProperty(Store, Classes, ModelEnum.OutputDirectoryDomainPropertyId, ModelEnum.IsOutputDirectoryTrackingDomainPropertyId);

@@ -15,7 +15,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.4.5
+      // EFDesigner v4.2.5.1
       // Copyright (c) 2017-2023 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -59,11 +59,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             return projectItem.ContainingProject;
 
          // this returns SELECTED (active) project(s) - it may be a different project than the T4 template. 
-         Array activeSolutionProjects = (Array)dte.ActiveSolutionProjects;
-
-         if (activeSolutionProjects == null)
-            throw new Exception("DTE.ActiveSolutionProjects returned null");
-
+         Array activeSolutionProjects = (Array)dte.ActiveSolutionProjects ?? throw new Exception("DTE.ActiveSolutionProjects returned null");
          if (activeSolutionProjects.Length > 0)
          {
             Project dteProject = (Project)activeSolutionProjects.GetValue(0);
@@ -75,55 +71,54 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          throw new InvalidOperationException("Error in GetCurrentProject(). Unable to find project.");
       }
 
-      private ProjectItem GetDirectoryItem(string target)
-      {
-         DTE dte = GetDTE();
-         Array projects = dte?.ActiveSolutionProjects as Array;
-         Project currentProject = projects?.GetValue(0) as Project;
-         ProjectItem targetProjectItem = null;
+      //private ProjectItem GetDirectoryItem(string target)
+      //{
+      //   DTE dte = GetDTE();
+      //   Array projects = dte?.ActiveSolutionProjects as Array;
+      //   ProjectItem targetProjectItem = null;
 
-         if (currentProject != null)
-         {
-            string rootDirectory = Path.GetDirectoryName(currentProject.FullName);
-            Directory.CreateDirectory(Path.Combine(rootDirectory, target));
+      //   if (projects?.GetValue(0) is Project currentProject)
+      //   {
+      //      string rootDirectory = Path.GetDirectoryName(currentProject.FullName);
+      //      Directory.CreateDirectory(Path.Combine(rootDirectory, target));
 
-            Queue<string> paths = new Queue<string>(target.Split('\\'));
-            ProjectItems currentItemList = currentProject.ProjectItems;
-            bool found = false;
+      //      Queue<string> paths = new Queue<string>(target.Split('\\'));
+      //      ProjectItems currentItemList = currentProject.ProjectItems;
+      //      bool found = false;
 
-            while (paths.Any())
-            {
-               string path = paths.Dequeue();
+      //      while (paths.Any())
+      //      {
+      //         string path = paths.Dequeue();
 
-               for (int index = 1; index <= currentItemList.Count; ++index)
-               {
-                  if (currentItemList.Item(index).Kind == EnvDTE.Constants.vsProjectItemKindPhysicalFolder)
-                  {
-                     if (!paths.Any())
-                        targetProjectItem = currentItemList.Item(index);
-                     else
-                        currentItemList = currentItemList.Item(index).ProjectItems;
+      //         for (int index = 1; index <= currentItemList.Count; ++index)
+      //         {
+      //            if (currentItemList.Item(index).Kind == EnvDTE.Constants.vsProjectItemKindPhysicalFolder)
+      //            {
+      //               if (!paths.Any())
+      //                  targetProjectItem = currentItemList.Item(index);
+      //               else
+      //                  currentItemList = currentItemList.Item(index).ProjectItems;
 
-                     found = true;
+      //               found = true;
 
-                     break;
-                  }
-               }
+      //               break;
+      //            }
+      //         }
 
-               if (!found)
-               {
-                  ProjectItem newItem = currentItemList.AddFolder(path);
+      //         if (!found)
+      //         {
+      //            ProjectItem newItem = currentItemList.AddFolder(path);
 
-                  if (!paths.Any())
-                     targetProjectItem = newItem;
-                  else
-                     currentItemList = newItem.ProjectItems;
-               }
-            }
-         }
+      //            if (!paths.Any())
+      //               targetProjectItem = newItem;
+      //            else
+      //               currentItemList = newItem.ProjectItems;
+      //         }
+      //      }
+      //   }
 
-         return targetProjectItem;
-      }
+      //   return targetProjectItem;
+      //}
 
       /// <summary>
       /// Gets the instance of the Visual Studio development environment.
@@ -131,41 +126,33 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
       /// <returns>The instance of the development environment.</returns>
       public DTE GetDTE()
       {
-         IServiceProvider serviceProvider = (IServiceProvider)Host;
-
-         if (serviceProvider == null)
-            throw new Exception("Host property returned unexpected value (null)");
-
-         DTE dte = (DTE)serviceProvider.GetService(typeof(DTE));
-
-         if (dte == null)
-            throw new Exception("Unable to retrieve EnvDTE.DTE");
-
+         IServiceProvider serviceProvider = (IServiceProvider)Host ?? throw new Exception("Host property returned unexpected value (null)");
+         DTE dte = (DTE)serviceProvider.GetService(typeof(DTE)) ?? throw new Exception("Unable to retrieve EnvDTE.DTE");
          return dte;
       }
 
-      private string GetProjectPath(Project project)
-      {
-         string fullProjectName = project.FullName;
+      //private string GetProjectPath(Project project)
+      //{
+      //   string fullProjectName = project.FullName;
 
-         if (string.IsNullOrWhiteSpace(fullProjectName))
-            return string.Empty;
+      //   if (string.IsNullOrWhiteSpace(fullProjectName))
+      //      return string.Empty;
 
-         try
-         {
-            FileInfo info = new FileInfo(fullProjectName);
+      //   try
+      //   {
+      //      FileInfo info = new FileInfo(fullProjectName);
 
-            return info.Directory != null
-                      ? info.Directory.FullName
-                      : string.Empty;
-         }
-         catch
-         {
-            WriteLine("// Project " + fullProjectName + " excluded.");
+      //      return info.Directory != null
+      //                ? info.Directory.FullName
+      //                : string.Empty;
+      //   }
+      //   catch
+      //   {
+      //      WriteLine("// Project " + fullProjectName + " excluded.");
 
-            return string.Empty;
-         }
-      }
+      //      return string.Empty;
+      //   }
+      //}
 
       /// <summary>
       /// This method returns a Solution object

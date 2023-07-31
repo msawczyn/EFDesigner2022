@@ -13,7 +13,6 @@ namespace Sawczyn.EFDesigner.EFModel.Extensions
    /// </summary>
    public static class SyntaxNodeExtensions
    {
-#pragma warning disable CS3001 // Argument type is not CLS-compliant
       /// <summary>
       /// Checks whether or not a syntax node has the specified attribute.
       /// </summary>
@@ -21,7 +20,6 @@ namespace Sawczyn.EFDesigner.EFModel.Extensions
       /// <param name="attributeName">The name of the attribute to check for.</param>
       /// <returns>True if the syntax node has the specified attribute, otherwise false.</returns>
       public static bool HasAttribute([NotNull] this SyntaxNode node, string attributeName)
-#pragma warning restore CS3001 // Argument type is not CLS-compliant
       {
          string fullname = attributeName.EndsWith("Attribute")
                               ? attributeName
@@ -36,7 +34,6 @@ namespace Sawczyn.EFDesigner.EFModel.Extensions
                     .Any(x => (x.Name.ToString() == shortName) || (x.Name.ToString() == fullname));
       }
 
-#pragma warning disable CS3001 // Argument type is not CLS-compliant
 #pragma warning disable CS3002 // Return type is not CLS-compliant
       /// <summary>
       /// Retrieves the attribute syntax of the specified name from the given syntax node.
@@ -88,7 +85,6 @@ namespace Sawczyn.EFDesigner.EFModel.Extensions
 
          return valueToken?.Text.Trim('"');
       }
-#pragma warning restore CS3001 // Argument type is not CLS-compliant
 #pragma warning restore CS3002 // Return type is not CLS-compliant
    }
 }

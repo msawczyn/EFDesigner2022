@@ -7,9 +7,18 @@ using Sawczyn.EFDesigner.EFModel.Nuget;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Helper class with methods to interact with NuGet packages.
+   /// </summary>
    public class NuGetHelper
    {
+      /// <summary>
+      /// Constant that represents the package id for Entity Framework 6.
+      /// </summary>
       public const string PACKAGEID_EF6 = "EntityFramework";
+      /// <summary>
+      /// Constant string representing the package ID for Microsoft Entity Framework Core.
+      /// </summary>
       public const string PACKAGEID_EFCORE = "Microsoft.EntityFrameworkCore";
 
       private const string NUGET_URL = "https://api-v2v3search-0.nuget.org/query?q={0}&prerelease=true&semVerLevel=2.0.0";
@@ -35,7 +44,13 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      /// Gets a dictionary that maps each EFVersion enum value to a collection of strings representing available versions of the corresponding NuGet package.
+      /// </summary>
       public static Dictionary<EFVersion, IEnumerable<string>> EFPackageVersions { get; }
+      /// <summary>
+      /// Gets a list of NuGetPackageDisplay objects.
+      /// </summary>
       public static List<NuGetDisplay> NuGetPackageDisplay { get; }
 
       [SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "Caller requires synchronous method")]

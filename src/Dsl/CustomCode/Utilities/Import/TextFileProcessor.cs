@@ -18,11 +18,18 @@ using Sawczyn.EFDesigner.EFModel.Extensions;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Represents a class that consumes C# source code text files and produces model elements
+   /// </summary>
    public class TextFileProcessor : IFileProcessor
    {
       private readonly Store Store;
       private List<string> KnownInterfaces;
 
+      /// <summary>
+      /// Initializes a new instance of the TextFileProcessor class with the specified Store object.
+      /// </summary>
+      /// <param name="store">The Store object to be used by the TextFileProcessor.</param>
       public TextFileProcessor(Store store)
       {
          Store = store;
@@ -32,6 +39,12 @@ namespace Sawczyn.EFDesigner.EFModel
          KnownClasses = new List<string>();
       }
 
+      /// <summary>
+      /// Processes the input file and returns a boolean value indicating if the operation was successful. Additionally, it populates a list of ModelElement objects representing the new elements created during the process.
+      /// </summary>
+      /// <param name="inputFile">The path to the input file.</param>
+      /// <param name="newElements">An output parameter that will store the list of new ModelElement objects created during the process.</param>
+      /// <returns>A boolean value indicating if the operation was successful.</returns>
       public bool Process(string inputFile, out List<ModelElement> newElements)
       {
          if (string.IsNullOrEmpty(inputFile))
@@ -175,6 +188,10 @@ namespace Sawczyn.EFDesigner.EFModel
          return new List<string>();
       }
 
+      /// <summary>
+      /// Load cache from a list of text files.
+      /// </summary>
+      /// <param name="textFileList">List of text files used to load cache.</param>
       public void LoadCache(List<string> textFileList)
       {
          foreach (string textFile in textFileList)
@@ -183,6 +200,10 @@ namespace Sawczyn.EFDesigner.EFModel
          KnownInterfaces = KnownInterfaces.Distinct().ToList();
       }
 
+      /// <summary>
+      /// Loads a cache from a text file.
+      /// </summary>
+      /// <param name="textFile">The path of the text file containing cache data.</param>
       public void LoadCache(string textFile)
       {
          KnownInterfaces.AddRange(HarvestInterfaces(textFile).Union(new List<string>(new[] {"INotifyPropertyChanged"})));

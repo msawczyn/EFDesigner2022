@@ -13,7 +13,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.4.5
+      // EFDesigner v4.2.5.1
       // Copyright (c) 2017-2023 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -716,14 +716,14 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             if (association.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany && association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
             {
-               string targetFK = association.Target.IdentityAttributes.FirstOrDefault().Name;
-               string sourceFK = association.Source.IdentityAttributes.FirstOrDefault().Name;
+               string targetFKs = string.Join(", ", association.Target.IdentityAttributes.Select(a => $"\"{association.Target.Name}_{a.Name}\""));
+               string sourceFKs = string.Join(", ", association.Source.IdentityAttributes.Select(a => $"\"{association.Source.Name}_{a.Name}\""));
                string joinTable = string.IsNullOrEmpty(association.JoinTableName) ? $"{association.Target.Name}_x_{association.Source.Name}" : association.JoinTableName;
 
                string segment =
                   "UsingEntity<Dictionary<string, object>>("
-                + $"right => right.HasOne<{association.Target.FullName}>().WithMany().HasForeignKey(\"{targetFK}\").OnDelete(DeleteBehavior.Cascade),"
-                + $"left => left.HasOne<{association.Source.FullName}>().WithMany().HasForeignKey(\"{sourceFK}\").OnDelete(DeleteBehavior.Cascade),"
+                + $"right => right.HasOne<{association.Target.FullName}>().WithMany().HasForeignKey({targetFKs}).OnDelete(DeleteBehavior.Cascade),"
+                + $"left => left.HasOne<{association.Source.FullName}>().WithMany().HasForeignKey({sourceFKs}).OnDelete(DeleteBehavior.Cascade),"
                 + $"join => join.ToTable(\"{joinTable}\"))";
 
                segments.Add(segment);

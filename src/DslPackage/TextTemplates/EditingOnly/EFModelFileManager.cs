@@ -17,7 +17,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.4.5
+      // EFDesigner v4.2.5.1
       // Copyright (c) 2017-2023 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -231,11 +231,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             internal VSManager(ITextTemplatingEngineHost host, StringBuilder template) : base(host, template)
             {
-               IServiceProvider hostServiceProvider = (IServiceProvider)host;
-
-               if (hostServiceProvider == null)
-                  throw new ArgumentNullException(nameof(host));
-
+               IServiceProvider hostServiceProvider = (IServiceProvider)host ?? throw new ArgumentNullException(nameof(host));
                dte = (DTE)hostServiceProvider.GetCOMService(typeof(DTE));
                templateProjectItem = dte.Solution.FindProjectItem(host.TemplateFile);
             }

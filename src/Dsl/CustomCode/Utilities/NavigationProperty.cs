@@ -126,6 +126,11 @@
       /// </summary>
       public string FKPropertyName { get; set; }
 
+      /// <summary>
+      /// Gets or sets the navigation property for the source end of this bidirectional association.
+      /// </summary>
+      /// <param name="association">The bidirectional association.</param>
+      /// <returns>The navigation property for the source end of the association.</returns>
       public static NavigationProperty LinkToSource(BidirectionalAssociation association)
       {
          return new NavigationProperty
@@ -153,6 +158,11 @@
                 };
       }
 
+      /// <summary>
+      /// This method creates a navigation property that links to the source of a unidirectional association.
+      /// </summary>
+      /// <param name="association">The unidirectional association</param>
+      /// <returns>The navigation property that links to the source of the association</returns>
       public static NavigationProperty LinkToSource(UnidirectionalAssociation association)
       {
          return new NavigationProperty
@@ -167,6 +177,11 @@
                 };
       }
 
+      /// <summary>
+      /// Links association to target navigation property
+      /// </summary>
+      /// <param name="association">The association being linked</param>
+      /// <returns>The target navigation property</returns>
       public static NavigationProperty LinkToTarget(Association association)
       {
          return new NavigationProperty

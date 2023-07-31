@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.0.1
+//     Produced by Entity Framework Visual Editor v4.2.4.5
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -22,7 +22,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace SureImpact.Data.Framework
+namespace TestData
 {
    public partial class Entity1
    {
@@ -33,6 +33,8 @@ namespace SureImpact.Data.Framework
       /// </summary>
       public Entity1()
       {
+         Entity2 = new System.Collections.Generic.HashSet<global::TestData.Entity2>();
+
          Init();
       }
 
@@ -53,7 +55,7 @@ namespace SureImpact.Data.Framework
        * Navigation properties
        *************************************************************************/
 
-      public virtual global::SureImpact.Data.Framework.Entity2 Entity2 { get; set; }
+      public virtual ICollection<global::TestData.Entity2> Entity2 { get; private set; }
 
    }
 }

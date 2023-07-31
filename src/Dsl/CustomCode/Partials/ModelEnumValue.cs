@@ -15,6 +15,9 @@ namespace Sawczyn.EFDesigner.EFModel
    {
       private ModelEnum cachedParent;
 
+      /// <summary>
+      ///    Gets the parent model element of the current model element.
+      /// </summary>
       public IModelElementWithCompartments ParentModelElement
       {
          get
@@ -23,6 +26,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      ///    Gets the name of the compartment
+      /// </summary>
       public string CompartmentName
       {
          get
@@ -31,6 +37,10 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
+      /// <summary>
+      ///    Returns the display text for the class.
+      /// </summary>
+      /// <returns>The display text.</returns>
       public string GetDisplayText()
       {
          return $"{Enum.Name}.{Name}";
@@ -64,7 +74,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
          ModelRoot modelRoot = Store.ElementDirectory.FindElements<ModelRoot>().FirstOrDefault();
 
-         if ((Enum != null) && (modelRoot?.WarnOnMissingDocumentation == true) && string.IsNullOrWhiteSpace(Summary))
+         if (Enum != null && modelRoot?.WarnOnMissingDocumentation == true && string.IsNullOrWhiteSpace(Summary))
          {
             context.LogWarning($"{Enum.Name}.{Name}: Enum value should be documented", "AWMissingSummary", this);
             hasWarning = true;
@@ -88,16 +98,25 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private bool hasWarning;
 
+      /// <summary>
+      ///    Gets a boolean value indicating if there is a warning.
+      /// </summary>
       public bool GetHasWarningValue()
       {
          return hasWarning;
       }
 
+      /// <summary>
+      ///    Resets the warning.
+      /// </summary>
       public void ResetWarning()
       {
          hasWarning = false;
       }
 
+      /// <summary>
+      ///    Redraws the item.
+      /// </summary>
       public void RedrawItem()
       {
          // redraw on every diagram

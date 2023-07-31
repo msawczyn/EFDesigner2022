@@ -62,7 +62,9 @@ namespace Sawczyn.EFDesigner.EFModel
       /// </summary>
       /// <param name="sender">The object that raised the event.</param>
       /// <param name="e">The event data.</param>
+#pragma warning disable IDE1006 // Naming Styles
       private void btnOk_Click(object sender, EventArgs e)
+#pragma warning restore IDE1006 // Naming Styles
       {
          DialogResult = DialogResult.OK;
       }

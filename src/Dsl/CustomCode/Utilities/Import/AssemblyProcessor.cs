@@ -621,71 +621,71 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      private void FixupAssociationClasses(ModelRoot modelRoot)
-      {
-         // find classes that look like N-N association classes. 
-         // turn them into association classes and add the bidirectional association
+      //private void FixupAssociationClasses(ModelRoot modelRoot)
+      //{
+      //   // find classes that look like N-N association classes. 
+      //   // turn them into association classes and add the bidirectional association
 
-         using (Transaction tx = Store.TransactionManager.BeginTransaction("Convert to association class"))
-         {
-            // simple case - only foreign key fields (ignoring identity fields)
-            foreach (ModelClass associationClass in modelRoot.Classes
-                                                       .Where(c => c.Persistent
-                                                                && c.Attributes.Count(a => (!a.IsIdentity || a.IsForeignKeyProperty) && a.Required) == 2)
-                                                       .ToArray())
-            {
-               //// remove standalone identities
-               //foreach (ModelAttribute attribute in modelClass.Attributes.Where(a => a.IsIdentity && !a.IsForeignKeyProperty))
-               //   associationClass.Attributes.Remove(attribute);
+      //   using (Transaction tx = Store.TransactionManager.BeginTransaction("Convert to association class"))
+      //   {
+      //      // simple case - only foreign key fields (ignoring identity fields)
+      //      foreach (ModelClass associationClass in modelRoot.Classes
+      //                                                 .Where(c => c.Persistent
+      //                                                          && c.Attributes.Count(a => (!a.IsIdentity || a.IsForeignKeyProperty) && a.Required) == 2)
+      //                                                 .ToArray())
+      //      {
+      //         //// remove standalone identities
+      //         //foreach (ModelAttribute attribute in modelClass.Attributes.Where(a => a.IsIdentity && !a.IsForeignKeyProperty))
+      //         //   associationClass.Attributes.Remove(attribute);
 
-               //// add fk properties as identities (should only be 2 properties left)
-               //foreach (ModelAttribute attribute in associationClass.Attributes)
-               //   attribute.IsIdentity = true;
+      //         //// add fk properties as identities (should only be 2 properties left)
+      //         //foreach (ModelAttribute attribute in associationClass.Attributes)
+      //         //   attribute.IsIdentity = true;
 
-               // get the entities we're serving
-
-
-               ModelClass[] entities = associationClass.UnidirectionalSources.Where(x => x != associationClass)
-                                                       .Union(associationClass.UnidirectionalTargets.Where(x => x != associationClass))
-                                                       .Union(associationClass.BidirectionalSources.Where(x => x != associationClass))
-                                                       .Union(associationClass.BidirectionalTargets.Where(x => x != associationClass))
-                                                       .ToArray();
-
-               if (entities.Length != 2)
-                  continue;
+      //         // get the entities we're serving
 
 
-               {
-                  // remove any association between those entities and the association class that might be there
-                  modelRoot.Store
-                           .GetAll<Association>()
-                           .Where(a => (entities.Contains(a.Source) && a.Target == associationClass)
-                                    || (entities.Contains(a.Target) && a.Source == associationClass))
-                           .ToList()
-                           .ForEach(a => a.Delete());
+      //         ModelClass[] entities = associationClass.UnidirectionalSources.Where(x => x != associationClass)
+      //                                                 .Union(associationClass.UnidirectionalTargets.Where(x => x != associationClass))
+      //                                                 .Union(associationClass.BidirectionalSources.Where(x => x != associationClass))
+      //                                                 .Union(associationClass.BidirectionalTargets.Where(x => x != associationClass))
+      //                                                 .ToArray();
 
-                  // add the new bidirectional association
-                  BidirectionalAssociation bidirectional =
-                     new BidirectionalAssociation(Store,
-                                                  new[]
-                                                  {
-                                                     new RoleAssignment(Association.SourceDomainRoleId, entities[0]), 
-                                                     new RoleAssignment(Association.TargetDomainRoleId, entities[1])
-                                                  },
-                                                  new[]
-                                                  {
-                                                     new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, Multiplicity.ZeroMany),
-                                                     new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, Multiplicity.ZeroMany)
-                                                  });
+      //         if (entities.Length != 2)
+      //            continue;
 
-                  // turn the class of interest into a proper association class for that new bidirectional association
-                  associationClass.ConvertToAssociationClass(bidirectional);
-               }
-            }
 
-            tx.Commit();
-         }
-      }
+      //         {
+      //            // remove any association between those entities and the association class that might be there
+      //            modelRoot.Store
+      //                     .GetAll<Association>()
+      //                     .Where(a => (entities.Contains(a.Source) && a.Target == associationClass)
+      //                              || (entities.Contains(a.Target) && a.Source == associationClass))
+      //                     .ToList()
+      //                     .ForEach(a => a.Delete());
+
+      //            // add the new bidirectional association
+      //            BidirectionalAssociation bidirectional =
+      //               new BidirectionalAssociation(Store,
+      //                                            new[]
+      //                                            {
+      //                                               new RoleAssignment(Association.SourceDomainRoleId, entities[0]), 
+      //                                               new RoleAssignment(Association.TargetDomainRoleId, entities[1])
+      //                                            },
+      //                                            new[]
+      //                                            {
+      //                                               new PropertyAssignment(Association.SourceMultiplicityDomainPropertyId, Multiplicity.ZeroMany),
+      //                                               new PropertyAssignment(Association.TargetMultiplicityDomainPropertyId, Multiplicity.ZeroMany)
+      //                                            });
+
+      //            // turn the class of interest into a proper association class for that new bidirectional association
+      //            associationClass.ConvertToAssociationClass(bidirectional);
+      //         }
+      //      }
+
+      //      tx.Commit();
+      //   }
+      //}
 
       #endregion
 

@@ -5,6 +5,9 @@ using System.Globalization;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Converts a string representation of a navigation endpoint to a NavigationEndpoint object.
+   /// </summary>
    public class NavigationEndpointTypeConverter : TypeConverterBase
    {
       /// <summary>
@@ -68,9 +71,7 @@ namespace Sawczyn.EFDesigner.EFModel
          if (context.Instance.GetType().IsArray)
             return null;
 
-         Association association = context.Instance as Association;
-
-         if (association == null)
+         if (!(context.Instance is Association association))
             return null;
 
          List<string> values = new List<string> {association.Source.Name, association.Target.Name};

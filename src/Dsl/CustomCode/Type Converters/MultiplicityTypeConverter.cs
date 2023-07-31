@@ -4,6 +4,9 @@ using System.Globalization;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Converts a string value to a Multiplicity enum value.
+   /// </summary>
    public class MultiplicityTypeConverter : TypeConverterBase
    {
       /// <summary>

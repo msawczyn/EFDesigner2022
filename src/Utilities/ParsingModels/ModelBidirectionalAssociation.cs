@@ -33,7 +33,6 @@ namespace ParsingModels
       /// <summary>Determines whether the specified object is equal to the current object.</summary>
       /// <param name="obj">The object to compare with the current object.</param>
       /// <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>
-      [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
       public override bool Equals(object obj)
       {
          if (ReferenceEquals(null, obj))
@@ -42,6 +41,7 @@ namespace ParsingModels
          if (ReferenceEquals(this, obj))
             return true;
 
+         // ReSharper disable once ConvertIfStatementToReturnStatement
          if (obj.GetType() != GetType())
             return false;
 
@@ -62,14 +62,15 @@ namespace ParsingModels
 
       /// <summary>Serves as the default hash function.</summary>
       /// <returns>A hash code for the current object.</returns>
-      [SuppressMessage( "ReSharper", "NonReadonlyMemberInGetHashCode" )]
       public override int GetHashCode()
       {
          unchecked
          {
             int hashCode = base.GetHashCode();
+            // ReSharper disable NonReadonlyMemberInGetHashCode
             hashCode = (hashCode * 397) ^ SourcePropertyTypeName.GetHashCode();
             hashCode = (hashCode * 397) ^ SourcePropertyName.GetHashCode();
+            // ReSharper restore NonReadonlyMemberInGetHashCode
 
             return hashCode;
          }

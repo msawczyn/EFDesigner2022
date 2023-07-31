@@ -770,7 +770,7 @@ namespace Sawczyn.EFDesigner.EFModel
          if (sender is MenuCommand command)
          {
             command.Visible = true;
-            command.Enabled = IsDiagramSelected() && !IsCurrentDiagramEmpty();
+            command.Enabled = CurrentDocView?.Frame != null && IsDiagramSelected() && !IsCurrentDiagramEmpty();
          }
       }
 
@@ -791,7 +791,7 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             command.Visible = true;
 
-            LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+            IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
 
             command.Enabled = childShapes.OfType<ClassShape>().Any(s => !s.IsVisible) || childShapes.OfType<EnumShape>().Any(s => !s.IsVisible);
          }
@@ -805,7 +805,7 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             using (Transaction tx = firstShape.Store.TransactionManager.BeginTransaction("HideShapes"))
             {
-               LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+               IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
 
                foreach (ClassShape shape in childShapes.OfType<ClassShape>().Where(s => !s.IsVisible))
                   shape.Visible = true;
@@ -1003,9 +1003,8 @@ namespace Sawczyn.EFDesigner.EFModel
                      .BeginInvoke(() =>
                                   {
                                      ThreadHelper.ThrowIfNotOnUIThread();
-                                     EFModelDiagram currentDiagram = CurrentDocView?.CurrentDiagram as EFModelDiagram;
 
-                                     if (currentDiagram == null)
+                                     if (!(CurrentDocView?.CurrentDiagram is EFModelDiagram currentDiagram))
                                         return;
 
                                      DiagramThemeColors cachedColors = currentDiagram.GetThemeColors();
@@ -1117,9 +1116,8 @@ namespace Sawczyn.EFDesigner.EFModel
                      .BeginInvoke(() =>
                                   {
                                      ThreadHelper.ThrowIfNotOnUIThread();
-                                     EFModelDiagram currentDiagram = CurrentDocView?.CurrentDiagram as EFModelDiagram;
 
-                                     if (currentDiagram == null)
+                                     if (!(CurrentDocView?.CurrentDiagram is EFModelDiagram currentDiagram))
                                         return;
 
                                      DiagramThemeColors cachedColors = currentDiagram.GetThemeColors();
@@ -1228,14 +1226,14 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             command.Visible = true;
 
-            LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+            IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
             command.Enabled = childShapes.OfType<ClassShape>().Any(x => x.IsVisible());
          }
       }
 
       private void OnMenuSelectClasses(object sender, EventArgs e)
       {
-         LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+         IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
 
          foreach (ClassShape shape in childShapes.OfType<ClassShape>().Where(x => x.IsVisible()))
             shape.Diagram.ActiveDiagramView.Selection.Add(new DiagramItem(shape));
@@ -1251,7 +1249,7 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             command.Visible = true;
 
-            LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+            IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
             command.Enabled = childShapes.OfType<ClassShape>().Any(x => ((x.ModelElement as ModelClass)?.Persistent == false
                                                                       || (x.ModelElement as ModelClass)?.IsDependentType == true)
                                                                      && x.IsVisible());
@@ -1260,7 +1258,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void OnMenuSelectStructs(object sender, EventArgs e)
       {
-         LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+         IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
 
          foreach (ClassShape shape in childShapes.OfType<ClassShape>().Where(x => ((x.ModelElement as ModelClass)?.Persistent == false
                                                                                 || (x.ModelElement as ModelClass)?.IsDependentType == true)
@@ -1278,14 +1276,14 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             command.Visible = true;
 
-            LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+            IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
             command.Enabled = childShapes.OfType<EnumShape>().Any(x => x.IsVisible());
          }
       }
 
       private void OnMenuSelectEnums(object sender, EventArgs e)
       {
-         LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+         IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
 
          foreach (EnumShape shape in childShapes.OfType<EnumShape>().Where(x => x.IsVisible()))
             shape.Diagram.ActiveDiagramView.Selection.Add(new DiagramItem(shape));
@@ -1301,14 +1299,14 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             command.Visible = true;
 
-            LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+            IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
             command.Enabled = childShapes.OfType<AssociationConnector>().Any(x => x.IsVisible());
          }
       }
 
       private void OnMenuSelectAssocs(object sender, EventArgs e)
       {
-         LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+         IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
 
          foreach (AssociationConnector shape in childShapes.OfType<AssociationConnector>().Where(x => x.IsVisible()))
             shape.Diagram.ActiveDiagramView.Selection.Add(new DiagramItem(shape));
@@ -1324,14 +1322,14 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             command.Visible = true;
 
-            LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+            IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
             command.Enabled = childShapes.OfType<UnidirectionalConnector>().Any(x => x.IsVisible());
          }
       }
 
       private void OnMenuSelectUnidir(object sender, EventArgs e)
       {
-         LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+         IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
 
          foreach (UnidirectionalConnector shape in childShapes.OfType<UnidirectionalConnector>().Where(x => x.IsVisible()))
             shape.Diagram.ActiveDiagramView.Selection.Add(new DiagramItem(shape));
@@ -1347,14 +1345,14 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             command.Visible = true;
 
-            LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+            IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
             command.Enabled = childShapes.OfType<BidirectionalConnector>().Any(x => x.IsVisible());
          }
       }
 
       private void OnMenuSelectBidir(object sender, EventArgs e)
       {
-         LinkedElementCollection<ShapeElement> childShapes = CurrentDocView.CurrentDiagram.NavigationRoot.NestedChildShapes;
+         IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
 
          foreach (BidirectionalConnector shape in childShapes.OfType<BidirectionalConnector>().Where(x => x.IsVisible()))
             shape.Diagram.ActiveDiagramView.Selection.Add(new DiagramItem(shape));
@@ -1763,10 +1761,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
          if (diagram != null)
          {
-            ModelRoot modelRoot = diagram.ModelElement as ModelRoot;
             Store store = CurrentDocData.Store;
 
-            if ((modelRoot != null) && (store != null))
+            if ((diagram.ModelElement is ModelRoot modelRoot) && (store != null))
             {
                //Transaction is required if you want to update elements.
                using (Transaction t = store.TransactionManager.BeginTransaction("AddEntity"))

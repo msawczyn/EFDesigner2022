@@ -9,6 +9,9 @@ using Sawczyn.EFDesigner.EFModel.Extensions;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Converts a string representation of a property access mode into a PropertyAccessMode instance, and vice versa.
+   /// </summary>
    public class PropertyAccessModeTypeConverter : TypeConverterBase
    {
       /// <summary>

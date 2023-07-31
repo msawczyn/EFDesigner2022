@@ -70,14 +70,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
          ProjectItem templateProjectItem = Dte2.Solution.FindProjectItem(templateFilename);
 
-         VSProjectItem templateVsProjectItem = templateProjectItem?.Object as VSProjectItem;
-
-         if (templateVsProjectItem == null)
-         {
-            // TODO - place messages in output window or on PCML UI
-            throw new Exception($"Tried to generate code but couldn't find {templateFilename} in the solution.");
-         }
-
+         VSProjectItem templateVsProjectItem = templateProjectItem?.Object as VSProjectItem ?? throw new Exception($"Tried to generate code but couldn't find {templateFilename} in the solution.");
          try
          {
             Dte.StatusBar.Text = $"Generating code from {templateFilename}";
@@ -127,10 +120,9 @@ namespace Sawczyn.EFDesigner.EFModel
          hierarchy = null;
          itemid = VSConstants.VSITEMID_NIL;
 
-         IVsMonitorSelection monitorSelection = Package.GetGlobalService(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
-         IVsSolution solution = Package.GetGlobalService(typeof(SVsSolution)) as IVsSolution;
 
-         if ((monitorSelection == null) || (solution == null))
+         if ((!(Package.GetGlobalService(typeof(SVsShellMonitorSelection)) is IVsMonitorSelection monitorSelection)) 
+          || (!(Package.GetGlobalService(typeof(SVsSolution)) is IVsSolution solution)))
             return false;
 
          IntPtr hierarchyPtr = IntPtr.Zero;

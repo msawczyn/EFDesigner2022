@@ -1,5 +1,4 @@
-﻿using System;
-using System.CodeDom.Compiler;
+﻿using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -81,7 +80,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   else
                   {
                      if (string.IsNullOrEmpty(element.DbSetName))
-                        element.DbSetName = MakeDefaultTableAndSetName(element.Name);
+                        element.DbSetName = MakeDefaultTableAndSetName(element.Name, modelRoot.PluralizeDbSetNames);
 
                      if ((current.Name.ToLowerInvariant() != "paste") && (string.IsNullOrWhiteSpace(element.DbSetName) || !CodeGenerator.IsValidLanguageIndependentIdentifier(element.DbSetName)))
                      {
@@ -234,7 +233,7 @@ namespace Sawczyn.EFDesigner.EFModel
                         element.ViewName = element.TableName;
 
                      if (string.IsNullOrEmpty(element.ViewName))
-                        element.ViewName = MakeDefaultTableAndSetName(element.Name);
+                        element.ViewName = MakeDefaultTableAndSetName(element.Name, modelRoot.PluralizeTableNames);
 
                      //if (modelRoot.IsEFCore5Plus)
                      //   VerifyKeylessTypeEFCore5();
@@ -377,8 +376,8 @@ namespace Sawczyn.EFDesigner.EFModel
                   }
                   else
                   {
-                     element.DbSetName = MakeDefaultTableAndSetName(element.Name);
-                     element.TableName = MakeDefaultTableAndSetName(element.Name);
+                     element.DbSetName = MakeDefaultTableAndSetName(element.Name, modelRoot.PluralizeDbSetNames);
+                     element.TableName = MakeDefaultTableAndSetName(element.Name, modelRoot.PluralizeTableNames);
 
                      foreach (ClassShape classShape in PresentationViewsSubject.GetPresentation(element).OfType<ClassShape>().Distinct().ToList())
                         classShape.StyleSet.ClearPenOverride(DiagramPens.ShapeOutline);
@@ -458,14 +457,8 @@ namespace Sawczyn.EFDesigner.EFModel
                      errorMessages.Add($"Class name '{element.FullName}' already in use by an enum");
                   else if (!string.IsNullOrEmpty((string)e.OldValue))
                   {
-                     string oldDefaultName = MakeDefaultTableAndSetName((string)e.OldValue);
-                     string newDefaultName = MakeDefaultTableAndSetName(element.Name);
-
-                     if (element.DbSetName == oldDefaultName)
-                        element.DbSetName = newDefaultName;
-
-                     if (element.TableName == oldDefaultName)
-                        element.TableName = newDefaultName;
+                     element.DbSetName = element.GetDefaultDbSetName(modelRoot.PluralizeDbSetNames);
+                     element.TableName = element.GetDefaultTableName(modelRoot.PluralizeTableNames);
                   }
 
                   if (modelRoot.ReservedWords.Contains(element.Name))
@@ -548,7 +541,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      else
                      {
                         if (string.IsNullOrEmpty(newTableName))
-                           element.TableName = MakeDefaultTableAndSetName(element.Name);
+                           element.TableName = MakeDefaultTableAndSetName(element.Name, modelRoot.PluralizeTableNames);
 
                         if (store.GetAll<ModelClass>()
                                  .Except(new[] { element })
@@ -579,7 +572,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      else
                      {
                         if (string.IsNullOrEmpty(newViewName))
-                           element.TableName = MakeDefaultTableAndSetName(element.Name);
+                           element.TableName = MakeDefaultTableAndSetName(element.Name, modelRoot.PluralizeTableNames);
 
                         List<ModelClass> classesUsingTableName = store.GetAll<ModelClass>()
                                                                       .Except(new[] { element })
@@ -719,9 +712,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      private string MakeDefaultTableAndSetName(string root)
+      private string MakeDefaultTableAndSetName(string root, bool shouldPluralize)
       {
-         return ModelRoot.PluralizationService?.IsSingular(root) == true
+         return ModelRoot.PluralizationService?.IsSingular(root) == true && shouldPluralize
                    ? ModelRoot.PluralizationService.Pluralize(root)
                    : root;
       }

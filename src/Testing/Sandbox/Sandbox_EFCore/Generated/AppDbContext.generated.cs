@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.0.1
+//     Produced by Entity Framework Visual Editor v4.2.4.5
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -25,8 +25,8 @@ namespace SureImpact.Data.Framework
    public partial class AppDbContext : DbContext
    {
       #region DbSets
-      public virtual Microsoft.EntityFrameworkCore.DbSet<global::SureImpact.Data.Framework.Entity1> Entity1 { get; set; }
-      public virtual Microsoft.EntityFrameworkCore.DbSet<global::SureImpact.Data.Framework.Entity2> Entity2 { get; set; }
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::TestData.Entity1> Entity1 { get; set; }
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::TestData.Entity2> Entity2 { get; set; }
 
       #endregion DbSets
 
@@ -81,22 +81,22 @@ namespace SureImpact.Data.Framework
 
          modelBuilder.HasDefaultSchema("dbo");
 
-         modelBuilder.Entity<global::SureImpact.Data.Framework.Entity1>()
+         modelBuilder.Entity<global::TestData.Entity1>()
                      .ToTable("Entity1")
                      .HasKey(t => t.Id);
-         modelBuilder.Entity<global::SureImpact.Data.Framework.Entity1>()
+         modelBuilder.Entity<global::TestData.Entity1>()
                      .Property(t => t.Id)
                      .ValueGeneratedOnAdd()
                      .IsRequired();
-         modelBuilder.Entity<global::SureImpact.Data.Framework.Entity1>()
-                     .HasOne<global::SureImpact.Data.Framework.Entity2>(p => p.Entity2)
-                     .WithOne(p => p.Entity1)
-                     .HasForeignKey("Entity2", "Entity1Id");
+         modelBuilder.Entity<global::TestData.Entity1>()
+                     .HasMany<global::TestData.Entity2>(p => p.Entity2)
+                     .WithMany(p => p.Entity1)
+                     .UsingEntity<Dictionary<string, object>>(right => right.HasOne<global::TestData.Entity2>().WithMany().HasForeignKey("Id").OnDelete(DeleteBehavior.Cascade),left => left.HasOne<global::TestData.Entity1>().WithMany().HasForeignKey("Id").OnDelete(DeleteBehavior.Cascade),join => join.ToTable("Entity2_x_Entity1"));
 
-         modelBuilder.Entity<global::SureImpact.Data.Framework.Entity2>()
+         modelBuilder.Entity<global::TestData.Entity2>()
                      .ToTable("Entity2")
                      .HasKey(t => t.Id);
-         modelBuilder.Entity<global::SureImpact.Data.Framework.Entity2>()
+         modelBuilder.Entity<global::TestData.Entity2>()
                      .Property(t => t.Id)
                      .ValueGeneratedOnAdd()
                      .IsRequired();

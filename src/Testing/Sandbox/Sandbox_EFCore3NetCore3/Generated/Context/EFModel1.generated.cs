@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v3.0.6.4
+//     Produced by Entity Framework Visual Editor v4.2.5.1
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -26,16 +26,14 @@ namespace Testing
    {
       #region DbSets
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::Testing.Entity1> Entity1 { get; set; }
-      public virtual Microsoft.EntityFrameworkCore.DbSet<global::Testing.EntityAbstract> EntityAbstract { get; set; }
-      public virtual Microsoft.EntityFrameworkCore.DbSet<global::Testing.EntityImplementation> EntityImplementation { get; set; }
-      public virtual Microsoft.EntityFrameworkCore.DbSet<global::Testing.EntityRelated> EntityRelated { get; set; }
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::Testing.Entity2> Entity2 { get; set; }
 
       #endregion DbSets
 
       /// <summary>
       /// Default connection string
       /// </summary>
-      public static string ConnectionString { get; set; } = @"Data Source=(localdb)\MSSQLLocalDb;Initial Catalog=Test;Integrated Security=True";
+      public static string ConnectionString { get; set; } = @"Data Source=.;Initial Catalog=Sandbox;Integrated Security=True;Persist Security Info=True;MultipleActiveResultSets=True;TrustServerCertificate=True";
 
       /// <summary>
       ///     <para>
@@ -77,54 +75,27 @@ namespace Testing
 
          modelBuilder.Entity<global::Testing.Entity1>()
                      .ToTable("Entity1")
-                     .HasKey(t => t.Id);
+                     .HasKey(t => new { t.Id, t.Property1 });
          modelBuilder.Entity<global::Testing.Entity1>()
                      .Property(t => t.Id)
                      .ValueGeneratedOnAdd()
                      .IsRequired();
          modelBuilder.Entity<global::Testing.Entity1>()
-                     .HasOne<global::Testing.EntityImplementation>(p => p.EntityImplementation)
-                     .WithOne(p => p.Entity1)
-                     .HasForeignKey("Entity1", "EntityImplementationId")
-                     .OnDelete(DeleteBehavior.Cascade);
-         modelBuilder.Entity<global::Testing.Entity1>().Navigation(e => e.EntityImplementation).IsRequired();
-
-         modelBuilder.Entity<global::Testing.EntityAbstract>()
-                     .ToTable("EntityAbstract")
-                     .HasKey(t => t.Id);
-         modelBuilder.Entity<global::Testing.EntityAbstract>()
-                     .Property(t => t.Id)
-                     .ValueGeneratedOnAdd()
-                     .IsRequired();
-
-         modelBuilder.Entity<global::Testing.EntityImplementation>()
-                     .ToTable("EntityImplementation");
-         modelBuilder.Entity<global::Testing.EntityImplementation>()
-                     .Property(t => t.Test)
-                     .HasMaxLength(255)
-                     .HasDefaultValue("default string");
-         modelBuilder.Entity<global::Testing.EntityImplementation>()
                      .Property(t => t.Property1)
-                     .HasDefaultValue(DateTime.UtcNow);
-         modelBuilder.Entity<global::Testing.EntityImplementation>()
-                     .Property(t => t.Property11)
-                     .HasDefaultValue(3);
-         modelBuilder.Entity<global::Testing.EntityImplementation>()
-                     .Property(t => t.Property12)
-                     .HasDefaultValue(true);
+                     .ValueGeneratedOnAdd()
+                     .IsRequired();
+         modelBuilder.Entity<global::Testing.Entity1>()
+                     .HasMany<global::Testing.Entity2>(p => p.Entity2)
+                     .WithMany(p => p.Entity1)
+                     .UsingEntity<Dictionary<string, object>>(right => right.HasOne<global::Testing.Entity2>().WithMany().HasForeignKey("Entity2_Id").OnDelete(DeleteBehavior.Cascade),left => left.HasOne<global::Testing.Entity1>().WithMany().HasForeignKey("Entity1_Id", "Entity1_Property1").OnDelete(DeleteBehavior.Cascade),join => join.ToTable("Entity2_x_Entity1"));
 
-         modelBuilder.Entity<global::Testing.EntityRelated>()
-                     .ToTable("EntityRelated")
+         modelBuilder.Entity<global::Testing.Entity2>()
+                     .ToTable("Entity2")
                      .HasKey(t => t.Id);
-         modelBuilder.Entity<global::Testing.EntityRelated>()
+         modelBuilder.Entity<global::Testing.Entity2>()
                      .Property(t => t.Id)
                      .ValueGeneratedOnAdd()
                      .IsRequired();
-         modelBuilder.Entity<global::Testing.EntityRelated>()
-                     .HasOne<global::Testing.EntityAbstract>(p => p.EntityAbstract)
-                     .WithMany(p => p.EntityRelated)
-                     .HasForeignKey("EntityAbstractId");
-         modelBuilder.Entity<global::Testing.EntityRelated>().Navigation(e => e.EntityAbstract).IsRequired();
 
          OnModelCreatedImpl(modelBuilder);
       }

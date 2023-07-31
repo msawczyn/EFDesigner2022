@@ -22,10 +22,15 @@
 #><#@ import namespace="System.Data.Entity.Design.PluralizationServices"
 #><#@ import namespace="Microsoft.VisualStudio.TextTemplating"
 #><#+
-      // EFDesigner v4.2.4.4
-      // Copyright (c) 2017-2022 Michael Sawczyn
+      // EFDesigner v4.2.5.1
+      // Copyright (c) 2017-2023 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
+      /// <summary>
+      /// Generates Entity Framework 6 classes based on manager and modelRoot objects
+      /// </summary>
+      /// <param name="manager">Manager object</param>
+      /// <param name="modelRoot">ModelRoot object</param>
       public void GenerateEF6(Manager manager, ModelRoot modelRoot)
       {
          if (modelRoot.EntityFrameworkVersion != EFVersion.EF6)
@@ -35,6 +40,11 @@
          generator.Generate(manager);
       }
 
+      /// <summary>
+      /// Generates Entity Framework Core classes based on the manager and model root provided
+      /// </summary>
+      /// <param name="manager">The manager containing the data source information</param>
+      /// <param name="modelRoot">The model root containing the entity information</param>
       public void GenerateEFCore(Manager manager, ModelRoot modelRoot)
       {
          if (modelRoot.EntityFrameworkVersion != EFVersion.EFCore)
