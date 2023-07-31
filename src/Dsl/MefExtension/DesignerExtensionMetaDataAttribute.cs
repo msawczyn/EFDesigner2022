@@ -88,7 +88,7 @@ namespace Sawczyn.EFDesigner.EFModel.ExtensionEnablement
 	/// Provides a strongly typed custom attribute which allows user to use the following: 
 	///     [EFModelValidationExtension]
 	/// in lieu of
-	///		[Export(typeof(typeof(Action<ValidationContext, object>))]
+	///		[Export(typeof(typeof(Action&lt;ValidationContext, object&gt;))]
 	///		[ExportMetadata("EFModelExtensionFilter", null)]
 	///
 	/// Use this attribute to Export a ValidationExtension MEF part for EFModel designer.
