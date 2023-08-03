@@ -235,50 +235,50 @@
 
             if (!string.IsNullOrEmpty(modelAttribute.InitialValue))
             {
-               if (modelAttribute.InitialValue.Contains(".")) // enum
+               switch (modelAttribute.Type)
                {
-                  string enumName = modelAttribute.InitialValue.Split('.').First();
-                  string enumValue = modelAttribute.InitialValue.Split('.').Last();
-                  string enumFQN = modelAttribute.ModelClass.ModelRoot.Enums.FirstOrDefault(e => e.Name == enumName)?.FullName ?? enumName;
-                  segments.Add($"HasDefaultValue({enumFQN.Trim()}.{enumValue.Trim()})");
-               }
-               else
-               {
-                  if (string.IsNullOrWhiteSpace(modelAttribute.DatabaseDefaultValue))
-                  {
-                     switch (modelAttribute.Type)
+                  case "String":
+                     segments.Add($"HasDefaultValue(\"{modelAttribute.InitialValue.Trim(' ', '"')}\")");
+
+                     break;
+
+                  case "Char":
+                     segments.Add($"HasDefaultValue('{modelAttribute.InitialValue.Trim(' ', '\'')}')");
+
+                     break;
+
+                  case "DateTime":
+                     if (modelAttribute.InitialValue == "DateTime.UtcNow" || modelAttribute.InitialValue == "DateTime.Now")
+                        segments.Add("HasDefaultValueSql(\"CURRENT_TIMESTAMP\")");
+
+                     break;
+
+                  case "DateTimeOffset":
+                     if (modelAttribute.InitialValue == "DateTimeOffset.UtcNow" || modelAttribute.InitialValue == "DateTimeOffset.Now")
+                        segments.Add("HasDefaultValueSql(\"CURRENT_TIMESTAMP\")");
+
+                     break;
+
+                  default:
+                     string enumName = modelAttribute.InitialValue.Split('.').First();
+                     ModelEnum enumObject = modelAttribute.ModelClass.ModelRoot.Enums.FirstOrDefault(e => e.Name == enumName);
+
+                     // because we may use object properties as a initial value (like DateTime.Now below) we first need to check if it is an enum
+                     if (modelAttribute.InitialValue.Contains(".") && enumObject != null) // enum
                      {
-                        case "String":
-                           segments.Add($"HasDefaultValue(\"{modelAttribute.InitialValue.Trim(' ', '"')}\")");
-
-                           break;
-
-                        case "Char":
-                           segments.Add($"HasDefaultValue('{modelAttribute.InitialValue.Trim(' ', '\'')}')");
-
-                           break;
-
-                        case "DateTime":
-                           if (modelAttribute.InitialValue == "DateTime.UtcNow" || modelAttribute.InitialValue == "DateTime.Now")
-                              segments.Add("HasDefaultValueSql(\"CURRENT_TIMESTAMP\")");
-
-                           break;
-
-                        case "DateTimeOffset":
-                           if (modelAttribute.InitialValue == "DateTimeOffset.UtcNow" || modelAttribute.InitialValue == "DateTimeOffset.Now")
-                              segments.Add("HasDefaultValueSql(\"CURRENT_TIMESTAMP\")");
-
-                           break;
-
-                        default:
-                           segments.Add($"HasDefaultValue({modelAttribute.InitialValue})");
-
-                           break;
+                        string enumValue = modelAttribute.InitialValue.Split('.').Last();
+                        string enumFQN = enumObject.FullName ?? enumName;
+                        segments.Add($"HasDefaultValue({enumFQN.Trim()}.{enumValue.Trim()})");
                      }
-                  }
-                  else
-                     segments.Add($"HasDefaultValueSql(\"{modelAttribute.DatabaseDefaultValue}\")");
+                     else
+                        segments.Add($"HasDefaultValue({modelAttribute.InitialValue})");
+
+                     break;
                }
+            }
+            else if (!string.IsNullOrWhiteSpace(modelAttribute.DatabaseDefaultValue))
+            {
+               segments.Add($"HasDefaultValueSql(\"{modelAttribute.DatabaseDefaultValue}\")");
             }
 
             if (!string.IsNullOrEmpty(modelAttribute.DatabaseCollation)
