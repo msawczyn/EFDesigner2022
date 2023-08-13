@@ -51,6 +51,15 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
 
 **ChangeLog**
 
+**4.2.6**
+   - Fixes issue when generating code for properties that have a default enumeration value. Thanks to @equipatuequipo for [the pull request](https://github.com/msawczyn/EFDesigner2022/pull/72).
+
+**4.2.5**
+   - Adds missing XML documentation for public and protected members
+   - Fixes "No 'Is Identity' setting when adding a new entity property (version 4.2.44)" (see https://github.com/msawczyn/EFDesigner2022/issues/63)
+   - Fixes "Bad intersection table generation when M:M tables have the same primary key name" (see https://github.com/msawczyn/EFDesigner2022/issues/64)
+   - Fixes "Table names are pluralized even when flag set to false" (see https://github.com/msawczyn/EFDesigner2022/issues/65)
+
 **4.2.4**
    - **[NEW]** Exposed "Collapse Selected Elements" context menu choice for diagrams
    - Reduced model load time by 98%
