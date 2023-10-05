@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.3.4
+//     Produced by Entity Framework Visual Editor v4.2.5.2
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -25,9 +25,9 @@ namespace Sandbox_EFCore_Test
    public partial class EFModel1 : DbContext
    {
       #region DbSets
-      public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore_Test.BaseType> BaseTypes { get; set; }
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore_Test.Entity1> Entity1 { get; set; }
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore_Test.Entity2> Entity2 { get; set; }
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore_Test.Entity3> Entity3 { get; set; }
 
       #endregion DbSets
 
@@ -74,21 +74,50 @@ namespace Sandbox_EFCore_Test
 
          modelBuilder.HasDefaultSchema("dbo");
 
-         modelBuilder.Entity<global::Sandbox_EFCore_Test.BaseType>()
-                     .ToTable("BaseTypes")
+         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity1>()
+                     .ToTable("Entity1")
                      .HasKey(t => t.Id);
-         modelBuilder.Entity<global::Sandbox_EFCore_Test.BaseType>()
+         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity1>()
                      .Property(t => t.Id)
                      .ValueGeneratedOnAdd()
                      .IsRequired();
-
          modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity1>()
-                     .ToTable("Entity1")
-                     .HasBaseType<global::Sandbox_EFCore_Test.BaseType>();
+                     .HasMany<global::Sandbox_EFCore_Test.Entity2>(p => p.Entity2)
+                     .WithMany(p => p.Entity1)
+                     .UsingEntity<global::Sandbox_EFCore_Test.Entity3>(
+                        j => j
+                           .HasOne(x => x.Entity2)
+                           .WithMany(x => x.Entity3)
+                           .HasForeignKey(x => x.Entity2Id),
+                        j => j
+                           .HasOne(x => x.Entity1)
+                           .WithMany(x => x.Entity3)
+                           .HasForeignKey(x => x.Entity1Id),
+                        j =>
+                        {
+                           j.ToTable("Entity3");
+                           j.HasKey(t => new { t.Entity1Id, t.Entity2Id });
+                           j.Property(t => t.Id).IsRequired();
+                           j.HasIndex(t => t.Id).IsUnique();
+                        });
+         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity1>()
+                     .HasMany<global::Sandbox_EFCore_Test.Entity3>(p => p.Entity3)
+                     .WithOne(p => p.Entity1)
+                     .HasForeignKey(k => k.Entity1Id)
+                     .IsRequired();
 
          modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity2>()
                      .ToTable("Entity2")
-                     .HasBaseType<global::Sandbox_EFCore_Test.BaseType>();
+                     .HasKey(t => t.Id);
+         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity2>()
+                     .Property(t => t.Id)
+                     .ValueGeneratedOnAdd()
+                     .IsRequired();
+         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity2>()
+                     .HasMany<global::Sandbox_EFCore_Test.Entity3>(p => p.Entity3)
+                     .WithOne(p => p.Entity2)
+                     .HasForeignKey(k => k.Entity2Id)
+                     .IsRequired();
 
          OnModelCreatedImpl(modelBuilder);
       }

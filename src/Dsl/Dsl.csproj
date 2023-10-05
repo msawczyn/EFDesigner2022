@@ -31,7 +31,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\Sawczyn.EFDesigner.EFModel.Dsl.xml</DocumentationFile>
     <LangVersion>7.3</LangVersion>
-    <NoWarn>CS3001,CS3009,MSB3277</NoWarn>
+    <NoWarn>CS3001,CS3009,MSB3277,IDE0005</NoWarn>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

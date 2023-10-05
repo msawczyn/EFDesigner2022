@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -235,28 +236,26 @@ namespace Sawczyn.EFDesigner.EFModel
          ModelElement element = diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelClass") as ModelElement
                              ?? diagramDragEventArgs.Data.GetData("Sawczyn.EFDesigner.EFModel.ModelEnum") as ModelElement;
 
-         // TODO: This isn't ready for prime time. Need to handle multiple identity properties
-         //List<BidirectionalConnector> candidates = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
+         List<BidirectionalConnector> candidates = ClassShape.ClassShapeDragData?.GetBidirectionalConnectorsUnderShape(diagramDragEventArgs.MousePosition);
 
          // are we creating an association class?
 
-         //if (candidates?.Any() == true)
-         //{
-         //   MakeAssociationClass(candidates);
+         if (candidates?.Any() == true)
+         {
+            MakeAssociationClass(candidates);
 
-         //   try
-         //   {
-         //      base.OnDragDrop(diagramDragEventArgs);
-         //   }
-         //   catch (ArgumentException)
-         //   {
-         //      // ignore. byproduct of multiple diagrams
-         //   }
-         //}
+            try
+            {
+               base.OnDragDrop(diagramDragEventArgs);
+            }
+            catch (ArgumentException)
+            {
+               // ignore. byproduct of multiple diagrams
+            }
+         }
 
          //// came from model explorer?
-         //else 
-         if (element != null)
+         else if (element != null)
             AddToDiagram(element, diagramDragEventArgs.MousePosition);
 
          else if (IsDroppingExternal)
@@ -296,30 +295,39 @@ namespace Sawczyn.EFDesigner.EFModel
             return $"Import dropped files: added {(messageParts.Count > 1 ? string.Join(", ", messageParts.Take(messageParts.Count - 1)) + " and " + messageParts.Last() : messageParts.First())}";
          }
 
-         //void MakeAssociationClass(List<BidirectionalConnector> possibleConnectors)
-         //{
-         //   ModelClass modelClass = (ModelClass)ClassShape.ClassShapeDragData.ClassShape.ModelElement;
+         void MakeAssociationClass(List<BidirectionalConnector> possibleConnectors)
+         {
+            ModelClass modelClass = (ModelClass)ClassShape.ClassShapeDragData.ClassShape.ModelElement;
 
-         //   using (Transaction t = modelClass.Store.TransactionManager.BeginTransaction("Creating association class"))
-         //   {
-         //      foreach (BidirectionalConnector candidate in possibleConnectors)
-         //      {
-         //         BidirectionalAssociation association = (BidirectionalAssociation)candidate.ModelElement;
+            if (modelClass.IsAssociationClass)
+            {
+               ErrorDisplay.Show(Store, "Can't create an association class using an association class.");
+               return;
+            }
 
-         //         if (BooleanQuestionDisplay.Show(Store, $"Make {modelClass.Name} an association class for {association.GetDisplayText()}?") == true)
-         //         {
-         //            modelClass.ConvertToAssociationClass(association);
-         //            ClassShape.ClassShapeDragData = null;
+            using (Transaction t = modelClass.Store.TransactionManager.BeginTransaction("Creating association class"))
+            {
+               foreach (BidirectionalConnector candidate in possibleConnectors)
+               {
+                  BidirectionalAssociation association = (BidirectionalAssociation)candidate.ModelElement;
 
-         //            break;
-         //         }
-         //      }
+                  if (BooleanQuestionDisplay.Show(Store, $"Make {modelClass.Name} an association class for {association.GetDisplayText()}?") == true)
+                  {
+                     if (association.Source.AllIdentityAttributes.Count() > 1 || association.Target.AllIdentityAttributes.Count() > 1)
+                        ErrorDisplay.Show(Store, "Can't create an association class for an association with multiple identity properties in the entities it's connecting. Please create an issue in Github.");
+                     else if (Store.GetAll<ModelClass>().Any(c => c.IsAssociationClass && c.DescribedAssociationElementId == association.Id))
+                        ErrorDisplay.Show(Store, "Can't create an association class for an association that already has an association class.");
+                     else
+                        modelClass.ConvertToAssociationClass(association);
 
-         //      t.Commit();
-         //   }
+                     break;
+                  }
+               }
 
-         //   ClassShape.ClassShapeDragData = null;
-         //}
+               ClassShape.ClassShapeDragData = null;
+               t.Commit();
+            }
+         }
 
          void AddToDiagram(ModelElement elementToAdd, PointD atPosition)
          {

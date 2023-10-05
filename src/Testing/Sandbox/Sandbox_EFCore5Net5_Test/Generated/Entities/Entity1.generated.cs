@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.3.4
+//     Produced by Entity Framework Visual Editor v4.2.5.2
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -24,15 +24,18 @@ using System.Runtime.CompilerServices;
 
 namespace Sandbox_EFCore_Test
 {
-   public partial class Entity1: global::Sandbox_EFCore_Test.BaseType
+   public partial class Entity1
    {
       partial void Init();
 
       /// <summary>
       /// Default constructor
       /// </summary>
-      public Entity1(): base()
+      public Entity1()
       {
+         Entity2 = new System.Collections.Generic.HashSet<global::Sandbox_EFCore_Test.Entity2>();
+         Entity3 = new System.Collections.Generic.HashSet<global::Sandbox_EFCore_Test.Entity3>();
+
          Init();
       }
 
@@ -40,7 +43,27 @@ namespace Sandbox_EFCore_Test
        * Properties
        *************************************************************************/
 
-      public string Property1 { get; set; }
+      /// <summary>
+      /// Identity, Indexed, Required
+      /// Unique identifier
+      /// </summary>
+      [Key]
+      [Required]
+      [System.ComponentModel.Description("Unique identifier")]
+      public long Id { get; set; }
+
+      /*************************************************************************
+       * Navigation properties
+       *************************************************************************/
+
+      public virtual ICollection<global::Sandbox_EFCore_Test.Entity2> Entity2 { get; private set; }
+
+      /// <summary>
+      /// Association class for Entity2
+      /// </summary>
+      [System.ComponentModel.Description("Association class for Entity2")]
+      [System.ComponentModel.DataAnnotations.Display(Name="Association object for Entity2")]
+      public virtual ICollection<global::Sandbox_EFCore_Test.Entity3> Entity3 { get; private set; }
 
    }
 }

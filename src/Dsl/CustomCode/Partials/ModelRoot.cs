@@ -193,6 +193,17 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
+      ///   True if the model is EFCore and the Entity Framework version is >= 8
+      /// </summary>
+      public bool IsEfCore8Plus
+      {
+         get
+         {
+            return EntityFrameworkVersion == EFVersion.EFCore && (EntityFrameworkPackageVersion == "Latest" || GetEntityFrameworkPackageVersionNum() >= 8);
+         }
+      }
+
+      /// <summary>
       ///    Finds all diagrams associated to this model
       /// </summary>
       public EFModelDiagram[] GetDiagrams()
