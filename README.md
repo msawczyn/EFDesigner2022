@@ -76,6 +76,8 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 ### Change Log
 [4.2.6](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.6/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - Fixes issue when generating code for properties that have a default enumeration value. Thanks to @equipatuequipo for [the pull request](https://github.com/msawczyn/EFDesigner2022/pull/72).
+   - Association classes are back, but only for cases where each side of the many-to-many bidirectional association has a single identity property. 
+   - Support for per-entity inheritance in EF7
 
 [4.2.5](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.5/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - Adds missing XML documentation for public and protected members

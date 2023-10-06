@@ -52,7 +52,9 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
 **ChangeLog**
 
 **4.2.6**
+   - **[NEW]** Support for per-entity inheritance in EF7
    - Fixes issue when generating code for properties that have a default enumeration value. Thanks to @equipatuequipo for [the pull request](https://github.com/msawczyn/EFDesigner2022/pull/72).
+   - Association classes are back, but only for cases where each side of the many-to-many bidirectional association has a single identity property. 
 
 **4.2.5**
    - Adds missing XML documentation for public and protected members

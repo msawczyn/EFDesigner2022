@@ -3183,6 +3183,40 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
+	      // InheritanceStrategy
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribInheritanceStrategy = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "inheritanceStrategy");
+	         if (attribInheritanceStrategy != null)
+	         {
+	            CodeStrategy valueOfInheritanceStrategy;
+	            if (DslModeling::SerializationUtilities.TryGetValue<CodeStrategy>(serializationContext, attribInheritanceStrategy, out valueOfInheritanceStrategy))
+	            {
+	               instanceOfModelClass.InheritanceStrategy = valueOfInheritanceStrategy;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "inheritanceStrategy", typeof(CodeStrategy), attribInheritanceStrategy);
+	            }
+	         }
+	      }
+	      // IsInheritanceStrategyTracking
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribIsInheritanceStrategyTracking = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "isInheritanceStrategyTracking");
+	         if (attribIsInheritanceStrategyTracking != null)
+	         {
+	            global::System.Boolean valueOfIsInheritanceStrategyTracking;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.Boolean>(serializationContext, attribIsInheritanceStrategyTracking, out valueOfIsInheritanceStrategyTracking))
+	            {
+	               instanceOfModelClass.IsInheritanceStrategyTracking = valueOfIsInheritanceStrategyTracking;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "isInheritanceStrategyTracking", typeof(global::System.Boolean), attribIsInheritanceStrategyTracking);
+	            }
+	         }
+	      }
 	   }
 	
 	   /// <summary>
@@ -4251,6 +4285,32 @@ namespace Sawczyn.EFDesigner.EFModel
 	            if (serializationContext.WriteOptionalPropertiesWithDefaultValue || string.CompareOrdinal(serializedPropValue, "true") != 0)
 	            {   // No need to write the value out if it's the same as default value.
 	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "persistent", serializedPropValue);
+	            }
+	         }
+	      }
+	      // InheritanceStrategy
+	      if (!serializationContext.Result.Failed)
+	      {
+	         CodeStrategy propValue = instanceOfModelClass.InheritanceStrategy;
+	         string serializedPropValue = DslModeling::SerializationUtilities.GetString<CodeStrategy>(serializationContext, propValue);
+	         if (!serializationContext.Result.Failed)
+	         {
+	            if (serializationContext.WriteOptionalPropertiesWithDefaultValue || string.CompareOrdinal(serializedPropValue, "TablePerHierarchy") != 0)
+	            {   // No need to write the value out if it's the same as default value.
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "inheritanceStrategy", serializedPropValue);
+	            }
+	         }
+	      }
+	      // IsInheritanceStrategyTracking
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.Boolean propValue = instanceOfModelClass.IsInheritanceStrategyTracking;
+	         string serializedPropValue = DslModeling::SerializationUtilities.GetString<global::System.Boolean>(serializationContext, propValue);
+	         if (!serializationContext.Result.Failed)
+	         {
+	            if (serializationContext.WriteOptionalPropertiesWithDefaultValue || string.CompareOrdinal(serializedPropValue, "true") != 0)
+	            {   // No need to write the value out if it's the same as default value.
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "isInheritanceStrategyTracking", serializedPropValue);
 	            }
 	         }
 	      }

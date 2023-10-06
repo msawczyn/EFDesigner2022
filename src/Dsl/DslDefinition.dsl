@@ -636,6 +636,28 @@
             <ExternalTypeMoniker Name="/System/String" />
           </Type>
         </DomainProperty>
+        <DomainProperty Id="9ff4f2f1-a842-48ff-82cf-d7e09d7d564b" Description="How tables will be created and used to handle inheritance" Name="InheritanceStrategy" DisplayName="Inheritance Strategy" DefaultValue="TablePerHierarchy" Kind="CustomStorage" Category="Code Generation" IsBrowsable="false">
+          <Attributes>
+            <ClrAttribute Name="System.ComponentModel.ReadOnly">
+              <Parameters>
+                <AttributeParameter Value="false" />
+              </Parameters>
+            </ClrAttribute>
+            <ClrAttribute Name="System.ComponentModel.TypeConverter">
+              <Parameters>
+                <AttributeParameter Value="typeof(CodeStrategyTypeConverter)" />
+              </Parameters>
+            </ClrAttribute>
+          </Attributes>
+          <Type>
+            <DomainEnumerationMoniker Name="CodeStrategy" />
+          </Type>
+        </DomainProperty>
+        <DomainProperty Id="d4e77677-ac29-46fb-9543-5702f3eed5cc" Description="If true, ModelClass.InheritanceStrategy tracks ModelRoot.InheritanceStrategy" Name="IsInheritanceStrategyTracking" DisplayName="Is Inheritance Strategy Tracking" DefaultValue="true" IsBrowsable="false">
+          <Type>
+            <ExternalTypeMoniker Name="/System/Boolean" />
+          </Type>
+        </DomainProperty>
       </Properties>
       <ElementMergeDirectives>
         <ElementMergeDirective>
@@ -2569,6 +2591,12 @@
           </XmlPropertyData>
           <XmlPropertyData XmlName="explorerTooltip" Representation="Ignore">
             <DomainPropertyMoniker Name="ModelClass/ExplorerTooltip" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="inheritanceStrategy">
+            <DomainPropertyMoniker Name="ModelClass/InheritanceStrategy" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="isInheritanceStrategyTracking">
+            <DomainPropertyMoniker Name="ModelClass/IsInheritanceStrategyTracking" />
           </XmlPropertyData>
         </ElementData>
       </XmlClassData>

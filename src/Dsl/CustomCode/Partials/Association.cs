@@ -628,8 +628,8 @@ namespace Sawczyn.EFDesigner.EFModel
          /// </param>
          internal void PreResetValue(Association element)
          {
-            // of the CollectionClass property is retrieved from storage.  
             // Force the IsCollectionClassTracking property to false so that the value  
+            // of the CollectionClass property is retrieved from storage.  
             element.isCollectionClassTrackingPropertyStorage = false;
          }
 
@@ -723,8 +723,8 @@ namespace Sawczyn.EFDesigner.EFModel
          /// </param>
          internal void PreResetValue(Association element)
          {
-            // of the TargetAutoProperty property is retrieved from storage.  
             // Force the IsTargetAutoPropertyTracking property to false so that the value  
+            // of the TargetAutoProperty property is retrieved from storage.  
             element.isTargetAutoPropertyTrackingPropertyStorage = false;
          }
 

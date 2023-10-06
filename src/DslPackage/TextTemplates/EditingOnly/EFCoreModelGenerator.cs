@@ -35,11 +35,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          /// <summary>
          /// Gets the list of spatial types supported by the database provider.
          /// </summary>
-         public static string[] SpatialTypes 
+         public static string[] SpatialTypes
          {
             get
             {
-               return new[] {"Geometry", "GeometryPoint", "GeometryLineString", "GeometryPolygon", "GeometryCollection", "GeometryMultiPoint", "GeometryMultiLineString", "GeometryMultiPolygon"};
+               return new[] { "Geometry", "GeometryPoint", "GeometryLineString", "GeometryPolygon", "GeometryCollection", "GeometryMultiPoint", "GeometryMultiLineString", "GeometryMultiPolygon" };
             }
          }
 
@@ -120,9 +120,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             ConfigureTransientProperties(segments, modelClass);
 
-            //if (modelRoot.InheritanceStrategy == CodeStrategy.TablePerConcreteType && modelClass.Superclass != null)
-            //   segments.Add("Map(x => x.MapInheritedProperties())");
-
             if (classesWithTables.Contains(modelClass))
             {
                if (modelClass.IsQueryType)
@@ -199,6 +196,23 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             string schema = string.IsNullOrEmpty(modelClass.DatabaseSchema) || (modelClass.DatabaseSchema == modelClass.ModelRoot.DatabaseSchema)
                                ? string.Empty
                                : $", \"{modelClass.DatabaseSchema}\"";
+
+            if (modelClass.ModelRoot.IsEFCore7Plus)
+            {
+               switch (modelClass.InheritanceStrategy)
+               {
+                  case CodeStrategy.TablePerHierarchy:
+                     break;
+
+                  case CodeStrategy.TablePerType:
+                     segments.Add($"UseTptMappingStrategy()");
+                     break;
+
+                  case CodeStrategy.TablePerConcreteType:
+                     segments.Add($"UseTpcMappingStrategy()");
+                     break;
+               }
+            }
 
             segments.Add($"ToTable(\"{tableName}\"{schema})");
 
@@ -669,47 +683,33 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          protected virtual void WriteDbContext()
          {
             List<string> segments = new List<string>();
-            ModelClass[] classesWithTables = null;
-
-            // Note: TablePerConcreteType not yet available, but it doesn't hurt for it to be here since they shouldn't make it past the designer's validations
-            switch (modelRoot.InheritanceStrategy)
-            {
-               case CodeStrategy.TablePerType:
-               case CodeStrategy.TablePerConcreteType:
-                  classesWithTables = modelRoot.Classes
-                                               .Where(mc => (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
+            ModelClass[] classesWithTables = modelRoot.Classes
+                                               .Where(mc => mc.InheritanceStrategy == CodeStrategy.TablePerType 
+                                                         && (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
                                                          && mc.Persistent
                                                          && !mc.IsQueryType
                                                          && (!mc.IsKeyless() || mc.IsDatabaseView)
                                                          && !mc.CustomAttributes.Contains("NotMapped")
                                                          && mc.GenerateCode)
+                                               .Union(modelRoot.Classes
+                                                               .Where(mc => mc.InheritanceStrategy == CodeStrategy.TablePerConcreteType 
+                                                                         && (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
+                                                                         && mc.Persistent
+                                                                         && !mc.IsQueryType
+                                                                         && (!mc.IsKeyless() || mc.IsDatabaseView)
+                                                                         && !mc.CustomAttributes.Contains("NotMapped")
+                                                                         && !mc.IsAbstract
+                                                                         && mc.GenerateCode))
+                                               .Union(modelRoot.Classes
+                                                               .Where(mc => mc.InheritanceStrategy == CodeStrategy.TablePerHierarchy 
+                                                                         && (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName))
+                                                                         && (mc.Superclass == null)
+                                                                         && mc.Persistent
+                                                                         && !mc.IsQueryType
+                                                                         && !mc.CustomAttributes.Contains("NotMapped")
+                                                                         && mc.GenerateCode))
                                                .OrderBy(x => x.Name)
                                                .ToArray();
-
-                  break;
-
-               //case CodeStrategy.TablePerConcreteType:
-               //   classesWithTables = modelRoot.Classes
-               //                                .Where(mc => (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName)) 
-               //                                          && !mc.IsAbstract 
-               //                                          && mc.GenerateCode)
-               //                                .OrderBy(x => x.Name)
-               //                                .ToArray();
-               //   break;
-
-               case CodeStrategy.TablePerHierarchy:
-                  classesWithTables = modelRoot.Classes
-                                               .Where(mc => (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName))
-                                                         && (mc.Superclass == null)
-                                                         && mc.Persistent
-                                                         && !mc.IsQueryType
-                                                         && !mc.CustomAttributes.Contains("NotMapped")
-                                                         && mc.GenerateCode)
-                                               .OrderBy(x => x.Name)
-                                               .ToArray();
-
-                  break;
-            }
 
             Output("using System;");
             Output("using System.Collections.Generic;");
@@ -1200,6 +1200,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          }
       }
 
-#endregion Template
+      #endregion Template
    }
 }

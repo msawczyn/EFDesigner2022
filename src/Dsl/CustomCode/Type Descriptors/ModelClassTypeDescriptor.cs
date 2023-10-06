@@ -174,6 +174,20 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                       new CategoryAttribute("Code Generation"),
                                                                       new TypeConverterAttribute(typeof(ProjectDirectoryTypeConverter))
                                                                    }));
+
+            if (modelRoot.IsEFCore7Plus)
+            {
+               propertyDescriptors.Add(new TrackingPropertyDescriptor(modelClass
+                                                                    , storeDomainDataDirectory.GetDomainProperty(ModelClass.InheritanceStrategyDomainPropertyId)
+                                                                    , storeDomainDataDirectory.GetDomainProperty(ModelClass.IsInheritanceStrategyTrackingDomainPropertyId)
+                                                                    , new Attribute[]
+                                                                      {
+                                                                         new DisplayNameAttribute("Inheritance Strategy")
+                                                                       , new DescriptionAttribute("Overrides default inheritance strategy")
+                                                                       , new CategoryAttribute("Code Generation")
+                                                                       , new TypeConverterAttribute(typeof( CodeStrategyTypeConverter ))
+                                                                      }));
+            }
          }
 
          // Return the property descriptors for this element  

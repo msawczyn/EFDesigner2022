@@ -68,9 +68,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             ConfigureTransientProperties(segments, modelClass);
 
-            //if (modelRoot.InheritanceStrategy == CodeStrategy.TablePerConcreteType && modelClass.Superclass != null)
-            //   segments.Add("Map(x => x.MapInheritedProperties())");
-
             if (classesWithTables.Contains(modelClass))
             {
                if (modelClass.IsQueryType)
@@ -160,7 +157,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             if (modelRoot.IsEFCore6Plus 
              && modelClass.UseTemporalTables
              && !modelClass.IsDatabaseView
-             && (!modelClass.Subclasses.Any() || modelClass.ModelRoot.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
+             && (!modelClass.Subclasses.Any() || modelClass.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
              && modelClass.Superclass == null)
                modifiers.Add("t.IsTemporal();");
 
