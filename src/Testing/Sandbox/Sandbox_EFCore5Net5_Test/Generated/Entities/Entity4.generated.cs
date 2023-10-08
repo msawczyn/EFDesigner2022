@@ -24,18 +24,15 @@ using System.Runtime.CompilerServices;
 
 namespace Sandbox_EFCore_Test
 {
-   public partial class Entity2
+   public partial class Entity4: global::Sandbox_EFCore_Test.Entity2
    {
       partial void Init();
 
       /// <summary>
       /// Default constructor
       /// </summary>
-      public Entity2()
+      public Entity4(): base()
       {
-         Entity3 = new System.Collections.Generic.HashSet<global::Sandbox_EFCore_Test.Entity3>();
-         Entity1 = new System.Collections.Generic.HashSet<global::Sandbox_EFCore_Test.Entity1>();
-
          Init();
       }
 
@@ -43,27 +40,7 @@ namespace Sandbox_EFCore_Test
        * Properties
        *************************************************************************/
 
-      /// <summary>
-      /// Identity, Indexed, Required
-      /// Unique identifier
-      /// </summary>
-      [Key]
-      [Required]
-      [System.ComponentModel.Description("Unique identifier")]
-      public long Id { get; set; }
-
-      /*************************************************************************
-       * Navigation properties
-       *************************************************************************/
-
-      public virtual ICollection<global::Sandbox_EFCore_Test.Entity1> Entity1 { get; private set; }
-
-      /// <summary>
-      /// Association class for Entity1
-      /// </summary>
-      [System.ComponentModel.Description("Association class for Entity1")]
-      [System.ComponentModel.DataAnnotations.Display(Name="Association object for Entity1")]
-      public virtual ICollection<global::Sandbox_EFCore_Test.Entity3> Entity3 { get; private set; }
+      public int? Property1 { get; set; }
 
    }
 }

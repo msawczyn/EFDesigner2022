@@ -8401,6 +8401,95 @@ namespace Sawczyn.EFDesigner.EFModel
 		}
 		
 		#endregion
+		#region TableHasTriggers domain property code
+		
+		/// <summary>
+		/// TableHasTriggers domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid TableHasTriggersDomainPropertyId = new global::System.Guid(0x6cc32d2e, 0xd66f, 0x4c34, 0x9d, 0x55, 0xf4, 0x7c, 0x0e, 0x75, 0x44, 0xb5);
+		
+		/// <summary>
+		/// Storage for TableHasTriggers
+		/// </summary>
+		private global::System.Boolean tableHasTriggersPropertyStorage;
+		
+		/// <summary>
+		/// Gets or sets the value of TableHasTriggers domain property.
+		/// If true, the table storing this entity's data has triggers, which will impact
+		/// how EFCore queries for it
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/TableHasTriggers.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelClass/TableHasTriggers.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelClass/TableHasTriggers.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslModeling::DomainObjectId("6cc32d2e-d66f-4c34-9d55-f47c0e7544b5")]
+		public global::System.Boolean TableHasTriggers
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return tableHasTriggersPropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				TableHasTriggersPropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelClass.TableHasTriggers domain property.
+		/// </summary>
+		internal sealed partial class TableHasTriggersPropertyHandler : DslModeling::DomainPropertyValueHandler<ModelClass, global::System.Boolean>
+		{
+			private TableHasTriggersPropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelClass.TableHasTriggers domain property value handler.
+			/// </summary>
+			public static readonly TableHasTriggersPropertyHandler Instance = new TableHasTriggersPropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelClass.TableHasTriggers domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return TableHasTriggersDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.Boolean GetValue(ModelClass element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.tableHasTriggersPropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelClass element, global::System.Boolean newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.Boolean oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.tableHasTriggersPropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
 		#region Targets opposite domain role accessor
 		
 		/// <summary>
@@ -14667,6 +14756,6 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
    partial class ModelRoot
    {
-      public const string DSLVersion = "4.2.5.2";
+      public const string DSLVersion = "4.2.6.1";
    }
 }

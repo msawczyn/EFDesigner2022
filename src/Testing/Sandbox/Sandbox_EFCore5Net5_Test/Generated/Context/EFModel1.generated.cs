@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.5.2
+//     Produced by Entity Framework Visual Editor v4.2.6.1
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -28,6 +28,7 @@ namespace Sandbox_EFCore_Test
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore_Test.Entity1> Entity1 { get; set; }
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore_Test.Entity2> Entity2 { get; set; }
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore_Test.Entity3> Entity3 { get; set; }
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::Sandbox_EFCore_Test.Entity4> Entity4 { get; set; }
 
       #endregion DbSets
 
@@ -75,7 +76,7 @@ namespace Sandbox_EFCore_Test
          modelBuilder.HasDefaultSchema("dbo");
 
          modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity1>()
-                     .ToTable("Entity1")
+                     .UseTptMappingStrategy().ToTable("Entity1")
                      .HasKey(t => t.Id);
          modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity1>()
                      .Property(t => t.Id)
@@ -118,6 +119,26 @@ namespace Sandbox_EFCore_Test
                      .WithOne(p => p.Entity2)
                      .HasForeignKey(k => k.Entity2Id)
                      .IsRequired();
+
+         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity3>()
+                     .ToTable("Entity3")
+                     .HasKey(t => new { t.Entity1Id, t.Entity2Id });
+         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity3>()
+                     .Property(t => t.Id)
+                     .IsRequired();
+         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity3>().HasIndex(t => t.Id)
+                     .IsUnique();
+         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity3>()
+                     .Property(t => t.Entity1Id)
+                     .ValueGeneratedNever()
+                     .IsRequired();
+         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity3>()
+                     .Property(t => t.Entity2Id)
+                     .ValueGeneratedNever()
+                     .IsRequired();
+
+         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity4>()
+                     .HasBaseType<global::Sandbox_EFCore_Test.Entity2>();
 
          OnModelCreatedImpl(modelBuilder);
       }

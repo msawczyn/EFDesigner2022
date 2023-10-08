@@ -135,7 +135,7 @@
          /// <param name="visited">The list of already-visited associations.</param>
          protected override void ConfigureModelClasses(List<string> segments, ModelClass[] classesWithTables, List<string> foreignKeyColumns, List<Association> visited)
          {
-            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => !x.IsAssociationClass && x.Persistent).OrderBy(x => x.Name))
+            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => x.Persistent).OrderBy(x => x.Name))
                ConfigureModelClass(segments, classesWithTables, foreignKeyColumns, visited, modelClass);
          }
 
@@ -163,32 +163,47 @@
             if (modelClass.ExcludeFromMigrations)
                modifiers.Add("t.ExcludeFromMigrations();");
 
-            if (modelRoot.IsEFCore6Plus 
+            if (modelRoot.IsEFCore6Plus
              && modelClass.UseTemporalTables
              && !modelClass.IsDatabaseView
              && (!modelClass.Subclasses.Any() || modelClass.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
              && modelClass.Superclass == null)
                modifiers.Add("t.IsTemporal();");
 
-            if (modelRoot.IsEFCore7Plus)
-            {
-               bool hasTrigger = modelClass.AllNavigationProperties()
-                                           .Any(n =>
-                                                   (n.AssociationObject.Source == modelClass && n.AssociationObject.Target == modelClass && (n.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One || n.AssociationObject.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One))
-                                                || (n.AssociationObject.Source == modelClass && (n.AssociationObject.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One || n.AssociationObject.TargetDeleteAction == DeleteAction.Cascade))
-                                                || (n.AssociationObject.Target == modelClass && (n.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One || n.AssociationObject.SourceDeleteAction == DeleteAction.Cascade)));
-
-               // for later - EFCore7, SqlServer and triggers don't work well. We need to tell it that the triggers exist.
-               // but how to know what they are at this stage of the game?
-            }
+            if (modelRoot.IsEFCore7Plus && modelClass.Persistent && modelClass.TableHasTriggers)
+               modifiers.Add("t.HasTrigger(\"Foo\");");
 
             string buildActions = modifiers.Any()
                                      ? $", t => {{ {string.Join(" ", modifiers)} }}"
                                      : string.Empty;
 
-            segments.Add(modelClass.IsDatabaseView
-                            ? $"ToView(\"{viewName}\"{schema}{buildActions})"
-                            : $"ToTable(\"{tableName}\"{schema}{buildActions})");
+            // if it's a view, declare it so
+            if (modelClass.IsDatabaseView)
+            {
+               segments.Add($"ToView(\"{viewName}\"{schema}{buildActions})");
+            }
+            else // it's a table
+            {
+               switch (modelClass.InheritanceStrategy)
+               {
+                  case CodeStrategy.TablePerHierarchy:
+                     if (modelClass.Superclass == null)
+                        segments.Add($"ToTable(\"{tableName}\"{schema}{buildActions})");
+
+                     break;
+
+                  case CodeStrategy.TablePerConcreteType:
+                     if (!modelClass.IsAbstract)
+                        segments.Add($"UseTpcMappingStrategy().ToTable(\"{tableName}\"{schema}{buildActions})");
+
+                     break;
+
+                  case CodeStrategy.TablePerType:
+                     segments.Add($"UseTptMappingStrategy().ToTable(\"{tableName}\"{schema}{buildActions})");
+
+                     break;
+               }
+            }
 
             if (modelClass.Superclass != null)
             {
@@ -205,7 +220,8 @@
                   segments.Add($"HasKey(t => new {{ t.{string.Join(", t.", allIdentityAttributes.Select(ia => ia.Name))} }})");
                else
                   segments.Add("HasNoKey()");
-            }         }
+            }
+         }
 
          /// <summary>
          /// Configures and writes the unidirectional associations of a model class.

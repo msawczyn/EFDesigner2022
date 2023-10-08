@@ -15,6 +15,9 @@
    Manager manager = Manager.Create(Host, GenerationEnvironment);
    manager.FileNameMarker = ModelRoot.FileNameMarker;
 
+   System.Diagnostics.Debugger.Launch();
+   System.Diagnostics.Debugger.Break();
+
    if (ModelRoot.Classes.Any())
    {
       manager.StartHeader(false);

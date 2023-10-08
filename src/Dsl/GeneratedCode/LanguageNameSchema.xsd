@@ -696,6 +696,12 @@
             <xsd:documentation>If true, ModelClass.InheritanceStrategy tracks ModelRoot.InheritanceStrategy</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+        <!-- Property: TableHasTriggers -->
+        <xsd:attribute name="tableHasTriggers" type="xsd:boolean" >
+          <xsd:annotation>
+            <xsd:documentation>If true, the table storing this entity&apos;s data has triggers, which will impact how EFCore queries for it</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

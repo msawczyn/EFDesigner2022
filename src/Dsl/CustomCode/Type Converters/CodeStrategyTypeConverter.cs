@@ -86,8 +86,7 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             ModelRoot modelRoot = store.ModelRoot();
 
-            // Value set changes at EFCore5
-            if (modelRoot.IsEFCore6Plus)
+            if (modelRoot.IsEFCore7Plus)
                values.AddRange(new[] {"TablePerConcreteType", "TablePerHierarchy", "TablePerType"});
             else if (modelRoot.IsEFCore5Plus)
                values.AddRange(new[] {"TablePerHierarchy", "TablePerType"});

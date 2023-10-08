@@ -592,6 +592,7 @@ namespace Sawczyn.EFDesigner.EFModel
          IsDatabaseSchemaTrackingPropertyHandler.Instance.PreResetValue(this);
          IsNamespaceTrackingPropertyHandler.Instance.PreResetValue(this);
          IsOutputDirectoryTrackingPropertyHandler.Instance.PreResetValue(this);
+         IsInheritanceStrategyTrackingPropertyHandler.Instance.PreResetValue(this);
 
          // same with other tracking properties as they get added
       }
@@ -615,6 +616,7 @@ namespace Sawczyn.EFDesigner.EFModel
          IsDatabaseSchemaTrackingPropertyHandler.Instance.ResetValue(this);
          IsNamespaceTrackingPropertyHandler.Instance.ResetValue(this);
          IsOutputDirectoryTrackingPropertyHandler.Instance.ResetValue(this);
+         IsInheritanceStrategyTrackingPropertyHandler.Instance.ResetValue(this);
 
          // same with other tracking properties as they get added
       }
@@ -628,6 +630,7 @@ namespace Sawczyn.EFDesigner.EFModel
          ModelClass baseClass = Store.ElementDirectory.FindElements<ModelClass>().FirstOrDefault(x => x.Name == newValue);
          Superclass = baseClass;
       }
+
 
 #region Warning display
 
