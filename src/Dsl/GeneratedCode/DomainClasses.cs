@@ -8218,6 +8218,278 @@ namespace Sawczyn.EFDesigner.EFModel
 		}
 		
 		#endregion
+		#region InheritanceStrategy domain property code
+		
+		/// <summary>
+		/// InheritanceStrategy domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid InheritanceStrategyDomainPropertyId = new global::System.Guid(0x9ff4f2f1, 0xa842, 0x48ff, 0x82, 0xcf, 0xd7, 0xe0, 0x9d, 0x7d, 0x56, 0x4b);
+		
+		/// <summary>
+		/// Gets or sets the value of InheritanceStrategy domain property.
+		/// How tables will be created and used to handle inheritance
+		/// </summary>
+		[System.ComponentModel.ReadOnly(false)]
+		[System.ComponentModel.TypeConverter(typeof(CodeStrategyTypeConverter))]
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/InheritanceStrategy.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelClass/InheritanceStrategy.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelClass/InheritanceStrategy.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[global::System.ComponentModel.DefaultValue(CodeStrategy.TablePerHierarchy)]
+		[global::System.ComponentModel.Browsable(false)]
+		[DslModeling::DomainProperty(Kind = DslModeling::DomainPropertyKind.CustomStorage)]
+		[DslModeling::DomainObjectId("9ff4f2f1-a842-48ff-82cf-d7e09d7d564b")]
+		public CodeStrategy InheritanceStrategy
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return InheritanceStrategyPropertyHandler.Instance.GetValue(this);
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				InheritanceStrategyPropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelClass.InheritanceStrategy domain property.
+		/// </summary>
+		internal sealed partial class InheritanceStrategyPropertyHandler : DslModeling::DomainPropertyValueHandler<ModelClass, CodeStrategy>
+		{
+			private InheritanceStrategyPropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelClass.InheritanceStrategy domain property value handler.
+			/// </summary>
+			public static readonly InheritanceStrategyPropertyHandler Instance = new InheritanceStrategyPropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelClass.InheritanceStrategy domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return InheritanceStrategyDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed CodeStrategy GetValue(ModelClass element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				// There is no storage for InheritanceStrategy because its Kind is
+				// set to CustomStorage. Please provide the GetInheritanceStrategyValue()
+				// method on the domain class.
+				return element.GetInheritanceStrategyValue();
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelClass element, CodeStrategy newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				CodeStrategy oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					// There is no storage for InheritanceStrategy because its Kind is
+					// set to CustomStorage. Please provide the SetInheritanceStrategyValue()
+					// method on the domain class.
+					element.SetInheritanceStrategyValue(newValue);
+					ValueChanged(element, oldValue, GetValue(element));
+				}
+			}
+		}
+		
+		#endregion
+		#region IsInheritanceStrategyTracking domain property code
+		
+		/// <summary>
+		/// IsInheritanceStrategyTracking domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid IsInheritanceStrategyTrackingDomainPropertyId = new global::System.Guid(0xd4e77677, 0xac29, 0x46fb, 0x95, 0x43, 0x57, 0x02, 0xf3, 0xee, 0xd5, 0xcc);
+		
+		/// <summary>
+		/// Storage for IsInheritanceStrategyTracking
+		/// </summary>
+		private global::System.Boolean isInheritanceStrategyTrackingPropertyStorage = true;
+		
+		/// <summary>
+		/// Gets or sets the value of IsInheritanceStrategyTracking domain property.
+		/// If true, ModelClass.InheritanceStrategy tracks ModelRoot.InheritanceStrategy
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/IsInheritanceStrategyTracking.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelClass/IsInheritanceStrategyTracking.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[global::System.ComponentModel.DefaultValue(true)]
+		[global::System.ComponentModel.Browsable(false)]
+		[DslModeling::DomainObjectId("d4e77677-ac29-46fb-9543-5702f3eed5cc")]
+		public global::System.Boolean IsInheritanceStrategyTracking
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return isInheritanceStrategyTrackingPropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				IsInheritanceStrategyTrackingPropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelClass.IsInheritanceStrategyTracking domain property.
+		/// </summary>
+		internal sealed partial class IsInheritanceStrategyTrackingPropertyHandler : DslModeling::DomainPropertyValueHandler<ModelClass, global::System.Boolean>
+		{
+			private IsInheritanceStrategyTrackingPropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelClass.IsInheritanceStrategyTracking domain property value handler.
+			/// </summary>
+			public static readonly IsInheritanceStrategyTrackingPropertyHandler Instance = new IsInheritanceStrategyTrackingPropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelClass.IsInheritanceStrategyTracking domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return IsInheritanceStrategyTrackingDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.Boolean GetValue(ModelClass element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.isInheritanceStrategyTrackingPropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelClass element, global::System.Boolean newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.Boolean oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.isInheritanceStrategyTrackingPropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
+		#region TableHasTriggers domain property code
+		
+		/// <summary>
+		/// TableHasTriggers domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid TableHasTriggersDomainPropertyId = new global::System.Guid(0x6cc32d2e, 0xd66f, 0x4c34, 0x9d, 0x55, 0xf4, 0x7c, 0x0e, 0x75, 0x44, 0xb5);
+		
+		/// <summary>
+		/// Storage for TableHasTriggers
+		/// </summary>
+		private global::System.Boolean tableHasTriggersPropertyStorage;
+		
+		/// <summary>
+		/// Gets or sets the value of TableHasTriggers domain property.
+		/// If true, the table storing this entity's data has triggers, which will impact
+		/// how EFCore queries for it
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/TableHasTriggers.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelClass/TableHasTriggers.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelClass/TableHasTriggers.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslModeling::DomainObjectId("6cc32d2e-d66f-4c34-9d55-f47c0e7544b5")]
+		public global::System.Boolean TableHasTriggers
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return tableHasTriggersPropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				TableHasTriggersPropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelClass.TableHasTriggers domain property.
+		/// </summary>
+		internal sealed partial class TableHasTriggersPropertyHandler : DslModeling::DomainPropertyValueHandler<ModelClass, global::System.Boolean>
+		{
+			private TableHasTriggersPropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelClass.TableHasTriggers domain property value handler.
+			/// </summary>
+			public static readonly TableHasTriggersPropertyHandler Instance = new TableHasTriggersPropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelClass.TableHasTriggers domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return TableHasTriggersDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.Boolean GetValue(ModelClass element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.tableHasTriggersPropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelClass element, global::System.Boolean newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.Boolean oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.tableHasTriggersPropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
 		#region Targets opposite domain role accessor
 		
 		/// <summary>
@@ -14484,6 +14756,6 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
    partial class ModelRoot
    {
-      public const string DSLVersion = "4.2.5.2";
+      public const string DSLVersion = "4.2.6.1";
    }
 }

@@ -61,8 +61,6 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                       && c.AbsoluteBoundingBox.IntersectsWith(boundingBox))
                                                              .ToList();
 
-         Debug.WriteLine($"{connectors.Count} potential drop target(s)");
-
          return connectors;
       }
 

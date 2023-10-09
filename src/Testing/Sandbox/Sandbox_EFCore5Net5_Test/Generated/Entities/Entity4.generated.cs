@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.3.4
+//     Produced by Entity Framework Visual Editor v4.2.6.1
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -24,14 +24,14 @@ using System.Runtime.CompilerServices;
 
 namespace Sandbox_EFCore_Test
 {
-   public partial class BaseType
+   public partial class Entity4: global::Sandbox_EFCore_Test.Entity2
    {
       partial void Init();
 
       /// <summary>
       /// Default constructor
       /// </summary>
-      public BaseType()
+      public Entity4(): base()
       {
          Init();
       }
@@ -40,14 +40,7 @@ namespace Sandbox_EFCore_Test
        * Properties
        *************************************************************************/
 
-      /// <summary>
-      /// Identity, Indexed, Required
-      /// Unique identifier
-      /// </summary>
-      [Key]
-      [Required]
-      [System.ComponentModel.Description("Unique identifier")]
-      public long Id { get; set; }
+      public int? Property1 { get; set; }
 
    }
 }

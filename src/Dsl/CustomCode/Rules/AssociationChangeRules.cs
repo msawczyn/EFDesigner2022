@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -305,26 +306,26 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      public static void FixupForeignKeys(Association element)
+      public static void FixupForeignKeys(Association association)
       {
-         List<ModelAttribute> fkProperties = element.Source.Attributes.Where(x => x.IsForeignKeyFor == element.Id)
-                                                    .Union(element.Target.Attributes.Where(x => x.IsForeignKeyFor == element.Id))
+         List<ModelAttribute> fkProperties = association.Source.Attributes.Where(x => x.IsForeignKeyFor == association.Id)
+                                                    .Union(association.Target.Attributes.Where(x => x.IsForeignKeyFor == association.Id))
                                                     .ToList();
 
          // EF6 can't have declared foreign keys for 1..1 / 0-1..1 / 1..0-1 / 0-1..0-1 relationships
-         if (!string.IsNullOrEmpty(element.FKPropertyName)
-          && (element.Source.ModelRoot.EntityFrameworkVersion == EFVersion.EF6)
-          && (element.SourceMultiplicity != Multiplicity.ZeroMany)
-          && (element.TargetMultiplicity != Multiplicity.ZeroMany))
-            element.FKPropertyName = null;
+         if (!string.IsNullOrEmpty(association.FKPropertyName)
+          && (association.Source.ModelRoot.EntityFrameworkVersion == EFVersion.EF6)
+          && (association.SourceMultiplicity != Multiplicity.ZeroMany)
+          && (association.TargetMultiplicity != Multiplicity.ZeroMany))
+            association.FKPropertyName = null;
 
          // if no FKs, remove all the attributes for this element
-         if (string.IsNullOrEmpty(element.FKPropertyName) || (element.Dependent == null))
+         if (string.IsNullOrEmpty(association.FKPropertyName) || (association.Dependent == null))
          {
             List<ModelAttribute> unnecessaryProperties = fkProperties.Where(x => !x.IsIdentity).ToList();
 
             if (unnecessaryProperties.Any())
-               WarningDisplay.Show($"{element.GetDisplayText()} doesn't specify defined foreign keys. Removing foreign key attribute(s) {string.Join(", ", unnecessaryProperties.Select(x => x.GetDisplayText()))}");
+               WarningDisplay.Show($"{association.GetDisplayText()} doesn't specify defined foreign keys. Removing foreign key attribute(s) {string.Join(", ", unnecessaryProperties.Select(x => x.GetDisplayText()))}");
 
             foreach (ModelAttribute attribute in unnecessaryProperties)
             {
@@ -336,16 +337,16 @@ namespace Sawczyn.EFDesigner.EFModel
          }
 
          // synchronize what's there to what should be there
-         string[] currentForeignKeyPropertyNames = element.GetForeignKeyPropertyNames();
+         string[] currentForeignKeyPropertyNames = association.GetForeignKeyPropertyNames();
 
          (IEnumerable<string> add, IEnumerable<ModelAttribute> remove) = fkProperties.Synchronize(currentForeignKeyPropertyNames, (attribute, name) => attribute.Name == name);
-
          List<ModelAttribute> removeList = remove.ToList();
+         List<string> addList = add.ToList();
          fkProperties = fkProperties.Except(removeList).ToList();
 
          // remove extras
          if (removeList.Any())
-            WarningDisplay.Show($"{element.GetDisplayText()} has extra foreign keys. Removing unnecessary foreign key attribute(s) {string.Join(", ", removeList.Select(x => x.GetDisplayText()))}");
+            WarningDisplay.Show($"{association.GetDisplayText()} has extra foreign keys. Removing unnecessary foreign key attribute(s) {string.Join(", ", removeList.Select(x => x.GetDisplayText()))}");
 
          for (int index = 0; index < removeList.Count; index++)
          {
@@ -356,31 +357,32 @@ namespace Sawczyn.EFDesigner.EFModel
          }
 
          // reparent existing properties if needed
-         foreach (ModelAttribute existing in fkProperties.Where(x => x.ModelClass != element.Dependent))
+         foreach (ModelAttribute existing in fkProperties.Where(x => x.ModelClass != association.Dependent))
          {
             existing.ClearFKMods();
-            existing.ModelClass.MoveAttribute(existing, element.Dependent);
-            existing.SetFKMods(element);
+            existing.ModelClass.MoveAttribute(existing, association.Dependent);
+            existing.SetFKMods(association);
          }
 
          // create new properties if they don't already exist
-         foreach (string propertyName in add.Where(n => element.Dependent.Attributes.All(a => a.Name != n)))
-            element.Dependent.Attributes.Add(new ModelAttribute(element.Store, new PropertyAssignment(ModelAttribute.NameDomainPropertyId, propertyName)));
-
+         foreach (string propertyName in addList.Where(n => association.Dependent.Attributes.All(a => a.Name != n)))
+         {
+            association.Dependent.Attributes.Add(new ModelAttribute(association.Store, new PropertyAssignment(ModelAttribute.NameDomainPropertyId, propertyName)));
+         }
          // make a pass through and fixup the types, summaries, etc. based on the principal's identity attributes
-         ModelAttribute[] principalIdentityAttributes = element.Principal.AllIdentityAttributes.ToArray();
-         string summaryBoilerplate = element.GetSummaryBoilerplate();
+         ModelAttribute[] principalIdentityAttributes = association.Principal.AllIdentityAttributes.ToArray();
+         string summaryBoilerplate = association.GetSummaryBoilerplate();
 
          for (int index = 0; index < currentForeignKeyPropertyNames.Length; index++)
          {
-            ModelAttribute fkProperty = element.Dependent.Attributes.First(x => x.Name == currentForeignKeyPropertyNames[index]);
+            ModelAttribute fkProperty = association.Dependent.Attributes.First(x => x.Name == currentForeignKeyPropertyNames[index]);
             ModelAttribute idProperty = principalIdentityAttributes[index];
 
-            bool required = element.Dependent == element.Source
-                               ? element.TargetMultiplicity == Multiplicity.One
-                               : element.SourceMultiplicity == Multiplicity.One;
+            bool required = association.Dependent == association.Source
+                               ? association.TargetMultiplicity == Multiplicity.One
+                               : association.SourceMultiplicity == Multiplicity.One;
 
-            fkProperty.SetFKMods(element, summaryBoilerplate, required, idProperty.Type);
+            fkProperty.SetFKMods(association, summaryBoilerplate, required, idProperty.Type);
          }
       }
 

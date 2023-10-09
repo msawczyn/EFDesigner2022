@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sandbox_EFCore_Test;
 
@@ -11,9 +12,11 @@ using Sandbox_EFCore_Test;
 namespace Sandbox_EFCore_Test.Migrations
 {
     [DbContext(typeof(EFModel1))]
-    partial class EFModel1ModelSnapshot : ModelSnapshot
+    [Migration("20231009121137_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

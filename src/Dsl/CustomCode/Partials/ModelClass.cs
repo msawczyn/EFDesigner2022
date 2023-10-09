@@ -592,6 +592,7 @@ namespace Sawczyn.EFDesigner.EFModel
          IsDatabaseSchemaTrackingPropertyHandler.Instance.PreResetValue(this);
          IsNamespaceTrackingPropertyHandler.Instance.PreResetValue(this);
          IsOutputDirectoryTrackingPropertyHandler.Instance.PreResetValue(this);
+         IsInheritanceStrategyTrackingPropertyHandler.Instance.PreResetValue(this);
 
          // same with other tracking properties as they get added
       }
@@ -615,6 +616,7 @@ namespace Sawczyn.EFDesigner.EFModel
          IsDatabaseSchemaTrackingPropertyHandler.Instance.ResetValue(this);
          IsNamespaceTrackingPropertyHandler.Instance.ResetValue(this);
          IsOutputDirectoryTrackingPropertyHandler.Instance.ResetValue(this);
+         IsInheritanceStrategyTrackingPropertyHandler.Instance.ResetValue(this);
 
          // same with other tracking properties as they get added
       }
@@ -628,6 +630,7 @@ namespace Sawczyn.EFDesigner.EFModel
          ModelClass baseClass = Store.ElementDirectory.FindElements<ModelClass>().FirstOrDefault(x => x.Name == newValue);
          Superclass = baseClass;
       }
+
 
 #region Warning display
 
@@ -954,8 +957,8 @@ namespace Sawczyn.EFDesigner.EFModel
          /// </param>
          internal void PreResetValue(ModelClass element)
          {
-            // of the DatabaseSchema property is retrieved from storage.  
             // Force the IsDatabaseSchemaTracking property to false so that the value  
+            // of the DatabaseSchema property is retrieved from storage.  
             element.isDatabaseSchemaTrackingPropertyStorage = false;
          }
 
@@ -1048,8 +1051,8 @@ namespace Sawczyn.EFDesigner.EFModel
          /// </param>
          internal void PreResetValue(ModelClass element)
          {
-            // of the DefaultConstructorVisibility property is retrieved from storage.  
             // Force the IsDefaultConstructorVisibilityTracking property to false so that the value  
+            // of the DefaultConstructorVisibility property is retrieved from storage.  
             element.isDefaultConstructorVisibilityTrackingPropertyStorage = false;
          }
 
@@ -1145,8 +1148,8 @@ namespace Sawczyn.EFDesigner.EFModel
          /// </param>
          internal void PreResetValue(ModelClass element)
          {
-            // of the Namespace property is retrieved from storage.  
             // Force the IsNamespaceTracking property to false so that the value  
+            // of the Namespace property is retrieved from storage.  
             element.isNamespaceTrackingPropertyStorage = false;
          }
 
@@ -1226,8 +1229,8 @@ namespace Sawczyn.EFDesigner.EFModel
          /// </param>
          internal void PreResetValue(ModelClass element)
          {
-            // of the OutputDirectory property is retrieved from storage.  
             // Force the IsOutputDirectoryTracking property to false so that the value  
+            // of the OutputDirectory property is retrieved from storage.  
             element.isOutputDirectoryTrackingPropertyStorage = false;
          }
 
@@ -1374,5 +1377,85 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
 #endregion AutoPropertyDefault tracking property
+
+#region InheritanceStrategy tracking property
+
+      private CodeStrategy inheritanceStrategyStorage;
+
+      private CodeStrategy GetInheritanceStrategyValue()
+      {
+         if (!this.IsLoading() && IsInheritanceStrategyTracking)
+         {
+            try
+            {
+               return ModelRoot?.InheritanceStrategy ?? CodeStrategy.TablePerHierarchy;
+            }
+            catch (NullReferenceException)
+            {
+               return CodeStrategy.TablePerHierarchy;
+            }
+            catch (Exception e)
+            {
+               if (CriticalException.IsCriticalException(e))
+                  throw;
+
+               return CodeStrategy.TablePerHierarchy;
+            }
+         }
+
+         return inheritanceStrategyStorage;
+      }
+
+      private void SetInheritanceStrategyValue(CodeStrategy value)
+      {
+         inheritanceStrategyStorage = value;
+
+         if (!Store.InUndoRedoOrRollback && !this.IsLoading())
+            IsInheritanceStrategyTracking = (inheritanceStrategyStorage == ModelRoot?.InheritanceStrategy);
+      }
+
+      internal sealed partial class IsInheritanceStrategyTrackingPropertyHandler
+      {
+         /// <summary>
+         ///    Called after the IsInheritanceStrategyTracking property changes.
+         /// </summary>
+         /// <param name="element">The model element that has the property that changed. </param>
+         /// <param name="oldValue">The previous value of the property. </param>
+         /// <param name="newValue">The new value of the property. </param>
+         protected override void OnValueChanged(ModelClass element, bool oldValue, bool newValue)
+         {
+            base.OnValueChanged(element, oldValue, newValue);
+
+            if (!element.Store.InUndoRedoOrRollback && newValue)
+            {
+               DomainPropertyInfo propInfo = element.Store.DomainDataDirectory.GetDomainProperty(InheritanceStrategyDomainPropertyId);
+               propInfo.NotifyValueChange(element);
+            }
+         }
+
+         /// <summary>
+         ///    Method to set IsInheritanceStrategyTracking to false so that this instance of this tracking property is not
+         ///    storage-based.
+         /// </summary>
+         /// <param name="element">
+         ///    The element on which to reset the property
+         ///    value.
+         /// </param>
+         internal void PreResetValue(ModelClass element)
+         {
+            // Force the IsInheritanceStrategyTracking property to false so that the value  
+            // of the InheritanceStrategy property is retrieved from storage.  
+            element.isInheritanceStrategyTrackingPropertyStorage = false;
+         }
+
+         /// <summary>Performs the reset operation for the IsInheritanceStrategyTracking property for a model element.</summary>
+         /// <param name="element">The model element that has the property to reset.</param>
+         internal void ResetValue(ModelClass element)
+         {
+            element.isInheritanceStrategyTrackingPropertyStorage = (element.InheritanceStrategy == element.ModelRoot?.InheritanceStrategy);
+         }
+      }
+
+#endregion InheritanceStrategy tracking property
    }
 }

@@ -332,8 +332,8 @@ namespace Sawczyn.EFDesigner.EFModel
          /// </param>
          internal void PreResetValue(ModelEnum element)
          {
-            // of the Namespace property is retrieved from storage.  
             // Force the IsNamespaceTracking property to false so that the value  
+            // of the Namespace property is retrieved from storage.  
             element.isNamespaceTrackingPropertyStorage = false;
          }
 
@@ -414,8 +414,8 @@ namespace Sawczyn.EFDesigner.EFModel
          /// </param>
          internal void PreResetValue(ModelEnum element)
          {
-            // of the OutputDirectory property is retrieved from storage.  
             // Force the IsOutputDirectoryTracking property to false so that the value  
+            // of the OutputDirectory property is retrieved from storage.  
             element.isOutputDirectoryTrackingPropertyStorage = false;
          }
 

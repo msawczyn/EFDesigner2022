@@ -193,6 +193,17 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
+      ///   True if the model is EFCore and the Entity Framework version is >= 8
+      /// </summary>
+      public bool IsEfCore8Plus
+      {
+         get
+         {
+            return EntityFrameworkVersion == EFVersion.EFCore && (EntityFrameworkPackageVersion == "Latest" || GetEntityFrameworkPackageVersionNum() >= 8);
+         }
+      }
+
+      /// <summary>
       ///    Finds all diagrams associated to this model
       /// </summary>
       public EFModelDiagram[] GetDiagrams()
@@ -313,7 +324,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                           "Int32",
                                                           "Int64",
                                                           "Single",
-                                                          "String",
+                                                          "String"
                                                        });
 
             if (IsEFCore6Plus)
@@ -376,7 +387,7 @@ namespace Sawczyn.EFDesigner.EFModel
                validClrTypes.AddRange(new[] { "TimeOnly", "TimeOnly?", "Nullable<TimeOnly>" });
             }
 
-            return validClrTypes.Union(SpatialTypes).OrderBy(x => x).ToArray(); 
+            return validClrTypes.Union(SpatialTypes).OrderBy(x => x).ToArray();
          }
       }
 
@@ -768,5 +779,33 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       #endregion AutoPropertyDefault tracking property
+
+      #region InheritanceStrategy tracking property
+
+      /// <summary>
+      ///    Updates tracking properties when the IsImplementNotify value changes
+      /// </summary>
+      /// <param name="oldValue">Prior value</param>
+      /// <param name="newValue">Current value</param>
+      protected virtual void OnInheritanceStrategyChanged(CodeStrategy oldValue, CodeStrategy newValue)
+      {
+         TrackingHelper.UpdateTrackingCollectionProperty(Store,
+                                                         Classes,
+                                                         ModelClass.InheritanceStrategyDomainPropertyId,
+                                                         ModelClass.IsInheritanceStrategyTrackingDomainPropertyId);
+      }
+
+      internal sealed partial class InheritanceStrategyPropertyHandler
+      {
+         protected override void OnValueChanged(ModelRoot element, CodeStrategy oldValue, CodeStrategy newValue)
+         {
+            base.OnValueChanged(element, oldValue, newValue);
+
+            if (!element.Store.InUndoRedoOrRollback)
+               element.OnInheritanceStrategyChanged(oldValue, newValue);
+         }
+      }
+
+      #endregion InheritanceStrategy tracking property
    }
 }

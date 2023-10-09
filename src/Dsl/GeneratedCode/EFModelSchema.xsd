@@ -684,6 +684,24 @@
             <xsd:documentation>Class will be stored in persistent storage</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+        <!-- Property: InheritanceStrategy -->
+        <xsd:attribute name="inheritanceStrategy" type="CodeStrategy" >
+          <xsd:annotation>
+            <xsd:documentation>How tables will be created and used to handle inheritance</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <!-- Property: IsInheritanceStrategyTracking -->
+        <xsd:attribute name="isInheritanceStrategyTracking" type="xsd:boolean" >
+          <xsd:annotation>
+            <xsd:documentation>If true, ModelClass.InheritanceStrategy tracks ModelRoot.InheritanceStrategy</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <!-- Property: TableHasTriggers -->
+        <xsd:attribute name="tableHasTriggers" type="xsd:boolean" >
+          <xsd:annotation>
+            <xsd:documentation>If true, the table storing this entity&apos;s data has triggers, which will impact how EFCore queries for it</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

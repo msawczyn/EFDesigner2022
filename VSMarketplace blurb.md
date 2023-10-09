@@ -52,7 +52,10 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
 **ChangeLog**
 
 **4.2.6**
+   - **[NEW]** Support for per-entity inheritance in EF7
+   - **[NEW]** New 'TableHasTriggers' property for entities to help workaround a breaking change in EFCore7. (see [SQL Server tables with triggers or certain computed columns now require special EF Core configuration](https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-7.0/breaking-changes?tabs=v7#sql-server-tables-with-triggers-or-certain-computed-columns-now-require-special-ef-core-configuration))
    - Fixes issue when generating code for properties that have a default enumeration value. Thanks to @equipatuequipo for [the pull request](https://github.com/msawczyn/EFDesigner2022/pull/72).
+   - Association classes are back, but only for cases where each side of the many-to-many bidirectional association has a single identity property. 
 
 **4.2.5**
    - Adds missing XML documentation for public and protected members

@@ -271,8 +271,8 @@ namespace Sawczyn.EFDesigner.EFModel
          /// </param>
          internal void PreResetValue(BidirectionalAssociation element)
          {
-            // of the SourceAutoProperty property is retrieved from storage.  
             // Force the IsSourceAutoPropertyTracking property to false so that the value  
+            // of the SourceAutoProperty property is retrieved from storage.  
             element.isSourceAutoPropertyTrackingPropertyStorage = false;
          }
 

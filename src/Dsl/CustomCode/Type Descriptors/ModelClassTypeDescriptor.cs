@@ -48,15 +48,27 @@ namespace Sawczyn.EFDesigner.EFModel
                   propertyDescriptors.Remove("TableName");
             }
 
+            // things unavailable if pre-EFCore7
+            if (!modelRoot.IsEFCore7Plus)
+            {
+               propertyDescriptors.Remove("TableHasTriggers");
+            }
+
             if (!modelRoot.GenerateTableComments)
                propertyDescriptors.Remove("TableComment");
 
             if (modelClass.IsPropertyBag)
                propertyDescriptors.Remove("IsDependentType");
 
-            if ((modelClass.Subclasses.Any() && modelClass.ModelRoot.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
+            if ((modelClass.Subclasses.Any() && modelClass.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
              || modelClass.Superclass != null)
                propertyDescriptors.Remove("UseTemporalTables");
+
+            if (modelClass.InheritanceStrategy == CodeStrategy.TablePerHierarchy && modelClass.Superclass != null)
+            {
+               propertyDescriptors.Remove("TableHasTriggers");
+               propertyDescriptors.Remove("TableName");
+            }
 
             // things unavailable for association classes
             if (modelClass.IsAssociationClass)
@@ -81,6 +93,7 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("TableComment");
                propertyDescriptors.Remove("TableName");
                propertyDescriptors.Remove("UseTemporalTables");
+               propertyDescriptors.Remove("TableHasTriggers");
             }
             else
                propertyDescriptors.Remove("ViewName");
@@ -96,6 +109,7 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("Persistent");
                propertyDescriptors.Remove("TableComment");
                propertyDescriptors.Remove("TableName");
+               propertyDescriptors.Remove("TableHasTriggers");
                propertyDescriptors.Remove("UseTemporalTables");
                propertyDescriptors.Remove("ViewName");
             }
@@ -116,6 +130,7 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("TableName");
                propertyDescriptors.Remove("UseTemporalTables");
                propertyDescriptors.Remove("ViewName");
+               propertyDescriptors.Remove("TableHasTriggers");
             }
 
             //Add the descriptors for the tracking properties 
@@ -174,6 +189,20 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                       new CategoryAttribute("Code Generation"),
                                                                       new TypeConverterAttribute(typeof(ProjectDirectoryTypeConverter))
                                                                    }));
+
+            if (modelRoot.IsEFCore7Plus)
+            {
+               propertyDescriptors.Add(new TrackingPropertyDescriptor(modelClass
+                                                                    , storeDomainDataDirectory.GetDomainProperty(ModelClass.InheritanceStrategyDomainPropertyId)
+                                                                    , storeDomainDataDirectory.GetDomainProperty(ModelClass.IsInheritanceStrategyTrackingDomainPropertyId)
+                                                                    , new Attribute[]
+                                                                      {
+                                                                         new DisplayNameAttribute("Inheritance Strategy")
+                                                                       , new DescriptionAttribute("Overrides default inheritance strategy")
+                                                                       , new CategoryAttribute("Code Generation")
+                                                                       , new TypeConverterAttribute(typeof( CodeStrategyTypeConverter ))
+                                                                      }));
+            }
          }
 
          // Return the property descriptors for this element  

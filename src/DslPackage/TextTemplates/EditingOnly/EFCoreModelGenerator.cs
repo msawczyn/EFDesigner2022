@@ -35,11 +35,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          /// <summary>
          /// Gets the list of spatial types supported by the database provider.
          /// </summary>
-         public static string[] SpatialTypes 
+         public static string[] SpatialTypes
          {
             get
             {
-               return new[] {"Geometry", "GeometryPoint", "GeometryLineString", "GeometryPolygon", "GeometryCollection", "GeometryMultiPoint", "GeometryMultiLineString", "GeometryMultiPolygon"};
+               return new[] { "Geometry", "GeometryPoint", "GeometryLineString", "GeometryPolygon", "GeometryCollection", "GeometryMultiPoint", "GeometryMultiLineString", "GeometryMultiPolygon" };
             }
          }
 
@@ -119,9 +119,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             segments.Add($"modelBuilder.Entity<{modelClass.FullName}>()");
 
             ConfigureTransientProperties(segments, modelClass);
-
-            //if (modelRoot.InheritanceStrategy == CodeStrategy.TablePerConcreteType && modelClass.Superclass != null)
-            //   segments.Add("Map(x => x.MapInheritedProperties())");
 
             if (classesWithTables.Contains(modelClass))
             {
@@ -669,47 +666,61 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          protected virtual void WriteDbContext()
          {
             List<string> segments = new List<string>();
-            ModelClass[] classesWithTables = null;
 
-            // Note: TablePerConcreteType not yet available, but it doesn't hurt for it to be here since they shouldn't make it past the designer's validations
-            switch (modelRoot.InheritanceStrategy)
+            // this is throwing a MissingMethodException in the T4 Host indicating that ModelClass.get_InheritanceStrategy doesn't exist. That's an error in the T4 Host.
+            // we'll work around it for now.
+            //
+            //ModelClass[] classesWithTables = modelRoot.Classes
+            //                                          .Where(mc => (mc.Persistent && !mc.IsQueryType && !mc.CustomAttributes.Contains("NotMapped") && mc.GenerateCode)
+            //                                                    && (mc.InheritanceStrategy == CodeStrategy.TablePerType
+            //                                                     && (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
+            //                                                     && (!mc.IsKeyless() || mc.IsDatabaseView))
+            //                                                    || (mc.InheritanceStrategy == CodeStrategy.TablePerConcreteType
+            //                                                     && (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
+            //                                                     && (!mc.IsKeyless() || mc.IsDatabaseView)
+            //                                                     && !mc.IsAbstract)
+            //                                                    || (mc.InheritanceStrategy == CodeStrategy.TablePerHierarchy
+            //                                                     && (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName))
+            //                                                     && mc.Superclass == null))
+            //                                          .OrderBy(x => x.Name)
+            //                                          .ToArray();
+
+            List<ModelClass> classesWithTablesList = new List<ModelClass>();
+
+            foreach (ModelClass mc in modelRoot.Classes)
             {
-               case CodeStrategy.TablePerType:
-               case CodeStrategy.TablePerConcreteType:
-                  classesWithTables = modelRoot.Classes
-                                               .Where(mc => (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
-                                                         && mc.Persistent
-                                                         && !mc.IsQueryType
-                                                         && (!mc.IsKeyless() || mc.IsDatabaseView)
-                                                         && !mc.CustomAttributes.Contains("NotMapped")
-                                                         && mc.GenerateCode)
-                                               .OrderBy(x => x.Name)
-                                               .ToArray();
+               if (mc.Persistent && !mc.IsQueryType && !mc.CustomAttributes.Contains("NotMapped") && mc.GenerateCode)
+               {
+                  switch (mc.InheritanceStrategy)
+                  {
+                     case CodeStrategy.TablePerType:
+                        if (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
+                        {
+                           if (!mc.IsKeyless() || mc.IsDatabaseView)
+                              classesWithTablesList.Add(mc);
+                        }
 
-                  break;
+                        break;
 
-               //case CodeStrategy.TablePerConcreteType:
-               //   classesWithTables = modelRoot.Classes
-               //                                .Where(mc => (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName)) 
-               //                                          && !mc.IsAbstract 
-               //                                          && mc.GenerateCode)
-               //                                .OrderBy(x => x.Name)
-               //                                .ToArray();
-               //   break;
+                     case CodeStrategy.TablePerConcreteType:
+                        if (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
+                        {
+                           if ((!mc.IsKeyless() || mc.IsDatabaseView) && !mc.IsAbstract)
+                              classesWithTablesList.Add(mc);
+                        }
 
-               case CodeStrategy.TablePerHierarchy:
-                  classesWithTables = modelRoot.Classes
-                                               .Where(mc => (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName))
-                                                         && (mc.Superclass == null)
-                                                         && mc.Persistent
-                                                         && !mc.IsQueryType
-                                                         && !mc.CustomAttributes.Contains("NotMapped")
-                                                         && mc.GenerateCode)
-                                               .OrderBy(x => x.Name)
-                                               .ToArray();
+                        break;
 
-                  break;
+                     case CodeStrategy.TablePerHierarchy:
+                        if (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) && mc.Superclass == null)
+                           classesWithTablesList.Add(mc);
+
+                        break;
+                  }
+               }
             }
+
+            ModelClass[] classesWithTables = classesWithTablesList.OrderBy(x => x.Name).ToArray();
 
             Output("using System;");
             Output("using System.Collections.Generic;");
@@ -729,7 +740,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             Output($"{modelRoot.EntityContainerAccess.ToString().ToLower()} partial class {modelRoot.EntityContainerName} : {baseClass}");
             Output("{");
 
-            if (classesWithTables?.Any() == true)
+            if (classesWithTables.Any())
                WriteDbSets();
 
             WriteContextConstructors();
@@ -1200,6 +1211,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          }
       }
 
-#endregion Template
+      #endregion Template
    }
 }
