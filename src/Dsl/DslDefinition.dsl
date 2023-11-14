@@ -1376,6 +1376,11 @@
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
         </DomainProperty>
+        <DomainProperty Id="3e577bf4-8cff-4859-ac5b-56590d0be462" Description="If true, the owned entity will be stored as JSON in the database" Name="IsJSON" DisplayName="Is JSON" DefaultValue="false" Category="Database">
+          <Type>
+            <ExternalTypeMoniker Name="/System/Boolean" />
+          </Type>
+        </DomainProperty>
       </Properties>
       <Source>
         <DomainRole Id="d2edf927-64c2-4fe3-8d4e-c44e87142c4c" Description="" Name="Source" DisplayName="Source" PropertyName="Targets" PropertyDisplayName="Targets">
@@ -2278,6 +2283,9 @@
           </XmlPropertyData>
           <XmlPropertyData XmlName="targetAutoInclude">
             <DomainPropertyMoniker Name="Association/TargetAutoInclude" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="isJSON">
+            <DomainPropertyMoniker Name="Association/IsJSON" />
           </XmlPropertyData>
         </ElementData>
       </XmlClassData>

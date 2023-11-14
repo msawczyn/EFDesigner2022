@@ -34,123 +34,78 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private static bool CanAcceptModelClassAndModelClassAsSourceAndTarget(ModelClass sourceModelClass, ModelClass targetModelClass)
       {
-         // keyless types may not have navigations to owned entities
-         if (sourceModelClass.IsKeyless() && targetModelClass.IsDependent())
-            return false;
-
-         // navigation properties can't point to keyless entity types
-         if (targetModelClass.IsKeyless())
-            return false;
-
          // valid unidirectional associations:
          // EF6 - entity to entity, entity to dependent
          // EFCore - entity to entity, entity to dependent
          // EFCore5Plus - entity to entity, entity to dependent, dependent to dependent, keyless to entity
+
+         if (sourceModelClass == targetModelClass)
+            return true;
 
          ModelRoot modelRoot = sourceModelClass.ModelRoot;
 
-         if (modelRoot.EntityFrameworkVersion == EFVersion.EF6)
+         System.Diagnostics.Debug.WriteLine($"Source: {sourceModelClass?.Name}, Is Entity: {sourceModelClass?.IsEntity()}, Is Dependent: {sourceModelClass?.IsDependent()}, Is DependentType: {sourceModelClass?.IsDependentType}, Is Keyless: {sourceModelClass?.IsKeyless()}, Is Keyless Type: {sourceModelClass?.IsKeylessType()}");
+         System.Diagnostics.Debug.WriteLine($"Target: {targetModelClass?.Name}, Is Entity: {targetModelClass?.IsEntity()}, Is Dependent: {targetModelClass?.IsDependent()}, Is DependentType: {targetModelClass?.IsDependentType}, Is Keyless: {targetModelClass?.IsKeyless()}, Is Keyless Type: {targetModelClass?.IsKeylessType()}");
+         switch ( modelRoot.EntityFrameworkVersion )
          {
-            if (sourceModelClass.IsEntity() && targetModelClass.IsEntity())
-               return true;
-
-            if (sourceModelClass.IsEntity() && targetModelClass.IsDependent())
-               return true;
-         }
-         else if ((modelRoot.EntityFrameworkVersion == EFVersion.EFCore) && !modelRoot.IsEFCore5Plus)
-         {
-            if (sourceModelClass.IsEntity() && targetModelClass.IsEntity())
-               return true;
-
-            if (sourceModelClass.IsEntity() && targetModelClass.IsDependent())
-               return true;
-         }
-         else if (modelRoot.IsEFCore5Plus)
-         {
-            if (sourceModelClass.IsEntity() && targetModelClass.IsEntity())
-               return true;
-
-            if (sourceModelClass.IsEntity() && targetModelClass.IsDependent())
-               return true;
-
-            if (sourceModelClass.IsDependent() && targetModelClass.IsDependent())
-               return true;
-
-            if (sourceModelClass.IsKeyless() && targetModelClass.IsEntity())
-               return true;
+            case EFVersion.EF6:
+               return
+                  sourceModelClass.IsEntity() && targetModelClass.IsEntity()
+               || sourceModelClass.IsEntity() && targetModelClass.IsDependent();
+            case EFVersion.EFCore when !modelRoot.IsEFCore5Plus:
+               return
+                  sourceModelClass.IsEntity() && targetModelClass.IsEntity()
+               || sourceModelClass.IsEntity() && targetModelClass.IsDependent();
+            case EFVersion.EFCore when modelRoot.IsEFCore5Plus:
+               return
+                  sourceModelClass.IsEntity() && targetModelClass.IsEntity()
+               || sourceModelClass.IsEntity() && targetModelClass.IsDependent()
+               || sourceModelClass.IsDependent() && targetModelClass.IsDependent()
+               || sourceModelClass.IsKeyless() && targetModelClass.IsEntity();
          }
 
          return false;
       }
 
-      private static bool CanAcceptModelClassAsSource(ModelClass candidate)
+      private static bool CanAcceptModelClassAsSource(ModelClass sourceCandidate)
       {
          // valid unidirectional associations:
          // EF6 - entity to entity, entity to dependent
          // EFCore - entity to entity, entity to dependent
          // EFCore5Plus - entity to entity, entity to dependent, dependent to dependent, keyless to entity
 
-         ModelRoot modelRoot = candidate.ModelRoot;
-         EFVersion entityFrameworkVersion = modelRoot.EntityFrameworkVersion;
+         ModelRoot modelRoot = sourceCandidate.ModelRoot;
 
-         if (entityFrameworkVersion == EFVersion.EF6)
+         switch (modelRoot.EntityFrameworkVersion)
          {
-            if (candidate.IsEntity())
-               return true;
-         }
-         else if ((entityFrameworkVersion == EFVersion.EFCore) && !modelRoot.IsEFCore5Plus)
-         {
-            if (candidate.IsEntity())
-               return true;
-         }
-         else if (modelRoot.IsEFCore5Plus)
-         {
-            if (candidate.IsEntity())
-               return true;
-
-            if (candidate.IsDependent())
-               return true;
-
-            if (candidate.IsKeyless())
-               return true;
+            case EFVersion.EF6:
+               return sourceCandidate.IsEntity();
+            case EFVersion.EFCore when !modelRoot.IsEFCore5Plus:
+               return sourceCandidate.IsEntity();
+            case EFVersion.EFCore when modelRoot.IsEFCore5Plus:
+               return sourceCandidate.IsEntity() || sourceCandidate.IsDependentType || sourceCandidate.IsKeylessType();
          }
 
          return false;
       }
 
-      private static bool CanAcceptModelClassAsTarget(ModelClass candidate)
+      private static bool CanAcceptModelClassAsTarget(ModelClass targetCandidate)
       {
          // valid unidirectional associations:
          // EF6 - entity to entity, entity to dependent
          // EFCore - entity to entity, entity to dependent
          // EFCore5Plus - entity to entity, entity to dependent, dependent to dependent, keyless to entity
 
-         ModelRoot modelRoot = candidate.ModelRoot;
-         EFVersion entityFrameworkVersion = modelRoot.EntityFrameworkVersion;
+         ModelRoot modelRoot = targetCandidate.ModelRoot;
 
-         if (entityFrameworkVersion == EFVersion.EF6)
+         switch ( modelRoot.EntityFrameworkVersion )
          {
-            if (candidate.IsEntity())
-               return true;
-
-            if (candidate.IsDependent())
-               return true;
-         }
-         else if ((entityFrameworkVersion == EFVersion.EFCore) && !modelRoot.IsEFCore5Plus)
-         {
-            if (candidate.IsEntity())
-               return true;
-
-            if (candidate.IsDependent())
-               return true;
-         }
-         else if (modelRoot.IsEFCore5Plus)
-         {
-            if (candidate.IsEntity())
-               return true;
-
-            if (candidate.IsDependent())
-               return true;
+            case EFVersion.EF6:
+               return targetCandidate.IsEntity() || targetCandidate.IsDependent();
+            case EFVersion.EFCore when !modelRoot.IsEFCore5Plus:
+               return targetCandidate.IsEntity() || targetCandidate.IsDependent();
+            case EFVersion.EFCore when modelRoot.IsEFCore5Plus:
+               return targetCandidate.IsEntity() || targetCandidate.IsDependent();
          }
 
          return false;

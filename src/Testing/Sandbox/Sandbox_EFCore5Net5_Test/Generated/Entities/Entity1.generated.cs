@@ -47,14 +47,15 @@ namespace Sandbox_EFCore_Test
       /// Identity, Indexed, Required
       /// Unique identifier
       /// </summary>
-      [Key]
-      [Required]
+      [NotMapped]
       [System.ComponentModel.Description("Unique identifier")]
       public long Id { get; set; }
 
       /*************************************************************************
        * Navigation properties
        *************************************************************************/
+
+      public virtual global::Sandbox_EFCore_Test.Embedded Embedded { get; set; }
 
       public virtual ICollection<global::Sandbox_EFCore_Test.Entity2> Entity2 { get; private set; }
 

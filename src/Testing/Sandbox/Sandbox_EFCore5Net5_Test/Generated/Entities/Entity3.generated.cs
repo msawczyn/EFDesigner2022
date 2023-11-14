@@ -92,8 +92,7 @@ namespace Sandbox_EFCore_Test
       /// Identity, Indexed, Required
       /// Foreign key for Entity1.Entity3 &lt;--&gt; Entity3.Entity1. 
       /// </summary>
-      [Key]
-      [Required]
+      [NotMapped]
       [System.ComponentModel.Description("Foreign key for Entity1.Entity3 <--> Entity3.Entity1. ")]
       public long Entity1Id { get; set; }
 
@@ -101,8 +100,7 @@ namespace Sandbox_EFCore_Test
       /// Identity, Indexed, Required
       /// Foreign key for Entity2.Entity3 &lt;--&gt; Entity3.Entity2. 
       /// </summary>
-      [Key]
-      [Required]
+      [NotMapped]
       [System.ComponentModel.Description("Foreign key for Entity2.Entity3 <--> Entity3.Entity2. ")]
       public long Entity2Id { get; set; }
 
@@ -110,7 +108,7 @@ namespace Sandbox_EFCore_Test
       /// Indexed, Required
       /// Unique identifier
       /// </summary>
-      [Required]
+      [NotMapped]
       [System.ComponentModel.Description("Unique identifier")]
       public long Id { get; set; }
 

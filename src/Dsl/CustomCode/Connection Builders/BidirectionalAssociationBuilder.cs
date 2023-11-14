@@ -36,7 +36,6 @@ namespace Sawczyn.EFDesigner.EFModel
          // valid bidirectional associations:
          // EF6 - entity to entity
          // EFCore - entity to entity, entity to dependent,  dependent to entity
-         // EFCore5Plus - entity to entity, entity to dependent, dependent to entity
 
          ModelRoot modelRoot = sourceModelClass.ModelRoot;
          EFVersion entityFrameworkVersion = modelRoot.EntityFrameworkVersion;
@@ -46,18 +45,7 @@ namespace Sawczyn.EFDesigner.EFModel
             if (sourceModelClass.IsEntity() && targetModelClass.IsEntity())
                return true;
          }
-         else if ((entityFrameworkVersion == EFVersion.EFCore) && !modelRoot.IsEFCore5Plus)
-         {
-            if (sourceModelClass.IsEntity() && targetModelClass.IsEntity())
-               return true;
-
-            if (sourceModelClass.IsEntity() && targetModelClass.IsDependent())
-               return true;
-
-            if (sourceModelClass.IsDependent() && targetModelClass.IsEntity())
-               return true;
-         }
-         else if (modelRoot.IsEFCore5Plus)
+         else 
          {
             if (sourceModelClass.IsEntity() && targetModelClass.IsEntity())
                return true;

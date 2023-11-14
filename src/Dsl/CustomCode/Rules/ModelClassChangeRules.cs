@@ -292,7 +292,7 @@ namespace Sawczyn.EFDesigner.EFModel
                         break;
                      }
 
-                     List<Association> principalAssociations = store.GetAll<Association>().Where(a => a.Principal == element).ToList();
+                     List<Association> principalAssociations = store.GetAll<Association>().Where(a => a.Principal == element && !a.Dependent.IsDependentType).ToList();
 
                      if (principalAssociations.Any())
                      {
@@ -360,8 +360,8 @@ namespace Sawczyn.EFDesigner.EFModel
                         element.TableName = string.Empty;
                      }
 
-                     foreach (ModelAttribute modelAttribute in element.AllAttributes.Where(a => a.IsIdentity))
-                        modelAttribute.IsIdentity = false;
+                     //foreach (ModelAttribute modelAttribute in element.AllAttributes.Where(a => a.IsIdentity))
+                     //   modelAttribute.IsIdentity = false;
 
                      element.DbSetName = string.Empty;
 

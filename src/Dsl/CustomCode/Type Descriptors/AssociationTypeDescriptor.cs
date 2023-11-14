@@ -19,7 +19,6 @@ namespace Sawczyn.EFDesigner.EFModel
          // Get the default property descriptors from the base class  
          PropertyDescriptorCollection propertyDescriptors = base.GetProperties(attributes);
 
-         //Add the descriptor for the tracking property.  
          if (ModelElement is Association association)
          {
             ModelRoot modelRoot = association.Source.ModelRoot;
@@ -43,6 +42,17 @@ namespace Sawczyn.EFDesigner.EFModel
             if (association.Source.IsDependentType || association.Target.IsDependentType)
                propertyDescriptors.Remove("FKPropertyName");
 
+            // only aggregates can be stored as JSON.
+            if (!association.Source.IsDependentType && !association.Target.IsDependentType)
+               propertyDescriptors.Remove("IsJSON");
+
+            // If the aggregate inherits, the strategy must be TPH (https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-7.0/whatsnew -
+            // Mapping of owned types to JSON is not yet supported in conjunction with TPT or TPC inheritance)
+            if (association.Source.IsDependentType && association.Source.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
+               propertyDescriptors.Remove("IsJSON");
+            if (association.Target.IsDependentType && association.Target.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
+               propertyDescriptors.Remove("IsJSON");
+
             // only display roles for 1..1 and 0-1..0-1 associations
             if ((association.SourceMultiplicity != Multiplicity.One || association.TargetMultiplicity != Multiplicity.One)
              && (association.SourceMultiplicity != Multiplicity.ZeroOne || association.TargetMultiplicity != Multiplicity.ZeroOne))
@@ -59,8 +69,8 @@ namespace Sawczyn.EFDesigner.EFModel
             if (association.TargetRole != EndpointRole.Principal || association.Source.IsDependentType || association.Target.IsDependentType)
                propertyDescriptors.Remove("TargetDeleteAction");
 
-            // only show join table details if is *..* association
-            if (!isManyToMany || !modelRoot.IsEFCore5Plus)
+            // only show join table details if is *..* association and no association class
+            if ((!isManyToMany || !modelRoot.IsEFCore5Plus) && association.GetAssociationClass() != null)
             {
                propertyDescriptors.Remove("JoinTableName");
                propertyDescriptors.Remove("SourceFKColumnName");
@@ -112,6 +122,12 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("SourceFKColumnName");
                propertyDescriptors.Remove("TargetFKColumnName");
                propertyDescriptors.Remove("TargetAutoInclude");
+            }
+
+            // things unavailable if < EFCore7+
+            if (!modelRoot.IsEFCore7Plus)
+            {
+               propertyDescriptors.Remove("IsJSON");
             }
 
             /********************************************************************************/

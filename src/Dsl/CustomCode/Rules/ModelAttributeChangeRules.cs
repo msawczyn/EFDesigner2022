@@ -247,9 +247,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "Persistent":
                {
-                  bool newPersistent = (bool)e.NewValue;
+                  element.Persistent = (bool)e.NewValue && (element.ModelClass?.Persistent ?? true);
 
-                  if (!newPersistent)
+                  if (!element.Persistent)
                   {
                      element.IsIdentity = false;
                      element.Indexed = false;
@@ -264,7 +264,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
             case "ReadOnly":
                {
-                  if (!element.Persistent || (element.SetterVisibility != SetterAccessModifier.Public))
+                  // only transient properties can be read-only
+                  // and it makes no sense for a non-public property to be read-only
+                  if (element.Persistent || element.SetterVisibility != SetterAccessModifier.Public)
                      element.ReadOnly = false;
                }
 

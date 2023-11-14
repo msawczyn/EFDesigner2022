@@ -40,6 +40,7 @@ namespace Sandbox_EFCore_Test
        * Properties
        *************************************************************************/
 
+      [NotMapped]
       public int? Property1 { get; set; }
 
    }

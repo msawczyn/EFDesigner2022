@@ -2277,6 +2277,18 @@
     <value>End 2</value>
     <comment>Category for DomainProperty &apos;TargetAutoInclude&apos; on DomainClass &apos;Association&apos;</comment>
   </data>
+  <data name="Sawczyn.EFDesigner.EFModel.Association/IsJSON.Description" xml:space="preserve">
+    <value>If true, the owned entity will be stored as JSON in the database</value>
+    <comment>Description for DomainProperty &apos;IsJSON&apos; on DomainClass &apos;Association&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.Association/IsJSON.DisplayName" xml:space="preserve">
+    <value>Is JSON</value>
+    <comment>DisplayName for DomainProperty &apos;IsJSON&apos; on DomainClass &apos;Association&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.Association/IsJSON.Category" xml:space="preserve">
+    <value>Database</value>
+    <comment>Category for DomainProperty &apos;IsJSON&apos; on DomainClass &apos;Association&apos;</comment>
+  </data>
   <data name="Sawczyn.EFDesigner.EFModel.Association/Source.Description" xml:space="preserve">
     <value></value>
     <comment>Description for DomainRole &apos;Source&apos; on DomainRelationship &apos;Association&apos;</comment>

@@ -61,6 +61,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore5Net5", "EFCoreV5\EFC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sandbox_EFCore_Test", "Sandbox\Sandbox_EFCore5Net5_Test\Sandbox_EFCore_Test.csproj", "{00FCE402-231F-4912-B7D6-8C71EA878B23}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{4EAB7427-224D-4856-9CCC-8A9FD52934CD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoredProcs", "StoredProcs\StoredProcs.csproj", "{EA55EA36-11A2-48B9-8F3E-07ECA7200BE3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,6 +135,10 @@ Global
 		{00FCE402-231F-4912-B7D6-8C71EA878B23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00FCE402-231F-4912-B7D6-8C71EA878B23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00FCE402-231F-4912-B7D6-8C71EA878B23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA55EA36-11A2-48B9-8F3E-07ECA7200BE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA55EA36-11A2-48B9-8F3E-07ECA7200BE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA55EA36-11A2-48B9-8F3E-07ECA7200BE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA55EA36-11A2-48B9-8F3E-07ECA7200BE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -162,6 +170,7 @@ Global
 		{94DF701A-1F1E-46F6-95AF-FC0E059A759A} = {FA680FE6-5105-42DF-9F2D-AE96FAC16E77}
 		{B2F26FB8-0492-4117-AC94-9FD640900AFE} = {B9712341-0F3E-484C-A907-D0DCD86D9768}
 		{00FCE402-231F-4912-B7D6-8C71EA878B23} = {FA680FE6-5105-42DF-9F2D-AE96FAC16E77}
+		{EA55EA36-11A2-48B9-8F3E-07ECA7200BE3} = {4EAB7427-224D-4856-9CCC-8A9FD52934CD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C1564741-D3E6-4EFB-B1A8-82190DB1A31C}

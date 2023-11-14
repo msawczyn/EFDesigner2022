@@ -308,9 +308,18 @@ namespace Sawczyn.EFDesigner.EFModel
 
       public static void FixupForeignKeys(Association association)
       {
-         List<ModelAttribute> fkProperties = association.Source.Attributes.Where(x => x.IsForeignKeyFor == association.Id)
-                                                    .Union(association.Target.Attributes.Where(x => x.IsForeignKeyFor == association.Id))
-                                                    .ToList();
+         // for this to work, we need to know what's Principal and what's Dependent
+         if (association.Principal == null || association.Dependent == null)
+            return;
+
+         // clear FK data from properties in the Principal class, if they exist
+         foreach (ModelAttribute attribute in association.Principal.Attributes.Where(x => x.IsForeignKeyFor == association.Id))
+            attribute.ClearFKMods(string.Empty);
+
+         List<ModelAttribute> fkProperties = association.Dependent.Attributes
+                                                        .Where(x => x.IsForeignKeyFor == association.Id)
+                                                        .ToList();
+
 
          // EF6 can't have declared foreign keys for 1..1 / 0-1..1 / 1..0-1 / 0-1..0-1 relationships
          if (!string.IsNullOrEmpty(association.FKPropertyName)
@@ -319,8 +328,8 @@ namespace Sawczyn.EFDesigner.EFModel
           && (association.TargetMultiplicity != Multiplicity.ZeroMany))
             association.FKPropertyName = null;
 
-         // if no FKs, remove all the attributes for this element
-         if (string.IsNullOrEmpty(association.FKPropertyName) || (association.Dependent == null))
+         // if no FKs, remove FK properties in the Dependent class, if they exist
+         if (string.IsNullOrEmpty(association.FKPropertyName))
          {
             List<ModelAttribute> unnecessaryProperties = fkProperties.Where(x => !x.IsIdentity).ToList();
 
@@ -357,8 +366,14 @@ namespace Sawczyn.EFDesigner.EFModel
          }
 
          // reparent existing properties if needed
+         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: {association.GetDisplayText()} has {fkProperties.Count} FK properties");
+         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Dependent class is {association.Dependent.Name}");
+         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Principal class is {association.Principal.Name}");
+      
          foreach (ModelAttribute existing in fkProperties.Where(x => x.ModelClass != association.Dependent))
          {
+            Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Reparenting {existing.Name} from {existing.ModelClass.Name} to {association.Dependent.Name}");
+          
             existing.ClearFKMods();
             existing.ModelClass.MoveAttribute(existing, association.Dependent);
             existing.SetFKMods(association);
@@ -373,6 +388,11 @@ namespace Sawczyn.EFDesigner.EFModel
          ModelAttribute[] principalIdentityAttributes = association.Principal.AllIdentityAttributes.ToArray();
          string summaryBoilerplate = association.GetSummaryBoilerplate();
 
+         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Principal has {association.Principal.AllIdentityAttributes.Count()} identity attributes");
+         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Principal identity attributes are: {string.Join(", ", association.Principal.AllIdentityAttributes.Select(x=>x.Name))}");
+         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: {association.GetDisplayText()} has {currentForeignKeyPropertyNames.Length} FK properties");
+         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: FK properties are: {string.Join(", ", currentForeignKeyPropertyNames)}");
+        
          for (int index = 0; index < currentForeignKeyPropertyNames.Length; index++)
          {
             ModelAttribute fkProperty = association.Dependent.Attributes.First(x => x.Name == currentForeignKeyPropertyNames[index]);

@@ -10714,6 +10714,23 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
+	      // IsJSON
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribIsJSON = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "isJSON");
+	         if (attribIsJSON != null)
+	         {
+	            global::System.Boolean valueOfIsJSON;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.Boolean>(serializationContext, attribIsJSON, out valueOfIsJSON))
+	            {
+	               instanceOfAssociation.IsJSON = valueOfIsJSON;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "isJSON", typeof(global::System.Boolean), attribIsJSON);
+	            }
+	         }
+	      }
 	   }
 	
 	   #region TryCreateInstance & TryCreateDerivedInstance
@@ -11338,6 +11355,19 @@ namespace Sawczyn.EFDesigner.EFModel
 	         if (!serializationContext.Result.Failed)
 	         {
 	            EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "targetAutoInclude", serializedPropValue);
+	         }
+	      }
+	      // IsJSON
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.Boolean propValue = instanceOfAssociation.IsJSON;
+	         string serializedPropValue = DslModeling::SerializationUtilities.GetString<global::System.Boolean>(serializationContext, propValue);
+	         if (!serializationContext.Result.Failed)
+	         {
+	            if (serializationContext.WriteOptionalPropertiesWithDefaultValue || string.CompareOrdinal(serializedPropValue, "false") != 0)
+	            {   // No need to write the value out if it's the same as default value.
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "isJSON", serializedPropValue);
+	            }
 	         }
 	      }
 	   }

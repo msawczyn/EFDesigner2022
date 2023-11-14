@@ -2708,6 +2708,94 @@ namespace Sawczyn.EFDesigner.EFModel
 		}
 		
 		#endregion
+		#region IsJSON domain property code
+		
+		/// <summary>
+		/// IsJSON domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid IsJSONDomainPropertyId = new global::System.Guid(0x3e577bf4, 0x8cff, 0x4859, 0xac, 0x5b, 0x56, 0x59, 0x0d, 0x0b, 0xe4, 0x62);
+		
+		/// <summary>
+		/// Storage for IsJSON
+		/// </summary>
+		private global::System.Boolean isJSONPropertyStorage;
+		
+		/// <summary>
+		/// Gets or sets the value of IsJSON domain property.
+		/// If true, the owned entity will be stored as JSON in the database
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.Association/IsJSON.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.Association/IsJSON.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.Association/IsJSON.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslModeling::DomainObjectId("3e577bf4-8cff-4859-ac5b-56590d0be462")]
+		public global::System.Boolean IsJSON
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return isJSONPropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				IsJSONPropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the Association.IsJSON domain property.
+		/// </summary>
+		internal sealed partial class IsJSONPropertyHandler : DslModeling::DomainPropertyValueHandler<Association, global::System.Boolean>
+		{
+			private IsJSONPropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the Association.IsJSON domain property value handler.
+			/// </summary>
+			public static readonly IsJSONPropertyHandler Instance = new IsJSONPropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the Association.IsJSON domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return IsJSONDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.Boolean GetValue(Association element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.isJSONPropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(Association element, global::System.Boolean newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.Boolean oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.isJSONPropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
 		#region Source link accessor
 		/// <summary>
 		/// Get the list of Association links to a ModelClass.

@@ -75,12 +75,18 @@ namespace Sandbox_EFCore_Test
 
          modelBuilder.HasDefaultSchema("dbo");
 
+         modelBuilder.Owned<global::Sandbox_EFCore_Test.Embedded>();
+
+         modelBuilder.Owned<global::Sandbox_EFCore_Test.Embedded2>();
+
          modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity1>()
+                     .Ignore(t => t.Id)
                      .UseTptMappingStrategy().ToTable("Entity1")
                      .HasKey(t => t.Id);
-         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity1>()
-                     .Property(t => t.Id)
-                     .ValueGeneratedOnAdd()
+         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity1>().OwnsOne(p => p.Embedded).Property(p => p.Id)
+                     .IsRequired();
+         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity1>().OwnsOne(p => p.Embedded).Property(p => p.Property1);
+         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity1>().OwnsOne(p => p.Embedded).OwnsOne(p => p.Embedded2).Property(p => p.Id)
                      .IsRequired();
          modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity1>()
                      .HasMany<global::Sandbox_EFCore_Test.Entity2>(p => p.Entity2)
@@ -96,10 +102,11 @@ namespace Sandbox_EFCore_Test
                            .HasForeignKey(x => x.Entity1Id),
                         j =>
                         {
+                           j.Ignore(t => t.Id);
+                           j.Ignore(t => t.Entity1Id);
+                           j.Ignore(t => t.Entity2Id);
                            j.ToTable("Entity3");
                            j.HasKey(t => new { t.Entity1Id, t.Entity2Id });
-                           j.Property(t => t.Id).IsRequired();
-                           j.HasIndex(t => t.Id).IsUnique();
                         });
          modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity1>()
                      .HasMany<global::Sandbox_EFCore_Test.Entity3>(p => p.Entity3)
@@ -108,12 +115,9 @@ namespace Sandbox_EFCore_Test
                      .IsRequired();
 
          modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity2>()
-                     .ToTable("Entity2")
+                     .Ignore(t => t.Id)
+                     .UseTpcMappingStrategy().ToTable("Entity2")
                      .HasKey(t => t.Id);
-         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity2>()
-                     .Property(t => t.Id)
-                     .ValueGeneratedOnAdd()
-                     .IsRequired();
          modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity2>()
                      .HasMany<global::Sandbox_EFCore_Test.Entity3>(p => p.Entity3)
                      .WithOne(p => p.Entity2)
@@ -121,23 +125,15 @@ namespace Sandbox_EFCore_Test
                      .IsRequired();
 
          modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity3>()
-                     .ToTable("Entity3")
+                     .Ignore(t => t.Id)
+                     .Ignore(t => t.Entity1Id)
+                     .Ignore(t => t.Entity2Id)
+                     .UseTpcMappingStrategy().ToTable("Entity3")
                      .HasKey(t => new { t.Entity1Id, t.Entity2Id });
-         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity3>()
-                     .Property(t => t.Id)
-                     .IsRequired();
-         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity3>().HasIndex(t => t.Id)
-                     .IsUnique();
-         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity3>()
-                     .Property(t => t.Entity1Id)
-                     .ValueGeneratedNever()
-                     .IsRequired();
-         modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity3>()
-                     .Property(t => t.Entity2Id)
-                     .ValueGeneratedNever()
-                     .IsRequired();
 
          modelBuilder.Entity<global::Sandbox_EFCore_Test.Entity4>()
+                     .Ignore(t => t.Property1)
+                     .UseTpcMappingStrategy().ToTable("Entity4", t => { t.HasTrigger("Foo"); })
                      .HasBaseType<global::Sandbox_EFCore_Test.Entity2>();
 
          OnModelCreatedImpl(modelBuilder);

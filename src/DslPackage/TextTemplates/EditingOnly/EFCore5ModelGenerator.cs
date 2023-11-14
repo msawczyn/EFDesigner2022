@@ -443,6 +443,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                                      ? string.Empty
                                      : "_";
 
+               string buildAction = null;
+
                switch (association.TargetMultiplicity) // realized by property on source
                {
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:

@@ -509,17 +509,17 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      ///    True if this is a keyless entity type (backed by a query or a view), false otherwise
+      ///    True if this is a keyless entity type (backed by a query or a view) or somehow otherwise has no identity properties; false otherwise
       /// </summary>
       [Browsable(false)]
       public bool IsKeyless()
       {
-         return IsKeylessType();
+         return IsKeylessType() || !AllIdentityAttributes.Any();
       }
 
       internal bool IsKeylessType()
       {
-         return IsQueryType || IsDatabaseView || !AllIdentityAttributes.Any();
+         return IsQueryType || IsDatabaseView;
       }
 
       /// <summary>

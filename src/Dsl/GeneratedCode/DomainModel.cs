@@ -301,6 +301,7 @@ namespace Sawczyn.EFDesigner.EFModel
 	         new DomainMemberInfo(typeof(Association), "IsTargetAutoPropertyTracking", Association.IsTargetAutoPropertyTrackingDomainPropertyId, typeof(Association.IsTargetAutoPropertyTrackingPropertyHandler)),
 	         new DomainMemberInfo(typeof(Association), "IsTargetAbstract", Association.IsTargetAbstractDomainPropertyId, typeof(Association.IsTargetAbstractPropertyHandler)),
 	         new DomainMemberInfo(typeof(Association), "TargetAutoInclude", Association.TargetAutoIncludeDomainPropertyId, typeof(Association.TargetAutoIncludePropertyHandler)),
+	         new DomainMemberInfo(typeof(Association), "IsJSON", Association.IsJSONDomainPropertyId, typeof(Association.IsJSONPropertyHandler)),
 	         new DomainMemberInfo(typeof(Generalization), "Name", Generalization.NameDomainPropertyId, typeof(Generalization.NamePropertyHandler)),
 	         new DomainMemberInfo(typeof(BidirectionalAssociation), "SourcePropertyName", BidirectionalAssociation.SourcePropertyNameDomainPropertyId, typeof(BidirectionalAssociation.SourcePropertyNamePropertyHandler)),
 	         new DomainMemberInfo(typeof(BidirectionalAssociation), "SourceDescription", BidirectionalAssociation.SourceDescriptionDomainPropertyId, typeof(BidirectionalAssociation.SourceDescriptionPropertyHandler)),

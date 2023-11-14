@@ -132,6 +132,11 @@ namespace Sawczyn.EFDesigner.EFModel
          return true;
       }
 
+      internal ModelClass GetAssociationClass()
+      {
+         return Source?.ModelRoot?.Classes.FirstOrDefault(x => x.IsAssociationClass && x.DescribedAssociationElementId == Id);
+      }
+
       [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
       [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]

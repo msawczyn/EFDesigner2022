@@ -47,8 +47,7 @@ namespace Sandbox_EFCore_Test
       /// Identity, Indexed, Required
       /// Unique identifier
       /// </summary>
-      [Key]
-      [Required]
+      [NotMapped]
       [System.ComponentModel.Description("Unique identifier")]
       public long Id { get; set; }
 
