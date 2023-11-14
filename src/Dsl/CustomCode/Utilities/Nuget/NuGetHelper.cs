@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
@@ -56,37 +57,46 @@ namespace Sawczyn.EFDesigner.EFModel
       [SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "Caller requires synchronous method")]
       private static void LoadNuGetVersions(EFVersion efVersion, string packageId)
       {
-         // get NuGet packages with that package id
-         HttpResponseMessage responseMessage = httpClient.GetAsync(string.Format(NUGET_URL, packageId)).GetAwaiter().GetResult();
-         string jsonString = responseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+         try
+         {
+            // get NuGet packages with that package id
+            HttpResponseMessage responseMessage = httpClient.GetAsync(string.Format(NUGET_URL, packageId)).GetAwaiter().GetResult();
+            string jsonString = responseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
-         NuGetPackages nugetPackages = NuGetPackages.FromJson(jsonString);
-         string id = packageId.ToLower();
+            NuGetPackages nugetPackages = NuGetPackages.FromJson(jsonString);
+            string id = packageId.ToLower();
 
-         // get their versions
-         List<string> result = nugetPackages.Data
-                                            .Where(x => x.Title.ToLower() == id)
-                                            .SelectMany(x => x.Versions)
-                                            .OrderBy(v => v.VersionVersion)
-                                            .Select(v => v.VersionVersion)
-                                            .ToList();
+            // get their versions
+            List<string> result = nugetPackages.Data
+                                               .Where(x => x.Title.ToLower() == id)
+                                               .SelectMany(x => x.Versions)
+                                               .OrderBy(v => v.VersionVersion)
+                                               .Select(v => v.VersionVersion)
+                                               .ToList();
 
-         // find the major.minor versions
-         List<string> majorVersions = result.Select(v => string.Join(".", v.Split('.').Take(2))).OrderBy(v => v).Distinct().ToList();
+            // find the major.minor versions
+            List<string> majorVersions = result.Select(v => string.Join(".", v.Split('.').Take(2))).OrderBy(v => v).Distinct().ToList();
 
-         // do the trivial mapping of the full version to the full display name
-         foreach (string v in result)
-            NuGetPackageDisplay.Add(new NuGetDisplay(efVersion, packageId, v, v, string.Join(".", v.Split('.').Take(2))));
+            // do the trivial mapping of the full version to the full display name
+            foreach (string v in result)
+               NuGetPackageDisplay.Add(new NuGetDisplay(efVersion, packageId, v, v, string.Join(".", v.Split('.').Take(2))));
 
-         // figure out which one is the latest in the major.minor set and add its mapping
-         foreach (string v in majorVersions)
-            NuGetPackageDisplay.Add(new NuGetDisplay(efVersion, packageId, result.FindLast(x => x.StartsWith($"{v}.")), $"{v}.Latest", v));
+            // figure out which one is the latest in the major.minor set and add its mapping
+            foreach (string v in majorVersions)
+               NuGetPackageDisplay.Add(new NuGetDisplay(efVersion, packageId, result.FindLast(x => x.StartsWith($"{v}.")), $"{v}.Latest", v));
 
-         // figure out which is the overall latest and map it
-         NuGetPackageDisplay.Add(new NuGetDisplay(efVersion, packageId, result.FindLast(x => !x.EndsWith(".Latest")), "Latest", majorVersions.Last()));
+            // figure out which is the overall latest and map it
+            NuGetPackageDisplay.Add(new NuGetDisplay(efVersion, packageId, result.FindLast(x => !x.EndsWith(".Latest")), "Latest", majorVersions.Last()));
 
-         // tuck it away
-         EFPackageVersions.Add(efVersion, NuGetPackageDisplay.Where(p => p.EFVersion == efVersion).Select(p => p.DisplayVersion).ToList());
+            // tuck it away
+            EFPackageVersions.Add(efVersion, NuGetPackageDisplay.Where(p => p.EFVersion == efVersion).Select(p => p.DisplayVersion).ToList());
+         }
+         catch 
+         {
+            // probably no internet connection
+            NuGetPackageDisplay.Clear();
+            EFPackageVersions.Clear();
+         }
       }
    }
 }
