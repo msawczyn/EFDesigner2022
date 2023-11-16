@@ -658,11 +658,6 @@
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
         </DomainProperty>
-        <DomainProperty Id="6cc32d2e-d66f-4c34-9d55-f47c0e7544b5" Description="If true, the table storing this entity's data has triggers, which will impact how EFCore queries for it" Name="TableHasTriggers" DisplayName="Table Has Triggers" DefaultValue="false" Category="Database">
-          <Type>
-            <ExternalTypeMoniker Name="/System/Boolean" />
-          </Type>
-        </DomainProperty>
       </Properties>
       <ElementMergeDirectives>
         <ElementMergeDirective>
@@ -2610,9 +2605,6 @@
           </XmlPropertyData>
           <XmlPropertyData XmlName="isInheritanceStrategyTracking">
             <DomainPropertyMoniker Name="ModelClass/IsInheritanceStrategyTracking" />
-          </XmlPropertyData>
-          <XmlPropertyData XmlName="tableHasTriggers">
-            <DomainPropertyMoniker Name="ModelClass/TableHasTriggers" />
           </XmlPropertyData>
         </ElementData>
       </XmlClassData>

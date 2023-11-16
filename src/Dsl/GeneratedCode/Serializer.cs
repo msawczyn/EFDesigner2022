@@ -3217,23 +3217,6 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
-	      // TableHasTriggers
-	      if (!serializationContext.Result.Failed)
-	      {
-	         string attribTableHasTriggers = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "tableHasTriggers");
-	         if (attribTableHasTriggers != null)
-	         {
-	            global::System.Boolean valueOfTableHasTriggers;
-	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.Boolean>(serializationContext, attribTableHasTriggers, out valueOfTableHasTriggers))
-	            {
-	               instanceOfModelClass.TableHasTriggers = valueOfTableHasTriggers;
-	            }
-	            else
-	            {   // Invalid property value, ignored.
-	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "tableHasTriggers", typeof(global::System.Boolean), attribTableHasTriggers);
-	            }
-	         }
-	      }
 	   }
 	
 	   /// <summary>
@@ -4328,19 +4311,6 @@ namespace Sawczyn.EFDesigner.EFModel
 	            if (serializationContext.WriteOptionalPropertiesWithDefaultValue || string.CompareOrdinal(serializedPropValue, "true") != 0)
 	            {   // No need to write the value out if it's the same as default value.
 	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "isInheritanceStrategyTracking", serializedPropValue);
-	            }
-	         }
-	      }
-	      // TableHasTriggers
-	      if (!serializationContext.Result.Failed)
-	      {
-	         global::System.Boolean propValue = instanceOfModelClass.TableHasTriggers;
-	         string serializedPropValue = DslModeling::SerializationUtilities.GetString<global::System.Boolean>(serializationContext, propValue);
-	         if (!serializationContext.Result.Failed)
-	         {
-	            if (serializationContext.WriteOptionalPropertiesWithDefaultValue || string.CompareOrdinal(serializedPropValue, "false") != 0)
-	            {   // No need to write the value out if it's the same as default value.
-	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "tableHasTriggers", serializedPropValue);
 	            }
 	         }
 	      }

@@ -44,8 +44,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
          ModelRoot modelRoot = sourceModelClass.ModelRoot;
 
-         System.Diagnostics.Debug.WriteLine($"Source: {sourceModelClass?.Name}, Is Entity: {sourceModelClass?.IsEntity()}, Is Dependent: {sourceModelClass?.IsDependent()}, Is DependentType: {sourceModelClass?.IsDependentType}, Is Keyless: {sourceModelClass?.IsKeyless()}, Is Keyless Type: {sourceModelClass?.IsKeylessType()}");
-         System.Diagnostics.Debug.WriteLine($"Target: {targetModelClass?.Name}, Is Entity: {targetModelClass?.IsEntity()}, Is Dependent: {targetModelClass?.IsDependent()}, Is DependentType: {targetModelClass?.IsDependentType}, Is Keyless: {targetModelClass?.IsKeyless()}, Is Keyless Type: {targetModelClass?.IsKeylessType()}");
+         System.Diagnostics.Debug.WriteLine($"Source: {sourceModelClass?.Name}, Is Entity: {sourceModelClass?.IsEntity()}, Is Dependent: {sourceModelClass?.IsDependent()}, Is DependentType: {sourceModelClass?.IsDependentType}, Is Keyless: {sourceModelClass?.IsKeyless()}, Is Keyless Type: {( sourceModelClass != null ? sourceModelClass.IsQueryType || sourceModelClass.IsDatabaseView : (bool?)null )}");
+         System.Diagnostics.Debug.WriteLine($"Target: {targetModelClass?.Name}, Is Entity: {targetModelClass?.IsEntity()}, Is Dependent: {targetModelClass?.IsDependent()}, Is DependentType: {targetModelClass?.IsDependentType}, Is Keyless: {targetModelClass?.IsKeyless()}, Is Keyless Type: {( targetModelClass != null ? targetModelClass.IsQueryType || targetModelClass.IsDatabaseView : (bool?)null )}");
          switch ( modelRoot.EntityFrameworkVersion )
          {
             case EFVersion.EF6:
@@ -83,7 +83,7 @@ namespace Sawczyn.EFDesigner.EFModel
             case EFVersion.EFCore when !modelRoot.IsEFCore5Plus:
                return sourceCandidate.IsEntity();
             case EFVersion.EFCore when modelRoot.IsEFCore5Plus:
-               return sourceCandidate.IsEntity() || sourceCandidate.IsDependentType || sourceCandidate.IsKeylessType();
+               return sourceCandidate.IsEntity() || sourceCandidate.IsDependentType || (sourceCandidate.IsQueryType || sourceCandidate.IsDatabaseView);
          }
 
          return false;

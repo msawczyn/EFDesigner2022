@@ -170,9 +170,6 @@
              && modelClass.Superclass == null)
                modifiers.Add("t.IsTemporal();");
 
-            if (modelRoot.IsEFCore7Plus && modelClass.Persistent && modelClass.TableHasTriggers)
-               modifiers.Add("t.HasTrigger(\"Foo\");");
-
             string buildActions = modifiers.Any()
                                      ? $", t => {{ {string.Join(" ", modifiers)} }}"
                                      : string.Empty;

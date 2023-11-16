@@ -702,7 +702,7 @@
                      case CodeStrategy.TablePerType:
                         if (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
                         {
-                           if (!mc.IsKeyless() || mc.IsDatabaseView)
+                           if (!mc.IsQueryType && !mc.IsDatabaseView)
                               classesWithTablesList.Add(mc);
                         }
 
@@ -711,7 +711,7 @@
                      case CodeStrategy.TablePerConcreteType:
                         if (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
                         {
-                           if ((!mc.IsKeyless() || mc.IsDatabaseView) && !mc.IsAbstract)
+                           if (!mc.IsQueryType && !mc.IsDatabaseView && !mc.IsAbstract)
                               classesWithTablesList.Add(mc);
                         }
 

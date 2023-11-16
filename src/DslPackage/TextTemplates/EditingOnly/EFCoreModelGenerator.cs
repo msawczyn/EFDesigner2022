@@ -696,7 +696,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                      case CodeStrategy.TablePerType:
                         if (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
                         {
-                           if (!mc.IsKeylessType())
+                           if (!mc.IsQueryType && !mc.IsDatabaseView)
                               classesWithTablesList.Add(mc);
                         }
 
@@ -705,7 +705,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                      case CodeStrategy.TablePerConcreteType:
                         if (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
                         {
-                           if (!mc.IsKeylessType() && !mc.IsAbstract)
+                           if (!mc.IsQueryType && !mc.IsDatabaseView && !mc.IsAbstract)
                               classesWithTablesList.Add(mc);
                         }
 

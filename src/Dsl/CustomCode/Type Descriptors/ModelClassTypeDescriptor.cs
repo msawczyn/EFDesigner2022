@@ -49,11 +49,6 @@ namespace Sawczyn.EFDesigner.EFModel
             }
 
             // things unavailable if pre-EFCore7
-            if (!modelRoot.IsEFCore7Plus)
-            {
-               propertyDescriptors.Remove("TableHasTriggers");
-            }
-
             if (!modelRoot.GenerateTableComments)
                propertyDescriptors.Remove("TableComment");
 
@@ -66,7 +61,6 @@ namespace Sawczyn.EFDesigner.EFModel
 
             if (modelClass.InheritanceStrategy == CodeStrategy.TablePerHierarchy && modelClass.Superclass != null)
             {
-               propertyDescriptors.Remove("TableHasTriggers");
                propertyDescriptors.Remove("TableName");
             }
 
@@ -93,7 +87,6 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("TableComment");
                propertyDescriptors.Remove("TableName");
                propertyDescriptors.Remove("UseTemporalTables");
-               propertyDescriptors.Remove("TableHasTriggers");
             }
             else
                propertyDescriptors.Remove("ViewName");
@@ -109,7 +102,6 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("Persistent");
                propertyDescriptors.Remove("TableComment");
                propertyDescriptors.Remove("TableName");
-               propertyDescriptors.Remove("TableHasTriggers");
                propertyDescriptors.Remove("UseTemporalTables");
                propertyDescriptors.Remove("ViewName");
             }
@@ -130,7 +122,6 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("TableName");
                propertyDescriptors.Remove("UseTemporalTables");
                propertyDescriptors.Remove("ViewName");
-               propertyDescriptors.Remove("TableHasTriggers");
             }
 
             //Add the descriptors for the tracking properties 

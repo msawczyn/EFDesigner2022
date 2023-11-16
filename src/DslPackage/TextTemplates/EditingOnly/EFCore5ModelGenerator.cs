@@ -161,9 +161,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
              && modelClass.Superclass == null)
                modifiers.Add("t.IsTemporal();");
 
-            if (modelRoot.IsEFCore7Plus && modelClass.Persistent && modelClass.TableHasTriggers)
-               modifiers.Add("t.HasTrigger(\"Foo\");");
-
             string buildActions = modifiers.Any()
                                      ? $", t => {{ {string.Join(" ", modifiers)} }}"
                                      : string.Empty;
@@ -442,8 +439,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                string separator = sourceInstance.ModelRoot.ShadowKeyNamePattern == ShadowKeyPattern.TableColumn
                                      ? string.Empty
                                      : "_";
-
-               string buildAction = null;
 
                switch (association.TargetMultiplicity) // realized by property on source
                {

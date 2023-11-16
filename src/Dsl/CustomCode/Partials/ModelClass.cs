@@ -505,7 +505,7 @@ namespace Sawczyn.EFDesigner.EFModel
       [Browsable(false)]
       public bool IsEntity()
       {
-         return !IsDependentType && !IsKeylessType();
+         return !IsDependentType && !(IsQueryType || IsDatabaseView);
       }
 
       /// <summary>
@@ -514,12 +514,7 @@ namespace Sawczyn.EFDesigner.EFModel
       [Browsable(false)]
       public bool IsKeyless()
       {
-         return IsKeylessType() || !AllIdentityAttributes.Any();
-      }
-
-      internal bool IsKeylessType()
-      {
-         return IsQueryType || IsDatabaseView;
+         return IsQueryType || IsDatabaseView || !AllIdentityAttributes.Any();
       }
 
       /// <summary>
@@ -840,7 +835,7 @@ namespace Sawczyn.EFDesigner.EFModel
          if (ModelRoot == null)
             return;
 
-         if (!IsDependentType && !IsDatabaseView && !IsQueryType && Persistent && !AllIdentityAttributes.Any() && !IsKeylessType())
+         if (!IsDependentType && !IsDatabaseView && !IsQueryType && Persistent && !AllIdentityAttributes.Any() && !(IsQueryType || IsDatabaseView))
             context.LogError($"{Name}: Class has no identity property in inheritance chain", "MCENoIdentity", this);
       }
 
