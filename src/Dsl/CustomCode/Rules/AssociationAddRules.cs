@@ -36,18 +36,22 @@ namespace Sawczyn.EFDesigner.EFModel
 
          List<string> errorMessages = EFCoreValidator.GetErrors(element).ToList();
 
-         if (!element.Source.Persistent || !element.Source.Persistent)
+         switch (e.ModelElement)
          {
-            errorMessages.Add($"Unsupported association between {element.Source.Name} and {element.Target.Name}. "
-                            + "Both classes must be persistent. If needed, model this in a partial method.");
+            case UnidirectionalAssociation u:
+               ConfigureNewAssociation(u);
+
+               break;
+
+            case BidirectionalAssociation b:
+               ConfigureNewAssociation(b);
+
+               break;
          }
 
-         if (e.ModelElement is UnidirectionalAssociation u)
-            ConfigureNewAssociation(u);
-         else if (e.ModelElement is BidirectionalAssociation b)
-            ConfigureNewAssociation(b);
+         if (!element.AllCardinalitiesAreValid(out string errorMessage))
+            errorMessages.Add(errorMessage);
 
-         AssociationChangedRules.SetEndpointRoles(element);
          PresentationHelper.UpdateAssociationDisplay(element);
 
          errorMessages = errorMessages.Where(m => m != null).ToList();
@@ -57,7 +61,6 @@ namespace Sawczyn.EFDesigner.EFModel
             current.Rollback();
             ErrorDisplay.Show(store, string.Join("\n", errorMessages));
          }
-
       }
 
       private void SetInitialMultiplicity(BidirectionalAssociation element)

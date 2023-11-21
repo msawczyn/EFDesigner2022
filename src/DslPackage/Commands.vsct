@@ -370,6 +370,24 @@
             <!--<Icon guid="guidImages" id="bmpAddEntity" />-->
          </Button>
 
+         <Button guid="guidEFDiagramMenuCmdSet" id="cmdidMakeIdentity" priority="0x0108" type="Button">
+            <Parent guid="guidEFDiagramMenuCmdSet" id="grpidEFDiagram"/>
+            <CommandFlag>DynamicVisibility</CommandFlag>
+            <Strings>
+               <ButtonText>Make Identity</ButtonText>
+               <CommandName>MakeIdentity</CommandName>
+            </Strings>
+         </Button>
+
+         <Button guid="guidEFDiagramMenuCmdSet" id="cmdidUnmakeIdentity" priority="0x0108" type="Button">
+            <Parent guid="guidEFDiagramMenuCmdSet" id="grpidEFDiagram"/>
+            <CommandFlag>DynamicVisibility</CommandFlag>
+            <Strings>
+               <ButtonText>Clear Identity</ButtonText>
+               <CommandName>UnmakeIdentity</CommandName>
+            </Strings>
+         </Button>
+         
          <!-- Model explorer menu -->
 
          <Button guid="guidMenuExplorerCmdSet" id="cmdidGoToCode" priority="0x0901" type="Button">
@@ -521,6 +539,8 @@
          <IDSymbol name="cmdidDelForeignKeys"            value="0x00020"/>
          <IDSymbol name="cmdidImageToClipboard"          value="0x00021"/>
          <IDSymbol name="cmdidAddEntity"                 value="0x00022"/>
+         <IDSymbol name="cmdidMakeIdentity"              value="0x00023"/>
+         <IDSymbol name="cmdidUnmakeIdentity"            value="0x00024"/>
 
          <IDSymbol name="menuidSelect"                   value="0x01100"/>
          <IDSymbol name="grpidSelect"                    value="0x01150"/>

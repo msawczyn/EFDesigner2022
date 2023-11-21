@@ -313,7 +313,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   PresentationHelper.UpdateAssociationDisplay(association);
 
                   // for older diagrams that didn't calculate this initially
-                  AssociationChangedRules.SetEndpointRoles(association);
+                  association.SetEndpointRoles();
                }
 
                tx.Commit();

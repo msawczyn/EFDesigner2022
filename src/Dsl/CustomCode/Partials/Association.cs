@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -59,6 +60,14 @@ namespace Sawczyn.EFDesigner.EFModel
 
       internal bool AllCardinalitiesAreValid(out string errorMessage)
       {
+         bool needsForeignKeyFixup = false;
+         return AllCardinalitiesAreValid(out errorMessage, ref needsForeignKeyFixup);
+      }
+
+      internal bool AllCardinalitiesAreValid(out string errorMessage, ref bool needsForeignKeyFixup)
+      {
+         SetEndpointRoles();
+
          ModelRoot modelRoot = Source.ModelRoot;
          errorMessage = null;
 
@@ -79,6 +88,38 @@ namespace Sawczyn.EFDesigner.EFModel
 
                return false;
             }
+         }
+
+         if (!Source.IsDependentType && !Target.IsDependentType)
+         {
+            if (Is(Multiplicity.One, Multiplicity.One) || Is(Multiplicity.ZeroOne, Multiplicity.ZeroOne))
+            {
+               if (SourceRole != EndpointRole.NotSet)
+                  SourceRole = EndpointRole.NotSet;
+
+               if (TargetRole != EndpointRole.NotSet)
+                  TargetRole = EndpointRole.NotSet;
+            }
+            else
+               SetEndpointRoles();
+         }
+
+         // cascade delete behavior could now be illegal. Reset to default
+         SourceDeleteAction = DeleteAction.Default;
+         TargetDeleteAction = DeleteAction.Default;
+
+         if (Dependent == null)
+         {
+            FKPropertyName = null;
+            needsForeignKeyFixup = true;
+         }
+
+         if ((modelRoot.EntityFrameworkVersion == EFVersion.EF6 || modelRoot.IsEFCore5Plus)
+          && (SourceMultiplicity != Multiplicity.ZeroMany)
+          && (TargetMultiplicity != Multiplicity.ZeroMany))
+         {
+            FKPropertyName = null;
+            needsForeignKeyFixup = true;
          }
 
          if (Source.IsDependentType)
@@ -129,7 +170,225 @@ namespace Sawczyn.EFDesigner.EFModel
             }
          }
 
+         if (Source.Persistent ^ Target.Persistent)
+         {
+            if (Target.Persistent && !Source.Persistent && SourceRole != EndpointRole.Dependent)
+            {
+               // source is transient, target is persistent. Source must be dependent
+               errorMessage = $"Unsupported association between {Source.Name} and {Target.Name}. The transient class must be the Dependent.";
+               return false;
+            }
+
+            if (Source.Persistent && !Target.Persistent && TargetRole != EndpointRole.Dependent)
+            {
+               // source is persistent, target is transient. Target must be dependent
+               errorMessage = $"Unsupported association between {Source.Name} and {Target.Name}. The transient class must be the Dependent.";
+               return false;
+            }
+         }
+
          return true;
+      }
+
+      internal void FixupForeignKeys()
+      {
+         // for this to work, we need to know what's Principal and what's Dependent
+         if (Principal == null || Dependent == null)
+            return;
+
+         // clear FK data from properties in the Principal class, if they exist
+         foreach (ModelAttribute attribute in Principal.Attributes.Where(x => x.IsForeignKeyFor == Id))
+            attribute.ClearFKMods(string.Empty);
+
+         List<ModelAttribute> fkProperties = Dependent.Attributes
+                                                 .Where(x => x.IsForeignKeyFor == Id)
+                                                 .ToList();
+
+
+         // EF6 can't have declared foreign keys for 1..1 / 0-1..1 / 1..0-1 / 0-1..0-1 relationships
+         if (!string.IsNullOrEmpty(FKPropertyName)
+          && (Source.ModelRoot.EntityFrameworkVersion == EFVersion.EF6)
+          && (SourceMultiplicity != Multiplicity.ZeroMany)
+          && (TargetMultiplicity != Multiplicity.ZeroMany))
+            FKPropertyName = null;
+
+         // if no FKs, remove FK properties in the Dependent class, if they exist
+         if (string.IsNullOrEmpty(FKPropertyName))
+         {
+            List<ModelAttribute> unnecessaryProperties = fkProperties.Where(x => !x.IsIdentity).ToList();
+
+            if (unnecessaryProperties.Any())
+               WarningDisplay.Show($"{GetDisplayText()} doesn't specify defined foreign keys. Removing foreign key attribute(s) {string.Join(", ", unnecessaryProperties.Select(x => x.GetDisplayText()))}");
+
+            foreach (ModelAttribute attribute in unnecessaryProperties)
+            {
+               attribute.ClearFKMods(string.Empty);
+               attribute.Delete();
+            }
+
+            return;
+         }
+
+         // synchronize what's there to what should be there
+         string[] currentForeignKeyPropertyNames = GetForeignKeyPropertyNames();
+
+         (IEnumerable<string> add, IEnumerable<ModelAttribute> remove) = fkProperties.Synchronize(currentForeignKeyPropertyNames, (attribute, name) => attribute.Name == name);
+         List<ModelAttribute> removeList = remove.ToList();
+         List<string> addList = add.ToList();
+         fkProperties = fkProperties.Except(removeList).ToList();
+
+         // remove extras
+         if (removeList.Any())
+            WarningDisplay.Show($"{GetDisplayText()} has extra foreign keys. Removing unnecessary foreign key attribute(s) {string.Join(", ", removeList.Select(x => x.GetDisplayText()))}");
+
+         for (int index = 0; index < removeList.Count; index++)
+         {
+            ModelAttribute attribute = removeList[index];
+            attribute.ClearFKMods(string.Empty);
+            attribute.Delete();
+            removeList.RemoveAt(index--);
+         }
+
+         // reparent existing properties if needed
+         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: {GetDisplayText()} has {fkProperties.Count} FK properties");
+         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Dependent class is {Dependent.Name}");
+         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Principal class is {Principal.Name}");
+
+         foreach (ModelAttribute existing in fkProperties.Where(x => x.ModelClass != Dependent))
+         {
+            Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Reparenting {existing.Name} from {existing.ModelClass.Name} to {Dependent.Name}");
+
+            existing.ClearFKMods();
+            existing.ModelClass.MoveAttribute(existing, Dependent);
+            existing.SetFKMods(this);
+         }
+
+         // create new properties if they don't already exist
+         foreach (string propertyName in addList.Where(n => Dependent.Attributes.All(a => a.Name != n)))
+            Dependent.Attributes.Add(new ModelAttribute(Store, new PropertyAssignment(ModelAttribute.NameDomainPropertyId, propertyName)));
+
+         // make a pass through and fixup the types, summaries, etc. based on the principal's identity attributes
+         ModelAttribute[] principalIdentityAttributes = Principal.AllIdentityAttributes.ToArray();
+         string summaryBoilerplate = GetSummaryBoilerplate();
+
+         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Principal has {Principal.AllIdentityAttributes.Count()} identity attributes");
+         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Principal identity attributes are: {string.Join(", ", Principal.AllIdentityAttributes.Select(x => x.Name))}");
+         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: {GetDisplayText()} has {currentForeignKeyPropertyNames.Length} FK properties");
+         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: FK properties are: {string.Join(", ", currentForeignKeyPropertyNames)}");
+
+         for (int index = 0; index < currentForeignKeyPropertyNames.Length; index++)
+         {
+            ModelAttribute fkProperty = Dependent.Attributes.First(x => x.Name == currentForeignKeyPropertyNames[index]);
+            ModelAttribute idProperty = principalIdentityAttributes[index];
+
+            bool required = Dependent == Source
+                               ? TargetMultiplicity == Multiplicity.One
+                               : SourceMultiplicity == Multiplicity.One;
+
+            fkProperty.SetFKMods(this, summaryBoilerplate, required, idProperty.Type);
+         }
+      }
+
+      internal bool SetEndpointRoles()
+      {
+         // Note that we're checking 'if (x != y) x = y' to ensure that unnecessary rules don't fire off
+
+         switch (TargetMultiplicity)
+         {
+            case Multiplicity.ZeroMany:
+
+               switch (SourceMultiplicity)
+               {
+                  case Multiplicity.ZeroMany:
+                     if (SourceRole != EndpointRole.NotSet)
+                        SourceRole = EndpointRole.NotSet;
+
+                     if (TargetRole != EndpointRole.NotSet)
+                        TargetRole = EndpointRole.NotSet;
+
+                     return true;
+
+                  case Multiplicity.One:
+                     if (SourceRole != EndpointRole.Principal)
+                        SourceRole = EndpointRole.Principal;
+
+                     if (TargetRole != EndpointRole.Dependent)
+                        TargetRole = EndpointRole.Dependent;
+
+                     return true;
+
+                  case Multiplicity.ZeroOne:
+                     if (SourceRole != EndpointRole.Principal)
+                        SourceRole = EndpointRole.Principal;
+
+                     if (TargetRole != EndpointRole.Dependent)
+                        TargetRole = EndpointRole.Dependent;
+
+                     return true;
+               }
+
+               break;
+
+            case Multiplicity.One:
+
+               switch (SourceMultiplicity)
+               {
+                  case Multiplicity.ZeroMany:
+                     if (SourceRole != EndpointRole.Dependent)
+                        SourceRole = EndpointRole.Dependent;
+
+                     if (TargetRole != EndpointRole.Principal)
+                        TargetRole = EndpointRole.Principal;
+
+                     return true;
+
+                  case Multiplicity.One:
+
+                     return false;
+
+                  case Multiplicity.ZeroOne:
+                     if (SourceRole != EndpointRole.Dependent)
+                        SourceRole = EndpointRole.Dependent;
+
+                     if (TargetRole != EndpointRole.Principal)
+                        TargetRole = EndpointRole.Principal;
+
+                     return true;
+               }
+
+               break;
+
+            case Multiplicity.ZeroOne:
+
+               switch (SourceMultiplicity)
+               {
+                  case Multiplicity.ZeroMany:
+                     if (SourceRole != EndpointRole.Dependent)
+                        SourceRole = EndpointRole.Dependent;
+
+                     if (TargetRole != EndpointRole.Principal)
+                        TargetRole = EndpointRole.Principal;
+
+                     return true;
+
+                  case Multiplicity.One:
+                     if (SourceRole != EndpointRole.Principal)
+                        SourceRole = EndpointRole.Principal;
+
+                     if (TargetRole != EndpointRole.Dependent)
+                        TargetRole = EndpointRole.Dependent;
+
+                     return true;
+
+                  case Multiplicity.ZeroOne:
+
+                     return false;
+               }
+
+               break;
+         }
+
+         return false;
       }
 
       internal ModelClass GetAssociationClass()

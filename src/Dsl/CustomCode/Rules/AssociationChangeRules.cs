@@ -1,15 +1,11 @@
-﻿using System;
-using System.CodeDom.Compiler;
+﻿using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 using Microsoft.VisualStudio.Modeling;
 
 using Sawczyn.EFDesigner.EFModel.Extensions;
-
-using stdole;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
@@ -64,7 +60,6 @@ namespace Sawczyn.EFDesigner.EFModel
             return;
 
          Store store = element.Store;
-         ModelRoot modelRoot = store.ModelRoot();
          Transaction current = store.TransactionManager.CurrentTransaction;
 
          if (current.IsSerializing || ModelRoot.BatchUpdating)
@@ -102,17 +97,18 @@ namespace Sawczyn.EFDesigner.EFModel
 
                case "Persistent":
                   {
-                     if (element.Persistent)
+                     if (element.Source.Persistent ^ element.Target.Persistent)
                      {
-                        if (!element.Source.Persistent)
-                           errorMessages.Add($"Can't make {element.GetDisplayText()} persistent since {element.Source.Name} is transient.");
-                        if (!element.Target.Persistent)
-                           errorMessages.Add($"Can't make {element.GetDisplayText()} persistent since {element.Target.Name} is transient.");
-                     }
-                     else
-                     {
-                        element.Source.Attributes.Where(a => a.IsForeignKeyFor == element.Id).ToList().ForEach(a => a.IsForeignKeyFor = Guid.Empty);
-                        element.Target.Attributes.Where(a => a.IsForeignKeyFor == element.Id).ToList().ForEach(a => a.IsForeignKeyFor = Guid.Empty);
+                        if (element.Target.Persistent && !element.Source.Persistent && element.SourceRole != EndpointRole.Dependent)
+                        {
+                           // source is transient, target is persistent. Source must be dependent
+                           errorMessages.Add($"Unsupported association between {element.Source.Name} and {element.Target.Name}. The transient class must be the Dependent.");
+                        }
+                        else if (element.Source.Persistent && !element.Target.Persistent && element.TargetRole != EndpointRole.Dependent)
+                        {
+                           // source is persistent, target is transient. Target must be dependent
+                           errorMessages.Add($"Unsupported association between {element.Source.Name} and {element.Target.Name}. The transient class must be the Dependent.");
+                        }
                      }
 
                      break;
@@ -139,26 +135,28 @@ namespace Sawczyn.EFDesigner.EFModel
 
                case "SourceMultiplicity":
                   {
-                     if (!ValidateMultiplicity(element, modelRoot, errorMessages, ref doForeignKeyFixup))
-                        break;
-
-                     Multiplicity priorSourceMultiplicity = (Multiplicity)e.OldValue;
-
-                     if ((((priorSourceMultiplicity == Multiplicity.ZeroOne) || (priorSourceMultiplicity == Multiplicity.ZeroMany)) && (element.SourceMultiplicity == Multiplicity.One))
-                      || (((element.SourceMultiplicity == Multiplicity.ZeroOne) || (element.SourceMultiplicity == Multiplicity.ZeroMany)) && (priorSourceMultiplicity == Multiplicity.One)))
-                        doForeignKeyFixup = true;
-
-                     string defaultSourcePropertyName =
-                        (priorSourceMultiplicity == Multiplicity.ZeroMany) && (ModelRoot.PluralizationService?.IsSingular(element.Source.Name) == true)
-                           ? ModelRoot.PluralizationService.Pluralize(element.Source.Name)
-                           : element.Source.Name;
-
-                     if (element is BidirectionalAssociation bidirectional && (bidirectional.SourcePropertyName == defaultSourcePropertyName))
+                     if (element.AllCardinalitiesAreValid(out string errorMessage, ref doForeignKeyFixup))
                      {
-                        bidirectional.SourcePropertyName = (element.SourceMultiplicity == Multiplicity.ZeroMany) && (ModelRoot.PluralizationService?.IsSingular(element.Source.Name) == true)
-                                                              ? ModelRoot.PluralizationService.Pluralize(element.Source.Name)
-                                                              : element.Source.Name;
+                        Multiplicity priorSourceMultiplicity = (Multiplicity)e.OldValue;
+
+                        if ((((priorSourceMultiplicity == Multiplicity.ZeroOne) || (priorSourceMultiplicity == Multiplicity.ZeroMany)) && (element.SourceMultiplicity == Multiplicity.One))
+                         || (((element.SourceMultiplicity == Multiplicity.ZeroOne) || (element.SourceMultiplicity == Multiplicity.ZeroMany)) && (priorSourceMultiplicity == Multiplicity.One)))
+                           doForeignKeyFixup = true;
+
+                        string defaultSourcePropertyName =
+                           (priorSourceMultiplicity == Multiplicity.ZeroMany) && (ModelRoot.PluralizationService?.IsSingular(element.Source.Name) == true)
+                              ? ModelRoot.PluralizationService.Pluralize(element.Source.Name)
+                              : element.Source.Name;
+
+                        if (element is BidirectionalAssociation bidirectional && (bidirectional.SourcePropertyName == defaultSourcePropertyName))
+                        {
+                           bidirectional.SourcePropertyName = (element.SourceMultiplicity == Multiplicity.ZeroMany) && (ModelRoot.PluralizationService?.IsSingular(element.Source.Name) == true)
+                                                                 ? ModelRoot.PluralizationService.Pluralize(element.Source.Name)
+                                                                 : element.Source.Name;
+                        }
                      }
+                     else
+                        errorMessages.Add(errorMessage);
 
                      break;
                   }
@@ -180,13 +178,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      if (element.SourceRole == EndpointRole.NotApplicable)
                         element.SourceRole = EndpointRole.NotSet;
 
-                     //if (element.Source.IsDependentType)
-                     //{
-                     //   element.SourceRole = EndpointRole.Dependent;
-                     //   element.TargetRole = EndpointRole.Principal;
-                     //}
-                     //else 
-                     if (!SetEndpointRoles(element))
+                     if (!element.SetEndpointRoles())
                      {
                         if ((element.SourceRole == EndpointRole.Dependent) && (element.TargetRole != EndpointRole.Principal))
                            element.TargetRole = EndpointRole.Principal;
@@ -219,26 +211,28 @@ namespace Sawczyn.EFDesigner.EFModel
 
                case "TargetMultiplicity":
                   {
-                     if (!ValidateMultiplicity(element, modelRoot, errorMessages, ref doForeignKeyFixup))
-                        break;
-
-                     Multiplicity priorTargetMultiplicity = (Multiplicity)e.OldValue;
-
-                     if ((((priorTargetMultiplicity == Multiplicity.ZeroOne) || (priorTargetMultiplicity == Multiplicity.ZeroMany)) && (element.TargetMultiplicity == Multiplicity.One))
-                      || (((element.TargetMultiplicity == Multiplicity.ZeroOne) || (element.TargetMultiplicity == Multiplicity.ZeroMany)) && (priorTargetMultiplicity == Multiplicity.One)))
-                        doForeignKeyFixup = true;
-
-                     string defaultTargetPropertyName =
-                        (priorTargetMultiplicity == Multiplicity.ZeroMany) && (ModelRoot.PluralizationService?.IsSingular(element.Target.Name) == true)
-                           ? ModelRoot.PluralizationService.Pluralize(element.Target.Name)
-                           : element.Target.Name;
-
-                     if (element.TargetPropertyName == defaultTargetPropertyName)
+                     if (element.AllCardinalitiesAreValid(out string errorMessage, ref doForeignKeyFixup))
                      {
-                        element.TargetPropertyName = (element.TargetMultiplicity == Multiplicity.ZeroMany) && (ModelRoot.PluralizationService?.IsSingular(element.Target.Name) == true)
-                                                        ? ModelRoot.PluralizationService.Pluralize(element.Target.Name)
-                                                        : element.Target.Name;
+                        Multiplicity priorTargetMultiplicity = (Multiplicity)e.OldValue;
+
+                        if ((((priorTargetMultiplicity == Multiplicity.ZeroOne) || (priorTargetMultiplicity == Multiplicity.ZeroMany)) && (element.TargetMultiplicity == Multiplicity.One))
+                         || (((element.TargetMultiplicity == Multiplicity.ZeroOne) || (element.TargetMultiplicity == Multiplicity.ZeroMany)) && (priorTargetMultiplicity == Multiplicity.One)))
+                           doForeignKeyFixup = true;
+
+                        string defaultTargetPropertyName =
+                           (priorTargetMultiplicity == Multiplicity.ZeroMany) && (ModelRoot.PluralizationService?.IsSingular(element.Target.Name) == true)
+                              ? ModelRoot.PluralizationService.Pluralize(element.Target.Name)
+                              : element.Target.Name;
+
+                        if (element.TargetPropertyName == defaultTargetPropertyName)
+                        {
+                           element.TargetPropertyName = (element.TargetMultiplicity == Multiplicity.ZeroMany) && (ModelRoot.PluralizationService?.IsSingular(element.Target.Name) == true)
+                                                           ? ModelRoot.PluralizationService.Pluralize(element.Target.Name)
+                                                           : element.Target.Name;
+                        }
                      }
+                     else
+                        errorMessages.Add(errorMessage);
 
                      break;
                   }
@@ -272,7 +266,7 @@ namespace Sawczyn.EFDesigner.EFModel
                      //   doForeignKeyFixup = true;
                      //}
                      //else 
-                     if (!SetEndpointRoles(element))
+                     if (!element.SetEndpointRoles())
                      {
                         if ((element.TargetRole == EndpointRole.Dependent) && (element.SourceRole != EndpointRole.Principal))
                         {
@@ -291,7 +285,7 @@ namespace Sawczyn.EFDesigner.EFModel
             }
 
             if (doForeignKeyFixup)
-               FixupForeignKeys(element);
+               element.FixupForeignKeys();
 
             inner.Commit();
             element.RedrawItem();
@@ -306,207 +300,7 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-      public static void FixupForeignKeys(Association association)
-      {
-         // for this to work, we need to know what's Principal and what's Dependent
-         if (association.Principal == null || association.Dependent == null)
-            return;
 
-         // clear FK data from properties in the Principal class, if they exist
-         foreach (ModelAttribute attribute in association.Principal.Attributes.Where(x => x.IsForeignKeyFor == association.Id))
-            attribute.ClearFKMods(string.Empty);
-
-         List<ModelAttribute> fkProperties = association.Dependent.Attributes
-                                                        .Where(x => x.IsForeignKeyFor == association.Id)
-                                                        .ToList();
-
-
-         // EF6 can't have declared foreign keys for 1..1 / 0-1..1 / 1..0-1 / 0-1..0-1 relationships
-         if (!string.IsNullOrEmpty(association.FKPropertyName)
-          && (association.Source.ModelRoot.EntityFrameworkVersion == EFVersion.EF6)
-          && (association.SourceMultiplicity != Multiplicity.ZeroMany)
-          && (association.TargetMultiplicity != Multiplicity.ZeroMany))
-            association.FKPropertyName = null;
-
-         // if no FKs, remove FK properties in the Dependent class, if they exist
-         if (string.IsNullOrEmpty(association.FKPropertyName))
-         {
-            List<ModelAttribute> unnecessaryProperties = fkProperties.Where(x => !x.IsIdentity).ToList();
-
-            if (unnecessaryProperties.Any())
-               WarningDisplay.Show($"{association.GetDisplayText()} doesn't specify defined foreign keys. Removing foreign key attribute(s) {string.Join(", ", unnecessaryProperties.Select(x => x.GetDisplayText()))}");
-
-            foreach (ModelAttribute attribute in unnecessaryProperties)
-            {
-               attribute.ClearFKMods(string.Empty);
-               attribute.Delete();
-            }
-
-            return;
-         }
-
-         // synchronize what's there to what should be there
-         string[] currentForeignKeyPropertyNames = association.GetForeignKeyPropertyNames();
-
-         (IEnumerable<string> add, IEnumerable<ModelAttribute> remove) = fkProperties.Synchronize(currentForeignKeyPropertyNames, (attribute, name) => attribute.Name == name);
-         List<ModelAttribute> removeList = remove.ToList();
-         List<string> addList = add.ToList();
-         fkProperties = fkProperties.Except(removeList).ToList();
-
-         // remove extras
-         if (removeList.Any())
-            WarningDisplay.Show($"{association.GetDisplayText()} has extra foreign keys. Removing unnecessary foreign key attribute(s) {string.Join(", ", removeList.Select(x => x.GetDisplayText()))}");
-
-         for (int index = 0; index < removeList.Count; index++)
-         {
-            ModelAttribute attribute = removeList[index];
-            attribute.ClearFKMods(string.Empty);
-            attribute.Delete();
-            removeList.RemoveAt(index--);
-         }
-
-         // reparent existing properties if needed
-         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: {association.GetDisplayText()} has {fkProperties.Count} FK properties");
-         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Dependent class is {association.Dependent.Name}");
-         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Principal class is {association.Principal.Name}");
-      
-         foreach (ModelAttribute existing in fkProperties.Where(x => x.ModelClass != association.Dependent))
-         {
-            Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Reparenting {existing.Name} from {existing.ModelClass.Name} to {association.Dependent.Name}");
-          
-            existing.ClearFKMods();
-            existing.ModelClass.MoveAttribute(existing, association.Dependent);
-            existing.SetFKMods(association);
-         }
-
-         // create new properties if they don't already exist
-         foreach (string propertyName in addList.Where(n => association.Dependent.Attributes.All(a => a.Name != n)))
-         {
-            association.Dependent.Attributes.Add(new ModelAttribute(association.Store, new PropertyAssignment(ModelAttribute.NameDomainPropertyId, propertyName)));
-         }
-         // make a pass through and fixup the types, summaries, etc. based on the principal's identity attributes
-         ModelAttribute[] principalIdentityAttributes = association.Principal.AllIdentityAttributes.ToArray();
-         string summaryBoilerplate = association.GetSummaryBoilerplate();
-
-         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Principal has {association.Principal.AllIdentityAttributes.Count()} identity attributes");
-         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Principal identity attributes are: {string.Join(", ", association.Principal.AllIdentityAttributes.Select(x=>x.Name))}");
-         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: {association.GetDisplayText()} has {currentForeignKeyPropertyNames.Length} FK properties");
-         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: FK properties are: {string.Join(", ", currentForeignKeyPropertyNames)}");
-        
-         for (int index = 0; index < currentForeignKeyPropertyNames.Length; index++)
-         {
-            ModelAttribute fkProperty = association.Dependent.Attributes.First(x => x.Name == currentForeignKeyPropertyNames[index]);
-            ModelAttribute idProperty = principalIdentityAttributes[index];
-
-            bool required = association.Dependent == association.Source
-                               ? association.TargetMultiplicity == Multiplicity.One
-                               : association.SourceMultiplicity == Multiplicity.One;
-
-            fkProperty.SetFKMods(association, summaryBoilerplate, required, idProperty.Type);
-         }
-      }
-
-      internal static bool SetEndpointRoles(Association element)
-      {
-         // Note that we're checking 'if (x != y) x = y' to ensure that unnecessary rules don't fire off
-
-         switch (element.TargetMultiplicity)
-         {
-            case Multiplicity.ZeroMany:
-
-               switch (element.SourceMultiplicity)
-               {
-                  case Multiplicity.ZeroMany:
-                     if (element.SourceRole != EndpointRole.NotSet)
-                        element.SourceRole = EndpointRole.NotSet;
-
-                     if (element.TargetRole != EndpointRole.NotSet)
-                        element.TargetRole = EndpointRole.NotSet;
-
-                     return true;
-
-                  case Multiplicity.One:
-                     if (element.SourceRole != EndpointRole.Principal)
-                        element.SourceRole = EndpointRole.Principal;
-
-                     if (element.TargetRole != EndpointRole.Dependent)
-                        element.TargetRole = EndpointRole.Dependent;
-
-                     return true;
-
-                  case Multiplicity.ZeroOne:
-                     if (element.SourceRole != EndpointRole.Principal)
-                        element.SourceRole = EndpointRole.Principal;
-
-                     if (element.TargetRole != EndpointRole.Dependent)
-                        element.TargetRole = EndpointRole.Dependent;
-
-                     return true;
-               }
-
-               break;
-
-            case Multiplicity.One:
-
-               switch (element.SourceMultiplicity)
-               {
-                  case Multiplicity.ZeroMany:
-                     if (element.SourceRole != EndpointRole.Dependent)
-                        element.SourceRole = EndpointRole.Dependent;
-
-                     if (element.TargetRole != EndpointRole.Principal)
-                        element.TargetRole = EndpointRole.Principal;
-
-                     return true;
-
-                  case Multiplicity.One:
-
-                     return false;
-
-                  case Multiplicity.ZeroOne:
-                     if (element.SourceRole != EndpointRole.Dependent)
-                        element.SourceRole = EndpointRole.Dependent;
-
-                     if (element.TargetRole != EndpointRole.Principal)
-                        element.TargetRole = EndpointRole.Principal;
-
-                     return true;
-               }
-
-               break;
-
-            case Multiplicity.ZeroOne:
-
-               switch (element.SourceMultiplicity)
-               {
-                  case Multiplicity.ZeroMany:
-                     if (element.SourceRole != EndpointRole.Dependent)
-                        element.SourceRole = EndpointRole.Dependent;
-
-                     if (element.TargetRole != EndpointRole.Principal)
-                        element.TargetRole = EndpointRole.Principal;
-
-                     return true;
-
-                  case Multiplicity.One:
-                     if (element.SourceRole != EndpointRole.Principal)
-                        element.SourceRole = EndpointRole.Principal;
-
-                     if (element.TargetRole != EndpointRole.Dependent)
-                        element.TargetRole = EndpointRole.Dependent;
-
-                     return true;
-
-                  case Multiplicity.ZeroOne:
-
-                     return false;
-               }
-
-               break;
-         }
-
-         return false;
-      }
 
       private static string ValidateAssociationIdentifier(Association association, ModelClass targetedClass, string identifier)
       {
@@ -558,50 +352,6 @@ namespace Sawczyn.EFDesigner.EFModel
             errorMessages.AddRange(element.GetFKAutoIdentityErrors()
                                           .Select(attribute => $"{attribute.Name} in {element.Dependent.FullName} is an auto-generated identity. Migration will fail."));
          }
-      }
-
-      private bool ValidateMultiplicity(Association element, ModelRoot modelRoot, List<string> errorMessages, ref bool doForeignKeyFixup)
-      {
-         if (!element.AllCardinalitiesAreValid(out string errorMessage))
-         {
-            errorMessages.Add(errorMessage);
-
-            return false;
-         }
-
-         if (!element.Source.IsDependentType && !element.Target.IsDependentType)
-         {
-            if (element.Is(Multiplicity.One, Multiplicity.One) || element.Is(Multiplicity.ZeroOne, Multiplicity.ZeroOne))
-            {
-               if (element.SourceRole != EndpointRole.NotSet)
-                  element.SourceRole = EndpointRole.NotSet;
-
-               if (element.TargetRole != EndpointRole.NotSet)
-                  element.TargetRole = EndpointRole.NotSet;
-            }
-            else
-               SetEndpointRoles(element);
-         }
-
-         // cascade delete behavior could now be illegal. Reset to default
-         element.SourceDeleteAction = DeleteAction.Default;
-         element.TargetDeleteAction = DeleteAction.Default;
-
-         if (element.Dependent == null)
-         {
-            element.FKPropertyName = null;
-            doForeignKeyFixup = true;
-         }
-
-         if ((modelRoot.EntityFrameworkVersion == EFVersion.EF6 || modelRoot.IsEFCore5Plus)
-          && (element.SourceMultiplicity != Multiplicity.ZeroMany)
-          && (element.TargetMultiplicity != Multiplicity.ZeroMany))
-         {
-            element.FKPropertyName = null;
-            doForeignKeyFixup = true;
-         }
-
-         return true;
       }
    }
 }

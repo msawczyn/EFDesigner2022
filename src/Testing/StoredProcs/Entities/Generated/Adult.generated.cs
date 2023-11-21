@@ -24,31 +24,42 @@ using System.Runtime.CompilerServices;
 
 namespace StoredProcs
 {
-   public partial class Grade
+   public partial class Adult
    {
       partial void Init();
 
       /// <summary>
-      /// Default constructor
+      /// Default constructor. Protected due to required properties, but present because EF needs it.
       /// </summary>
-      public Grade()
+      protected Adult()
       {
          Init();
       }
 
       /// <summary>
+      /// Replaces default constructor, since it's protected. Caller assumes responsibility for setting all required values before saving.
+      /// </summary>
+      public static Adult CreateAdultUnsafe()
+      {
+         return new Adult();
+      }
+
+      /// <summary>
       /// Public constructor with required data
       /// </summary>
-      /// <param name="name"></param>
-      /// <param name="school"></param>
-      public Grade(string name, global::StoredProcs.School school)
+      /// <param name="firstname"></param>
+      /// <param name="lastname"></param>
+      /// <param name="_student0"></param>
+      public Adult(string firstname, string lastname, global::StoredProcs.Student _student0)
       {
-         if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
-         this.Name = name;
+         if (string.IsNullOrEmpty(firstname)) throw new ArgumentNullException(nameof(firstname));
+         this.FirstName = firstname;
 
-         if (school == null) throw new ArgumentNullException(nameof(school));
-         this.School = school;
-         school.Grades.Add(this);
+         if (string.IsNullOrEmpty(lastname)) throw new ArgumentNullException(nameof(lastname));
+         this.LastName = lastname;
+
+         if (_student0 == null) throw new ArgumentNullException(nameof(_student0));
+         _student0.Parent.Add(this);
 
          Init();
       }
@@ -56,16 +67,25 @@ namespace StoredProcs
       /// <summary>
       /// Static create function (for use in LINQ queries, etc.)
       /// </summary>
-      /// <param name="name"></param>
-      /// <param name="school"></param>
-      public static Grade Create(string name, global::StoredProcs.School school)
+      /// <param name="firstname"></param>
+      /// <param name="lastname"></param>
+      /// <param name="_student0"></param>
+      public static Adult Create(string firstname, string lastname, global::StoredProcs.Student _student0)
       {
-         return new Grade(name, school);
+         return new Adult(firstname, lastname, _student0);
       }
 
       /*************************************************************************
        * Properties
        *************************************************************************/
+
+      /// <summary>
+      /// Indexed, Required, Max length = 50
+      /// </summary>
+      [Required]
+      [MaxLength(50)]
+      [StringLength(50)]
+      public string FirstName { get; set; }
 
       /// <summary>
       /// Identity, Indexed, Required
@@ -77,24 +97,16 @@ namespace StoredProcs
       public long Id { get; set; }
 
       /// <summary>
-      /// Required, Max length = 50
+      /// Indexed, Required, Max length = 50
       /// </summary>
       [Required]
       [MaxLength(50)]
       [StringLength(50)]
-      public string Name { get; set; }
+      public string LastName { get; set; }
 
       /*************************************************************************
        * Navigation properties
        *************************************************************************/
-
-      /// <summary>
-      /// Required
-      /// </summary>
-      public virtual global::StoredProcs.School School { get; set; }
-
-      [NotMapped]
-      public virtual ICollection<global::StoredProcs.Student> Students { get; private set; }
 
    }
 }

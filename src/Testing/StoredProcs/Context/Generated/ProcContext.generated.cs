@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.6.1
+//     Produced by Entity Framework Visual Editor v4.2.6.2
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -26,7 +26,7 @@ namespace StoredProcs
    {
       #region DbSets
       public virtual Microsoft.EntityFrameworkCore.DbSet<global::StoredProcs.Grade> Grades { get; set; }
-      public virtual Microsoft.EntityFrameworkCore.DbSet<global::StoredProcs.Student> Students { get; set; }
+      public virtual Microsoft.EntityFrameworkCore.DbSet<global::StoredProcs.School> Schools { get; set; }
 
       #endregion DbSets
 
@@ -73,38 +73,16 @@ namespace StoredProcs
 
          modelBuilder.HasDefaultSchema("dbo");
 
-         modelBuilder.Entity<global::StoredProcs.Grade>()
-                     .UseTpcMappingStrategy().ToTable("Grades")
-                     .HasKey(t => t.Id);
-         modelBuilder.Entity<global::StoredProcs.Grade>()
-                     .Property(t => t.Id)
-                     .ValueGeneratedOnAdd()
-                     .IsRequired();
-         modelBuilder.Entity<global::StoredProcs.Grade>()
-                     .Property(t => t.Name)
-                     .HasMaxLength(50)
-                     .IsRequired();
-         modelBuilder.Entity<global::StoredProcs.Grade>()
-                     .HasMany<global::StoredProcs.Student>(p => p.Students)
-                     .WithOne(p => p.Grade)
-                     .HasForeignKey("GradeId")
-                     .IsRequired();
+         modelBuilder.Entity<global::StoredProcs.Grade>().UseTpcMappingStrategy().ToTable("Grade").HasKey(t => t.Id);
+         modelBuilder.Entity<global::StoredProcs.Grade>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
+         modelBuilder.Entity<global::StoredProcs.Grade>().Property(t => t.Name).HasMaxLength(50).IsRequired();
+         modelBuilder.Entity<global::StoredProcs.Student>().OwnsMany(p => p.Parent, p1 => { p1.HasKey(p1x => p1x.Id); });
+         modelBuilder.Entity<global::StoredProcs.Grade>().OwnsMany(p => p.Students, p0 => { p0.ToTable("Students"); p0.HasKey(p0x => p0x.Id); });;
 
-         modelBuilder.Entity<global::StoredProcs.Student>()
-                     .UseTpcMappingStrategy().ToTable("Students")
-                     .HasKey(t => t.Id);
-         modelBuilder.Entity<global::StoredProcs.Student>()
-                     .Property(t => t.Id)
-                     .ValueGeneratedOnAdd()
-                     .IsRequired();
-         modelBuilder.Entity<global::StoredProcs.Student>()
-                     .Property(t => t.FirstName)
-                     .HasMaxLength(50)
-                     .IsRequired();
-         modelBuilder.Entity<global::StoredProcs.Student>()
-                     .Property(t => t.LastName)
-                     .HasMaxLength(50)
-                     .IsRequired();
+         modelBuilder.Entity<global::StoredProcs.School>().ToTable("Schools").HasKey(t => t.Id);
+         modelBuilder.Entity<global::StoredProcs.School>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
+         modelBuilder.Entity<global::StoredProcs.School>().Property(t => t.Name).HasMaxLength(50).IsRequired();
+         modelBuilder.Entity<global::StoredProcs.School>().HasMany<global::StoredProcs.Grade>(p => p.Grades).WithOne(p => p.School).HasForeignKey("SchoolId").IsRequired();
 
          OnModelCreatedImpl(modelBuilder);
       }

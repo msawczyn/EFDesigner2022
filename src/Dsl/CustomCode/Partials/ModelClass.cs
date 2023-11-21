@@ -368,8 +368,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
             // add the new FK properties
 
-            AssociationChangedRules.FixupForeignKeys(element1);
-            AssociationChangedRules.FixupForeignKeys(element2);
+            element1.FixupForeignKeys();
+            element2.FixupForeignKeys();
 
             // clean them up 
 

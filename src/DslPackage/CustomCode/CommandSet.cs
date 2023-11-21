@@ -357,7 +357,26 @@ namespace Sawczyn.EFDesigner.EFModel
 
          #endregion solutionExplorerGenerateCodeCommand
 
+         #region makeIdentityCommand
+
+         DynamicStatusMenuCommand makeIdentityCommand =
+            new DynamicStatusMenuCommand(OnStatusMakeIdentity, OnMenuMakeIdentity, new CommandID(guidEFDiagramMenuCmdSet, cmdidMakeIdentity));
+
+         commands.Add(makeIdentityCommand);
+
+         #endregion
+
+         #region unmakeIdentityCommand
+
+         DynamicStatusMenuCommand unmakeIdentityCommand =
+            new DynamicStatusMenuCommand(OnStatusUnmakeIdentity, OnMenuUnmakeIdentity, new CommandID(guidEFDiagramMenuCmdSet, cmdidUnmakeIdentity));
+
+         commands.Add(unmakeIdentityCommand);
+
+         #endregion
+   
          // Additional commands go here.  
+
          return commands;
       }
 
@@ -412,6 +431,8 @@ namespace Sawczyn.EFDesigner.EFModel
       private const int cmdidDelForeignKeys = 0x0020;
       private const int cmdidImageToClipboard = 0x0021;
       private const int cmdidAddEntity = 0x0022;
+      private const int cmdidMakeIdentity = 0x0023;
+      private const int cmdidUnmakeIdentity = 0x0024;
 
       private const int cmdidSelectClasses = 0x0101;
       private const int cmdidSelectEnums = 0x0102;
@@ -1150,7 +1171,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                   });
       }
 
-#endregion
+      #endregion
 
       #region Merge Unidirectional Associations
 
@@ -1818,5 +1839,67 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       #endregion Solution Explorer Generate Code
+
+      #region Make Identity
+
+      private void OnStatusMakeIdentity(object sender, EventArgs e)
+      {
+         if (sender is MenuCommand command)
+         {
+            command.Visible = true;
+
+            // must have at least one ModelAttribute selected, only ModelAttributes are selected, and all selected ModelAttributes must not already be identity
+            command.Enabled = CurrentSelection.Count > 0 && CurrentSelection.OfType<ModelAttribute>().Count(a => !a.IsIdentity) == CurrentSelection.Count;
+         }
+      }
+
+      private void OnMenuMakeIdentity(object sender, EventArgs e)
+      {
+         Store store = CurrentSelection.OfType<ModelAttribute>().FirstOrDefault()?.Store;
+
+         if (store != null)
+         {
+            using (Transaction tx = store.TransactionManager.BeginTransaction("MakeIdentity"))
+            {
+               foreach (ModelAttribute attribute in CurrentSelection.OfType<ModelAttribute>())
+                  attribute.IsIdentity = true;
+
+               tx.Commit();
+            }
+         }
+      }
+
+      #endregion Make Identity
+
+      #region Unmake Identity
+
+      private void OnStatusUnmakeIdentity(object sender, EventArgs e)
+      {
+         if (sender is MenuCommand command)
+         {
+            command.Visible = true;
+
+            // must have at least one ModelAttribute selected, only ModelAttributes are selected, and all selected ModelAttributes must be identity
+            command.Enabled = CurrentSelection.Count > 0 && CurrentSelection.OfType<ModelAttribute>().Count(a => a.IsIdentity) == CurrentSelection.Count;
+         }
+      }
+
+      private void OnMenuUnmakeIdentity(object sender, EventArgs e)
+      {
+         Store store = CurrentSelection.OfType<ModelAttribute>().FirstOrDefault()?.Store;
+
+         if (store != null)
+         {
+            using (Transaction tx = store.TransactionManager.BeginTransaction("UnmakeIdentity"))
+            {
+               foreach (ModelAttribute attribute in CurrentSelection.OfType<ModelAttribute>())
+                  attribute.IsIdentity = false;
+
+               tx.Commit();
+            }
+         }
+      }
+
+      #endregion Unmake Identity
    }
 }

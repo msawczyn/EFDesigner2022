@@ -480,19 +480,15 @@ namespace Sawczyn.EFDesigner.EFModel
                   if (!element.Persistent)
                   {
                      if (element.IsDependentType)
-                        errorMessages.Add($"{element.Name} can't be made transient since it's a dependent type.");
-                     else
                      {
-                        foreach (Association association in Association.GetLinksToTargets(element)
-                                                                       .Union(Association.GetLinksToSources(element))
-                                                                       .Where(x => x.Persistent))
-                           association.Persistent = false;
+                        errorMessages.Add($"{element.Name} can't be made transient since it's a dependent type.");
+                     }
 
-                        foreach (ModelAttribute attribute in element.Attributes.Where(attr => attr.IsIdentity))
-                           attribute.IsIdentity = false;
-
-                        element.TableName = null;
-                        element.ViewName = null;
+                     // if we're a principal in a relationship to a persistent class, we can't be made transient
+                     if (Association.GetLinksToTargets(element).Any(a => a.Target.Persistent && a.SourceRole != EndpointRole.Dependent)
+                      || Association.GetLinksToSources(element).Any(a => a.Source.Persistent && a.TargetRole != EndpointRole.Dependent))
+                     {
+                        errorMessages.Add($"{element.Name} can't be made transient since it's a member of a persistent association but it's not on the dependent side of that association. Transient classes can only be associated to persistent classes if they're in the dependent role.");
                      }
                   }
                   else
@@ -514,6 +510,13 @@ namespace Sawczyn.EFDesigner.EFModel
                      }
                   }
 
+                  if (!errorMessages.Any())
+                  {
+                     Association.GetLinksToTargets(element)
+                                .Union(Association.GetLinksToSources(element))
+                                .ToList()
+                                .ForEach(a => a.RedrawItem());
+                  }
                   break;
                }
 

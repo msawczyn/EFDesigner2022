@@ -24,32 +24,38 @@ using System.Runtime.CompilerServices;
 
 namespace StoredProcs
 {
-   public partial class Grade
+   public partial class School
    {
       partial void Init();
 
       /// <summary>
-      /// Default constructor
+      /// Default constructor. Protected due to required properties, but present because EF needs it.
       /// </summary>
-      public Grade()
+      protected School()
       {
+         Grades = new System.Collections.Generic.HashSet<global::StoredProcs.Grade>();
+
          Init();
+      }
+
+      /// <summary>
+      /// Replaces default constructor, since it's protected. Caller assumes responsibility for setting all required values before saving.
+      /// </summary>
+      public static School CreateSchoolUnsafe()
+      {
+         return new School();
       }
 
       /// <summary>
       /// Public constructor with required data
       /// </summary>
       /// <param name="name"></param>
-      /// <param name="school"></param>
-      public Grade(string name, global::StoredProcs.School school)
+      public School(string name)
       {
          if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
          this.Name = name;
 
-         if (school == null) throw new ArgumentNullException(nameof(school));
-         this.School = school;
-         school.Grades.Add(this);
-
+         Grades = new System.Collections.Generic.HashSet<global::StoredProcs.Grade>();
          Init();
       }
 
@@ -57,10 +63,9 @@ namespace StoredProcs
       /// Static create function (for use in LINQ queries, etc.)
       /// </summary>
       /// <param name="name"></param>
-      /// <param name="school"></param>
-      public static Grade Create(string name, global::StoredProcs.School school)
+      public static School Create(string name)
       {
-         return new Grade(name, school);
+         return new School(name);
       }
 
       /*************************************************************************
@@ -88,13 +93,7 @@ namespace StoredProcs
        * Navigation properties
        *************************************************************************/
 
-      /// <summary>
-      /// Required
-      /// </summary>
-      public virtual global::StoredProcs.School School { get; set; }
-
-      [NotMapped]
-      public virtual ICollection<global::StoredProcs.Student> Students { get; private set; }
+      public virtual ICollection<global::StoredProcs.Grade> Grades { get; private set; }
 
    }
 }

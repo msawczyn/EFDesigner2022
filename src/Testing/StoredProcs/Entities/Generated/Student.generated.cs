@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.6.1
+//     Produced by Entity Framework Visual Editor v4.2.6.2
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -33,6 +33,8 @@ namespace StoredProcs
       /// </summary>
       public Student()
       {
+         Parent = new System.Collections.Generic.HashSet<global::StoredProcs.Adult>();
+
          Init();
       }
 
@@ -54,6 +56,7 @@ namespace StoredProcs
          this.Grade = grade;
          grade.Students.Add(this);
 
+         Parent = new System.Collections.Generic.HashSet<global::StoredProcs.Adult>();
          Init();
       }
 
@@ -73,7 +76,7 @@ namespace StoredProcs
        *************************************************************************/
 
       /// <summary>
-      /// Required, Max length = 50
+      /// Indexed, Required, Max length = 50
       /// </summary>
       [Required]
       [MaxLength(50)]
@@ -90,7 +93,7 @@ namespace StoredProcs
       public long Id { get; set; }
 
       /// <summary>
-      /// Required, Max length = 50
+      /// Indexed, Required, Max length = 50
       /// </summary>
       [Required]
       [MaxLength(50)]
@@ -105,6 +108,8 @@ namespace StoredProcs
       /// Required
       /// </summary>
       public virtual global::StoredProcs.Grade Grade { get; set; }
+
+      public virtual ICollection<global::StoredProcs.Adult> Parent { get; private set; }
 
    }
 }

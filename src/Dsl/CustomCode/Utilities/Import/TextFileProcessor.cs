@@ -261,7 +261,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                       new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, xmlDocumentation.Description)
                                                    });
 
-                  AssociationChangedRules.SetEndpointRoles(element);
+                  element.SetEndpointRoles();
                }
                else
                {
@@ -289,7 +289,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                      new PropertyAssignment(Association.TargetDescriptionDomainPropertyId, xmlDocumentation.Description)
                                                   });
 
-                  AssociationChangedRules.SetEndpointRoles(element);
+                  element.SetEndpointRoles();
                }
             }
 
@@ -585,7 +585,7 @@ namespace Sawczyn.EFDesigner.EFModel
                // TODO: is this really a good assumption? Review later
                if (propertyDecl.ChildNodes().OfType<GenericNameSyntax>().Any())
                {
-                  ProcessAsList(propertyDecl, className, propertyName, propertyType, modelRoot, modelClass);
+                  ProcessAsList(propertyDecl, className, propertyName, modelRoot, modelClass);
 
                   continue;
                }
@@ -688,7 +688,7 @@ namespace Sawczyn.EFDesigner.EFModel
             tx.Commit();
          }
 
-         void ProcessAsList(PropertyDeclarationSyntax propertyDecl, string className, string propertyName, string propertyType, ModelRoot modelRoot, ModelClass modelClass)
+         void ProcessAsList(PropertyDeclarationSyntax propertyDecl, string className, string propertyName, ModelRoot modelRoot, ModelClass modelClass)
          {
             GenericNameSyntax genericDecl = propertyDecl.ChildNodes().OfType<GenericNameSyntax>().FirstOrDefault();
             List<string> contentTypes = genericDecl.DescendantNodes().OfType<IdentifierNameSyntax>().Select(i => i.Identifier.ToString()).ToList();
@@ -696,7 +696,7 @@ namespace Sawczyn.EFDesigner.EFModel
             // there can only be one generic argument
             if (contentTypes.Count == 1)
             {
-               propertyType = contentTypes[0];
+               string propertyType = contentTypes[0];
                ModelClass target = modelRoot.Classes.FirstOrDefault(t => t.Name == propertyType);
 
                if (target == null)

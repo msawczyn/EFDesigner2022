@@ -41,9 +41,13 @@ $files =
    
 foreach ($f in $files) {
    try {
+      "Processing $f"
       [regex]::Replace((get-content src\DslPackage\TextTemplates\EditingOnly\$f.cs -Raw), $search, $replace) | set-content src\DslPackage\TextTemplates\$f.ttinclude
    } catch {
       "** Did not process $f"
    }
 }
+
+"Done"
+
 

@@ -255,6 +255,9 @@
     <Content Include="Parsers\EFCore7Parser.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Parsers\EFCore8Parser.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\Commands.png" />
     <Content Include="TextTemplates\EF6ModelGenerator.ttinclude">
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -280,6 +283,18 @@
     <Content Include="TextTemplates\EFModelGenerator.ttinclude">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Compile Include="TextTemplates\EditingOnly\EF6Designer.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EF6ModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCore2ModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCore3ModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCore5ModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCoreDesigner.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCoreModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFDesigner.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFModelFileManager.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\MultipleOutputHelper.cs" />
+    <Compile Include="TextTemplates\EditingOnly\VSIntegration.cs" />
     <Compile Include="VSPackage.Designer.cs" />
     <Content Include="Logo.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -312,12 +327,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Parsers\EF6Parser.exe">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Parsers\EFCore2Parser.exe">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Parsers\EFCore3Parser.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="ProjectItemTemplates\EFModel.xsd">
@@ -378,6 +387,7 @@
     <Content Include="TextTemplates\VSIntegration.ttinclude">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include="TextTemplates\EditingOnly\_ReadMe.md" />
     <None Include="TextTemplates\EF6Designer.ttinclude" />
     <None Include="TextTemplates\EFCoreDesigner.ttinclude" />
   </ItemGroup>
@@ -464,11 +474,10 @@
   <PropertyGroup>
     <PreBuildEvent>copy /y "$(SolutionDir)Dsl\GeneratedCode\EFModelSchema.xsd" "$(ProjectDir)ProjectItemTemplates\EFModel.xsd"
 dotnet publish -c $(ConfigurationName) --nologo --self-contained -o "$(ProjectDir)Parsers" /p:DeployOnBuild=true /p:PublishProfile=FolderProfile "$(SolutionDir)Utilities\EF6Parser\EF6Parser.csproj"
-dotnet publish -c $(ConfigurationName) --nologo --self-contained -o "$(ProjectDir)Parsers" /p:DeployOnBuild=true /p:PublishProfile=FolderProfile "$(SolutionDir)Utilities\EFCore2Parser\EFCore2Parser.csproj"
-dotnet publish -c $(ConfigurationName) --nologo --self-contained -o "$(ProjectDir)Parsers" /p:DeployOnBuild=true /p:PublishProfile=FolderProfile "$(SolutionDir)Utilities\EFCore3Parser\EFCore3Parser.csproj"
 dotnet publish -c $(ConfigurationName) --nologo --self-contained -o "$(ProjectDir)Parsers" /p:DeployOnBuild=true /p:PublishProfile=FolderProfile "$(SolutionDir)Utilities\EFCore5Parser\EFCore5Parser.csproj"
 dotnet publish -c $(ConfigurationName) --nologo --self-contained -o "$(ProjectDir)Parsers" /p:DeployOnBuild=true /p:PublishProfile=FolderProfile "$(SolutionDir)Utilities\EFCore6Parser\EFCore6Parser.csproj"
 dotnet publish -c $(ConfigurationName) --nologo --self-contained -o "$(ProjectDir)Parsers" /p:DeployOnBuild=true /p:PublishProfile=FolderProfile "$(SolutionDir)Utilities\EFCore7Parser\EFCore7Parser.csproj"
+dotnet publish -c $(ConfigurationName) --nologo --self-contained -o "$(ProjectDir)Parsers" /p:DeployOnBuild=true /p:PublishProfile=FolderProfile "$(SolutionDir)Utilities\EFCore8Parser\EFCore8Parser.csproj"
 if "$(ConfigurationName)"=="Release" del "$(ProjectDir)Parsers\*.pdb
 </PreBuildEvent>
   </PropertyGroup>

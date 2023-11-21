@@ -138,7 +138,7 @@ namespace Sawczyn.EFDesigner.EFModel
                            foreach (Association association in associations)
                            {
                               association.FKPropertyName = null;
-                              AssociationChangedRules.FixupForeignKeys(association);
+                              association.FixupForeignKeys();
                            }
                         }
 
@@ -175,7 +175,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                       && !string.IsNullOrWhiteSpace(a.FKPropertyName)))
                   {
                      association.FKPropertyName = null;
-                     AssociationChangedRules.FixupForeignKeys(association);
+                     association.FixupForeignKeys();
                   }
                }
 

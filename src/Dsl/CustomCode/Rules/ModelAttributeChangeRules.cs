@@ -304,7 +304,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                            && a.FKPropertyName.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(n => n.Trim() == element.Name));
 
                         foreach (Association association in participatingAssociations)
-                           AssociationChangedRules.FixupForeignKeys(association);
+                           association.FixupForeignKeys();
                      }
                   }
 

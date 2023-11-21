@@ -16,7 +16,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.5.2
+      // EFDesigner v4.2.6
       // Copyright (c) 2017-2023 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -414,7 +414,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          /// <param name="sourceInstance">The source instance</param>
          /// <param name="baseSegment">The base segment</param>
          /// <param name="visited">The visited associations list</param>
-         protected virtual void WriteBidirectionalDependentAssociations(ModelClass sourceInstance, string baseSegment, List<Association> visited)
+         protected virtual void WriteBidirectionalDependentAssociations(ModelClass sourceInstance, string baseSegment, List<Association> visited, int depth = 0)
          {
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (BidirectionalAssociation association in Association.GetLinksToTargets(sourceInstance)
@@ -1033,7 +1033,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          /// <param name="sourceInstance">The ModelClass instance to search the unidirectional dependent associations.</param>
          /// <param name="baseSegment">The base segment to prepend the association's property segment.</param>
          /// <param name="visited">List of visited associations to avoid circular references.</param>
-         protected virtual void WriteUnidirectionalDependentAssociations(ModelClass sourceInstance, string baseSegment, List<Association> visited)
+         protected virtual void WriteUnidirectionalDependentAssociations(ModelClass sourceInstance, string baseSegment, List<Association> visited, int depth = 0)
          {
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (UnidirectionalAssociation association in Association.GetLinksToTargets(sourceInstance)

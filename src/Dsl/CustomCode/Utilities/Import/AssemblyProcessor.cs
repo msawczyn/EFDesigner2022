@@ -55,11 +55,10 @@ namespace Sawczyn.EFDesigner.EFModel
             string[] parsers =
             {
                @"Parsers\EF6Parser.exe",
-               @"Parsers\EFCore2Parser.exe",
-               @"Parsers\EFCore3Parser.exe",
                @"Parsers\EFCore5Parser.exe",
                @"Parsers\EFCore6Parser.exe",
                @"Parsers\EFCore7Parser.exe",
+               @"Parsers\EFCore8Parser.exe"
             };
 
             Dictionary<string, bool> contexts = new Dictionary<string, bool>();
@@ -154,8 +153,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
          foreach (Association association in modelRoot.Store.GetAll<Association>())
          {
-            AssociationChangedRules.SetEndpointRoles(association);
-            AssociationChangedRules.FixupForeignKeys(association);
+            association.SetEndpointRoles();
+            association.FixupForeignKeys();
          }
 
          // still a work-in-progress
@@ -516,8 +515,8 @@ namespace Sawczyn.EFDesigner.EFModel
             elementLink.SourceRole = ConvertRole(data.SourceRole);
             elementLink.TargetRole = ConvertRole(data.TargetRole);
 
-            AssociationChangedRules.SetEndpointRoles(elementLink);
-            AssociationChangedRules.FixupForeignKeys(elementLink);
+            elementLink.SetEndpointRoles();
+            elementLink.FixupForeignKeys();
 
             // we could have a situation where there are no roles assigned (if 0/1-0/1 or 1-1). If we have exposed foreign keys, though, we can figure those out.
             if (((elementLink.SourceMultiplicity != Multiplicity.ZeroMany) || (elementLink.TargetMultiplicity != Multiplicity.ZeroMany))
@@ -596,8 +595,8 @@ namespace Sawczyn.EFDesigner.EFModel
             elementLink.SourceDescription = data.SourceDescription;
             elementLink.JoinTableName = data.JoinTableName;
 
-            AssociationChangedRules.SetEndpointRoles(elementLink);
-            AssociationChangedRules.FixupForeignKeys(elementLink);
+            elementLink.SetEndpointRoles();
+            elementLink.FixupForeignKeys();
 
             // we could have a situation where there are no roles assigned (if 0/1-0/1 or 1-1). If we have exposed foreign keys, though, we can figure those out.
             if (((elementLink.SourceMultiplicity != Multiplicity.ZeroMany) || (elementLink.TargetMultiplicity != Multiplicity.ZeroMany))
