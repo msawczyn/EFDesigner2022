@@ -12,7 +12,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    public partial class GeneratedTextTransformation
    {
       #region Template
-
       // EFDesigner v4.2.6
       // Copyright (c) 2017-2023 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
@@ -584,8 +583,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                // don't use 1..1 associations in constructor parameters. Becomes a Catch-22 scenario.
                requiredParameters.AddRange(modelClass.AllRequiredNavigationProperties()
-                                                     .Where(np => (np.AssociationObject.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)
-                                                               || (np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
+                                                     .Where(np => np.AssociationObject.Persistent &&
+                                                                  (np.AssociationObject.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One
+                                                               || np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
                                                      .Select(x =>
                                                              {
                                                                 string name = x.ClassType.ModelRoot.ReservedWords.Contains(x.PropertyName.ToLower())
@@ -800,15 +800,17 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             // all required navigation properties that aren't a 1..1 relationship
             List<NavigationProperty> requiredNavigationProperties = modelClass.AllRequiredNavigationProperties()
-                                                                              .Where(np => (np.AssociationObject.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One)
-                                                                                        || (np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
+                                                                              .Where(np => np.AssociationObject.Persistent
+                                                                                        && (np.AssociationObject.SourceMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One
+                                                                                         || np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One))
                                                                               .ToList();
 
             bool hasRequiredNavigationProperties = requiredNavigationProperties.Any();
 
             bool hasOneToOneAssociations = modelClass.AllRequiredNavigationProperties()
-                                                     .Any(np => (np.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One)
-                                                             && (np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One));
+                                                     .Any(np => np.AssociationObject.Persistent
+                                                             && np.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One
+                                                             && np.AssociationObject.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.One);
 
             string visibility = GetDefaultConstructorVisibility(modelClass);
 
@@ -836,8 +838,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             if (hasOneToOneAssociations)
             {
                List<Association> oneToOneAssociations = modelClass.AllRequiredNavigationProperties()
-                                                                  .Where(np => (np.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One)
-                                                                            && (np.AssociationObject.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One))
+                                                                  .Where(np => np.AssociationObject.Persistent
+                                                                            && np.AssociationObject.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One
+                                                                            && np.AssociationObject.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One)
                                                                   .Select(np => np.AssociationObject)
                                                                   .ToList();
 
@@ -983,8 +986,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                                ? requiredAttribute.Name
                                : requiredAttribute.BackingFieldName;
 
-               string parameterName = requiredAttribute.ModelClass.ModelRoot.ReservedWords.Contains(requiredAttribute.Name.ToLower()) 
-                                         ? "@" + requiredAttribute.Name.ToLower() 
+               string parameterName = requiredAttribute.ModelClass.ModelRoot.ReservedWords.Contains(requiredAttribute.Name.ToLower())
+                                         ? "@" + requiredAttribute.Name.ToLower()
                                          : requiredAttribute.Name.ToLower();
 
                Output($"this.{lhs} = {parameterName};");
@@ -1019,8 +1022,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             foreach (NavigationProperty requiredNavigationProperty in requiredNavigationProperties)
             {
                NavigationProperty otherSide = requiredNavigationProperty.OtherSide;
-               string parameterName = requiredNavigationProperty.ClassType.ModelRoot.ReservedWords.Contains(requiredNavigationProperty.PropertyName.ToLower()) 
-                                         ? "@" + requiredNavigationProperty.PropertyName.ToLower() 
+               string parameterName = requiredNavigationProperty.ClassType.ModelRoot.ReservedWords.Contains(requiredNavigationProperty.PropertyName.ToLower())
+                                         ? "@" + requiredNavigationProperty.PropertyName.ToLower()
                                          : requiredNavigationProperty.PropertyName.ToLower();
 
                Output($"if ({parameterName} == null) throw new ArgumentNullException(nameof({parameterName}));");
@@ -1307,6 +1310,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                }
 
                string customAttributes = navigationProperty.CustomAttributes ?? string.Empty;
+               string collectionType = GetFullContainerName(navigationProperty.AssociationObject.CollectionClass, navigationProperty.ClassType.FullName);
 
                if (!string.IsNullOrWhiteSpace(customAttributes))
                   Output($"[{customAttributes.Trim('[', ']')}]");
@@ -1317,13 +1321,43 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                if (!string.IsNullOrWhiteSpace(navigationProperty.DisplayText))
                   Output($"[System.ComponentModel.DataAnnotations.Display(Name=\"{navigationProperty.DisplayText.Replace("\"", "\\\"")}\")]");
 
-               if (!navigationProperty.AssociationObject.Persistent && modelClass.Persistent)
+               if (!navigationProperty.AssociationObject.Persistent)
                {
-                  if (!customAttributes.Contains("NotMapped"))
-                     Output("[NotMapped]");
-               }
+                  if (navigationProperty.IsCollection)
+                     Output($"partial void Get{navigationProperty.PropertyName}({type} result);");
+                  else
+                     Output($"partial void Get{navigationProperty.PropertyName}(ref {type} result);");
+                  NL();
 
-               if (navigationProperty.IsAutoProperty)
+                  if (modelClass.Persistent && !customAttributes.Contains("NotMapped"))
+                     Output("[NotMapped]");
+
+                  if (navigationProperty.IsCollection)
+                  {
+                     Output($"public virtual {type} {navigationProperty.PropertyName}");
+                     Output("{");
+                     Output($"get");
+                     Output("{");
+                     Output($"{type} result = new {collectionType}();");
+                     Output($"Get{navigationProperty.PropertyName}(result);");
+                     Output($"return result;");
+                     Output("}");
+                     Output("}");
+                  }
+                  else
+                  {
+                     Output($"public virtual {type} {navigationProperty.PropertyName}");
+                     Output("{");
+                     Output($"get");
+                     Output("{");
+                     Output($"{type} result = new {type}();");
+                     Output($"Get{navigationProperty.PropertyName}(ref result);");
+                     Output($"return result;");
+                     Output("}");
+                     Output("}");
+                  }
+               }
+               else if (navigationProperty.IsAutoProperty)
                {
                   if (navigationProperty.IsCollection)
                      Output($"public virtual {type} {navigationProperty.PropertyName} {{ get; private set; }}");
@@ -1332,6 +1366,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                }
                else if (navigationProperty.IsCollection)
                {
+                  Output("private {type} {navigationProperty.BackingFieldName} = new {collectionType}();");
+                  NL();
                   Output($"public virtual {type} {navigationProperty.PropertyName}");
                   Output("{");
                   Output("get");
@@ -1545,7 +1581,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          protected GeneratedTextTransformation host { get; set; }
 #pragma warning restore IDE1006 // Naming Styles
       }
-
       #endregion Template
    }
 }

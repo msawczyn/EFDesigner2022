@@ -633,8 +633,11 @@ namespace Sawczyn.EFDesigner.EFModel
       [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void ValidateMultiplicity(ValidationContext context)
       {
-         if (!AllCardinalitiesAreValid(out string errorMessage))
-            context.LogError(errorMessage, "AEUnsupportedMultiplicity", this);
+         using (Transaction t = Store.TransactionManager.BeginTransaction())
+         {
+            if (Persistent && !AllCardinalitiesAreValid(out string errorMessage))
+               context.LogError(errorMessage, "AEUnsupportedMultiplicity", this);
+         }
       }
 
       internal sealed partial class SourceMultiplicityPropertyHandler

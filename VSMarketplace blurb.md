@@ -57,6 +57,8 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
    - Fixes issue when generating code for properties that have a default enumeration value. Thanks to @equipatuequipo for [the pull request](https://github.com/msawczyn/EFDesigner2022/pull/72).
    - Association classes are back, but only for cases where each side of the many-to-many bidirectional association has a single identity property. 
    - Removed EFCore2 and EFCore3 parsers. Those EFCore versions have been obsolete for quite a while. If you need to use them, you can still use the 4.2.5 version of the extension.
+   - Constructors with required but transient associations no longer have those associations as parameters. If that constructor is needed, add it to the partial class file.
+   - Tightened up the concept of transient entities. We're now generating better code for these and the restriction that transient associations must be auto properties has been removed.
 
 **4.2.5**
    - Adds missing XML documentation for public and protected members

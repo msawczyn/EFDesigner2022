@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" MinorVersion="2" Build="6" Revision="2" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
+<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" MinorVersion="2" Build="6" Revision="3" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
   <Classes>
     <DomainClass Id="95532cb8-3452-4b09-a654-aeb2e2d0b3ad" Description="" Name="ModelRoot" DisplayName="Entity Model" Namespace="Sawczyn.EFDesigner.EFModel">
       <CustomTypeDescriptor>
@@ -1351,7 +1351,7 @@
             <DomainEnumerationMoniker Name="PropertyAccessMode" />
           </Type>
         </DomainProperty>
-        <DomainProperty Id="6b0a49d6-1220-4c69-a7d4-35fb2469bd3e" Description="If false, generates a backing field and a partial method to hook getting and setting the property. If true, generates a simple auto property. Only valid for non-collection properties." Name="TargetAutoProperty" DisplayName="End2 Is Auto Property" DefaultValue="" Kind="CustomStorage" Category="End 2" IsBrowsable="false">
+        <DomainProperty Id="6b0a49d6-1220-4c69-a7d4-35fb2469bd3e" Description="If false, generates a backing field and a partial method to hook getting and setting the property. If true, generates a simple auto property. Only valid for non-collection properties and transient collections." Name="TargetAutoProperty" DisplayName="End2 Is Auto Property" DefaultValue="" Kind="CustomStorage" Category="End 2" IsBrowsable="false">
           <Type>
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
@@ -1554,7 +1554,7 @@
             <ExternalTypeMoniker Name="/System/String" />
           </Type>
         </DomainProperty>
-        <DomainProperty Id="d21b9158-3044-468d-8987-073fb9976623" Description="If false, generates a backing field and a partial method to hook getting and setting the property. If true, generates a simple auto property. Only valid for non-collection properties." Name="SourceAutoProperty" DisplayName="End1 Is Auto Property" DefaultValue="" Kind="CustomStorage" Category="End 1" IsBrowsable="false">
+        <DomainProperty Id="d21b9158-3044-468d-8987-073fb9976623" Description="If false, generates a backing field and a partial method to hook getting and setting the property. If true, generates a simple auto property. Only valid for non-collection properties and transient collections." Name="SourceAutoProperty" DisplayName="End1 Is Auto Property" DefaultValue="" Kind="CustomStorage" Category="End 1" IsBrowsable="false">
           <Type>
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>

@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+<head>
+   <meta charset="UTF-8">
+   <!-- Global site tag (gtag.js) - Google Analytics -->
+   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-116198145-1"></script>
+   <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'UA-116198145-1');
+   </script>
+
+   {% seo %}
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <meta name="theme-color" content="#157878">
+   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
+   <style>
+      .sidebar {
+         float: right;
+         width: 256px;
+         min-height: 35em;
+         border: 1px solid darkgreen;
+         margin-left: 3em;
+         margin-top: 2em;
+         padding: 1em;
+         font-size: 14px;
+      }
+
+         .sidebar a, .sidebar a:visited, .sidebar a:hover {
+            display: block;
+            color: #159957;
+         }
+
+            .sidebar a + a {
+               margin-top: .5em;
+            }
+
+         .sidebar ul {
+            margin-top: 0;
+            margin-bottom: .5em;
+         }
+
+      .content-wrapper {
+         max-width: 80em;
+         margin: 0 auto;
+      }
+
+      .site-footer {
+         font-size: .7em;
+      }
+
+      .site-footer-owner {
+         font-weight: normal;
+      }
+
+      .main-content {
+         margin: 0;
+      }
+
+         .main-content a,
+         .main-content a:visited {
+            color: firebrick;
+         }
+
+            .main-content a:hover {
+               color: firebrick;
+               /*text-decoration: none;*/
+            }
+
+         .main-content table {
+            font-size: .95rem;
+         }
+
+            .main-content table th, .main-content table td {
+               border: 1px solid darkgray;
+            }
+
+            .main-content table tr th:first-child {
+               width: 20%;
+            }
+
+         .main-content h2 {
+            border-top: 2px double #159957;
+            margin-top: 3rem;
+         }
+
+      @media screen and (max-width: 42em) {
+         .sidebar {
+            display: none;
+         }
+      }
+   </style>
+</head>
+<body>
+   <section class="page-header">
+      <h1 class="project-name">{{ site.title | default: site.github.repository_name }}</h1>
+      <h2 class="project-tagline">{{ site.description | default: site.github.project_tagline }}</h2>
+      {% if site.github.is_project_page %}
+      <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
+      {% endif %}
+      {% if site.show_downloads %}
+      <a href="{{ site.github.zip_url }}" class="btn">Download .zip</a>
+      <a href="{{ site.github.tar_url }}" class="btn">Download .tar.gz</a>
+      {% endif %}
+   </section>
+
+   <div class="content-wrapper">
+      <div class="sidebar">
+         <a href="index.html">Home</a>
+         <a href="Getting-Started.html">Getting Started</a>
+         <a href="Using-the-designer.html">Using the Designer</a>
+         <ul>
+            <li><a href="Using-the-designer.html#design-surface-properties">Design surface properties</a></li>
+            <li><a href="Using-the-designer.html#context-menu">Context menu</a></li>
+            <li><a href="Using-the-designer.html#selecting-design-elements">Selecting design elements</a></li>
+            <li><a href="Using-the-designer.html#the-entity-model-explorer-window">The entity model explorer window</a></li>
+            <li><a href="Using-the-designer.html#generating-code">Generating code</a></li>
+         </ul>
+         <a href="Diagrams.html">Diagrams</a>
+         <ul>
+            <li><a href="Diagrams.html#concepts">Concepts</a></li>
+            <li><a href="Diagrams.html#adding-elements">Adding elements</a></li>
+            <li><a href="Diagrams.html#hiding-vs-removing-from-the-diagram-vs-deleting-elements">Hiding vs Removing from the Diagram vs Deleting Elements</a></li>
+            <li><a href="Diagrams.html#moving-between-diagrams">Moving between diagrams</a></li>
+         </ul>
+         <a href="Entities.html">Persistent Entities</a>
+         <ul>
+            <li><a href="Entities.html#adding-an-entity">Adding an entity</a></li>
+            <li><a href="Entities.html#removing-an-entity">Removing an entity</a></li>
+            <li><a href="Entities.html#entity-properties">Entity properties</a></li>
+            <li><a href="Entities.html#context-menu">Context menu</a></li>
+            <li><a href="Entities.html#inotifypropertychanged">INotifyPropertyChanged</a></li>
+         </ul>
+         <a href="Properties.html">Properties</a>
+         <ul>
+            <li><a href="Properties.html#adding-a-property">Adding a property</a></li>
+            <li><a href="Properties.html#removing-a-property">Removing a property</a></li>
+            <li><a href="Properties.html#property-properties">Property properties</a></li>
+            <li><a href="Properties.html#creating-a-multi-property-index">Creating a multi-property index</a></li>
+            <li><a href="Properties.html#context-menu">Context menu</a></li>
+            <li><a href="Properties.html#adding-properties-via-code-custom-property-syntax">Adding properties via code</a></li>
+         </ul>
+         <a href="Associations.html">Associations</a>
+         <ul>
+            <li><a href="Associations.html#cardinalities">Cardinalities</a></li>
+            <li><a href="Associations.html#unidirectional-associations">Unidirectional association properties</a></li>
+            <li><a href="Associations.html#bidirectional-associations">Bidirectional association properties</a></li>
+         </ul>
+         <a href="Inheritance.html">Inheritance</a>
+         <ul>
+            <li><a href="Inheritance.html#deleting-an-inheritance-relationship">Deleting an inheritance relationship</a></li>
+         </ul>
+         <a href="Enumerations.html">Enumerations</a>
+         <ul>
+            <li><a href="Enumerations.html#adding-a-value">Adding a value</a></li>
+            <li><a href="Enumerations.html#removing-a-value">Removing a value</a></li>
+            <li><a href="Enumerations.html#flags">Flags</a></li>
+            <li><a href="Enumerations.html#enumeration-properties">Enumeration properties</a></li>
+            <li><a href="Enumerations.html#context-menu">Context menu</a></li>
+            <li><a href="Enumerations.html#enumeration-value-properties">Enumeration value properties</a></li>
+            <li><a href="Enumerations.html#context-menu-for-values">Context menu for values</a></li>
+            <li><a href="Enumerations.html#adding-values-via-code-custom-property-syntax">Adding values via code</a></li>
+         </ul>
+         <a href="Comments.html">Comments</a>
+         <ul>
+            <li><a href="Comments.html#comment-links">Comment Links</a></li>
+         </ul>
+         <a href="Importing.html">Importing Existing Code</a>
+         <ul>
+            <li><a href="Importing.html#Importing-source-code-from-other-projects">Importing source code from other projects</a></li>
+            <li><a href="Importing.html#Caveats">Caveats</a></li>
+            <li><a href="Importing.html#Importing-source-code-from-Windows-File-Explorer">Importing source code from Windows File Explorer</a></li>
+            <li><a href="Importing.html#Importing-compiled-assemblies">Importing compiled assemblies</a></li>
+            <li><a href="Importing.html#A-quick-tip">Importing compiled assemblies</a></li>
+         </ul>
+         <a href="Templates.html">Generating Code</a>
+         <ul>
+            <li><a href="Templates.html#understanding-the-code">Understanding the code</a></li>
+         </ul>
+         <a href="Customizing.html">Customizing Code Generation</a>
+         <ul>
+            <li><a href="Customizing.html#partial-classes">Partial classes</a></li>
+            <li><a href="Customizing.html#replacing-the-t4-templates">Replacing the T4 templates</a></li>
+            <li><a href="Customizing.html#customizing-designer-behavior">Customizing designer behavior</a></li>
+            <li><a href="api/index.html">T4 API documentation</a></li>
+         </ul>
+         <a href="Development.html">Contributing</a>
+         <ul>
+            <li><a href="Development.html#project-structure">Project structure</a></li>
+            <li><a href="Development.html#extending-via-mef">Extending via MEF</a></li>
+            <li><a href="Development.html#Things-to-note">Things to note</a></li>
+         </ul>
+         <a href="https://github.com/msawczyn/EFDesigner/issues?utf8=%E2%9C%93&q=label%3Aquestion+">Questions</a>
+         <a href="Licensing.html">License</a>
+         <a href="https://raw.githubusercontent.com/msawczyn/EFDesigner/master/changelog.txt">Changelog</a>
+
+      </div>
+      <section class="main-content">
+         {{ content }}
+      </section>
+      <footer class="site-footer">
+         {% if site.github.is_project_page %}
+         <!--<span class="site-footer-owner"><a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a> is maintained by <a href="{{ site.github.owner_url }}">Michael Sawczyn</a>.</span>-->
+         {% endif %}
+         <!--<span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.</span>-->
+      </footer>
+   </div>
+
+</body>
+</html>

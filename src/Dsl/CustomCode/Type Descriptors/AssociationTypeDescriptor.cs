@@ -88,8 +88,12 @@ namespace Sawczyn.EFDesigner.EFModel
             if (association.TargetMultiplicity == Multiplicity.ZeroMany)
                propertyDescriptors.Remove("TargetAutoProperty");
 
-            if (bidirectionalAssociation != null && bidirectionalAssociation.SourceMultiplicity == Multiplicity.ZeroMany)
+            if (bidirectionalAssociation != null && association.SourceMultiplicity == Multiplicity.ZeroMany && association.Persistent)
                propertyDescriptors.Remove("SourceAutoProperty");
+
+            // no need to know type of collection class if theres no collection involved
+            if (association.TargetMultiplicity != Multiplicity.ZeroMany && association.SourceMultiplicity != Multiplicity.ZeroMany)
+               propertyDescriptors.Remove("CollectionClass");
 
             // EF6 doesn't support property access modes
             if (modelRoot.EntityFrameworkVersion == EFVersion.EF6)
@@ -165,7 +169,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                       {
                                                                          new DisplayNameAttribute("End1 Is Auto Property"),
                                                                          new DescriptionAttribute("If false, generates a backing field and a partial method to hook getting and setting the property. "
-                                                                                                + "If true, generates a simple auto property. Only valid for non-collection properties."),
+                                                                                                + "If true, generates a simple auto property. Only valid for non-collection properties or for transient collections."),
                                                                          new CategoryAttribute("End 2")
                                                                       }));
             }
@@ -190,7 +194,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                       {
                                                                          new DisplayNameAttribute("End2 Is Auto Property"),
                                                                          new DescriptionAttribute("If false, generates a backing field and a partial method to hook getting and setting the property. "
-                                                                                                + "If true, generates a simple auto property. Only valid for non-collection properties."),
+                                                                                                + "If true, generates a simple auto property. Only valid for non-collection properties or for transient collections."),
                                                                          new CategoryAttribute("End 1")
                                                                       }));
             }

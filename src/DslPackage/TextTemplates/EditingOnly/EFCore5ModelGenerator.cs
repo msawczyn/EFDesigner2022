@@ -12,7 +12,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    public partial class GeneratedTextTransformation
    {
       #region Template
-
       // EFDesigner v4.2.6
       // Copyright (c) 2017-2023 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
@@ -164,9 +163,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             // if it's a view, declare it so
             if (modelClass.IsDatabaseView)
-            {
                segments.Add($"ToView(\"{viewName}\"{schema}{buildActions})");
-            }
             else // it's a table
             {
                switch (modelClass.InheritanceStrategy)
@@ -191,9 +188,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
 
             if (modelClass.Superclass != null)
-            {
                segments.Add($"HasBaseType<{modelClass.Superclass.FullName}>()");
-            }
             else  // if there's a base class, we can't have new identifiers
             {
                // primary key code segments must be output last, since HasKey returns a different type
@@ -275,9 +270,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                }
             }
             else if (!string.IsNullOrWhiteSpace(modelAttribute.DatabaseDefaultValue))
-            {
                segments.Add($"HasDefaultValueSql(\"{modelAttribute.DatabaseDefaultValue}\")");
-            }
 
             if (!string.IsNullOrEmpty(modelAttribute.DatabaseCollation)
              && modelAttribute.DatabaseCollation != modelRoot.DatabaseCollationDefault
@@ -425,7 +418,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (BidirectionalAssociation association in Association.GetLinksToTargets(sourceInstance)
                                                                         .OfType<BidirectionalAssociation>()
-                                                                        .Where(x => !x.Target.Persistent))
+                                                                        .Where(x => x.Persistent && !x.Target.Persistent))
             {
                if (visited.Contains(association))
                   continue;
@@ -440,7 +433,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      {
                         segments.Add(baseSegment);
-                        segments.Add($"OwnsMany(p => p.{association.TargetPropertyName}, {config});");
+                        segments.Add($"OwnsMany(p => p.{association.TargetPropertyName}{config});");
 
                         Output(segments);
 
@@ -450,7 +443,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
                      {
                         segments.Add(baseSegment);
-                        segments.Add($"OwnsOne(p => p.{association.TargetPropertyName}, {config})");
+                        segments.Add($"OwnsOne(p => p.{association.TargetPropertyName}{config})");
 
                         Output(segments);
 
@@ -465,7 +458,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      {
                         segments.Add(baseSegment);
-                        segments.Add($"OwnsOne(p => p.{association.TargetPropertyName}, {config})");
+                        segments.Add($"OwnsOne(p => p.{association.TargetPropertyName}{config})");
 
                         Output(segments);
 
@@ -486,7 +479,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (BidirectionalAssociation association in Association.GetLinksToTargets(modelClass)
                                                                         .OfType<BidirectionalAssociation>()
-                                                                        .Where(x => x.Target.Persistent))
+                                                                        .Where(x => x.Persistent && x.Target.Persistent))
             {
                if (visited.Contains(association))
                   continue;
@@ -695,7 +688,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (UnidirectionalAssociation association in Association.GetLinksToTargets(sourceInstance)
                                                                          .OfType<UnidirectionalAssociation>()
-                                                                         .Where(x => !x.Target.Persistent))
+                                                                         .Where(x => x.Persistent && !x.Target.Persistent))
             {
                if (visited.Contains(association))
                   continue;
@@ -710,7 +703,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
                      {
                         segments.Add(baseSegment);
-                        segments.Add($"OwnsMany(p => p.{association.TargetPropertyName}, {config})");
+                        segments.Add($"OwnsMany(p => p.{association.TargetPropertyName}{config})");
 
                         Output(segments);
                         break;
@@ -719,7 +712,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
                      {
                         segments.Add(baseSegment);
-                        segments.Add($"OwnsOne(p => p.{association.TargetPropertyName}, {config})");
+                        segments.Add($"OwnsOne(p => p.{association.TargetPropertyName}{config})");
 
                         Output(segments);
 
@@ -733,7 +726,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      {
                         segments.Add(baseSegment);
-                        segments.Add($"OwnsMany(p => p.{association.TargetPropertyName}, {config})");
+                        segments.Add($"OwnsMany(p => p.{association.TargetPropertyName}{config})");
 
                         Output(segments);
 
@@ -745,9 +738,15 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
          private string WriteAggregateTargetConfiguration(Association association, List<Association> visited, int depth)
          {
-            string segment = $"p{depth} => {{ ";
-            List<string> segments = new List<string>();
             ModelClass modelClass = association.Target;
+            string segment = $", p{depth} => {{ ";
+            List<string> segments = new List<string>();
+            BidirectionalAssociation bidirectionalAssociation = association as BidirectionalAssociation;
+
+            if (bidirectionalAssociation == null)
+               segment += $"p{depth}.WithOwner(); ";
+            else
+               segment += $"p{depth}.WithOwner(t => t.{bidirectionalAssociation.SourcePropertyName}); ";
 
             if (!string.IsNullOrEmpty(modelClass.TableName) && modelClass.TableName != association.Source.TableName)
                segment += $"p{depth}.ToTable(\"{modelClass.TableName}\"); ";
@@ -760,18 +759,22 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             foreach (ModelAttribute transient in modelClass.Attributes.Where(x => !x.Persistent))
                segment += $"p{depth}.Ignore(p{depth}x => p{depth}x.{transient.Name}); ";
 
-            foreach (ModelAttribute modelAttribute in modelClass.Attributes.Where(x => x.Persistent 
-                                                                                    && !SpatialTypes.Contains(x.Type)
-                                                                                    && x.Indexed 
-                                                                                    && !x.IsIdentity
-                                                                                    && !string.IsNullOrEmpty(x.IndexName)))
+            foreach (ModelAttribute modelAttribute in modelClass.Attributes.Where(x => x.Persistent && !SpatialTypes.Contains(x.Type)))
             {
-               segment += $"p{depth}.HasIndex(p{depth}x => p{depth}x.{modelAttribute.Name}, {modelAttribute.IndexName})";
+               segments.Clear();
 
-               if (modelAttribute.IndexedUnique)
-                  segment += ".IsUnique(); ";
-               else
-                  segment += "; ";
+               segments.AddRange(GatherModelAttributeSegments(modelAttribute));
+
+               if (segments.Any())
+                  segment += $"p{depth}.Property(t => t.{modelAttribute.Name}).{string.Join(".", segments)}; ";
+
+               if (modelAttribute.Indexed && !modelAttribute.IsIdentity)
+               {
+                  string uniqueTag = modelAttribute.IndexedUnique ? ".IsUnique()" : string.Empty;
+                  segments.Add(!string.IsNullOrEmpty(modelAttribute.IndexName)
+                                  ? $"p{depth}.HasIndex(t => t.{modelAttribute.Name}, {modelAttribute.IndexName}){uniqueTag}; "
+                                  : $"p{depth}.HasIndex(t => t.{modelAttribute.Name}){uniqueTag}; ");
+               }
             }
 
             WriteUnidirectionalDependentAssociations(modelClass, $"modelBuilder.Entity<{modelClass.FullName}>()", visited, depth + 1);
@@ -793,7 +796,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (UnidirectionalAssociation association in Association.GetLinksToTargets(modelClass)
                                                                          .OfType<UnidirectionalAssociation>()
-                                                                         .Where(x => x.Target.Persistent))
+                                                                         .Where(x => x.Persistent && x.Target.Persistent))
             {
                if (visited.Contains(association))
                   continue;
@@ -885,7 +888,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             }
          }
       }
-
       #endregion Template
    }
 }

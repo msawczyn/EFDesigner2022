@@ -2361,7 +2361,7 @@ namespace Sawczyn.EFDesigner.EFModel
 		/// Gets or sets the value of TargetAutoProperty domain property.
 		/// If false, generates a backing field and a partial method to hook getting and
 		/// setting the property. If true, generates a simple auto property. Only valid for
-		/// non-collection properties.
+		/// non-collection properties and transient collections.
 		/// </summary>
 		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.Association/TargetAutoProperty.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.Association/TargetAutoProperty.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
@@ -4939,7 +4939,7 @@ namespace Sawczyn.EFDesigner.EFModel
 		/// Gets or sets the value of SourceAutoProperty domain property.
 		/// If false, generates a backing field and a partial method to hook getting and
 		/// setting the property. If true, generates a simple auto property. Only valid for
-		/// non-collection properties.
+		/// non-collection properties and transient collections.
 		/// </summary>
 		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.BidirectionalAssociation/SourceAutoProperty.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.BidirectionalAssociation/SourceAutoProperty.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]

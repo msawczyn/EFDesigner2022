@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex4_ModelInvoice", "Ex4_Mod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex5_Course", "Ex5_Course\Ex5_Course.csproj", "{BF56F02E-DCEB-413D-8DE6-A1FFA71870A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ex6_Mvp", "Ex6_Mvp\Ex6_Mvp.csproj", "{7C2F0CD7-CF1B-41F9-A9B9-132EBA642217}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex6_Mvp", "Ex6_Mvp\Ex6_Mvp.csproj", "{7C2F0CD7-CF1B-41F9-A9B9-132EBA642217}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoredProcs", "StoredProcs\StoredProcs.csproj", "{552C17AA-8ECE-4487-A504-628A5ABCBB2A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{7C2F0CD7-CF1B-41F9-A9B9-132EBA642217}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C2F0CD7-CF1B-41F9-A9B9-132EBA642217}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C2F0CD7-CF1B-41F9-A9B9-132EBA642217}.Release|Any CPU.Build.0 = Release|Any CPU
+		{552C17AA-8ECE-4487-A504-628A5ABCBB2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{552C17AA-8ECE-4487-A504-628A5ABCBB2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{552C17AA-8ECE-4487-A504-628A5ABCBB2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{552C17AA-8ECE-4487-A504-628A5ABCBB2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

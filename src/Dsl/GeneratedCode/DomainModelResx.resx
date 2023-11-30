@@ -2222,7 +2222,7 @@
     <comment>Category for DomainProperty &apos;TargetPropertyAccessMode&apos; on DomainClass &apos;Association&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.Association/TargetAutoProperty.Description" xml:space="preserve">
-    <value>If false, generates a backing field and a partial method to hook getting and setting the property. If true, generates a simple auto property. Only valid for non-collection properties.</value>
+    <value>If false, generates a backing field and a partial method to hook getting and setting the property. If true, generates a simple auto property. Only valid for non-collection properties and transient collections.</value>
     <comment>Description for DomainProperty &apos;TargetAutoProperty&apos; on DomainClass &apos;Association&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.Association/TargetAutoProperty.DisplayName" xml:space="preserve">
@@ -2562,7 +2562,7 @@
     <comment>Category for DomainProperty &apos;SourceBackingFieldName&apos; on DomainClass &apos;BidirectionalAssociation&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.BidirectionalAssociation/SourceAutoProperty.Description" xml:space="preserve">
-    <value>If false, generates a backing field and a partial method to hook getting and setting the property. If true, generates a simple auto property. Only valid for non-collection properties.</value>
+    <value>If false, generates a backing field and a partial method to hook getting and setting the property. If true, generates a simple auto property. Only valid for non-collection properties and transient collections.</value>
     <comment>Description for DomainProperty &apos;SourceAutoProperty&apos; on DomainClass &apos;BidirectionalAssociation&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.BidirectionalAssociation/SourceAutoProperty.DisplayName" xml:space="preserve">
