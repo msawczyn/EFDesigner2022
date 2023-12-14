@@ -15,33 +15,6 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
    public static class EFCoreValidator
    {
-#region ModelAttribute
-
-      public static void AdjustEFCoreProperties(PropertyDescriptorCollection propertyDescriptors, ModelAttribute element)
-      {
-         ModelRoot modelRoot = element.ModelClass.ModelRoot;
-
-         for (int index = 0; index < propertyDescriptors.Count; index++)
-         {
-            bool shouldRemove = false;
-
-            switch (propertyDescriptors[index].Name)
-            {
-               case "PersistencePoint":
-                  shouldRemove = modelRoot.EntityFrameworkVersion == EFVersion.EF6;
-
-                  break;
-
-               // add more as needed
-            }
-
-            if (shouldRemove)
-               propertyDescriptors.Remove(propertyDescriptors[index--]);
-         }
-      }
-
-#endregion ModelAttribute
-
 #region Association
 
       public static IEnumerable<string> GetErrors(Association element)

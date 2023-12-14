@@ -11,7 +11,7 @@ using StoredProcs;
 namespace StoredProcs.Migrations
 {
     [DbContext(typeof(ProcContext))]
-    [Migration("20231129113646_Initial")]
+    [Migration("20231208110539_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -143,9 +143,6 @@ namespace StoredProcs.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<float>("GPA")
-                        .HasColumnType("real");
 
                     b.Property<long>("GradeId")
                         .HasColumnType("bigint");

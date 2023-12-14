@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.6.2
+//     Produced by Entity Framework Visual Editor v4.2.6.3
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -45,7 +45,6 @@ namespace StoredProcs
       /// <param name="lastname"></param>
       /// <param name="grade"></param>
       /// <param name="_school0"></param>
-      /// <param name="_school1"></param>
       public Student(string firstname, string lastname, global::StoredProcs.Grade grade)
       {
          if (string.IsNullOrEmpty(firstname)) throw new ArgumentNullException(nameof(firstname));
@@ -69,7 +68,6 @@ namespace StoredProcs
       /// <param name="lastname"></param>
       /// <param name="grade"></param>
       /// <param name="_school0"></param>
-      /// <param name="_school1"></param>
       public static Student Create(string firstname, string lastname, global::StoredProcs.Grade grade)
       {
          return new Student(firstname, lastname, grade);

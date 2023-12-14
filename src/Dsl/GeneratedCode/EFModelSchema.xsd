@@ -615,7 +615,7 @@
         <!-- Property: IsQueryType -->
         <xsd:attribute name="isQueryType" type="xsd:boolean" >
           <xsd:annotation>
-            <xsd:documentation>If true, this class is defined by a SQL query that must be implemented in a partial method. See comments in generated code for more information.</xsd:documentation>
+            <xsd:documentation>If true, this class is defined by a SQL query or stored procedure that must be implemented in a partial method. See comments in generated code for more information.</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
         <!-- Property: ExcludeFromMigrations -->
@@ -1476,7 +1476,7 @@
         <!-- Property: IsJSON -->
         <xsd:attribute name="isJSON" type="xsd:boolean" >
           <xsd:annotation>
-            <xsd:documentation>If true, the owned entity will be stored as JSON in the database</xsd:documentation>
+            <xsd:documentation>If true, the aggregate will be stored as JSON in the database</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
       </xsd:extension>

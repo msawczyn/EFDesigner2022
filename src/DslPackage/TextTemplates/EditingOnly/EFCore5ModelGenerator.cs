@@ -152,7 +152,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             if (modelRoot.IsEFCore6Plus
              && modelClass.UseTemporalTables
-             && !modelClass.IsDatabaseView
+             && !modelClass.IsDatabaseView && !modelClass.IsQueryType
              && (!modelClass.Subclasses.Any() || modelClass.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
              && modelClass.Superclass == null)
                modifiers.Add("t.IsTemporal();");
@@ -164,6 +164,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             // if it's a view, declare it so
             if (modelClass.IsDatabaseView)
                segments.Add($"ToView(\"{viewName}\"{schema}{buildActions})");
+            else if (modelClass.IsQueryType)
+               segments.Add($"ToView(null)");
             else // it's a table
             {
                switch (modelClass.InheritanceStrategy)
@@ -726,7 +728,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      {
                         segments.Add(baseSegment);
-                        segments.Add($"OwnsMany(p => p.{association.TargetPropertyName}{config})");
+                        segments.Add($"OwnsOne(p => p.{association.TargetPropertyName}{config})");
 
                         Output(segments);
 
@@ -748,7 +750,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             else
                segment += $"p{depth}.WithOwner(t => t.{bidirectionalAssociation.SourcePropertyName}); ";
 
-            if (!string.IsNullOrEmpty(modelClass.TableName) && modelClass.TableName != association.Source.TableName)
+            if (modelRoot.IsEFCore7Plus 
+             && association.IsJSON 
+             && association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany 
+             && association.Target.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
+               segment += $"p{depth}.ToJson(); ";
+            else if (!string.IsNullOrEmpty(modelClass.TableName) && modelClass.TableName != association.Source.TableName)
                segment += $"p{depth}.ToTable(\"{modelClass.TableName}\"); ";
 
             if (modelClass.AllIdentityAttributes.Count() == 1)

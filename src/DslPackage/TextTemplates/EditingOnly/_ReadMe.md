@@ -9,3 +9,7 @@ support for the T4 editing experience in Visual Studio.
 To re-emphasize, they're only here as a convenience mechanism, and really only because [Resharper](https://www.jetbrains.com/resharper/) makes me look good,
 and it needs a real C# file to give me its kind assistance.
 
+Note, too, that the text of these files will be copied into the appropriate `.ttinclude`
+during the build process. That means that all edits should be done here, and not in the `.ttinclude`. Changes
+there will get overwritten.
+

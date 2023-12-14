@@ -721,8 +721,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                if ((modelRoot.InheritanceStrategy == CodeStrategy.TablePerConcreteType) && (modelClass.Superclass != null))
                   segments.Add("Map(x => x.MapInheritedProperties())");
 
-               if (!modelClass.Persistent)
-                  segments.Add("ToView()");
+               if (modelClass.IsDatabaseView)
+                  segments.Add($"ToView(\"{modelClass.ViewName}\")");
                else
                {
                   if (classesWithTables.Contains(modelClass))

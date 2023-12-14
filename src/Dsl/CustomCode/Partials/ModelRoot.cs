@@ -195,7 +195,7 @@ namespace Sawczyn.EFDesigner.EFModel
       /// <summary>
       ///   True if the model is EFCore and the Entity Framework version is >= 8
       /// </summary>
-      public bool IsEfCore8Plus
+      public bool IsEFCore8Plus
       {
          get
          {

@@ -91,7 +91,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             while (modelClass != null)
             {
-               interfaces.AddRange(modelClass.CustomInterfaces.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries));
+               interfaces.AddRange(modelClass.CustomInterfaces.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
                modelClass = modelClass.Superclass;
             }
 
@@ -319,7 +319,7 @@ namespace Sawczyn.EFDesigner.EFModel
                new BidirectionalAssociation(Store,
                                             new[]
                                             {
-                                               new RoleAssignment(Association.SourceDomainRoleId, bidirectionalAssociation.Source), 
+                                               new RoleAssignment(Association.SourceDomainRoleId, bidirectionalAssociation.Source),
                                                new RoleAssignment(Association.TargetDomainRoleId, this)
                                             },
                                             new[]
@@ -341,7 +341,7 @@ namespace Sawczyn.EFDesigner.EFModel
                new BidirectionalAssociation(Store,
                                             new[]
                                             {
-                                               new RoleAssignment(Association.SourceDomainRoleId, bidirectionalAssociation.Target), 
+                                               new RoleAssignment(Association.SourceDomainRoleId, bidirectionalAssociation.Target),
                                                new RoleAssignment(Association.TargetDomainRoleId, this)
                                             },
                                             new[]
@@ -496,7 +496,7 @@ namespace Sawczyn.EFDesigner.EFModel
       [Browsable(false)]
       public bool IsDependent()
       {
-         return IsDependentType;
+         return IsDependentType || !Persistent;
       }
 
       /// <summary>
@@ -588,6 +588,7 @@ namespace Sawczyn.EFDesigner.EFModel
          IsNamespaceTrackingPropertyHandler.Instance.PreResetValue(this);
          IsOutputDirectoryTrackingPropertyHandler.Instance.PreResetValue(this);
          IsInheritanceStrategyTrackingPropertyHandler.Instance.PreResetValue(this);
+         IsDefaultConstructorVisibilityTrackingPropertyHandler.Instance.PreResetValue(this);
 
          // same with other tracking properties as they get added
       }
@@ -627,7 +628,7 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
 
-#region Warning display
+      #region Warning display
 
       // set as methods to avoid issues around serialization
 
@@ -730,9 +731,9 @@ namespace Sawczyn.EFDesigner.EFModel
          return "EntityGlyph";
       }
 
-#endregion
+      #endregion
 
-#region Validations
+      #region Validations
 
       [ValidationMethod(ValidationCategories.Open | ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
@@ -885,9 +886,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Validations
+      #endregion Validations
 
-#region DatabaseSchema tracking property
+      #region DatabaseSchema tracking property
 
       private string databaseSchemaStorage;
 
@@ -897,7 +898,7 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             try
             {
-               return Store.ModelRoot()?.DatabaseSchema;
+               return ModelRoot?.DatabaseSchema;
             }
             catch (NullReferenceException)
             {
@@ -962,11 +963,10 @@ namespace Sawczyn.EFDesigner.EFModel
          internal void ResetValue(ModelClass element)
          {
             object calculatedValue = null;
-            ModelRoot modelRoot = element.Store.ModelRoot();
 
             try
             {
-               calculatedValue = modelRoot?.DatabaseSchema;
+               calculatedValue = element.ModelRoot?.DatabaseSchema;
             }
             catch (NullReferenceException) { }
             catch (Exception e)
@@ -980,9 +980,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion DatabaseSchema tracking property
+      #endregion DatabaseSchema tracking property
 
-#region DefaultConstructorVisibility tracking property
+      #region DefaultConstructorVisibility tracking property
 
       private TypeAccessModifierExt defaultConstructorVisibilityStorage;
 
@@ -992,7 +992,7 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             try
             {
-               return Store.ModelRoot()?.EntityDefaultConstructorVisibilityDefault ?? TypeAccessModifierExt.Default;
+               return ModelRoot?.EntityDefaultConstructorVisibilityDefault ?? TypeAccessModifierExt.Default;
             }
             catch (NullReferenceException)
             {
@@ -1015,7 +1015,7 @@ namespace Sawczyn.EFDesigner.EFModel
          defaultConstructorVisibilityStorage = value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
-            IsDefaultConstructorVisibilityTracking = false;
+            IsDefaultConstructorVisibilityTracking = (defaultConstructorVisibilityStorage == (ModelRoot?.EntityDefaultConstructorVisibilityDefault ?? TypeAccessModifierExt.Default));
       }
 
       internal sealed partial class IsDefaultConstructorVisibilityTrackingPropertyHandler
@@ -1056,11 +1056,10 @@ namespace Sawczyn.EFDesigner.EFModel
          internal void ResetValue(ModelClass element)
          {
             object calculatedValue = null;
-            ModelRoot modelRoot = element.Store.ModelRoot();
 
             try
             {
-               calculatedValue = modelRoot?.EntityDefaultConstructorVisibilityDefault;
+               calculatedValue = element.ModelRoot?.EntityDefaultConstructorVisibilityDefault;
             }
             catch (NullReferenceException) { }
             catch (Exception e)
@@ -1074,9 +1073,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion
+      #endregion DefaultConstructorVisibility tracking property
 
-#region Namespace tracking property
+      #region Namespace tracking property
 
       private string namespaceStorage;
 
@@ -1156,9 +1155,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion Namespace tracking property
+      #endregion Namespace tracking property
 
-#region OutputDirectory tracking property
+      #region OutputDirectory tracking property
 
       private string outputDirectoryStorage;
 
@@ -1234,12 +1233,11 @@ namespace Sawczyn.EFDesigner.EFModel
          internal void ResetValue(ModelClass element)
          {
             object calculatedValue = null;
-            ModelRoot modelRoot = element.Store.ModelRoot();
 
             try
             {
                calculatedValue = element.IsDependentType
-                                    ? modelRoot?.StructOutputDirectory
+                                    ? element.ModelRoot?.StructOutputDirectory
                                     : element.ModelRoot?.EntityOutputDirectory;
             }
             catch (NullReferenceException) { }
@@ -1254,9 +1252,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion OutputDirectory tracking property
+      #endregion OutputDirectory tracking property
 
-#region IsImplementNotify tracking property
+      #region IsImplementNotify tracking property
 
       /// <summary>
       ///    Updates tracking properties when the IsImplementNotify value changes
@@ -1292,9 +1290,9 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion IsImplementNotify tracking property
+      #endregion IsImplementNotify tracking property
 
-#region AutoPropertyDefault tracking property
+      #region AutoPropertyDefault
 
       // this property is both a tracking property (dependent on ModelRoot.AutoPropertyDefault)
       // and a tracked property (ModelAttribute.AutoProperty, Association.TargetAutoProperty and BidirectionalAssociation.SourceAutoProperty depends on it)
@@ -1371,42 +1369,44 @@ namespace Sawczyn.EFDesigner.EFModel
          }
       }
 
-#endregion AutoPropertyDefault tracking property
+      #endregion AutoPropertyDefault tracking property
 
-#region InheritanceStrategy tracking property
+      #region InheritanceStrategy tracking property
 
       private CodeStrategy inheritanceStrategyStorage;
 
-      private CodeStrategy GetInheritanceStrategyValue()
+      internal CodeStrategy DefalultInheritanceStrategy => ModelRoot?.InheritanceStrategy ?? CodeStrategy.TablePerHierarchy;
+
+      public CodeStrategy GetInheritanceStrategyValue()
       {
          if (!this.IsLoading() && IsInheritanceStrategyTracking)
          {
             try
             {
-               return ModelRoot?.InheritanceStrategy ?? CodeStrategy.TablePerHierarchy;
+               return ModelRoot?.InheritanceStrategy ?? DefalultInheritanceStrategy;
             }
             catch (NullReferenceException)
             {
-               return CodeStrategy.TablePerHierarchy;
+               return DefalultInheritanceStrategy;
             }
             catch (Exception e)
             {
                if (CriticalException.IsCriticalException(e))
                   throw;
 
-               return CodeStrategy.TablePerHierarchy;
+               return DefalultInheritanceStrategy;
             }
          }
 
          return inheritanceStrategyStorage;
       }
 
-      private void SetInheritanceStrategyValue(CodeStrategy value)
+      public void SetInheritanceStrategyValue(CodeStrategy value)
       {
          inheritanceStrategyStorage = value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
-            IsInheritanceStrategyTracking = (inheritanceStrategyStorage == ModelRoot?.InheritanceStrategy);
+            IsInheritanceStrategyTracking = (inheritanceStrategyStorage == (ModelRoot?.InheritanceStrategy ?? DefalultInheritanceStrategy));
       }
 
       internal sealed partial class IsInheritanceStrategyTrackingPropertyHandler
@@ -1447,10 +1447,24 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelClass element)
          {
-            element.isInheritanceStrategyTrackingPropertyStorage = (element.InheritanceStrategy == element.ModelRoot?.InheritanceStrategy);
+            CodeStrategy? calculatedValue = null;
+
+            try
+            {
+               calculatedValue = element.ModelRoot?.InheritanceStrategy;
+            }
+            catch (NullReferenceException) { }
+            catch (Exception e)
+            {
+               if (CriticalException.IsCriticalException(e))
+                  throw;
+            }
+
+            if (calculatedValue != null && element.InheritanceStrategy == calculatedValue)
+               element.isInheritanceStrategyTrackingPropertyStorage = true;
          }
       }
 
-#endregion InheritanceStrategy tracking property
+      #endregion InheritanceStrategy tracking property
    }
 }

@@ -615,7 +615,7 @@
         <!-- Property: IsQueryType -->
         <xsd:attribute name="isQueryType" type="xsd:boolean" >
           <xsd:annotation>
-            <xsd:documentation>If true, this class is defined by a SQL query that must be implemented in a partial method. See comments in generated code for more information.</xsd:documentation>
+            <xsd:documentation>If true, this class is defined by a SQL query or stored procedure that must be implemented in a partial method. See comments in generated code for more information.</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
         <!-- Property: ExcludeFromMigrations -->
@@ -1452,7 +1452,7 @@
         <!-- Property: TargetAutoProperty -->
         <xsd:attribute name="targetAutoProperty" type="xsd:boolean" >
           <xsd:annotation>
-            <xsd:documentation>If false, generates a backing field and a partial method to hook getting and setting the property. If true, generates a simple auto property. Only valid for non-collection properties or for transient collections.</xsd:documentation>
+            <xsd:documentation>If false, generates a backing field and a partial method to hook getting and setting the property. If true, generates a simple auto property. Only valid for non-collection properties and transient collections.</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
         <!-- Property: IsTargetAutoPropertyTracking -->
@@ -1476,7 +1476,7 @@
         <!-- Property: IsJSON -->
         <xsd:attribute name="isJSON" type="xsd:boolean" >
           <xsd:annotation>
-            <xsd:documentation>If true, the owned entity will be stored as JSON in the database</xsd:documentation>
+            <xsd:documentation>If true, the aggregate will be stored as JSON in the database</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
       </xsd:extension>
@@ -1714,7 +1714,7 @@
         <!-- Property: SourceAutoProperty -->
         <xsd:attribute name="sourceAutoProperty" type="xsd:boolean" >
           <xsd:annotation>
-            <xsd:documentation>If false, generates a backing field and a partial method to hook getting and setting the property. If true, generates a simple auto property. Only valid for non-collection properties or for transient collections.</xsd:documentation>
+            <xsd:documentation>If false, generates a backing field and a partial method to hook getting and setting the property. If true, generates a simple auto property. Only valid for non-collection properties and transient collections.</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
         <!-- Property: IsSourceAutoPropertyTracking -->

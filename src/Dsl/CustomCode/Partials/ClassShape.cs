@@ -47,7 +47,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
-            return (ModelDisplay.GetDiagramColors()?.Background ?? Color.White).IsLight()
+            return (ModelDisplay.GetDiagramColors?.Invoke().Background ?? Color.White).IsLight()
                       ? ClassGlyphCache
                       : InvertedClassGlyphCache;
          }
@@ -60,7 +60,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
-            return (ModelDisplay.GetDiagramColors()?.Background ?? Color.White).IsLight()
+            return (ModelDisplay.GetDiagramColors?.Invoke().Background ?? Color.White).IsLight()
                       ? PropertyGlyphCache
                       : InvertedPropertyGlyphCache;
          }
@@ -81,13 +81,18 @@ namespace Sawczyn.EFDesigner.EFModel
                              ? null
                              : Store.TransactionManager.BeginTransaction("Set diagram colors");
 
+         ModelClass modelClass = ModelElement as ModelClass;
+
          try
          {
             foreach (ListCompartment compartment in NestedChildShapes.OfType<ListCompartment>())
             {
                compartment.CompartmentFillColor = diagramColors.Background;
                compartment.ItemTextColor = diagramColors.Text;
-               compartment.TitleFillColor = diagramColors.HeaderBackground;
+
+               compartment.TitleFillColor = modelClass?.Persistent == true
+                                               ? diagramColors.HeaderBackground
+                                               : diagramColors.HeaderBackground.WashedOut();
                compartment.TitleTextColor = diagramColors.HeaderText;
             }
 
@@ -180,7 +185,7 @@ namespace Sawczyn.EFDesigner.EFModel
                               ? nameof(Resources.AssociationClassGlyphVisible)
                               : nameof(Resources.AssociationClassGlyph);
                }
-               else if (modelClass.IsQueryType)
+               else if (modelClass.IsQueryType || modelClass.IsDatabaseView)
                {
                   result = modelClass.IsVisible()
                               ? nameof(Resources.SQLVisible)

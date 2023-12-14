@@ -414,6 +414,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          /// <param name="sourceInstance">The source instance</param>
          /// <param name="baseSegment">The base segment</param>
          /// <param name="visited">The visited associations list</param>
+         /// <param name="depth">How deep we are in transient parentage</param>
          protected virtual void WriteBidirectionalDependentAssociations(ModelClass sourceInstance, string baseSegment, List<Association> visited, int depth = 0)
          {
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
@@ -643,6 +644,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                NL();
             }
 
+            Output("/// <inheritdoc />");
+            Output($"public {modelRoot.EntityContainerName}() : base()");
+            Output("{");
+            Output("}");
+            NL();
             Output("/// <summary>");
             Output("///     <para>");
             Output("///         Initializes a new instance of the <see cref=\"T:Microsoft.EntityFrameworkCore.DbContext\" /> class using the specified options.");
@@ -666,25 +672,6 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          protected virtual void WriteDbContext()
          {
             List<string> segments = new List<string>();
-
-            // this is throwing a MissingMethodException in the T4 Host indicating that ModelClass.get_InheritanceStrategy doesn't exist. That's an error in the T4 Host.
-            // we'll work around it for now.
-            //
-            //ModelClass[] classesWithTables = modelRoot.Classes
-            //                                          .Where(mc => (mc.Persistent && !mc.IsQueryType && !mc.CustomAttributes.Contains("NotMapped") && mc.GenerateCode)
-            //                                                    && (mc.InheritanceStrategy == CodeStrategy.TablePerType
-            //                                                     && (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
-            //                                                     && (!mc.IsKeyless() || mc.IsDatabaseView))
-            //                                                    || (mc.InheritanceStrategy == CodeStrategy.TablePerConcreteType
-            //                                                     && (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName) || !string.IsNullOrEmpty(mc.ViewName))
-            //                                                     && (!mc.IsKeyless() || mc.IsDatabaseView)
-            //                                                     && !mc.IsAbstract)
-            //                                                    || (mc.InheritanceStrategy == CodeStrategy.TablePerHierarchy
-            //                                                     && (!mc.IsDependentType || !string.IsNullOrEmpty(mc.TableName))
-            //                                                     && mc.Superclass == null))
-            //                                          .OrderBy(x => x.Name)
-            //                                          .ToArray();
-
             List<ModelClass> classesWithTablesList = new List<ModelClass>();
 
             foreach (ModelClass mc in modelRoot.Classes)
@@ -865,33 +852,52 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             Output("#region DbSets");
             PluralizationService pluralizationService = ModelRoot.PluralizationService;
 
-            foreach (ModelClass modelClass in modelRoot.Classes.Where(x => !x.IsDependentType && x.Persistent).OrderBy(x => x.Name))
+            foreach (ModelClass modelClass in modelRoot.Classes
+                                                       .Where(x => !x.IsDependentType 
+                                                                && x.Persistent 
+                                                                && !x.IsDatabaseView
+                                                                && !x.IsQueryType)
+                                                       .OrderBy(x => x.Name))
             {
-               string dbSetName;
-
-               if (!string.IsNullOrEmpty(modelClass.DbSetName))
-                  dbSetName = modelClass.DbSetName;
-               else
-               {
-                  dbSetName = pluralizationService?.IsSingular(modelClass.Name) == true
-                                 ? pluralizationService.Pluralize(modelClass.Name)
-                                 : modelClass.Name;
-               }
-
-               if (!string.IsNullOrEmpty(modelClass.Summary))
-               {
-                  NL();
-                  Output("/// <summary>");
-                  WriteCommentBody($"Repository for {modelClass.FullName} - {modelClass.Summary}");
-                  Output("/// </summary>");
-               }
-
+               string dbSetName = WriteDbSetHeader( modelClass );
                Output($"{modelRoot.DbSetAccess.ToString().ToLower()} virtual Microsoft.EntityFrameworkCore.DbSet<{modelClass.FullName}> {dbSetName} {{ get; set; }}");
+            }
+
+            foreach (ModelClass modelClass in modelRoot.Classes
+                                                       .Where(x => x.IsQueryType || x.IsDatabaseView)
+                                                       .OrderBy(x => x.Name))
+            {
+               string dbSetName = WriteDbSetHeader( modelClass );
+               Output($"{modelRoot.DbSetAccess.ToString().ToLower()} virtual Microsoft.EntityFrameworkCore.DbQuery<{modelClass.FullName}> {dbSetName} {{ get; set; }}");
             }
 
             NL();
             Output("#endregion DbSets");
             NL();
+
+            string WriteDbSetHeader( ModelClass modelClass )
+            {
+               string dbSetName;
+
+               if (!string.IsNullOrEmpty( modelClass.DbSetName ))
+                  dbSetName = modelClass.DbSetName;
+               else
+               {
+                  dbSetName = pluralizationService?.IsSingular( modelClass.Name ) == true
+                                 ? pluralizationService.Pluralize( modelClass.Name )
+                                 : modelClass.Name;
+               }
+
+               if (!string.IsNullOrEmpty( modelClass.Summary ))
+               {
+                  NL();
+                  Output( "/// <summary>" );
+                  WriteCommentBody( $"Repository for {modelClass.FullName} - {modelClass.Summary}" );
+                  Output( "/// </summary>" );
+               }
+
+               return dbSetName;
+            }
          }
 
          /// <summary>
@@ -1033,6 +1039,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          /// <param name="sourceInstance">The ModelClass instance to search the unidirectional dependent associations.</param>
          /// <param name="baseSegment">The base segment to prepend the association's property segment.</param>
          /// <param name="visited">List of visited associations to avoid circular references.</param>
+         /// <param name="depth">How deep we are in transient parentage</param>
          protected virtual void WriteUnidirectionalDependentAssociations(ModelClass sourceInstance, string baseSegment, List<Association> visited, int depth = 0)
          {
             // ReSharper disable once LoopCanBePartlyConvertedToQuery

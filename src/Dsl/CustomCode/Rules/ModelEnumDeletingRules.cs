@@ -7,7 +7,7 @@ using Sawczyn.EFDesigner.EFModel.Extensions;
 namespace Sawczyn.EFDesigner.EFModel
 {
    [RuleOn(typeof(ModelEnum), FireTime = TimeToFire.TopLevelCommit)]
-   internal class ModelEnumDeleteRules : DeletingRule
+   internal class ModelEnumDeletingRules : DeletingRule
    {
       /// <summary>
       ///    public virtual method for the client to have his own user-defined delete rule class

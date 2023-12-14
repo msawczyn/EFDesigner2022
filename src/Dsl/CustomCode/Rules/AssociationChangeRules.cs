@@ -158,6 +158,9 @@ namespace Sawczyn.EFDesigner.EFModel
                      else
                         errorMessages.Add(errorMessage);
 
+                     if (element.Dependent?.IsKeyless() == true)
+                        errorMessages.Add($"{element.Dependent.Name} is keyless. Keyless entities cannot be the dependent in an association.");
+
                      break;
                   }
 

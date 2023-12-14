@@ -493,7 +493,6 @@ namespace Sawczyn.EFDesigner.EFModel
                   }
                   else
                   {
-
                      ModelClass target = element.Superclass;
 
                      while (target != null)
@@ -516,7 +515,33 @@ namespace Sawczyn.EFDesigner.EFModel
                                 .Union(Association.GetLinksToSources(element))
                                 .ToList()
                                 .ForEach(a => a.RedrawItem());
+
+                     if (element.Persistent)
+                     {
+                        foreach (ClassShape classShape in PresentationViewsSubject.GetPresentation(element).OfType<ClassShape>().Distinct().ToList())
+                        {
+                           classShape.StyleSet.ClearBrushOverride(DiagramBrushes.ShapeBackground);
+
+                           if (ModelDisplay.GetDiagramColors != null)
+                              classShape.SetThemeColors(ModelDisplay.GetDiagramColors());
+                        }
+                     }
+                     else
+                     {
+                        foreach (ClassShape classShape in PresentationViewsSubject.GetPresentation(element).OfType<ClassShape>().Distinct().ToList())
+                        {
+                           BrushSettings backgroundBrush = classShape.StyleSet.GetOverriddenBrushSettings(DiagramBrushes.ShapeBackground) ?? new BrushSettings();
+                           backgroundBrush.Color = classShape.FillColor.WashedOut();
+                           classShape.StyleSet.OverrideBrush(DiagramBrushes.ShapeBackground, backgroundBrush);
+
+                           if (ModelDisplay.GetDiagramColors != null)
+                              classShape.SetThemeColors(ModelDisplay.GetDiagramColors());
+                        }
+                     }
+
+                     PresentationHelper.UpdateClassDisplay(element);
                   }
+
                   break;
                }
 

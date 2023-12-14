@@ -141,9 +141,6 @@ namespace StoredProcs.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<float>("GPA")
-                        .HasColumnType("real");
-
                     b.Property<long>("GradeId")
                         .HasColumnType("bigint");
 

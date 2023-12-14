@@ -558,7 +558,7 @@
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
         </DomainProperty>
-        <DomainProperty Id="9b6ae5c9-fe3f-4b3c-9a76-291d58fde1eb" Description="If true, this class is defined by a SQL query that must be implemented in a partial method. See comments in generated code for more information." Name="IsQueryType" DisplayName="Is Query Type" DefaultValue="false" Category="Database">
+        <DomainProperty Id="9b6ae5c9-fe3f-4b3c-9a76-291d58fde1eb" Description="If true, this class is defined by a SQL query or stored procedure that must be implemented in a partial method. See comments in generated code for more information." Name="IsQueryType" DisplayName="Is Query Type" DefaultValue="false" Category="Database">
           <Type>
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
@@ -636,7 +636,7 @@
             <ExternalTypeMoniker Name="/System/String" />
           </Type>
         </DomainProperty>
-        <DomainProperty Id="9ff4f2f1-a842-48ff-82cf-d7e09d7d564b" Description="How tables will be created and used to handle inheritance" Name="InheritanceStrategy" DisplayName="Inheritance Strategy" DefaultValue="TablePerHierarchy" Kind="CustomStorage" Category="Code Generation" IsBrowsable="false">
+        <DomainProperty Id="9ff4f2f1-a842-48ff-82cf-d7e09d7d564b" Description="How tables will be created and used to handle inheritance" Name="InheritanceStrategy" DisplayName="Inheritance Strategy" DefaultValue="" Kind="CustomStorage" Category="Code Generation" IsBrowsable="false">
           <Attributes>
             <ClrAttribute Name="System.ComponentModel.ReadOnly">
               <Parameters>
@@ -1371,7 +1371,7 @@
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
         </DomainProperty>
-        <DomainProperty Id="3e577bf4-8cff-4859-ac5b-56590d0be462" Description="If true, the owned entity will be stored as JSON in the database" Name="IsJSON" DisplayName="Is JSON" DefaultValue="false" Category="Database">
+        <DomainProperty Id="3e577bf4-8cff-4859-ac5b-56590d0be462" Description="If true, the aggregate will be stored as JSON in the database" Name="IsJSON" DisplayName="Is JSON" DefaultValue="false" Category="Database">
           <Type>
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>

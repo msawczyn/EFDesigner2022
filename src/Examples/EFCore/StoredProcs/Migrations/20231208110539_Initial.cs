@@ -83,7 +83,6 @@ namespace StoredProcs.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false, defaultValueSql: "NEXT VALUE FOR [dbo].[StudentSequence]"),
-                    GPA = table.Column<float>(type: "real", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     GradeId = table.Column<long>(type: "bigint", nullable: false)

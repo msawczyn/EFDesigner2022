@@ -42,7 +42,6 @@ namespace Sawczyn.EFDesigner.EFModel
                {
                   if (element.AutoProperty)
                   {
-                     //element.PersistencePoint = PersistencePointType.Property;
                      element.ImplementNotify = false;
                   }
                   else

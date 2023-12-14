@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 
 namespace Sawczyn.EFDesigner.EFModel
@@ -34,6 +35,28 @@ public static bool IsLight(this Color color)
          return color.IsLight()
                    ? Color.Black
                    : Color.White;
+      }
+
+      /// <summary>
+      ///   Calculates a washed-out version of the given color. Result will be the color halfway between the original and white.
+      /// </summary>
+      /// <param name="originalColor">The starting color</param>
+      /// <returns>Its washed out version</returns>
+      public static Color WashedOut(this Color originalColor)
+      {
+         // Calculate the washed-out color by averaging the RGB values
+         int washedOutRed = (originalColor.R + 255) / 2;
+         int washedOutGreen = (originalColor.G + 255) / 2;
+         int washedOutBlue = (originalColor.B + 255) / 2;
+
+         // Ensure the values are within the valid color range (0-255)
+         washedOutRed = Math.Min(255, washedOutRed);
+         washedOutGreen = Math.Min(255, washedOutGreen);
+         washedOutBlue = Math.Min(255, washedOutBlue);
+
+         // Create and return the washed-out color
+         Color washedOutColor = Color.FromArgb(washedOutRed, washedOutGreen, washedOutBlue);
+         return washedOutColor;
       }
    }
 }

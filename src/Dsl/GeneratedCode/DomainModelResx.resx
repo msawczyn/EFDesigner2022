@@ -1022,7 +1022,7 @@
     <comment>Category for DomainProperty &apos;IsPropertyBag&apos; on DomainClass &apos;ModelClass&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.ModelClass/IsQueryType.Description" xml:space="preserve">
-    <value>If true, this class is defined by a SQL query that must be implemented in a partial method. See comments in generated code for more information.</value>
+    <value>If true, this class is defined by a SQL query or stored procedure that must be implemented in a partial method. See comments in generated code for more information.</value>
     <comment>Description for DomainProperty &apos;IsQueryType&apos; on DomainClass &apos;ModelClass&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.ModelClass/IsQueryType.DisplayName" xml:space="preserve">
@@ -2266,7 +2266,7 @@
     <comment>Category for DomainProperty &apos;TargetAutoInclude&apos; on DomainClass &apos;Association&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.Association/IsJSON.Description" xml:space="preserve">
-    <value>If true, the owned entity will be stored as JSON in the database</value>
+    <value>If true, the aggregate will be stored as JSON in the database</value>
     <comment>Description for DomainProperty &apos;IsJSON&apos; on DomainClass &apos;Association&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.Association/IsJSON.DisplayName" xml:space="preserve">

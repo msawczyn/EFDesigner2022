@@ -52,6 +52,9 @@ namespace Sawczyn.EFDesigner.EFModel
          if (!element.AllCardinalitiesAreValid(out string errorMessage))
             errorMessages.Add(errorMessage);
 
+         if (element.Dependent.IsKeyless())
+            errorMessages.Add($"{element.Dependent.Name} is keyless. Keyless entities cannot be the dependent in an association.");
+
          PresentationHelper.UpdateAssociationDisplay(element);
 
          errorMessages = errorMessages.Where(m => m != null).ToList();

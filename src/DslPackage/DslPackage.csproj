@@ -472,7 +472,9 @@
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>copy /y "$(SolutionDir)Dsl\GeneratedCode\EFModelSchema.xsd" "$(ProjectDir)ProjectItemTemplates\EFModel.xsd"
+    <PreBuildEvent>cd "$(SolutionDir).."
+powershell -File ".\UpdateTemplates.ps1"
+copy /y "$(SolutionDir)Dsl\GeneratedCode\EFModelSchema.xsd" "$(ProjectDir)ProjectItemTemplates\EFModel.xsd"
 dotnet publish -c $(ConfigurationName) --nologo --self-contained -o "$(ProjectDir)Parsers" /p:DeployOnBuild=true /p:PublishProfile=FolderProfile "$(SolutionDir)Utilities\EF6Parser\EF6Parser.csproj"
 dotnet publish -c $(ConfigurationName) --nologo --self-contained -o "$(ProjectDir)Parsers" /p:DeployOnBuild=true /p:PublishProfile=FolderProfile "$(SolutionDir)Utilities\EFCore5Parser\EFCore5Parser.csproj"
 dotnet publish -c $(ConfigurationName) --nologo --self-contained -o "$(ProjectDir)Parsers" /p:DeployOnBuild=true /p:PublishProfile=FolderProfile "$(SolutionDir)Utilities\EFCore6Parser\EFCore6Parser.csproj"

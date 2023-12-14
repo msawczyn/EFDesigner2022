@@ -49,19 +49,27 @@ namespace Sawczyn.EFDesigner.EFModel
             }
 
             // things unavailable if pre-EFCore7
-            if (!modelRoot.GenerateTableComments)
-               propertyDescriptors.Remove("TableComment");
-
-            if (modelClass.IsPropertyBag)
-               propertyDescriptors.Remove("IsDependentType");
-
-            if ((modelClass.Subclasses.Any() && modelClass.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
-             || modelClass.Superclass != null)
-               propertyDescriptors.Remove("UseTemporalTables");
-
-            if (modelClass.InheritanceStrategy == CodeStrategy.TablePerHierarchy && modelClass.Superclass != null)
+            if (!modelRoot.IsEFCore7Plus)
             {
-               propertyDescriptors.Remove("TableName");
+               if (!modelRoot.GenerateTableComments)
+                  propertyDescriptors.Remove("TableComment");
+
+               if (modelClass.IsPropertyBag)
+                  propertyDescriptors.Remove("IsDependentType");
+
+               if ((modelClass.Subclasses.Any() && modelClass.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
+                || modelClass.Superclass != null)
+                  propertyDescriptors.Remove("UseTemporalTables");
+
+               if (modelClass.InheritanceStrategy == CodeStrategy.TablePerHierarchy && modelClass.Superclass != null)
+               {
+                  propertyDescriptors.Remove("TableName");
+               }
+            }
+
+            // things unavailable if pre-EFCore8
+            if (!modelRoot.IsEFCore8Plus)
+            {
             }
 
             // things unavailable for association classes
@@ -76,7 +84,7 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("ExcludeFromMigrations");
             }
 
-            // things unavailable for views
+            // things unavailable based on whether there's a view backing the class
             if (modelClass.IsDatabaseView)
             {
                propertyDescriptors.Remove("DbSetName");
@@ -106,13 +114,14 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("ViewName");
             }
 
-            // things unavailable for transient classes
+            // things unavailable based on persistent/transient status
             if (!modelClass.Persistent)
             {
                propertyDescriptors.Remove("Concurrency");
                propertyDescriptors.Remove("DbSetName");
                propertyDescriptors.Remove("DescribedAssociationElementId");
                propertyDescriptors.Remove("ExcludeFromMigrations");
+               propertyDescriptors.Remove("InheritanceStrategy");
                propertyDescriptors.Remove("IsAssociationClass");
                propertyDescriptors.Remove("IsDatabaseView");
                propertyDescriptors.Remove("IsDependentType");
@@ -181,7 +190,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                       new TypeConverterAttribute(typeof(ProjectDirectoryTypeConverter))
                                                                    }));
 
-            if (modelRoot.IsEFCore7Plus)
+            if (modelRoot.IsEFCore7Plus && modelClass.Persistent)
             {
                propertyDescriptors.Add(new TrackingPropertyDescriptor(modelClass
                                                                     , storeDomainDataDirectory.GetDomainProperty(ModelClass.InheritanceStrategyDomainPropertyId)

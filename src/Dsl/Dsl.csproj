@@ -161,7 +161,7 @@
     <Compile Include="CustomCode\Rules\ModelDiagramDataAddRules.cs" />
     <Compile Include="CustomCode\Rules\ModelDiagramDataChangeRules.cs" />
     <Compile Include="CustomCode\Rules\ModelDiagramDataDeleteRules.cs" />
-    <Compile Include="CustomCode\Rules\ModelEnumDeleteRules.cs" />
+    <Compile Include="CustomCode\Rules\ModelEnumDeletingRules.cs" />
     <Compile Include="CustomCode\ModelElement Interfaces\IHasStore.cs" />
     <Compile Include="CustomCode\Type Converters\CodeStrategyTypeConverter.cs" />
     <Compile Include="CustomCode\Type Converters\MaxLengthTypeConverter.cs" />

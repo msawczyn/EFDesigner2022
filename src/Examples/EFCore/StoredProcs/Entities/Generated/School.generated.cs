@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.6.2
+//     Produced by Entity Framework Visual Editor v4.2.6.3
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -92,19 +92,6 @@ namespace StoredProcs
       /*************************************************************************
        * Navigation properties
        *************************************************************************/
-
-      partial void GetFirstGrader(ref global::StoredProcs.Student result);
-
-      [NotMapped]
-      public virtual global::StoredProcs.Student FirstGrader
-      {
-         get
-         {
-            global::StoredProcs.Student result = new global::StoredProcs.Student();
-            GetFirstGrader(ref result);
-            return result;
-         }
-      }
 
       partial void GetFirstGraders(ICollection<global::StoredProcs.Student> result);
 

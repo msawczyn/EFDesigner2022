@@ -396,13 +396,15 @@ namespace Sawczyn.EFDesigner.EFModel
          return Source?.ModelRoot?.Classes.FirstOrDefault(x => x.IsAssociationClass && x.DescribedAssociationElementId == Id);
       }
 
+      #region Validations
+
       [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
       [UsedImplicitly]
       [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void FKPropertiesCannotBeStoreGeneratedIdentifiers(ValidationContext context)
       {
          foreach (ModelAttribute attribute in GetFKAutoIdentityErrors())
-            context.LogError($"{Source.Name} <=> {Target.Name}: FK property {attribute.Name} in {Dependent.FullName} is an auto-generated identity. Migration will fail.", "AEIdentityFK", this);
+            context.LogError($"{GetDisplayText()}: FK property {attribute.Name} in {Dependent.FullName} is an auto-generated identity. Migration will fail.", "AEIdentityFK", this);
       }
 
       [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
@@ -414,7 +416,7 @@ namespace Sawczyn.EFDesigner.EFModel
             return;
 
          if (Dependent == null)
-            context.LogError($"{Source.Name} <=> {Target.Name}: FK property set without association having a Dependent end.", "AEFKWithNoDependent", this);
+            context.LogError($"{GetDisplayText()}: FK property set without association having a Dependent end.", "AEFKWithNoDependent", this);
       }
 
       [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
@@ -430,11 +432,98 @@ namespace Sawczyn.EFDesigner.EFModel
 
          if (fkCount != identityCount)
          {
-            context.LogError($"{Source.Name} <=> {Target.Name}: Wrong number of FK properties. Should be {identityCount} to match identity count in {Principal.Name} - currently is {fkCount}.",
+            context.LogError($"{GetDisplayText()}: Wrong number of FK properties. Should be {identityCount} to match identity count in {Principal.Name} - currently is {fkCount}.",
                              "AEFKWrongCount",
                              this);
          }
       }
+
+      [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
+      [UsedImplicitly]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      private void MustDetermineEndpointRoles(ValidationContext context)
+      {
+         if (Source?.ModelRoot == null)
+            return;
+
+         if ((Source != null)
+          && (Target != null)
+          && ((SourceRole == EndpointRole.NotSet) || (TargetRole == EndpointRole.NotSet))
+          && (((SourceMultiplicity == Multiplicity.One) && (TargetMultiplicity == Multiplicity.One))
+           || ((SourceMultiplicity == Multiplicity.ZeroOne) && (TargetMultiplicity == Multiplicity.ZeroOne))))
+            context.LogError($"{GetDisplayText()}: Principal/dependent designations must be manually set for 1..1 and 0-1..0-1 associations.", "AEEndpointRoles", this);
+      }
+
+      [ValidationMethod(ValidationCategories.Open | ValidationCategories.Save | ValidationCategories.Menu)]
+      [UsedImplicitly]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      private void SummaryDescriptionIsEmpty(ValidationContext context)
+      {
+         if (Source?.ModelRoot == null)
+            return;
+
+         ModelRoot modelRoot = Store.ElementDirectory.FindElements<ModelRoot>().FirstOrDefault();
+
+         if ((modelRoot?.WarnOnMissingDocumentation == true) && (Source != null) && string.IsNullOrWhiteSpace(TargetSummary))
+         {
+            context.LogWarning($"{Source.Name}.{TargetPropertyName}: Association end should be documented", "AWMissingSummary", this);
+            hasWarning = true;
+            RedrawItem();
+         }
+      }
+
+      [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
+      [UsedImplicitly]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      private void TPCEndpointsOnlyOnLeafNodes(ValidationContext context)
+      {
+         if (Source?.ModelRoot == null)
+            return;
+
+         if ((Source.InheritanceStrategy == CodeStrategy.TablePerConcreteType && Source.Subclasses.Any())
+          || (Target.InheritanceStrategy == CodeStrategy.TablePerConcreteType && Target.Subclasses.Any()))
+            context.LogError($"{GetDisplayText()}: Association endpoints can only be on most-derived classes in TPC inheritance strategy", "AEWrongEndpoints", this);
+      }
+
+      [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
+      [UsedImplicitly]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      private void ValidateMultiplicity(ValidationContext context)
+      {
+         using (Transaction _ = Store.TransactionManager.BeginTransaction())
+         {
+            if (Persistent && !AllCardinalitiesAreValid(out string errorMessage))
+               context.LogError(errorMessage, "AEUnsupportedMultiplicity", this);
+         }
+      }
+
+      [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
+      [UsedImplicitly]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      private void DependentsMustHaveIdentities(ValidationContext context)
+      {
+         using (Transaction _ = Store.TransactionManager.BeginTransaction())
+         {
+            if (!Dependent.AllIdentityAttributes.Any())
+               context.LogError($"{GetDisplayText()}: Dependent end must have at least one identity attribute", "AEDependentIdentity", this);
+         }
+      }
+
+      [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
+      [UsedImplicitly]
+      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
+      private void JsonRequiresTPHInheritanceOnPrincipal(ValidationContext context)
+      {
+         using (Transaction _ = Store.TransactionManager.BeginTransaction())
+         {
+            if (Principal?.Persistent == true 
+             && Dependent?.Persistent == false 
+             && Principal.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
+               context.LogError($"{GetDisplayText()}: {Principal.Name} must be in a TPH inheritance strategy to support Json serialization", "AEJsonRequiresTPH", this);
+         }
+      }
+
+      #endregion Validations
 
       /// <summary>
       ///    Short display text for this attribute
@@ -542,22 +631,6 @@ namespace Sawczyn.EFDesigner.EFModel
          return "?";
       }
 
-      [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
-      [UsedImplicitly]
-      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
-      private void MustDetermineEndpointRoles(ValidationContext context)
-      {
-         if (Source?.ModelRoot == null)
-            return;
-
-         if ((Source != null)
-          && (Target != null)
-          && ((SourceRole == EndpointRole.NotSet) || (TargetRole == EndpointRole.NotSet))
-          && (((SourceMultiplicity == Multiplicity.One) && (TargetMultiplicity == Multiplicity.One))
-           || ((SourceMultiplicity == Multiplicity.ZeroOne) && (TargetMultiplicity == Multiplicity.ZeroOne))))
-            context.LogError($"{Source.Name} <=> {Target.Name}: Principal/dependent designations must be manually set for 1..1 and 0-1..0-1 associations.", "AEEndpointRoles", this);
-      }
-
       /// <summary>
       ///    Calls the pre-reset method on the associated property value handler for each
       ///    tracking property of this model element.
@@ -594,50 +667,6 @@ namespace Sawczyn.EFDesigner.EFModel
       protected void SetTargetBackingFieldNameValue(string value)
       {
          _targetBackingFieldName = value;
-      }
-
-      [ValidationMethod(ValidationCategories.Open | ValidationCategories.Save | ValidationCategories.Menu)]
-      [UsedImplicitly]
-      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
-      private void SummaryDescriptionIsEmpty(ValidationContext context)
-      {
-         if (Source?.ModelRoot == null)
-            return;
-
-         ModelRoot modelRoot = Store.ElementDirectory.FindElements<ModelRoot>().FirstOrDefault();
-
-         if ((modelRoot?.WarnOnMissingDocumentation == true) && (Source != null) && string.IsNullOrWhiteSpace(TargetSummary))
-         {
-            context.LogWarning($"{Source.Name}.{TargetPropertyName}: Association end should be documented", "AWMissingSummary", this);
-            hasWarning = true;
-            RedrawItem();
-         }
-      }
-
-      [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
-      [UsedImplicitly]
-      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
-      private void TPCEndpointsOnlyOnLeafNodes(ValidationContext context)
-      {
-         if (Source?.ModelRoot == null)
-            return;
-
-         ModelRoot modelRoot = Store.ElementDirectory.FindElements<ModelRoot>().FirstOrDefault();
-
-         if ((modelRoot?.InheritanceStrategy == CodeStrategy.TablePerConcreteType) && ((Target?.Subclasses.Any() == true) || (Source?.Subclasses.Any() == true)))
-            context.LogError($"{Source.Name} <=> {Target.Name}: Association endpoints can only be to most-derived classes in TPC inheritance strategy", "AEWrongEndpoints", this);
-      }
-
-      [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
-      [UsedImplicitly]
-      [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
-      private void ValidateMultiplicity(ValidationContext context)
-      {
-         using (Transaction t = Store.TransactionManager.BeginTransaction())
-         {
-            if (Persistent && !AllCardinalitiesAreValid(out string errorMessage))
-               context.LogError(errorMessage, "AEUnsupportedMultiplicity", this);
-         }
       }
 
       internal sealed partial class SourceMultiplicityPropertyHandler

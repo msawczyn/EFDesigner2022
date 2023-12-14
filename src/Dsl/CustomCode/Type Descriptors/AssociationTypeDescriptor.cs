@@ -43,15 +43,26 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("FKPropertyName");
 
             // only aggregates can be stored as JSON.
-            if (!association.Source.IsDependentType && !association.Target.IsDependentType)
+            if (!association.Source.IsDependent() && !association.Target.IsDependent())
+            {
                propertyDescriptors.Remove("IsJSON");
+            }
 
-            // If the aggregate inherits, the strategy must be TPH (https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-7.0/whatsnew -
-            // Mapping of owned types to JSON is not yet supported in conjunction with TPT or TPC inheritance)
-            if (association.Source.IsDependentType && association.Source.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
+            // collections can't be stored as JSON
+            if (association.Target.IsDependent() && association.TargetMultiplicity == Multiplicity.ZeroMany)
+            {
                propertyDescriptors.Remove("IsJSON");
-            if (association.Target.IsDependentType && association.Target.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
+            }
+            if (association.Source.IsDependent() && association.SourceMultiplicity == Multiplicity.ZeroMany)
+            {
                propertyDescriptors.Remove("IsJSON");
+            }
+
+            // Mapping of owned types to JSON is not yet supported in conjunction with TPT or TPC inheritance - see https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-7.0/whatsnew
+            if (association.Principal?.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
+            {
+               propertyDescriptors.Remove("IsJSON");
+            }
 
             // only display roles for 1..1 and 0-1..0-1 associations
             if ((association.SourceMultiplicity != Multiplicity.One || association.TargetMultiplicity != Multiplicity.One)
@@ -131,6 +142,7 @@ namespace Sawczyn.EFDesigner.EFModel
             // things unavailable if < EFCore7+
             if (!modelRoot.IsEFCore7Plus)
             {
+               System.Diagnostics.Debug.WriteLine("Removing IsJSON from " + association.GetDisplayText());
                propertyDescriptors.Remove("IsJSON");
             }
 
