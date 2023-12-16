@@ -56,6 +56,7 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
    - **[NEW]** Arrays of native types can now be used as property types in EFCore8+ projects
    - **[NEW]** Aggregate ("owned") types can now be stored as JSON properties in EFCore7+ projects
    - **[NEW]** Associations with transient, non-collection objects can be stored as JSON properties in EFCore7+ projects
+   - **[NEW]** Added support for reverse engineering EFCore v8 assemblies
    - Fixes issue when generating code for properties that have a default enumeration value. Thanks to @equipatuequipo for [the pull request](https://github.com/msawczyn/EFDesigner2022/pull/72).
    - Association classes are back, but only for cases where each side of the many-to-many bidirectional association has a single identity property. 
    - Removed EFCore2 and EFCore3 parsers. Those EFCore versions have been obsolete for quite a while. If you need to use them, you can still use the 4.2.5 version of the extension.
