@@ -59,6 +59,8 @@ namespace Transient
       [System.ComponentModel.Description("Unique identifier")]
       public long Id { get; set; }
 
+      public String[] StringArray { get; set; }
+
       /*************************************************************************
        * Navigation properties
        *************************************************************************/

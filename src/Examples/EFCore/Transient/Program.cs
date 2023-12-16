@@ -9,6 +9,7 @@
             Master master = new Master
             {
                Foo = "Foo",
+               StringArray = new[] { "Foo", "Bar" },
                TransientDetailAsJson = new TransientDetailAsJson
                {
                   Zoom = "Zoom",
