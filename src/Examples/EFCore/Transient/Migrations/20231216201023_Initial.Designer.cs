@@ -12,7 +12,7 @@ using Transient;
 namespace Transient_Owned.Migrations
 {
     [DbContext(typeof(TransientContext))]
-    [Migration("20231215112203_Initial")]
+    [Migration("20231216201023_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -42,9 +42,6 @@ namespace Transient_Owned.Migrations
                     b.Property<string>("Foo")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("StringCollection")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

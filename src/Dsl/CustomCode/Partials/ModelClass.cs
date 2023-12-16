@@ -1375,30 +1375,24 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private CodeStrategy inheritanceStrategyStorage;
 
-      internal CodeStrategy DefaultInheritanceStrategy => ModelRoot?.InheritanceStrategy ?? CodeStrategy.TablePerHierarchy;
-
-      /// <summary>
-      ///   The inheritance strategy for this entity, taking into account the model's default strategy and any override defined in this class
-      /// </summary>
-      /// <returns></returns>
       private CodeStrategy GetInheritanceStrategyValue()
       {
          if (!this.IsLoading() && IsInheritanceStrategyTracking)
          {
             try
             {
-               return ModelRoot?.InheritanceStrategy ?? DefaultInheritanceStrategy;
+               return ModelRoot?.InheritanceStrategyDefault ?? CodeStrategy.TablePerHierarchy;
             }
             catch (NullReferenceException)
             {
-               return DefaultInheritanceStrategy;
+               return CodeStrategy.TablePerHierarchy;
             }
             catch (Exception e)
             {
                if (CriticalException.IsCriticalException(e))
                   throw;
 
-               return DefaultInheritanceStrategy;
+               return CodeStrategy.TablePerHierarchy;
             }
          }
 
@@ -1410,7 +1404,7 @@ namespace Sawczyn.EFDesigner.EFModel
          inheritanceStrategyStorage = value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
-            IsInheritanceStrategyTracking = (inheritanceStrategyStorage == (ModelRoot?.InheritanceStrategy ?? DefaultInheritanceStrategy));
+            IsInheritanceStrategyTracking = (inheritanceStrategyStorage == (ModelRoot?.InheritanceStrategyDefault ?? CodeStrategy.TablePerHierarchy));
       }
 
       internal sealed partial class IsInheritanceStrategyTrackingPropertyHandler
@@ -1437,13 +1431,12 @@ namespace Sawczyn.EFDesigner.EFModel
          ///    storage-based.
          /// </summary>
          /// <param name="element">
-         ///    The element on which to reset the property
-         ///    value.
+         ///    The element on which to reset the property value.
          /// </param>
          internal void PreResetValue(ModelClass element)
          {
-            // Force the IsInheritanceStrategyTracking property to false so that the value  
-            // of the InheritanceStrategy property is retrieved from storage.  
+            // Force the IsDefaultConstructorVisibilityTracking property to false so that the value  
+            // of the DefaultConstructorVisibility property is retrieved from storage.  
             element.isInheritanceStrategyTrackingPropertyStorage = false;
          }
 
@@ -1451,11 +1444,11 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelClass element)
          {
-            CodeStrategy? calculatedValue = null;
+            object calculatedValue = null;
 
             try
             {
-               calculatedValue = element.ModelRoot?.InheritanceStrategy;
+               calculatedValue = element.ModelRoot?.InheritanceStrategyDefault;
             }
             catch (NullReferenceException) { }
             catch (Exception e)
@@ -1464,7 +1457,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if (calculatedValue != null && element.InheritanceStrategy == calculatedValue)
+            if ((calculatedValue != null) && (element.InheritanceStrategy == (CodeStrategy)calculatedValue))
                element.isInheritanceStrategyTrackingPropertyStorage = true;
          }
       }

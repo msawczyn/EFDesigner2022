@@ -788,7 +788,7 @@ namespace Sawczyn.EFDesigner.EFModel
       #region AutoPropertyDefault tracking property
 
       /// <summary>
-      ///    Updates tracking properties when the IsImplementNotify value changes
+      ///    Updates tracking properties when the AutoPropertyDefault value changes
       /// </summary>
       /// <param name="oldValue">Prior value</param>
       /// <param name="newValue">Current value</param>
@@ -816,11 +816,11 @@ namespace Sawczyn.EFDesigner.EFModel
       #region InheritanceStrategy tracking property
 
       /// <summary>
-      ///    Updates tracking properties when the IsImplementNotify value changes
+      ///    Updates tracking properties when the InheritanceStrategy value changes
       /// </summary>
       /// <param name="oldValue">Prior value</param>
       /// <param name="newValue">Current value</param>
-      protected virtual void OnInheritanceStrategyChanged(CodeStrategy oldValue, CodeStrategy newValue)
+      protected virtual void OnInheritanceStrategyDefaultChanged(CodeStrategy oldValue, CodeStrategy newValue)
       {
          TrackingHelper.UpdateTrackingCollectionProperty(Store,
                                                          Classes,
@@ -828,14 +828,14 @@ namespace Sawczyn.EFDesigner.EFModel
                                                          ModelClass.IsInheritanceStrategyTrackingDomainPropertyId);
       }
 
-      internal sealed partial class InheritanceStrategyPropertyHandler
+      internal sealed partial class InheritanceStrategyDefaultPropertyHandler
       {
          protected override void OnValueChanged(ModelRoot element, CodeStrategy oldValue, CodeStrategy newValue)
          {
             base.OnValueChanged(element, oldValue, newValue);
 
             if (!element.Store.InUndoRedoOrRollback)
-               element.OnInheritanceStrategyChanged(oldValue, newValue);
+               element.OnInheritanceStrategyDefaultChanged(oldValue, newValue);
          }
       }
 

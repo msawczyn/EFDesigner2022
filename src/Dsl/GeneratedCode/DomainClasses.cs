@@ -1479,62 +1479,62 @@ namespace Sawczyn.EFDesigner.EFModel
 		}
 		
 		#endregion
-		#region InheritanceStrategy domain property code
+		#region InheritanceStrategyDefault domain property code
 		
 		/// <summary>
-		/// InheritanceStrategy domain property Id.
+		/// InheritanceStrategyDefault domain property Id.
 		/// </summary>
-		public static readonly global::System.Guid InheritanceStrategyDomainPropertyId = new global::System.Guid(0x3ea27de3, 0xf83c, 0x44d8, 0xbb, 0xa5, 0xc1, 0x88, 0x6f, 0x65, 0xb1, 0x82);
+		public static readonly global::System.Guid InheritanceStrategyDefaultDomainPropertyId = new global::System.Guid(0x3ea27de3, 0xf83c, 0x44d8, 0xbb, 0xa5, 0xc1, 0x88, 0x6f, 0x65, 0xb1, 0x82);
 		
 		/// <summary>
-		/// Storage for InheritanceStrategy
+		/// Storage for InheritanceStrategyDefault
 		/// </summary>
-		private CodeStrategy inheritanceStrategyPropertyStorage = CodeStrategy.TablePerHierarchy;
+		private CodeStrategy inheritanceStrategyDefaultPropertyStorage = CodeStrategy.TablePerHierarchy;
 		
 		/// <summary>
-		/// Gets or sets the value of InheritanceStrategy domain property.
+		/// Gets or sets the value of InheritanceStrategyDefault domain property.
 		/// How tables will be created and used to handle inheritance
 		/// </summary>
 		[System.ComponentModel.TypeConverter(typeof(CodeStrategyTypeConverter))]
-		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelRoot/InheritanceStrategy.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
-		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelRoot/InheritanceStrategy.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
-		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelRoot/InheritanceStrategy.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelRoot/InheritanceStrategyDefault.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelRoot/InheritanceStrategyDefault.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelRoot/InheritanceStrategyDefault.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[global::System.ComponentModel.DefaultValue(CodeStrategy.TablePerHierarchy)]
 		[DslModeling::DomainObjectId("3ea27de3-f83c-44d8-bba5-c1886f65b182")]
-		public CodeStrategy InheritanceStrategy
+		public CodeStrategy InheritanceStrategyDefault
 		{
 			[global::System.Diagnostics.DebuggerStepThrough]
 			get
 			{
-				return inheritanceStrategyPropertyStorage;
+				return inheritanceStrategyDefaultPropertyStorage;
 			}
 			[global::System.Diagnostics.DebuggerStepThrough]
 			set
 			{
-				InheritanceStrategyPropertyHandler.Instance.SetValue(this, value);
+				InheritanceStrategyDefaultPropertyHandler.Instance.SetValue(this, value);
 			}
 		}
 		/// <summary>
-		/// Value handler for the ModelRoot.InheritanceStrategy domain property.
+		/// Value handler for the ModelRoot.InheritanceStrategyDefault domain property.
 		/// </summary>
-		internal sealed partial class InheritanceStrategyPropertyHandler : DslModeling::DomainPropertyValueHandler<ModelRoot, CodeStrategy>
+		internal sealed partial class InheritanceStrategyDefaultPropertyHandler : DslModeling::DomainPropertyValueHandler<ModelRoot, CodeStrategy>
 		{
-			private InheritanceStrategyPropertyHandler() { }
+			private InheritanceStrategyDefaultPropertyHandler() { }
 		
 			/// <summary>
-			/// Gets the singleton instance of the ModelRoot.InheritanceStrategy domain property value handler.
+			/// Gets the singleton instance of the ModelRoot.InheritanceStrategyDefault domain property value handler.
 			/// </summary>
-			public static readonly InheritanceStrategyPropertyHandler Instance = new InheritanceStrategyPropertyHandler();
+			public static readonly InheritanceStrategyDefaultPropertyHandler Instance = new InheritanceStrategyDefaultPropertyHandler();
 		
 			/// <summary>
-			/// Gets the Id of the ModelRoot.InheritanceStrategy domain property.
+			/// Gets the Id of the ModelRoot.InheritanceStrategyDefault domain property.
 			/// </summary>
 			public sealed override global::System.Guid DomainPropertyId
 			{
 				[global::System.Diagnostics.DebuggerStepThrough]
 				get
 				{
-					return InheritanceStrategyDomainPropertyId;
+					return InheritanceStrategyDefaultDomainPropertyId;
 				}
 			}
 			
@@ -1546,7 +1546,7 @@ namespace Sawczyn.EFDesigner.EFModel
 			public override sealed CodeStrategy GetValue(ModelRoot element)
 			{
 				if (element == null) throw new global::System.ArgumentNullException("element");
-				return element.inheritanceStrategyPropertyStorage;
+				return element.inheritanceStrategyDefaultPropertyStorage;
 			}
 		
 			/// <summary>
@@ -1562,7 +1562,7 @@ namespace Sawczyn.EFDesigner.EFModel
 				if (newValue != oldValue)
 				{
 					ValueChanging(element, oldValue, newValue);
-					element.inheritanceStrategyPropertyStorage = newValue;
+					element.inheritanceStrategyDefaultPropertyStorage = newValue;
 					ValueChanged(element, oldValue, newValue);
 				}
 			}
@@ -8223,19 +8223,18 @@ namespace Sawczyn.EFDesigner.EFModel
 		/// <summary>
 		/// InheritanceStrategy domain property Id.
 		/// </summary>
-		public static readonly global::System.Guid InheritanceStrategyDomainPropertyId = new global::System.Guid(0x9ff4f2f1, 0xa842, 0x48ff, 0x82, 0xcf, 0xd7, 0xe0, 0x9d, 0x7d, 0x56, 0x4b);
+		public static readonly global::System.Guid InheritanceStrategyDomainPropertyId = new global::System.Guid(0x94eaf920, 0xabf7, 0x424c, 0xa6, 0xe4, 0x6b, 0x4f, 0x0e, 0x6c, 0xfc, 0x02);
 		
 		/// <summary>
 		/// Gets or sets the value of InheritanceStrategy domain property.
-		/// How tables will be created and used to handle inheritance
+		/// Overrides inheritance strategy setting from the model
 		/// </summary>
-		[System.ComponentModel.TypeConverter(typeof(CodeStrategyTypeConverter))]
 		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/InheritanceStrategy.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelClass/InheritanceStrategy.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelClass/InheritanceStrategy.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[global::System.ComponentModel.Browsable(false)]
 		[DslModeling::DomainProperty(Kind = DslModeling::DomainPropertyKind.CustomStorage)]
-		[DslModeling::DomainObjectId("9ff4f2f1-a842-48ff-82cf-d7e09d7d564b")]
+		[DslModeling::DomainObjectId("94eaf920-abf7-424c-a6e4-6b4f0e6cfc02")]
 		public CodeStrategy InheritanceStrategy
 		{
 			[global::System.Diagnostics.DebuggerStepThrough]
@@ -8315,7 +8314,7 @@ namespace Sawczyn.EFDesigner.EFModel
 		/// <summary>
 		/// IsInheritanceStrategyTracking domain property Id.
 		/// </summary>
-		public static readonly global::System.Guid IsInheritanceStrategyTrackingDomainPropertyId = new global::System.Guid(0xd4e77677, 0xac29, 0x46fb, 0x95, 0x43, 0x57, 0x02, 0xf3, 0xee, 0xd5, 0xcc);
+		public static readonly global::System.Guid IsInheritanceStrategyTrackingDomainPropertyId = new global::System.Guid(0xc28f1c9d, 0x614f, 0x4883, 0xb4, 0x97, 0x6f, 0x27, 0xdd, 0xe4, 0x98, 0x16);
 		
 		/// <summary>
 		/// Storage for IsInheritanceStrategyTracking
@@ -8324,13 +8323,13 @@ namespace Sawczyn.EFDesigner.EFModel
 		
 		/// <summary>
 		/// Gets or sets the value of IsInheritanceStrategyTracking domain property.
-		/// If true, ModelClass.InheritanceStrategy tracks ModelRoot.InheritanceStrategy
+		/// If true, Model.InheritanceStrategyDefault
 		/// </summary>
 		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/IsInheritanceStrategyTracking.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelClass/IsInheritanceStrategyTracking.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[global::System.ComponentModel.DefaultValue(true)]
 		[global::System.ComponentModel.Browsable(false)]
-		[DslModeling::DomainObjectId("d4e77677-ac29-46fb-9543-5702f3eed5cc")]
+		[DslModeling::DomainObjectId("c28f1c9d-614f-4883-b497-6f27dde49816")]
 		public global::System.Boolean IsInheritanceStrategyTracking
 		{
 			[global::System.Diagnostics.DebuggerStepThrough]

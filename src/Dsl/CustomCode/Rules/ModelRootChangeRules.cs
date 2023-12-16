@@ -58,12 +58,12 @@ namespace Sawczyn.EFDesigner.EFModel
                if (element.EntityFrameworkVersion == EFVersion.EFCore)
                {
                   // if we're not going to at least EFCore 5 we can only use the TablePerHierarchy strategy
-                  if (!element.IsEFCore5Plus && element.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
-                     element.InheritanceStrategy = CodeStrategy.TablePerHierarchy;
+                  if (!element.IsEFCore5Plus && element.InheritanceStrategyDefault != CodeStrategy.TablePerHierarchy)
+                     element.InheritanceStrategyDefault = CodeStrategy.TablePerHierarchy;
 
                   // if we're not going to at least EFCore 7 we can't use the TablePerConcreteType strategy. Devolve to TablePerType.
-                  else if (!element.IsEFCore7Plus && element.InheritanceStrategy == CodeStrategy.TablePerConcreteType)
-                     element.InheritanceStrategy = CodeStrategy.TablePerType;
+                  else if (!element.IsEFCore7Plus && element.InheritanceStrategyDefault == CodeStrategy.TablePerConcreteType)
+                     element.InheritanceStrategyDefault = CodeStrategy.TablePerType;
 
                   if (!element.IsEFCore5Plus)
                   {
@@ -85,12 +85,12 @@ namespace Sawczyn.EFDesigner.EFModel
                   case EFVersion.EFCore:
                      {
                         // if we're not going to at least EFCore 5 we can only use the TablePerHierarchy strategy
-                        if (!element.IsEFCore5Plus && element.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
-                           element.InheritanceStrategy = CodeStrategy.TablePerHierarchy;
+                        if (!element.IsEFCore5Plus && element.InheritanceStrategyDefault != CodeStrategy.TablePerHierarchy)
+                           element.InheritanceStrategyDefault = CodeStrategy.TablePerHierarchy;
 
                         // if we're not going to at least EFCore 7 we can't use the TablePerConcreteType strategy. Devolve to TablePerType.
-                        else if (!element.IsEFCore7Plus && element.InheritanceStrategy == CodeStrategy.TablePerConcreteType)
-                           element.InheritanceStrategy = CodeStrategy.TablePerType;
+                        else if (!element.IsEFCore7Plus && element.InheritanceStrategyDefault == CodeStrategy.TablePerConcreteType)
+                           element.InheritanceStrategyDefault = CodeStrategy.TablePerType;
 
                         if (!element.IsEFCore5Plus)
                         {
@@ -204,10 +204,10 @@ namespace Sawczyn.EFDesigner.EFModel
                if (element.EntityFrameworkVersion == EFVersion.EFCore)
                {
                   if (!element.IsEFCore5Plus)
-                     element.InheritanceStrategy = CodeStrategy.TablePerHierarchy;
+                     element.InheritanceStrategyDefault = CodeStrategy.TablePerHierarchy;
 
-                  if (!element.IsEFCore7Plus && element.InheritanceStrategy == CodeStrategy.TablePerConcreteType)
-                     element.InheritanceStrategy = CodeStrategy.TablePerType;
+                  if (!element.IsEFCore7Plus && element.InheritanceStrategyDefault == CodeStrategy.TablePerConcreteType)
+                     element.InheritanceStrategyDefault = CodeStrategy.TablePerType;
                }
 
                break;

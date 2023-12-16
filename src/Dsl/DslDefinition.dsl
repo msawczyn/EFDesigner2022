@@ -115,7 +115,7 @@
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
         </DomainProperty>
-        <DomainProperty Id="3ea27de3-f83c-44d8-bba5-c1886f65b182" Description="How tables will be created and used to handle inheritance" Name="InheritanceStrategy" DisplayName="Inheritance Strategy" DefaultValue="TablePerHierarchy" Category="Code Generation">
+        <DomainProperty Id="3ea27de3-f83c-44d8-bba5-c1886f65b182" Description="How tables will be created and used to handle inheritance" Name="InheritanceStrategyDefault" DisplayName="Inheritance Strategy" DefaultValue="TablePerHierarchy" Category="Code Generation">
           <Attributes>
             <ClrAttribute Name="System.ComponentModel.TypeConverter">
               <Parameters>
@@ -631,19 +631,12 @@
             <ExternalTypeMoniker Name="/System/String" />
           </Type>
         </DomainProperty>
-        <DomainProperty Id="9ff4f2f1-a842-48ff-82cf-d7e09d7d564b" Description="How tables will be created and used to handle inheritance" Name="InheritanceStrategy" DisplayName="Inheritance Strategy" DefaultValue="" Kind="CustomStorage" Category="Code Generation" IsBrowsable="false">
-          <Attributes>
-            <ClrAttribute Name="System.ComponentModel.TypeConverter">
-              <Parameters>
-                <AttributeParameter Value="typeof(CodeStrategyTypeConverter)" />
-              </Parameters>
-            </ClrAttribute>
-          </Attributes>
+        <DomainProperty Id="94eaf920-abf7-424c-a6e4-6b4f0e6cfc02" Description="Overrides inheritance strategy setting from the model" Name="InheritanceStrategy" DisplayName="Inheritance Strategy" DefaultValue="" Kind="CustomStorage" Category="Code Generation" IsBrowsable="false">
           <Type>
             <DomainEnumerationMoniker Name="CodeStrategy" />
           </Type>
         </DomainProperty>
-        <DomainProperty Id="d4e77677-ac29-46fb-9543-5702f3eed5cc" Description="If true, ModelClass.InheritanceStrategy tracks ModelRoot.InheritanceStrategy" Name="IsInheritanceStrategyTracking" DisplayName="Is Inheritance Strategy Tracking" DefaultValue="true" IsBrowsable="false">
+        <DomainProperty Id="c28f1c9d-614f-4883-b497-6f27dde49816" Description="If true, Model.InheritanceStrategyDefault" Name="IsInheritanceStrategyTracking" DisplayName="Is Inheritance Strategy Tracking" DefaultValue="true" IsBrowsable="false">
           <Type>
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
@@ -1943,6 +1936,15 @@
         <EnumerationLiteral Description="Generate as [Foreign Table]_[Key Column]" Name="TableUnderscoreColumn" Value="" />
       </Literals>
     </DomainEnumeration>
+    <DomainEnumeration Name="TypeAccessModifierExt1" Namespace="Sawczyn.EFDesigner.EFModel" Description="Description for Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1">
+      <Literals>
+        <EnumerationLiteral Description="No description available" Name="Internal" Value="3" />
+        <EnumerationLiteral Description="" Name="Private" Value="1" />
+        <EnumerationLiteral Description="No description available" Name="Protected" Value="2" />
+        <EnumerationLiteral Description="" Name="Public" Value="0" />
+        <EnumerationLiteral Description="Description for Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1.Default" Name="Default" Value="4" />
+      </Literals>
+    </DomainEnumeration>
   </Types>
   <Shapes>
     <CompartmentShape Id="8055f08f-3d3a-435f-8b47-7afcd0e051bd" Description="" Name="ClassShape" DisplayName="Class Shape" Namespace="Sawczyn.EFDesigner.EFModel" GeneratesDoubleDerived="true" FixedTooltipText="Class Shape" TextColor="White" ExposesTextColor="true" FillColor="0, 122, 204" InitialHeight="0.3" OutlineThickness="0.01" FillGradientMode="None" ExposesOutlineColorAsProperty="true" ExposesFillColorAsProperty="true" ExposesOutlineDashStyleAsProperty="true" ExposesOutlineThicknessAsProperty="true" Geometry="Rectangle">
@@ -2345,8 +2347,8 @@
           <XmlPropertyData XmlName="chopMethodChains">
             <DomainPropertyMoniker Name="ModelRoot/ChopMethodChains" />
           </XmlPropertyData>
-          <XmlPropertyData XmlName="inheritanceStrategy">
-            <DomainPropertyMoniker Name="ModelRoot/InheritanceStrategy" />
+          <XmlPropertyData XmlName="inheritanceStrategyDefault">
+            <DomainPropertyMoniker Name="ModelRoot/InheritanceStrategyDefault" />
           </XmlPropertyData>
           <XmlPropertyData XmlName="defaultCollectionClass">
             <DomainPropertyMoniker Name="ModelRoot/DefaultCollectionClass" />

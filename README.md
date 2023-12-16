@@ -80,8 +80,9 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
    - Fixes issue when generating code for properties that have a default enumeration value. Thanks to @equipatuequipo for [the pull request](https://github.com/msawczyn/EFDesigner2022/pull/72).
    - Association classes are back, but only for cases where each side of the many-to-many bidirectional association has a single identity property. 
    - Removed EFCore2 and EFCore3 parsers. Those EFCore versions have been obsolete for quite a while. If you need to use them, you can still use the 4.2.5 version of the extension.
-   - Constructors with required but transient associations no longer have those associations as parameters. If that constructor is needed, add it to the partial class file.
-   - Tightened up the concept of transient entities. We're now generating better code for these and the restriction that transient associations must be auto properties has been removed.
+   - Constructors with required-but-transient associations no longer have those associations as parameters. If that constructor is needed, add it to the partial class file.
+   - Entities now update their displays immediately when the Persistent flag is changed.
+   - Associations with transient, non-collection objects can be stored as JSON properties in EFCore7+ projects
 
 [4.2.5](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.5/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - Adds missing XML documentation for public and protected members

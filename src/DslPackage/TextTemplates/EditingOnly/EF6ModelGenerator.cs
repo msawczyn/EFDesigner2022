@@ -705,7 +705,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   segments.Add($"Ignore(t => t.{transient.Name})");
 
                // note: this must come before the 'ToTable' call or there's a runtime error
-               if ((modelRoot.InheritanceStrategy == CodeStrategy.TablePerConcreteType) && (modelClass.Superclass != null))
+               if ((modelRoot.InheritanceStrategyDefault == CodeStrategy.TablePerConcreteType) && (modelClass.Superclass != null))
                   segments.Add("Map(x => x.MapInheritedProperties())");
 
                if (modelClass.IsDatabaseView)
@@ -714,7 +714,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                {
                   if (classesWithTables.Contains(modelClass))
                   {
-                     if ((modelRoot.InheritanceStrategy != CodeStrategy.TablePerConcreteType) || !modelClass.IsAbstract)
+                     if ((modelRoot.InheritanceStrategyDefault != CodeStrategy.TablePerConcreteType) || !modelClass.IsAbstract)
                      {
                         segments.Add(string.IsNullOrEmpty(modelClass.DatabaseSchema) || (modelClass.DatabaseSchema == modelClass.ModelRoot.DatabaseSchema)
                                         ? $"ToTable(\"{modelClass.TableName}\")"

@@ -426,20 +426,20 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
-	      // InheritanceStrategy
+	      // InheritanceStrategyDefault
 	      if (!serializationContext.Result.Failed)
 	      {
-	         string attribInheritanceStrategy = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "inheritanceStrategy");
-	         if (attribInheritanceStrategy != null)
+	         string attribInheritanceStrategyDefault = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "inheritanceStrategyDefault");
+	         if (attribInheritanceStrategyDefault != null)
 	         {
-	            CodeStrategy valueOfInheritanceStrategy;
-	            if (DslModeling::SerializationUtilities.TryGetValue<CodeStrategy>(serializationContext, attribInheritanceStrategy, out valueOfInheritanceStrategy))
+	            CodeStrategy valueOfInheritanceStrategyDefault;
+	            if (DslModeling::SerializationUtilities.TryGetValue<CodeStrategy>(serializationContext, attribInheritanceStrategyDefault, out valueOfInheritanceStrategyDefault))
 	            {
-	               instanceOfModelRoot.InheritanceStrategy = valueOfInheritanceStrategy;
+	               instanceOfModelRoot.InheritanceStrategyDefault = valueOfInheritanceStrategyDefault;
 	            }
 	            else
 	            {   // Invalid property value, ignored.
-	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "inheritanceStrategy", typeof(CodeStrategy), attribInheritanceStrategy);
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "inheritanceStrategyDefault", typeof(CodeStrategy), attribInheritanceStrategyDefault);
 	            }
 	         }
 	      }
@@ -1902,16 +1902,16 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
-	      // InheritanceStrategy
+	      // InheritanceStrategyDefault
 	      if (!serializationContext.Result.Failed)
 	      {
-	         CodeStrategy propValue = instanceOfModelRoot.InheritanceStrategy;
+	         CodeStrategy propValue = instanceOfModelRoot.InheritanceStrategyDefault;
 	         string serializedPropValue = DslModeling::SerializationUtilities.GetString<CodeStrategy>(serializationContext, propValue);
 	         if (!serializationContext.Result.Failed)
 	         {
 	            if (serializationContext.WriteOptionalPropertiesWithDefaultValue || string.CompareOrdinal(serializedPropValue, "TablePerHierarchy") != 0)
 	            {   // No need to write the value out if it's the same as default value.
-	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "inheritanceStrategy", serializedPropValue);
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "inheritanceStrategyDefault", serializedPropValue);
 	            }
 	         }
 	      }

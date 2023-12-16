@@ -185,8 +185,8 @@
             <xsd:documentation>Will chop generated code method chains</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
-        <!-- Property: InheritanceStrategy -->
-        <xsd:attribute name="inheritanceStrategy" type="CodeStrategy" >
+        <!-- Property: InheritanceStrategyDefault -->
+        <xsd:attribute name="inheritanceStrategyDefault" type="CodeStrategy" >
           <xsd:annotation>
             <xsd:documentation>How tables will be created and used to handle inheritance</xsd:documentation>
           </xsd:annotation>
@@ -687,13 +687,13 @@
         <!-- Property: InheritanceStrategy -->
         <xsd:attribute name="inheritanceStrategy" type="CodeStrategy" >
           <xsd:annotation>
-            <xsd:documentation>How tables will be created and used to handle inheritance</xsd:documentation>
+            <xsd:documentation>Overrides inheritance strategy setting from the model</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
         <!-- Property: IsInheritanceStrategyTracking -->
         <xsd:attribute name="isInheritanceStrategyTracking" type="xsd:boolean" >
           <xsd:annotation>
-            <xsd:documentation>If true, ModelClass.InheritanceStrategy tracks ModelRoot.InheritanceStrategy</xsd:documentation>
+            <xsd:documentation>If true, Model.InheritanceStrategyDefault</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
       </xsd:extension>
@@ -2600,6 +2600,25 @@
           <xsd:documentation>Generate as [Foreign Table]_[Key Column]</xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <!-- Enum TypeAccessModifierExt1 -->
+  <xsd:simpleType name="TypeAccessModifierExt1">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Internal">
+        <xsd:annotation>
+          <xsd:documentation>No description available</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="Private"/>
+      <xsd:enumeration value="Protected">
+        <xsd:annotation>
+          <xsd:documentation>No description available</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="Public"/>
+      <xsd:enumeration value="Default"/>
     </xsd:restriction>
   </xsd:simpleType>
   

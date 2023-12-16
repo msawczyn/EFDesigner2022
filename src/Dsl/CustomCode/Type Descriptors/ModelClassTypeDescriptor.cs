@@ -200,7 +200,6 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                          new DisplayNameAttribute("Inheritance Strategy")
                                                                        , new DescriptionAttribute("Overrides default inheritance strategy")
                                                                        , new CategoryAttribute("Code Generation")
-                                                                       , new TypeConverterAttribute(typeof( CodeStrategyTypeConverter ))
                                                                       }));
             }
          }

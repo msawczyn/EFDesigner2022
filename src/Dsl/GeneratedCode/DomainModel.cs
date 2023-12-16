@@ -134,7 +134,7 @@ namespace Sawczyn.EFDesigner.EFModel
 	         new DomainMemberInfo(typeof(ModelRoot), "EntityFrameworkVersion", ModelRoot.EntityFrameworkVersionDomainPropertyId, typeof(ModelRoot.EntityFrameworkVersionPropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelRoot), "ConnectionStringName", ModelRoot.ConnectionStringNameDomainPropertyId, typeof(ModelRoot.ConnectionStringNamePropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelRoot), "ChopMethodChains", ModelRoot.ChopMethodChainsDomainPropertyId, typeof(ModelRoot.ChopMethodChainsPropertyHandler)),
-	         new DomainMemberInfo(typeof(ModelRoot), "InheritanceStrategy", ModelRoot.InheritanceStrategyDomainPropertyId, typeof(ModelRoot.InheritanceStrategyPropertyHandler)),
+	         new DomainMemberInfo(typeof(ModelRoot), "InheritanceStrategyDefault", ModelRoot.InheritanceStrategyDefaultDomainPropertyId, typeof(ModelRoot.InheritanceStrategyDefaultPropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelRoot), "DefaultCollectionClass", ModelRoot.DefaultCollectionClassDomainPropertyId, typeof(ModelRoot.DefaultCollectionClassPropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelRoot), "ProxyGenerationEnabled", ModelRoot.ProxyGenerationEnabledDomainPropertyId, typeof(ModelRoot.ProxyGenerationEnabledPropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelRoot), "TransformOnSave", ModelRoot.TransformOnSaveDomainPropertyId, typeof(ModelRoot.TransformOnSavePropertyHandler)),
@@ -1699,5 +1699,44 @@ namespace Sawczyn.EFDesigner.EFModel
 		/// </summary>
 		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ShadowKeyPattern/TableUnderscoreColumn.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		TableUnderscoreColumn,
+	}
+}
+namespace Sawczyn.EFDesigner.EFModel
+{
+	/// <summary>
+	/// DomainEnumeration: TypeAccessModifierExt1
+	/// Description for Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1
+	/// </summary>
+	[global::System.CLSCompliant(true)]
+	public enum TypeAccessModifierExt1
+	{
+		/// <summary>
+		/// Internal
+		/// No description available
+		/// </summary>
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Internal.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		Internal = 3,
+		/// <summary>
+		/// Private
+		/// </summary>
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Private.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		Private = 1,
+		/// <summary>
+		/// Protected
+		/// No description available
+		/// </summary>
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Protected.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		Protected = 2,
+		/// <summary>
+		/// Public
+		/// </summary>
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Public.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		Public = 0,
+		/// <summary>
+		/// Default
+		/// Description for Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1.Default
+		/// </summary>
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Default.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		Default = 4,
 	}
 }

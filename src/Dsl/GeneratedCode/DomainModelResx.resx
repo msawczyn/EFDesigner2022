@@ -325,17 +325,17 @@
     <value>Code Generation</value>
     <comment>Category for DomainProperty &apos;ChopMethodChains&apos; on DomainClass &apos;ModelRoot&apos;</comment>
   </data>
-  <data name="Sawczyn.EFDesigner.EFModel.ModelRoot/InheritanceStrategy.Description" xml:space="preserve">
+  <data name="Sawczyn.EFDesigner.EFModel.ModelRoot/InheritanceStrategyDefault.Description" xml:space="preserve">
     <value>How tables will be created and used to handle inheritance</value>
-    <comment>Description for DomainProperty &apos;InheritanceStrategy&apos; on DomainClass &apos;ModelRoot&apos;</comment>
+    <comment>Description for DomainProperty &apos;InheritanceStrategyDefault&apos; on DomainClass &apos;ModelRoot&apos;</comment>
   </data>
-  <data name="Sawczyn.EFDesigner.EFModel.ModelRoot/InheritanceStrategy.DisplayName" xml:space="preserve">
+  <data name="Sawczyn.EFDesigner.EFModel.ModelRoot/InheritanceStrategyDefault.DisplayName" xml:space="preserve">
     <value>Inheritance Strategy</value>
-    <comment>DisplayName for DomainProperty &apos;InheritanceStrategy&apos; on DomainClass &apos;ModelRoot&apos;</comment>
+    <comment>DisplayName for DomainProperty &apos;InheritanceStrategyDefault&apos; on DomainClass &apos;ModelRoot&apos;</comment>
   </data>
-  <data name="Sawczyn.EFDesigner.EFModel.ModelRoot/InheritanceStrategy.Category" xml:space="preserve">
+  <data name="Sawczyn.EFDesigner.EFModel.ModelRoot/InheritanceStrategyDefault.Category" xml:space="preserve">
     <value>Code Generation</value>
-    <comment>Category for DomainProperty &apos;InheritanceStrategy&apos; on DomainClass &apos;ModelRoot&apos;</comment>
+    <comment>Category for DomainProperty &apos;InheritanceStrategyDefault&apos; on DomainClass &apos;ModelRoot&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.ModelRoot/DefaultCollectionClass.Description" xml:space="preserve">
     <value>The type of container generated to represent associations if not overridden. Must implement ICollection&lt;T&gt;.</value>
@@ -1170,7 +1170,7 @@
     <comment>DisplayName for DomainProperty &apos;ExplorerTooltip&apos; on DomainClass &apos;ModelClass&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.ModelClass/InheritanceStrategy.Description" xml:space="preserve">
-    <value>How tables will be created and used to handle inheritance</value>
+    <value>Overrides inheritance strategy setting from the model</value>
     <comment>Description for DomainProperty &apos;InheritanceStrategy&apos; on DomainClass &apos;ModelClass&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.ModelClass/InheritanceStrategy.DisplayName" xml:space="preserve">
@@ -1182,7 +1182,7 @@
     <comment>Category for DomainProperty &apos;InheritanceStrategy&apos; on DomainClass &apos;ModelClass&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.ModelClass/IsInheritanceStrategyTracking.Description" xml:space="preserve">
-    <value>If true, ModelClass.InheritanceStrategy tracks ModelRoot.InheritanceStrategy</value>
+    <value>If true, Model.InheritanceStrategyDefault</value>
     <comment>Description for DomainProperty &apos;IsInheritanceStrategyTracking&apos; on DomainClass &apos;ModelClass&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.ModelClass/IsInheritanceStrategyTracking.DisplayName" xml:space="preserve">
@@ -3748,6 +3748,46 @@
   <data name="Sawczyn.EFDesigner.EFModel.ShadowKeyPattern/TableUnderscoreColumn.Description" xml:space="preserve">
     <value>Generate as [Foreign Table]_[Key Column]</value>
     <comment>Description for EnumerationLiteral &apos;TableUnderscoreColumn&apos; on DomainEnumeration &apos;ShadowKeyPattern&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Internal.DisplayName" xml:space="preserve">
+    <value>Internal</value>
+    <comment>Display name for EnumerationLiteral &apos;Internal&apos; on DomainEnumeration &apos;TypeAccessModifierExt1&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Internal.Description" xml:space="preserve">
+    <value>No description available</value>
+    <comment>Description for EnumerationLiteral &apos;Internal&apos; on DomainEnumeration &apos;TypeAccessModifierExt1&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Private.DisplayName" xml:space="preserve">
+    <value>Private</value>
+    <comment>Display name for EnumerationLiteral &apos;Private&apos; on DomainEnumeration &apos;TypeAccessModifierExt1&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Private.Description" xml:space="preserve">
+    <value></value>
+    <comment>Description for EnumerationLiteral &apos;Private&apos; on DomainEnumeration &apos;TypeAccessModifierExt1&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Protected.DisplayName" xml:space="preserve">
+    <value>Protected</value>
+    <comment>Display name for EnumerationLiteral &apos;Protected&apos; on DomainEnumeration &apos;TypeAccessModifierExt1&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Protected.Description" xml:space="preserve">
+    <value>No description available</value>
+    <comment>Description for EnumerationLiteral &apos;Protected&apos; on DomainEnumeration &apos;TypeAccessModifierExt1&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Public.DisplayName" xml:space="preserve">
+    <value>Public</value>
+    <comment>Display name for EnumerationLiteral &apos;Public&apos; on DomainEnumeration &apos;TypeAccessModifierExt1&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Public.Description" xml:space="preserve">
+    <value></value>
+    <comment>Description for EnumerationLiteral &apos;Public&apos; on DomainEnumeration &apos;TypeAccessModifierExt1&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Default.DisplayName" xml:space="preserve">
+    <value>Default</value>
+    <comment>Display name for EnumerationLiteral &apos;Default&apos; on DomainEnumeration &apos;TypeAccessModifierExt1&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1/Default.Description" xml:space="preserve">
+    <value>Description for Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1.Default</value>
+    <comment>Description for EnumerationLiteral &apos;Default&apos; on DomainEnumeration &apos;TypeAccessModifierExt1&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.ClassShape.Description" xml:space="preserve">
     <value></value>

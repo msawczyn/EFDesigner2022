@@ -11,7 +11,10 @@
                Foo = "Foo",
                TransientDetailAsJson = new TransientDetailAsJson
                {
-                  Zoom = "Zoom"
+                  Zoom = "Zoom",
+                  Zoom1 = "Zoom 1",
+                  Zoom2 = "Zoom 2",
+                  Zoom3 = "Zoom 3"
                }
             };
             context.Masters.Add(master);

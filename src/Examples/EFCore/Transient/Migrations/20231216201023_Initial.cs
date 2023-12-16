@@ -24,7 +24,6 @@ namespace Transient_Owned.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StringCollection = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Foo = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     TransientDetailAsJson = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
