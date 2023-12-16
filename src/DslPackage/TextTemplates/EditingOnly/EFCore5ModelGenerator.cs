@@ -753,7 +753,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             if (modelRoot.IsEFCore7Plus 
              && association.IsJSON 
              && association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany 
-             && association.Target.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
+             && association.Principal?.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
                segment += $"p{depth}.ToJson(); ";
             else if (!string.IsNullOrEmpty(modelClass.TableName) && modelClass.TableName != association.Source.TableName)
                segment += $"p{depth}.ToTable(\"{modelClass.TableName}\"); ";

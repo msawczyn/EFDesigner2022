@@ -10,6 +10,10 @@
       <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
       <PublishSingleFile>true</PublishSingleFile>
       <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <Trimming>none</Trimming>
    </PropertyGroup>
 
    <PropertyGroup Condition="'$(Configuration)'=='Debug'">

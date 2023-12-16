@@ -90,8 +90,8 @@ namespace Transient
          modelBuilder.Entity<global::Transient.Master>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();
          modelBuilder.Entity<global::Transient.Master>().Property(t => t.Foo).HasMaxLength(100);
          modelBuilder.Entity<global::Transient.Master>().HasMany<global::Transient.PersistentDetail>(p => p.PersistentDetails).WithOne().HasForeignKey("MasterPersistentDetailsId");
-         modelBuilder.Entity<global::Transient.Master>().OwnsMany(p => p.TransientDetails, p0 => { p0.WithOwner(); p0.ToTable("TransientDetails"); p0.HasKey(p0x => p0x.Id); p0.Property(t => t.Baz).HasField("_baz").UsePropertyAccessMode(PropertyAccessMode.Field); p0.Property(t => t.Id).ValueGeneratedOnAdd().IsRequired(); });
-         modelBuilder.Entity<global::Transient.Master>().OwnsOne(p => p.TransientDetailAsJson, p0 => { p0.WithOwner(); });
+         modelBuilder.Entity<global::Transient.Master>().OwnsMany(p => p.TransientDetails, p0 => { p0.WithOwner(); p0.ToTable("TransientDetails"); p0.HasKey(p0x => p0x.Id); p0.Property(t => t.Id).ValueGeneratedOnAdd().IsRequired(); p0.Property(t => t.Baz).HasField("_baz").UsePropertyAccessMode(PropertyAccessMode.Field).HasDefaultValue("Empty").IsRequired(); });
+         modelBuilder.Entity<global::Transient.Master>().OwnsOne(p => p.TransientDetailAsJson, p0 => { p0.WithOwner(); p0.ToJson(); p0.HasKey(p0x => p0x.Id); p0.Property(t => t.Id).ValueGeneratedOnAdd().IsRequired(); p0.Property(t => t.Zoom).IsRequired(); p0.Property(t => t.Zoom1).IsRequired(); p0.Property(t => t.Zoom2).IsRequired(); p0.Property(t => t.Zoom3).IsRequired(); });
 
          modelBuilder.Entity<global::Transient.PersistentDetail>().UseTpcMappingStrategy().ToTable("PersistentDetails").HasKey(t => t.Id);
          modelBuilder.Entity<global::Transient.PersistentDetail>().Property(t => t.Id).ValueGeneratedOnAdd().IsRequired();

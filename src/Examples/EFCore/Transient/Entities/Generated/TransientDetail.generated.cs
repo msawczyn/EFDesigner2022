@@ -33,15 +33,21 @@ namespace Transient
       /// </summary>
       public TransientDetail()
       {
+         _baz = "Empty";
+
          Init();
       }
 
       /// <summary>
       /// Public constructor with required data
       /// </summary>
+      /// <param name="baz"></param>
       /// <param name="_master0"></param>
-      public TransientDetail(global::Transient.Master _master0)
+      public TransientDetail(global::Transient.Master _master0, string baz = "Empty")
       {
+         if (string.IsNullOrEmpty(baz)) throw new ArgumentNullException(nameof(baz));
+         this._baz = baz;
+
          if (_master0 == null) throw new ArgumentNullException(nameof(_master0));
          _master0.TransientDetails.Add(this);
 
@@ -51,10 +57,11 @@ namespace Transient
       /// <summary>
       /// Static create function (for use in LINQ queries, etc.)
       /// </summary>
+      /// <param name="baz"></param>
       /// <param name="_master0"></param>
-      public static TransientDetail Create(global::Transient.Master _master0)
+      public static TransientDetail Create(global::Transient.Master _master0, string baz = "Empty")
       {
-         return new TransientDetail(_master0);
+         return new TransientDetail(_master0, baz);
       }
 
       /*************************************************************************
@@ -74,6 +81,10 @@ namespace Transient
       /// </summary>
       partial void GetBaz(ref string result);
 
+      /// <summary>
+      /// Required, Default value = &quot;Empty&quot;
+      /// </summary>
+      [Required]
       public string Baz
       {
          get

@@ -1495,7 +1495,6 @@ namespace Sawczyn.EFDesigner.EFModel
 		/// Gets or sets the value of InheritanceStrategy domain property.
 		/// How tables will be created and used to handle inheritance
 		/// </summary>
-		[System.ComponentModel.ReadOnly(false)]
 		[System.ComponentModel.TypeConverter(typeof(CodeStrategyTypeConverter))]
 		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelRoot/InheritanceStrategy.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelRoot/InheritanceStrategy.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
@@ -8230,7 +8229,6 @@ namespace Sawczyn.EFDesigner.EFModel
 		/// Gets or sets the value of InheritanceStrategy domain property.
 		/// How tables will be created and used to handle inheritance
 		/// </summary>
-		[System.ComponentModel.ReadOnly(false)]
 		[System.ComponentModel.TypeConverter(typeof(CodeStrategyTypeConverter))]
 		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/InheritanceStrategy.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelClass/InheritanceStrategy.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]

@@ -95,6 +95,26 @@ namespace Sawczyn.EFDesigner.EFModel
                      break;
                   }
 
+               case "IsJSON":
+                  {
+                     ModelAttribute[] attributesWithInitialValues = element.Dependent.AllAttributes.Where(a => !string.IsNullOrEmpty(a.InitialValue)).ToArray();
+                     if (element.IsJSON && attributesWithInitialValues.Length > 0)
+                     {
+                        if (BooleanQuestionDisplay.Show(element.Store
+                                                      , $"{element.Dependent.Name} has {attributesWithInitialValues.Length} attributes with initial values specified. "
+                                                      + "This is not allowed for JSON storage. "
+                                                      + "The initial values will be cleared. Are you sure?") == true)
+                        {
+                           foreach (ModelAttribute attribute in attributesWithInitialValues)
+                              attribute.InitialValue = null;
+                        }
+                        else
+                           element.IsJSON = false;
+                     }
+
+                     break;
+                  }
+
                case "Persistent":
                   {
                      if (element.Source.Persistent ^ element.Target.Persistent)
@@ -262,13 +282,6 @@ namespace Sawczyn.EFDesigner.EFModel
                      if (element.TargetRole == EndpointRole.NotApplicable)
                         element.TargetRole = EndpointRole.NotSet;
 
-                     //if (element.Target.IsDependentType && (element.SourceRole != EndpointRole.Principal || element.TargetRole != EndpointRole.Dependent))
-                     //{
-                     //   element.SourceRole = EndpointRole.Principal;
-                     //   element.TargetRole = EndpointRole.Dependent;
-                     //   doForeignKeyFixup = true;
-                     //}
-                     //else 
                      if (!element.SetEndpointRoles())
                      {
                         if ((element.TargetRole == EndpointRole.Dependent) && (element.SourceRole != EndpointRole.Principal))

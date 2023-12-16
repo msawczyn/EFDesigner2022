@@ -12,7 +12,7 @@ using Transient;
 namespace Transient_Owned.Migrations
 {
     [DbContext(typeof(TransientContext))]
-    [Migration("20231214114021_Initial")]
+    [Migration("20231215112203_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -42,6 +42,9 @@ namespace Transient_Owned.Migrations
                     b.Property<string>("Foo")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("StringCollection")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -82,11 +85,26 @@ namespace Transient_Owned.Migrations
                                 .HasColumnType("bigint");
 
                             b1.Property<string>("Zoom")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Zoom1")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Zoom2")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Zoom3")
+                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
                             b1.HasKey("Id");
 
                             b1.ToTable("Masters", "dbo");
+
+                            b1.ToJson("TransientDetailAsJson");
 
                             b1.WithOwner()
                                 .HasForeignKey("Id");
@@ -101,7 +119,10 @@ namespace Transient_Owned.Migrations
                             SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<long>("Id"));
 
                             b1.Property<string>("Baz")
-                                .HasColumnType("nvarchar(max)");
+                                .IsRequired()
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("nvarchar(max)")
+                                .HasDefaultValue("Empty");
 
                             b1.Property<long?>("MasterId")
                                 .HasColumnType("bigint");

@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
 
 using EnvDTE;
@@ -23,6 +24,7 @@ using Microsoft.VisualStudio.Modeling.Validation;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.TextTemplating.VSHost;
 
 using Sawczyn.EFDesigner.EFModel.Extensions;
 
@@ -157,20 +159,20 @@ namespace Sawczyn.EFDesigner.EFModel
          GenerateCode(null);
       }
 
-      internal static void GenerateCode(string filepath)
+      internal static void GenerateCode(string modelFilePath)
       {
          ThreadHelper.ThrowIfNotOnUIThread();
-         ProjectItem modelProjectItem = Dte2.Solution.FindProjectItem(filepath ?? Dte2.ActiveDocument.FullName);
+         ProjectItem modelProjectItem = Dte2.Solution.FindProjectItem(modelFilePath ?? Dte2.ActiveDocument.FullName);
 
          if (Guid.Parse(modelProjectItem.Kind) == VSConstants.GUID_ItemType_PhysicalFile)
             modelProjectItem.Save();
 
-         string templateFilename = Path.ChangeExtension(filepath ?? Dte2.ActiveDocument.FullName, "tt");
+         string templateFilename = Path.ChangeExtension(modelFilePath ?? Dte2.ActiveDocument.FullName, "tt");
 
          ProjectItem templateProjectItem = Dte2.Solution.FindProjectItem(templateFilename);
-#pragma warning disable IDE0019 // Use pattern matching
+     
+         // ReSharper disable once UseNegatedPatternMatching
          VSProjectItem templateVsProjectItem = templateProjectItem?.Object as VSProjectItem;
-#pragma warning restore IDE0019 // Use pattern matching
 
          if (templateVsProjectItem == null)
             Messages.AddError($"Tried to generate code but couldn't find {templateFilename} in the solution.");
@@ -179,12 +181,29 @@ namespace Sawczyn.EFDesigner.EFModel
             try
             {
                Dte.StatusBar.Text = $"Generating code from {templateFilename}";
+
                templateVsProjectItem.RunCustomTool();
+
+               //using (ServiceProvider serviceProvider = new ServiceProvider(Dte as Microsoft.VisualStudio.OLE.Interop.IServiceProvider))
+               //{
+               //   ITextTemplating t4 = serviceProvider.GetService(typeof( STextTemplating )) as ITextTemplating;
+               //   T4Callback cb = new T4Callback();
+
+               //   //string classCode = t4.PreprocessTemplate(templateFilename, File.ReadAllText(templateFilename), cb, "MyClass", "MyNamespace", out string[] references);
+               //   //string outputFile = @"C:\temp\output.cs";
+               //   //File.WriteAllText(outputFile, classCode);
+
+               //   string processResult = t4.ProcessTemplate(templateFilename, File.ReadAllText(templateFilename), cb);
+
+               //   foreach (string errorMessage in cb.errorMessages)
+               //      Messages.AddError(errorMessage);
+               //}
+
                Dte.StatusBar.Text = $"Finished generating code from {templateFilename}";
             }
             catch (COMException)
             {
-               string message = $"Encountered an error generating code from {templateFilename}. Please transform T4 template manually.";
+               string message = $"Encountered an error generating code from {templateFilename}. Please transform T4 template manually by right-clicking {Path.GetFileName(templateFilename)} and selecting 'Run Custom Tool'.";
                Dte.StatusBar.Text = message;
                Messages.AddError(message);
             }
@@ -638,4 +657,27 @@ namespace Sawczyn.EFDesigner.EFModel
          EFModelDiagram.UpdateColors(Store, diagramColors);
       }
    }
+
+   class T4Callback : ITextTemplatingCallback
+   {
+      public List<string> errorMessages = new List<string>();
+      public string fileExtension = ".txt";
+      public Encoding outputEncoding = Encoding.UTF8;
+
+      public void ErrorCallback(bool warning, string message, int line, int column)
+      {
+         errorMessages.Add(message);
+      }
+
+      public void SetFileExtension(string extension)
+      {
+         fileExtension = extension;
+      }
+
+      public void SetOutputEncoding(Encoding encoding, bool fromOutputDirective)
+      {
+         outputEncoding = encoding;
+      }
+   }
+
 }

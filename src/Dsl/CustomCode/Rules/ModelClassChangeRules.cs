@@ -125,6 +125,20 @@ namespace Sawczyn.EFDesigner.EFModel
                   break;
                }
 
+            case "InheritanceStrategy":
+               {
+                  // the same inheritance strategy must be used for all classes in a hierarchy
+                  ModelClass superclass = element.Superclass;
+
+                  if (superclass != null)
+                     superclass.InheritanceStrategy = element.InheritanceStrategy;
+
+                  foreach (ModelClass subclass in element.Subclasses)
+                     subclass.InheritanceStrategy = element.InheritanceStrategy;
+
+                  break;
+               }
+
             case "IsAbstract":
                {
                   if (element.IsAbstract)

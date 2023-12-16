@@ -24,7 +24,6 @@ using System.Runtime.CompilerServices;
 
 namespace Transient
 {
-   [Microsoft.EntityFrameworkCore.Keyless]
    public partial class TransientDetailAsJson
    {
       partial void Init();
@@ -40,9 +39,25 @@ namespace Transient
       /// <summary>
       /// Public constructor with required data
       /// </summary>
+      /// <param name="zoom"></param>
+      /// <param name="zoom1"></param>
+      /// <param name="zoom2"></param>
+      /// <param name="zoom3"></param>
       /// <param name="_master0"></param>
-      public TransientDetailAsJson(global::Transient.Master _master0)
+      public TransientDetailAsJson(string zoom, string zoom1, string zoom2, string zoom3, global::Transient.Master _master0)
       {
+         if (string.IsNullOrEmpty(zoom)) throw new ArgumentNullException(nameof(zoom));
+         this.Zoom = zoom;
+
+         if (string.IsNullOrEmpty(zoom1)) throw new ArgumentNullException(nameof(zoom1));
+         this.Zoom1 = zoom1;
+
+         if (string.IsNullOrEmpty(zoom2)) throw new ArgumentNullException(nameof(zoom2));
+         this.Zoom2 = zoom2;
+
+         if (string.IsNullOrEmpty(zoom3)) throw new ArgumentNullException(nameof(zoom3));
+         this.Zoom3 = zoom3;
+
          if (_master0 == null) throw new ArgumentNullException(nameof(_master0));
          _master0.TransientDetailAsJson = this;
 
@@ -52,17 +67,52 @@ namespace Transient
       /// <summary>
       /// Static create function (for use in LINQ queries, etc.)
       /// </summary>
+      /// <param name="zoom"></param>
+      /// <param name="zoom1"></param>
+      /// <param name="zoom2"></param>
+      /// <param name="zoom3"></param>
       /// <param name="_master0"></param>
-      public static TransientDetailAsJson Create(global::Transient.Master _master0)
+      public static TransientDetailAsJson Create(string zoom, string zoom1, string zoom2, string zoom3, global::Transient.Master _master0)
       {
-         return new TransientDetailAsJson(_master0);
+         return new TransientDetailAsJson(zoom, zoom1, zoom2, zoom3, _master0);
       }
 
       /*************************************************************************
        * Properties
        *************************************************************************/
 
+      /// <summary>
+      /// Identity, Indexed, Required
+      /// Unique identifier
+      /// </summary>
+      [Key]
+      [Required]
+      [System.ComponentModel.Description("Unique identifier")]
+      public long Id { get; set; }
+
+      /// <summary>
+      /// Required
+      /// </summary>
+      [Required]
       public string Zoom { get; set; }
+
+      /// <summary>
+      /// Required
+      /// </summary>
+      [Required]
+      public string Zoom1 { get; set; }
+
+      /// <summary>
+      /// Required
+      /// </summary>
+      [Required]
+      public string Zoom2 { get; set; }
+
+      /// <summary>
+      /// Required
+      /// </summary>
+      [Required]
+      public string Zoom3 { get; set; }
 
       /*************************************************************************
        * Navigation properties

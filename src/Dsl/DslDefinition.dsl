@@ -117,11 +117,6 @@
         </DomainProperty>
         <DomainProperty Id="3ea27de3-f83c-44d8-bba5-c1886f65b182" Description="How tables will be created and used to handle inheritance" Name="InheritanceStrategy" DisplayName="Inheritance Strategy" DefaultValue="TablePerHierarchy" Category="Code Generation">
           <Attributes>
-            <ClrAttribute Name="System.ComponentModel.ReadOnly">
-              <Parameters>
-                <AttributeParameter Value="false" />
-              </Parameters>
-            </ClrAttribute>
             <ClrAttribute Name="System.ComponentModel.TypeConverter">
               <Parameters>
                 <AttributeParameter Value="typeof(CodeStrategyTypeConverter)" />
@@ -638,11 +633,6 @@
         </DomainProperty>
         <DomainProperty Id="9ff4f2f1-a842-48ff-82cf-d7e09d7d564b" Description="How tables will be created and used to handle inheritance" Name="InheritanceStrategy" DisplayName="Inheritance Strategy" DefaultValue="" Kind="CustomStorage" Category="Code Generation" IsBrowsable="false">
           <Attributes>
-            <ClrAttribute Name="System.ComponentModel.ReadOnly">
-              <Parameters>
-                <AttributeParameter Value="false" />
-              </Parameters>
-            </ClrAttribute>
             <ClrAttribute Name="System.ComponentModel.TypeConverter">
               <Parameters>
                 <AttributeParameter Value="typeof(CodeStrategyTypeConverter)" />

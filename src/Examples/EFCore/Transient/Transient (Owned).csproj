@@ -19,14 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="TransientContext.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>TransientContext.tt</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Context\Generated\" />
     <Folder Include="Entities\CustomCode\" />
     <Folder Include="Entities\Generated\" />

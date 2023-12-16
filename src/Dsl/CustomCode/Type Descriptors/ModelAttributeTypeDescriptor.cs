@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 
 using Microsoft.VisualStudio.Modeling;
 using Microsoft.VisualStudio.Modeling.Design;
@@ -24,6 +25,15 @@ namespace Sawczyn.EFDesigner.EFModel
             storeDomainDataDirectory = modelAttribute.Store.DomainDataDirectory;
             ModelClass parentModelClass = modelAttribute.ModelClass;
             ModelRoot modelRoot = parentModelClass.ModelRoot;
+
+            // If an entity is stored as JSON, its properties can't have initial values
+            bool isJsonSomewhere = modelAttribute.Store
+                                                 .ElementDirectory
+                                                 .FindElements<Association>()
+                                                 .Any(a => a.IsJSON && a.Dependent == parentModelClass);
+
+            if (isJsonSomewhere)
+               propertyDescriptors.Remove("InitialValue");
 
             // keyless classes don't get identities
             if (parentModelClass.IsQueryType || parentModelClass.IsDatabaseView)

@@ -35,56 +35,13 @@ namespace Sawczyn.EFDesigner.EFModel
 
 
       /// <summary>
-      /// Generates code based on the provided entity container file path.
+      /// Generates code based on the provided model file path.
       /// </summary>
-      /// <param name="entityContainerFilepath">The file path of the entity container.</param>
-      public static void GenerateCode(string entityContainerFilepath)
+      /// <param name="modelFilepath">The file path of the efmodel file.</param>
+      public static void GenerateCode(string modelFilepath)
       {
          ThreadHelper.ThrowIfNotOnUIThread();
-         DTE Dte = Package.GetGlobalService(typeof(DTE)) as DTE;
-         DTE2 Dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2;
-
-         if (entityContainerFilepath == null)
-            throw new ArgumentNullException(nameof(entityContainerFilepath));
-
-         if (!entityContainerFilepath.EndsWith(EFModelerFileNameExtension))
-            throw new ArgumentOutOfRangeException(nameof(entityContainerFilepath));
-
-         ProjectItem modelProjectItem = Dte2.Solution.FindProjectItem(entityContainerFilepath);
-
-         // Save file
-         if ((Guid.Parse(modelProjectItem.Kind) == VSConstants.GUID_ItemType_PhysicalFile) && !modelProjectItem.Saved)
-         {
-            try
-            {
-               modelProjectItem.Save();
-            }
-            catch (Exception)
-            {
-               throw new Exception($"Save failed for {modelProjectItem.Name}");
-            }
-         }
-
-         // TODO - clean up constant string
-         string templateFilename = Path.ChangeExtension(entityContainerFilepath, TextTransformationFileExtension);
-
-         ProjectItem templateProjectItem = Dte2.Solution.FindProjectItem(templateFilename);
-
-         VSProjectItem templateVsProjectItem = templateProjectItem?.Object as VSProjectItem ?? throw new Exception($"Tried to generate code but couldn't find {templateFilename} in the solution.");
-         try
-         {
-            Dte.StatusBar.Text = $"Generating code from {templateFilename}";
-            templateVsProjectItem.RunCustomTool();
-            Dte.StatusBar.Text = $"Finished generating code from {templateFilename}";
-         }
-         catch (COMException)
-         {
-            string message = $"Encountered an error generating code from {templateFilename}. Please transform T4 template manually.";
-            Dte.StatusBar.Text = message;
-
-            // TODO - place messages in output window or on PCML UI
-            throw new Exception(message);
-         }
+         EFModelDocData.GenerateCode(modelFilepath);
       }
 
       /// <summary>

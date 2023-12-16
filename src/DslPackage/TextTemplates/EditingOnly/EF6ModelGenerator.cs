@@ -573,25 +573,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
          private void WriteDbContext()
          {
-            ModelClass[] classesWithTables = null;
-
-            switch (modelRoot.InheritanceStrategy)
-            {
-               case CodeStrategy.TablePerType:
-                  classesWithTables = modelRoot.Classes.Where(mc => !mc.IsDependentType && mc.GenerateCode).OrderBy(x => x.Name).ToArray();
-
-                  break;
-
-               case CodeStrategy.TablePerConcreteType:
-                  classesWithTables = modelRoot.Classes.Where(mc => !mc.IsDependentType && !mc.IsAbstract && mc.GenerateCode).OrderBy(x => x.Name).ToArray();
-
-                  break;
-
-               case CodeStrategy.TablePerHierarchy:
-                  classesWithTables = modelRoot.Classes.Where(mc => !mc.IsDependentType && (mc.Superclass == null) && mc.GenerateCode).OrderBy(x => x.Name).ToArray();
-
-                  break;
-            }
+            ModelClass[] classesWithTables =
+               modelRoot.Classes.Where(mc => !mc.IsDependentType && mc.GenerateCode && mc.InheritanceStrategy == CodeStrategy.TablePerType)
+                        .Union(modelRoot.Classes.Where(mc => !mc.IsDependentType && !mc.IsAbstract && mc.GenerateCode && mc.InheritanceStrategy == CodeStrategy.TablePerConcreteType))
+                        .Union(modelRoot.Classes.Where(mc => !mc.IsDependentType && (mc.Superclass == null) && mc.GenerateCode && mc.InheritanceStrategy == CodeStrategy.TablePerHierarchy))
+                        .OrderBy(x => x.Name)
+                        .ToArray();
 
             Output("using System;");
             Output("using System.Collections.Generic;");

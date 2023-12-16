@@ -10,6 +10,10 @@
       <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
       <PublishSingleFile>true</PublishSingleFile>
       <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <Trimming>none</Trimming>
    </PropertyGroup>
 
    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -34,6 +38,14 @@
 
    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0-windows|AnyCPU'">
      <NoWarn>1701;1702;NETSDK1138</NoWarn>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+     <NoWarn>1701;1702;NETSDK1201</NoWarn>
+   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+     <NoWarn>1701;1702;NETSDK1201</NoWarn>
    </PropertyGroup>
 
    <ItemGroup>

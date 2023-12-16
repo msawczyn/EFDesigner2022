@@ -24,8 +24,9 @@ namespace Transient_Owned.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    StringCollection = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Foo = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    TransientDetailAsJson_Zoom = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    TransientDetailAsJson = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -59,7 +60,7 @@ namespace Transient_Owned.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Baz = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Baz = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "Empty"),
                     MasterId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>

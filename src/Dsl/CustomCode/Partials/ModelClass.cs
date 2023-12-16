@@ -1375,38 +1375,42 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private CodeStrategy inheritanceStrategyStorage;
 
-      internal CodeStrategy DefalultInheritanceStrategy => ModelRoot?.InheritanceStrategy ?? CodeStrategy.TablePerHierarchy;
+      internal CodeStrategy DefaultInheritanceStrategy => ModelRoot?.InheritanceStrategy ?? CodeStrategy.TablePerHierarchy;
 
-      public CodeStrategy GetInheritanceStrategyValue()
+      /// <summary>
+      ///   The inheritance strategy for this entity, taking into account the model's default strategy and any override defined in this class
+      /// </summary>
+      /// <returns></returns>
+      private CodeStrategy GetInheritanceStrategyValue()
       {
          if (!this.IsLoading() && IsInheritanceStrategyTracking)
          {
             try
             {
-               return ModelRoot?.InheritanceStrategy ?? DefalultInheritanceStrategy;
+               return ModelRoot?.InheritanceStrategy ?? DefaultInheritanceStrategy;
             }
             catch (NullReferenceException)
             {
-               return DefalultInheritanceStrategy;
+               return DefaultInheritanceStrategy;
             }
             catch (Exception e)
             {
                if (CriticalException.IsCriticalException(e))
                   throw;
 
-               return DefalultInheritanceStrategy;
+               return DefaultInheritanceStrategy;
             }
          }
 
          return inheritanceStrategyStorage;
       }
 
-      public void SetInheritanceStrategyValue(CodeStrategy value)
+      private void SetInheritanceStrategyValue(CodeStrategy value)
       {
          inheritanceStrategyStorage = value;
 
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
-            IsInheritanceStrategyTracking = (inheritanceStrategyStorage == (ModelRoot?.InheritanceStrategy ?? DefalultInheritanceStrategy));
+            IsInheritanceStrategyTracking = (inheritanceStrategyStorage == (ModelRoot?.InheritanceStrategy ?? DefaultInheritanceStrategy));
       }
 
       internal sealed partial class IsInheritanceStrategyTrackingPropertyHandler

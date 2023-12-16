@@ -327,18 +327,35 @@ namespace Sawczyn.EFDesigner.EFModel
                                                           "String"
                                                        });
 
-            if (IsEFCore6Plus)
-            {
-               validTypes.Add("DateOnly");
-               validTypes.Add("TimeOnly");
-            }
-
             if (IsEFCore5Plus)
             {
                validTypes.Add("System.Net.IPAddress");
                validTypes.Add("System.Net.NetworkInformation.PhysicalAddress");
             }
 
+            if (IsEFCore6Plus)
+            {
+               validTypes.Add("DateOnly");
+               validTypes.Add("TimeOnly");
+            }
+
+            if (IsEFCore8Plus)
+            {
+               validTypes.Add("Boolean[]");
+               validTypes.Add("DateTime[]");
+               validTypes.Add("Decimal[]");
+               validTypes.Add("Double[]");
+               validTypes.Add("Guid[]");
+               validTypes.Add("Int16[]");
+               validTypes.Add("Int32[]");
+               validTypes.Add("Int64[]");
+               validTypes.Add("Single[]");
+               validTypes.Add("String[]");
+               validTypes.Add("DateOnly[]");
+               validTypes.Add("TimeOnly[]");
+            }
+
+            validTypes.Sort();
             return validTypes.Union(SpatialTypes).ToArray();
          }
       }
@@ -385,6 +402,22 @@ namespace Sawczyn.EFDesigner.EFModel
             {
                validClrTypes.AddRange(new[] { "DateOnly", "DateOnly?", "Nullable<DateOnly>" });
                validClrTypes.AddRange(new[] { "TimeOnly", "TimeOnly?", "Nullable<TimeOnly>" });
+            }
+
+            if (IsEFCore8Plus)
+            {
+               validClrTypes.AddRange(new[] { "Boolean[]", "IEnumerable<Boolean>" });
+               validClrTypes.AddRange(new[] { "DateTime[]", "IEnumerable<DateTime>" });
+               validClrTypes.AddRange(new[] { "Decimal[]", "IEnumerable<Decimal>" });
+               validClrTypes.AddRange(new[] { "Double[]", "IEnumerable<Double>" });
+               validClrTypes.AddRange(new[] { "Guid[]", "IEnumerable<Guid>" });
+               validClrTypes.AddRange(new[] { "Int16[]", "IEnumerable<Int16>" });
+               validClrTypes.AddRange(new[] { "Int32[]", "IEnumerable<Int32>" });
+               validClrTypes.AddRange(new[] { "Int64[]", "IEnumerable<Int64>" });
+               validClrTypes.AddRange(new[] { "Single[]", "IEnumerable<Single>" });
+               validClrTypes.AddRange(new[] { "String[]", "IEnumerable<String>" });
+               validClrTypes.AddRange(new[] { "DateOnly[]", "IEnumerable<DateOnly>" });
+               validClrTypes.AddRange(new[] { "TimeOnly[]", "IEnumerable<TimeOnly>" });
             }
 
             return validClrTypes.Union(SpatialTypes).OrderBy(x => x).ToArray();
