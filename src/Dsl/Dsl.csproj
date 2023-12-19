@@ -204,6 +204,10 @@
     <Compile Include="CustomCode\Utilities\Import\TextFileProcessor.cs" />
     <Compile Include="CustomCode\Utilities\Import\XMLDocumentation.cs" />
     <Compile Include="CustomCode\Domain Types\OutputLocations.cs" />
+    <Compile Include="CustomCode\Utilities\Layout\Edge.cs" />
+    <Compile Include="CustomCode\Utilities\Layout\LineSegment.cs" />
+    <Compile Include="CustomCode\Utilities\Layout\Node.cs" />
+    <Compile Include="CustomCode\Utilities\Layout\Vector.cs" />
     <Compile Include="CustomCode\Utilities\Nuget\Models\Context.cs" />
     <Compile Include="CustomCode\Utilities\Nuget\Models\Converter.cs" />
     <Compile Include="CustomCode\Utilities\Nuget\Models\NuGetDisplay.cs" />

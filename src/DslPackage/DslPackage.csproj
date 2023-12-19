@@ -132,11 +132,17 @@
     </Compile>
     <Compile Include="CustomCode\CommandHelper.cs" />
     <Compile Include="CustomCode\Extensions\TreeViewExtensions.cs" />
-    <Compile Include="CustomCode\LayoutCommands.cs" />
+    <Compile Include="CustomCode\Layout\ForceDirected\FDGraphLayout.cs" />
+    <Compile Include="CustomCode\Layout\GraphViz\DotEdge.cs" />
+    <Compile Include="CustomCode\Layout\GraphViz\DotEngine.cs" />
+    <Compile Include="CustomCode\Layout\GraphViz\DotNode.cs" />
+    <Compile Include="CustomCode\Layout\LayoutCommands.cs" />
     <Compile Include="CustomCode\CommandSet.cs" />
     <Compile Include="CustomCode\Extensions\ModelClassExtensions.cs" />
     <Compile Include="CustomCode\Extensions\ModelElementExtensions.cs" />
     <Compile Include="CustomCode\Extensions\ModelEnumExtensions.cs" />
+    <Compile Include="CustomCode\Layout\GraphViz\GraphVizLayout.cs" />
+    <Compile Include="CustomCode\Layout\Standard\StandardLayout.cs" />
     <Compile Include="CustomCode\OptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -283,6 +289,18 @@
     <Content Include="TextTemplates\EFModelGenerator.ttinclude">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Compile Include="TextTemplates\EditingOnly\EF6Designer.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EF6ModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCore2ModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCore3ModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCore5ModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCoreDesigner.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFCoreModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFDesigner.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFModelFileManager.cs" />
+    <Compile Include="TextTemplates\EditingOnly\EFModelGenerator.cs" />
+    <Compile Include="TextTemplates\EditingOnly\MultipleOutputHelper.cs" />
+    <Compile Include="TextTemplates\EditingOnly\VSIntegration.cs" />
     <Compile Include="VSPackage.Designer.cs" />
     <Content Include="Logo.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -375,6 +393,7 @@
     <Content Include="TextTemplates\VSIntegration.ttinclude">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include="TextTemplates\EditingOnly\_ReadMe.md" />
     <None Include="TextTemplates\EF6Designer.ttinclude" />
     <None Include="TextTemplates\EFCoreDesigner.ttinclude" />
   </ItemGroup>

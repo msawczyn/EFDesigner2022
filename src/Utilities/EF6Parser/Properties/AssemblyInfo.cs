@@ -11,11 +11,11 @@ using System.Runtime.InteropServices;
 #endif
 [assembly : AssemblyCompany("Michael Sawczyn")]
 [assembly : AssemblyProduct("EFDesigner")]
-[assembly : AssemblyCopyright("Copyright © Michael Sawczyn 2017-2023")]
+[assembly : AssemblyCopyright("Copyright © Michael Sawczyn 2017-2024")]
 [assembly : AssemblyTrademark("")]
 [assembly : AssemblyCulture("")]
 
 [assembly : ComVisible(false)]
 
-[assembly : AssemblyVersion("4.2.6.0")]
-[assembly : AssemblyFileVersion("4.2.6.0")]
+[assembly : AssemblyVersion("4.2.7.0")]
+[assembly : AssemblyFileVersion("4.2.7.0")]

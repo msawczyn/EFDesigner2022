@@ -1,100 +1,50 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Modeling.Diagrams;
+using Microsoft.VisualStudio.Modeling.Diagrams.GraphObject;
+using QuikGraph;
+using QuikGraph.Graphviz;
+using QuikGraph.Graphviz.Dot;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-using Microsoft.VisualStudio.Modeling;
-using Microsoft.VisualStudio.Modeling.Diagrams;
-using Microsoft.VisualStudio.Modeling.Diagrams.GraphObject;
-
-using QuikGraph;
-using QuikGraph.Graphviz;
-using QuikGraph.Graphviz.Dot;
-
 namespace Sawczyn.EFDesigner.EFModel
 {
    /// <summary>
-   /// Implementation of the IDotEngine interface that uses the Graphviz dot.exe
+   /// Engine that lays out a diagram using Graphviz
    /// </summary>
-   public class DotEngine : IDotEngine
-   {
-      /// <summary>
-      /// Runs Graphviz with the specified image type, dot source, and output file name and returns the output as a string.
-      /// </summary>
-      /// <param name="imageType">The image type to create.</param>
-      /// <param name="dot">The Graphviz dot source to create an image from.</param>
-      /// <param name="outputFileName">The name of the output file to create.</param>
-      /// <returns>The output of Graphviz as a string.</returns>
-      public string Run(GraphvizImageType imageType, string dot, string outputFileName)
-      {
-         return dot;
-      }
-   }
-
-   /// <summary>
-   /// Represents a node in a dot graph.
-   /// </summary>
-   public class DotNode
-   {
-      /// <summary>
-      /// Gets or sets the value of the X coordinate.
-      /// </summary>
-      public double X { get; set; }
-      /// <summary>
-      /// Gets or sets the Y coordinate.
-      /// </summary>
-      public double Y { get; set; }
-      /// <summary>
-      /// Gets or sets the NodeShape object this graph node represents.
-      /// </summary>
-      public NodeShape Shape { get; set; }
-   }
-
-   /// <summary>
-   /// Represents an edge in a DOT graph.
-   /// </summary>
-   public class DotEdge : IEdge<DotNode>
-   {
-      /// <summary>
-      /// Initializes a new instance of the DotEdge class with the specified source and target nodes.
-      /// </summary>
-      /// <param name="source">The source node of the edge.</param>
-      /// <param name="target">The target node of the edge.</param>
-      public DotEdge(DotNode source, DotNode target)
-      {
-         Source = source;
-         Target = target;
-      }
-
-      /// <summary>
-      /// Gets or sets the BinaryLinkShape object this graph edge represents.
-      /// </summary>
-      public BinaryLinkShape Shape { get; set; }
-      /// <summary>
-      /// Gets or sets the source of the dot node.
-      /// </summary>
-      public DotNode Source { get; set; }
-      /// <summary>
-      /// Gets or sets the target DotNode.
-      /// </summary>
-      public DotNode Target { get; set; }
-   }
-
-   /// <summary>
-   ///    Represents a collection of commands.
-   /// </summary>
-   public class Commands
+   public class GraphVizLayout
    {
       // Set to public to allow MEF extension to perform layout
       // ReSharper disable once UnusedParameter.Local
-      private static void DoGraphvizLayout(List<DotNode> vertices, List<DotEdge> edges)
+      /// <summary>
+      /// Layout the given shape elements in the specified entity framework model diagram.
+      /// </summary>
+      /// <param name="diagram">Owning diagram</param>
+      /// <param name="connectors">Connections between nodes (graph edges)</param>
+      public static void Execute(EFModelDiagram diagram, IEnumerable<BinaryLinkShape> connectors)
       {
+         BinaryLinkShape[] links = connectors.ToArray();
+         List<DotNode> vertices = links.Select(link => link.FromShape)
+                                       .Union(links.Select(link => link.ToShape))
+                                       .Where(node => node != null)
+                                       .Distinct()
+                                       .Select(node => new DotNode { Shape = node })
+                                       .ToList();
+
+         List<DotEdge> edges = links
+                              .Where(link => link.FromShape != null && link.ToShape != null)
+                              .Select(link =>
+                                         new DotEdge(vertices.Single(vertex => vertex.Shape.Id == link.FromShape.Id)
+                                                   , vertices.Single(vertex => vertex.Shape.Id == link.ToShape.Id)) { Shape = link })
+                              .ToList();
+
          // set up to be a bidirectional graph with the edges we found
          BidirectionalGraph<DotNode, DotEdge> graph = edges.ToBidirectionalGraph<DotNode, DotEdge>();
 
          // add all the vertices that aren't connected by edges
-         graph.AddVertexRange(vertices.Except(edges.Select(e => e.Source).Union(edges.Select(e => e.Target))));
+         _ = graph.AddVertexRange(vertices.Except(edges.Select(e => e.Source).Union(edges.Select(e => e.Target))));
 
          // we'll process as Graphviz
          GraphvizAlgorithm<DotNode, DotEdge> graphviz = new GraphvizAlgorithm<DotNode, DotEdge>(graph);
@@ -118,7 +68,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                      args.VertexFormat.Label = args.Vertex.Shape.Id.ToString();
                                   };
 
-         graphviz.FormatEdge += (sender, args) =>
+         graphviz.FormatEdge += (_, args) =>
                                 {
                                    args.EdgeFormat.Label.Value = args.Edge.Shape.Id.ToString();
                                 };
@@ -130,12 +80,15 @@ namespace Sawczyn.EFDesigner.EFModel
          Debug.WriteLine(dotCommands);
 
          ProcessStartInfo dotStartInfo = new ProcessStartInfo(EFModelPackage.Options.DotExePath, "-T plain")
-                                         {
-                                            RedirectStandardInput = true
-                                          , RedirectStandardOutput = true
-                                          , UseShellExecute = false
-                                          , CreateNoWindow = true
-                                         };
+         {
+            RedirectStandardInput = true
+                                          ,
+            RedirectStandardOutput = true
+                                          ,
+            UseShellExecute = false
+                                          ,
+            CreateNoWindow = true
+         };
 
          string graphOutput;
 
@@ -165,8 +118,7 @@ namespace Sawczyn.EFDesigner.EFModel
             string[] parts = outputLine.Split(' ');
             string id;
 
-            double x
-                 , y;
+            double x, y;
 
             // graphviz coordinates have 0,0 at the bottom left, positive means moving up
             // our coordinates have 0,0 at the top left, positive means moving down
@@ -220,7 +172,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   {
                      x = double.Parse(parts[index]);
                      y = graphSize.Height - double.Parse(parts[index + 1]);
-                     linkShape.EdgePoints.Add(new EdgePoint(x, y, VGPointType.Normal));
+                     _ = linkShape.EdgePoints.Add(new EdgePoint(x, y, VGPointType.Normal));
                   }
 
                   // since we're not changing the nodes this edge connects, this really doesn't do much.
@@ -232,67 +184,8 @@ namespace Sawczyn.EFDesigner.EFModel
                   break;
             }
          }
-      }
 
-      private static void DoStandardLayout(List<BinaryLinkShape> linkShapes, EFModelDiagram diagram)
-      {
-         // first we need to mark all the connectors as dirty so they'll route. Easiest way is to flip their 'ManuallyRouted' flag
-         foreach (BinaryLinkShape linkShape in linkShapes)
-            linkShape.ManuallyRouted = !linkShape.ManuallyRouted;
-
-         // now let the layout mechanism route the connectors by setting 'ManuallyRouted' to false, regardless of what it was before
-         foreach (BinaryLinkShape linkShape in linkShapes)
-            linkShape.ManuallyRouted = false;
-
-         diagram.AutoLayoutShapeElements(diagram.NestedChildShapes.Where(s => s.IsVisible).ToList(), VGRoutingStyle.VGRouteStraight, PlacementValueStyle.VGPlaceSN, true);
-      }
-
-      /// <summary>
-      /// Arranges the layout of the given EFModelDiagram.
-      /// </summary>
-      /// <param name="diagram">The EFModelDiagram to layout.</param>
-      public static void LayoutDiagram(EFModelDiagram diagram)
-      {
-         using (WaitCursor _ = new WaitCursor())
-         {
-            IEnumerable<ShapeElement> shapeElements = diagram.NestedChildShapes.Where(s => s.IsVisible);
-
-            LayoutDiagram(diagram, shapeElements);
-         }
-      }
-
-      /// <summary>
-      /// Arranges the position of the given shape elements in the specified entity framework model diagram.
-      /// </summary>
-      /// <param name="diagram">The entity framework model diagram to layout.</param>
-      /// <param name="shapeElements">The shape elements to arrange in the layout.</param>
-      public static void LayoutDiagram(EFModelDiagram diagram, IEnumerable<ShapeElement> shapeElements)
-      {
-         using (Transaction tx = diagram.Store.TransactionManager.BeginTransaction("ModelAutoLayout"))
-         {
-            List<ShapeElement> shapeList = shapeElements.ToList();
-
-            List<DotNode> vertices = shapeList
-                                    .OfType<NodeShape>()
-                                    .Select(node => new DotNode { Shape = node })
-                                    .ToList();
-
-            List<DotEdge> edges = shapeList
-                                 .OfType<BinaryLinkShape>()
-                                 .Where(link => link.FromShape != null && link.ToShape != null)
-                                 .Select(link =>
-                                            new DotEdge(vertices.Single(vertex => vertex.Shape.Id == link.FromShape.Id)
-                                                      , vertices.Single(vertex => vertex.Shape.Id == link.ToShape.Id)) { Shape = link })
-                                 .ToList();
-
-            // use graphviz as the default if available
-            if (File.Exists(EFModelPackage.Options.DotExePath))
-               DoGraphvizLayout(vertices, edges);
-            else
-               DoStandardLayout(edges.Select(edge => edge.Shape).ToList(), diagram);
-
-            tx.Commit();
-         }
+         diagram.Invalidate();
       }
    }
 }

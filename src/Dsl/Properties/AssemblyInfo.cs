@@ -14,13 +14,13 @@ using System.Runtime.InteropServices;
 #endif
 [assembly : AssemblyCompany(@"Michael Sawczyn")]
 [assembly : AssemblyProduct(@"EFDesigner")]
-[assembly : AssemblyCopyright("Copyright © Michael Sawczyn 2017-2023")]
+[assembly : AssemblyCopyright("Copyright © Michael Sawczyn 2017-2024")]
 [assembly : AssemblyTrademark("")]
 [assembly : AssemblyCulture("")]
 [assembly : NeutralResourcesLanguage("en")]
 
-[assembly : AssemblyVersion("4.2.6.0")]
-[assembly : AssemblyFileVersion("4.2.6.0")]
+[assembly : AssemblyVersion("4.2.7.0")]
+[assembly : AssemblyFileVersion("4.2.7.0")]
 [assembly : ComVisible(false)]
 [assembly : CLSCompliant(true)]
 [assembly : ReliabilityContract(Consistency.MayCorruptProcess, Cer.None)]

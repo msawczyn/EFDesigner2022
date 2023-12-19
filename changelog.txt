@@ -1,3 +1,6 @@
+4.2.7
+   - Added force-directed graph algorithm for diagram layout
+
 4.2.6
    - Support for per-entity inheritance in EF7
    - Arrays of native types can now be used as property types in EFCore8+ projects
