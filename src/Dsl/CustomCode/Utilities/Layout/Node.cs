@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using Microsoft.VisualStudio.Modeling.Diagrams;
 
 namespace Sawczyn.EFDesigner.EFModel
@@ -9,25 +11,45 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
    public class Node
    {
-      public static List<Node> ProcessDiagram(IEnumerable<NodeShape> shapeElements)
+      /// <summary>
+      /// Constructor
+      /// </summary>
+      /// <param name="shapeElement">Shape element to represent</param>
+      public Node(ShapeElement shapeElement)
       {
-         List<Node> result = new List<Node>();
+         RectangleD boundingBox = shapeElement.AbsoluteBoundingBox;
 
-         foreach (NodeShape shapeElement in shapeElements)
+         ElementId = shapeElement.ModelElement.Id;
+         Left = boundingBox.Left;
+         Top = boundingBox.Top;
+         Width = boundingBox.Width;
+         Height = boundingBox.Height;
+      }
+
+      /// <summary>
+      ///   Process the given diagram and return a list of nodes
+      /// </summary>
+      /// <param name="diagram">Source diagram</param>
+      public static List<Node> ProcessDiagram(EFModelDiagram diagram)
+      {
+         List<Node> nodes = new List<Node>();
+
+         foreach (NodeShape shapeElement in diagram.NestedChildShapes.OfType<NodeShape>())
+            nodes.Add(new Node(shapeElement));
+
+         foreach (Node fromNode in nodes)
          {
-            Node node = new Node
-            {
-               ElementId = shapeElement.ModelElement.Id,
-               Left = shapeElement.AbsoluteBoundingBox.Left,
-               Top = shapeElement.AbsoluteBoundingBox.Top,
-               Width = shapeElement.AbsoluteBoundingBox.Width,
-               Height = shapeElement.AbsoluteBoundingBox.Height
-            };
+            List<BinaryLinkShape> links = diagram.NestedChildShapes
+                                                 .OfType<BinaryLinkShape>()
+                                                 .Where(link => link.FromShape.ModelElement.Id == fromNode.ElementId)
+                                                 .Distinct()
+                                                 .ToList();
 
-            result.Add(node);
+            foreach (BinaryLinkShape linkShape in links)
+               fromNode.Edges.Add(new Edge { Destination = nodes.Single(n => n.ElementId == linkShape.ToShape.ModelElement.Id) });
          }
 
-         return result;
+         return nodes;
       }
 
       /// <summary>
@@ -43,7 +65,7 @@ namespace Sawczyn.EFDesigner.EFModel
       /// <summary>
       ///    Force applied to this node
       /// </summary>
-      public Vector Force { get; set; }
+      public Vector Force { get; set; } = new Vector(0, 0);
 
       /// <summary>
       ///    Height of this node
@@ -73,7 +95,7 @@ namespace Sawczyn.EFDesigner.EFModel
       /// <summary>
       ///    Velocity of this node (attract/repel)
       /// </summary>
-      public Vector Velocity { get; set; }
+      public Vector Velocity { get; set; } = new Vector(0, 0);
 
       /// <summary>
       ///    Width of this node

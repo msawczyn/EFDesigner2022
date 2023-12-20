@@ -16,29 +16,27 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
    public class GraphVizLayout
    {
-      // Set to public to allow MEF extension to perform layout
-      // ReSharper disable once UnusedParameter.Local
       /// <summary>
       /// Layout the given shape elements in the specified entity framework model diagram.
       /// </summary>
       /// <param name="diagram">Owning diagram</param>
-      /// <param name="connectors">Connections between nodes (graph edges)</param>
-      public static void Execute(EFModelDiagram diagram, IEnumerable<BinaryLinkShape> connectors)
+      public static void Execute(EFModelDiagram diagram)
       {
-         BinaryLinkShape[] links = connectors.ToArray();
-         List<DotNode> vertices = links.Select(link => link.FromShape)
-                                       .Union(links.Select(link => link.ToShape))
-                                       .Where(node => node != null)
-                                       .Distinct()
-                                       .Select(node => new DotNode { Shape = node })
-                                       .ToList();
+         BinaryLinkShape[] links = diagram.NestedChildShapes.OfType<BinaryLinkShape>().ToArray();
 
-         List<DotEdge> edges = links
-                              .Where(link => link.FromShape != null && link.ToShape != null)
-                              .Select(link =>
-                                         new DotEdge(vertices.Single(vertex => vertex.Shape.Id == link.FromShape.Id)
-                                                   , vertices.Single(vertex => vertex.Shape.Id == link.ToShape.Id)) { Shape = link })
-                              .ToList();
+         NodeShape[] nodeShapes = diagram.NestedChildShapes.OfType<NodeShape>()
+                                         .Union(links.Select(link => link.FromShape)
+                                                     .Union(links.Select(link => link.ToShape))
+                                                     .Where(node => node != null))
+                                         .Distinct()
+                                         .ToArray();
+
+         List<DotNode> vertices = nodeShapes.Select(node => new DotNode { Shape = node }).ToList();
+
+         List<DotEdge> edges = links.Select(link =>
+                                               new DotEdge(vertices.Single(vertex => vertex.Shape.Id == link.FromShape.Id)
+                                                         , vertices.Single(vertex => vertex.Shape.Id == link.ToShape.Id)) { Shape = link })
+                                    .ToList();
 
          // set up to be a bidirectional graph with the edges we found
          BidirectionalGraph<DotNode, DotEdge> graph = edges.ToBidirectionalGraph<DotNode, DotEdge>();

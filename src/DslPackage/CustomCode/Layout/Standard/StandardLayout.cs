@@ -1,31 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.Linq;
 using Microsoft.VisualStudio.Modeling.Diagrams;
 using Microsoft.VisualStudio.Modeling.Diagrams.GraphObject;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
+   /// <summary>
+   /// Engine that lays out a diagram using the built-in Modeling SDK layout mechanism
+   /// </summary>
    public class StandardLayout
    {
-      public static void Execute(EFModelDiagram diagram, IEnumerable<ShapeElement> shapeElements)
+      /// <summary>
+      ///   Layout the given shape elements in the specified entity framework model diagram, using the standard layout mechanism for the Modeling SDK
+      /// </summary>
+      /// <param name="diagram">Owning diagram</param>
+      public static void Execute(EFModelDiagram diagram)
       {
          // first we need to mark all the connectors as dirty so they'll route. Easiest way is to flip their 'ManuallyRouted' flag
-         List<BinaryLinkShape> binaryLinkShapes = shapeElements.OfType<BinaryLinkShape>()
-                                                               .Where(link => link.FromShape != null && link.ToShape != null)
-                                                               .ToList();
+         BinaryLinkShape[] links = diagram.NestedChildShapes.OfType<BinaryLinkShape>().ToArray();
 
-         foreach (BinaryLinkShape linkShape in binaryLinkShapes)
+         NodeShape[] nodeShapes = diagram.NestedChildShapes.OfType<NodeShape>()
+                                         .Union(links.Select(link => link.FromShape)
+                                                     .Union(links.Select(link => link.ToShape))
+                                                     .Where(node => node != null))
+                                         .Distinct()
+                                         .ToArray();
+
+         foreach (BinaryLinkShape linkShape in links)
             linkShape.ManuallyRouted = !linkShape.ManuallyRouted;
 
          // now let the layout mechanism route the connectors by setting 'ManuallyRouted' to false, regardless of what it was before
-         foreach (BinaryLinkShape linkShape in binaryLinkShapes)
+         foreach (BinaryLinkShape linkShape in links)
             linkShape.ManuallyRouted = false;
 
-         diagram.AutoLayoutShapeElements(diagram.NestedChildShapes.Where(s => s.IsVisible).ToList(), VGRoutingStyle.VGRouteStraight, PlacementValueStyle.VGPlaceSN, true);
+         diagram.AutoLayoutShapeElements(nodeShapes.Cast<ShapeElement>().Union(links).ToList()
+                                       , VGRoutingStyle.VGRouteStraight
+                                       , PlacementValueStyle.VGPlaceSN
+                                       , true);
       }
 
    }

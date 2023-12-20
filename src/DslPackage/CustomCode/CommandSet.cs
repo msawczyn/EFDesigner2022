@@ -997,7 +997,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       private void OnMenuLayoutDiagram(object sender, EventArgs e)
       {
-         EFModelDiagram diagram = CurrentSelection.Cast<EFModelDiagram>().SingleOrDefault();
+         EFModelDiagram diagram = CurrentSelection.OfType<EFModelDiagram>().SingleOrDefault();
 
          if (diagram == null)
             return;
