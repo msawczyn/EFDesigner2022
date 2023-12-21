@@ -132,7 +132,11 @@
     </Compile>
     <Compile Include="CustomCode\CommandHelper.cs" />
     <Compile Include="CustomCode\Extensions\TreeViewExtensions.cs" />
+    <Compile Include="CustomCode\Layout\ForceDirected\Edge.cs" />
     <Compile Include="CustomCode\Layout\ForceDirected\FDGraphLayout.cs" />
+    <Compile Include="CustomCode\Layout\ForceDirected\LineSegment.cs" />
+    <Compile Include="CustomCode\Layout\ForceDirected\Node.cs" />
+    <Compile Include="CustomCode\Layout\ForceDirected\Vector.cs" />
     <Compile Include="CustomCode\Layout\GraphViz\DotEdge.cs" />
     <Compile Include="CustomCode\Layout\GraphViz\DotEngine.cs" />
     <Compile Include="CustomCode\Layout\GraphViz\DotNode.cs" />

@@ -51,7 +51,7 @@ namespace Sawczyn.EFDesigner.EFModel
          graphviz.CommonVertexFormat.Shape = GraphvizVertexShape.Record;
 
          // labels will be the Id of the underlying Shape
-         graphviz.FormatVertex += (sender, args) =>
+         graphviz.FormatVertex += (_, args) =>
                                   {
                                      args.VertexFormat.Label = args.Vertex.Shape.ModelElement is ModelClass modelClass
                                                                   ? modelClass.Name

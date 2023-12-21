@@ -67,7 +67,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
             const int iterations = 100; // Adjust as needed
             const double springConstant = 0.1f; // Tweak for optimal results
-            const double repulsionFactor = 100f; // Tweak for optimal results
+            const double repulsionFactor = 10f; // Tweak for optimal results
             const double dampingFactor = 0.8f; // Tweak for optimal results
 
             for (int iteration = 0; iteration < iterations; iteration++)
@@ -156,15 +156,12 @@ namespace Sawczyn.EFDesigner.EFModel
          foreach (Edge nodeSegment in edge.Destination.Edges)
          {
             edge.Segments.Add(new LineSegment
-            {
-               BeginX = edge.Destination.Left
-                               ,
-               BeginY = edge.Destination.Top
-                               ,
-               EndX = nodeSegment.Destination.Left
-                               ,
-               EndY = nodeSegment.Destination.Top
-            });
+                              {
+                                 BeginX = edge.Destination.Left
+                               , BeginY = edge.Destination.Top
+                               , EndX = nodeSegment.Destination.Left
+                               , EndY = nodeSegment.Destination.Top
+                              });
          }
       }
    }

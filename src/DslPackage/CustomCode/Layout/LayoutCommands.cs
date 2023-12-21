@@ -22,8 +22,7 @@ namespace Sawczyn.EFDesigner.EFModel
                if (File.Exists(EFModelPackage.Options.DotExePath))
                   GraphVizLayout.Execute(diagram);
                else
-                  //StandardLayout.Execute(diagram);
-                  FDGraphLayout.Execute(diagram);
+                  StandardLayout.Execute(diagram);
 
                tx.Commit();
             }

@@ -1,15 +1,13 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Modeling;
+using Microsoft.VisualStudio.Modeling.Diagrams;
+using Microsoft.VisualStudio.Modeling.Validation;
+using Sawczyn.EFDesigner.EFModel.Annotations;
+using Sawczyn.EFDesigner.EFModel.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-
-using Microsoft.VisualStudio.Modeling;
-using Microsoft.VisualStudio.Modeling.Diagrams;
-using Microsoft.VisualStudio.Modeling.Validation;
-
-using Sawczyn.EFDesigner.EFModel.Annotations;
-using Sawczyn.EFDesigner.EFModel.Extensions;
 
 namespace Sawczyn.EFDesigner.EFModel
 {
@@ -21,42 +19,24 @@ namespace Sawczyn.EFDesigner.EFModel
       /// <summary>
       ///    Gets the principal ModelClass of this association, if any
       /// </summary>
-      public ModelClass Principal
-      {
-         get
-         {
-            return SourceRole == EndpointRole.Principal
+      public ModelClass Principal => SourceRole == EndpointRole.Principal
                       ? Source
                       : TargetRole == EndpointRole.Principal
                          ? Target
                          : null;
-         }
-      }
 
       /// <summary>
       ///    Gets the dependent ModelClass of this association, if any
       /// </summary>
-      public ModelClass Dependent
-      {
-         get
-         {
-            return SourceRole == EndpointRole.Dependent
+      public ModelClass Dependent => SourceRole == EndpointRole.Dependent
                       ? Source
                       : TargetRole == EndpointRole.Dependent
                          ? Target
                          : null;
-         }
-      }
 
-      internal string TargetBackingFieldNameDefault
-      {
-         get
-         {
-            return string.IsNullOrEmpty(TargetPropertyName)
+      internal string TargetBackingFieldNameDefault => string.IsNullOrEmpty(TargetPropertyName)
                       ? string.Empty
                       : $"_{TargetPropertyName.Substring(0, 1).ToLowerInvariant()}{TargetPropertyName.Substring(1)}";
-         }
-      }
 
       internal bool AllCardinalitiesAreValid(out string errorMessage)
       {
@@ -66,7 +46,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
       internal bool AllCardinalitiesAreValid(out string errorMessage, ref bool needsForeignKeyFixup)
       {
-         SetEndpointRoles();
+         _ = SetEndpointRoles();
 
          ModelRoot modelRoot = Source.ModelRoot;
          errorMessage = null;
@@ -101,7 +81,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   TargetRole = EndpointRole.NotSet;
             }
             else
-               SetEndpointRoles();
+               _ = SetEndpointRoles();
          }
 
          // cascade delete behavior could now be illegal. Reset to default
@@ -201,9 +181,8 @@ namespace Sawczyn.EFDesigner.EFModel
             attribute.ClearFKMods(string.Empty);
 
          List<ModelAttribute> fkProperties = Dependent.Attributes
-                                                 .Where(x => x.IsForeignKeyFor == Id)
-                                                 .ToList();
-
+                                                      .Where(x => x.IsForeignKeyFor == Id)
+                                                      .ToList();
 
          // EF6 can't have declared foreign keys for 1..1 / 0-1..1 / 1..0-1 / 0-1..0-1 relationships
          if (!string.IsNullOrEmpty(FKPropertyName)
@@ -262,6 +241,7 @@ namespace Sawczyn.EFDesigner.EFModel
             existing.ModelClass.MoveAttribute(existing, Dependent);
             existing.SetFKMods(this);
          }
+
 
          // create new properties if they don't already exist
          foreach (string propertyName in addList.Where(n => Dependent.Attributes.All(a => a.Name != n)))
@@ -403,8 +383,11 @@ namespace Sawczyn.EFDesigner.EFModel
       [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Called by validation")]
       private void FKPropertiesCannotBeStoreGeneratedIdentifiers(ValidationContext context)
       {
-         foreach (ModelAttribute attribute in GetFKAutoIdentityErrors())
-            context.LogError($"{GetDisplayText()}: FK property {attribute.Name} in {Dependent.FullName} is an auto-generated identity. Migration will fail.", "AEIdentityFK", this);
+         if (Dependent != null)
+         {
+            foreach (ModelAttribute attribute in GetFKAutoIdentityErrors())
+               _ = context.LogError($"{GetDisplayText()}: FK property {attribute.Name} in {Dependent.FullName} is an auto-generated identity. Migration will fail.", "AEIdentityFK", this);
+         }
       }
 
       [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
@@ -416,7 +399,7 @@ namespace Sawczyn.EFDesigner.EFModel
             return;
 
          if (Dependent == null)
-            context.LogError($"{GetDisplayText()}: FK property set without association having a Dependent end.", "AEFKWithNoDependent", this);
+            _ = context.LogError($"{GetDisplayText()}: FK property set without association having a Dependent end.", "AEFKWithNoDependent", this);
       }
 
       [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
@@ -432,7 +415,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
          if (fkCount != identityCount)
          {
-            context.LogError($"{GetDisplayText()}: Wrong number of FK properties. Should be {identityCount} to match identity count in {Principal.Name} - currently is {fkCount}.",
+            _ = context.LogError($"{GetDisplayText()}: Wrong number of FK properties. Should be {identityCount} to match identity count in {Principal.Name} - currently is {fkCount}.",
                              "AEFKWrongCount",
                              this);
          }
@@ -451,7 +434,7 @@ namespace Sawczyn.EFDesigner.EFModel
           && ((SourceRole == EndpointRole.NotSet) || (TargetRole == EndpointRole.NotSet))
           && (((SourceMultiplicity == Multiplicity.One) && (TargetMultiplicity == Multiplicity.One))
            || ((SourceMultiplicity == Multiplicity.ZeroOne) && (TargetMultiplicity == Multiplicity.ZeroOne))))
-            context.LogError($"{GetDisplayText()}: Principal/dependent designations must be manually set for 1..1 and 0-1..0-1 associations.", "AEEndpointRoles", this);
+            _ = context.LogError($"{GetDisplayText()}: Principal/dependent designations must be manually set for 1..1 and 0-1..0-1 associations.", "AEEndpointRoles", this);
       }
 
       [ValidationMethod(ValidationCategories.Open | ValidationCategories.Save | ValidationCategories.Menu)]
@@ -466,7 +449,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
          if ((modelRoot?.WarnOnMissingDocumentation == true) && (Source != null) && string.IsNullOrWhiteSpace(TargetSummary))
          {
-            context.LogWarning($"{Source.Name}.{TargetPropertyName}: Association end should be documented", "AWMissingSummary", this);
+            _ = context.LogWarning($"{Source.Name}.{TargetPropertyName}: Association end should be documented", "AWMissingSummary", this);
             hasWarning = true;
             RedrawItem();
          }
@@ -482,7 +465,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
          if ((Source.InheritanceStrategy == CodeStrategy.TablePerConcreteType && Source.Subclasses.Any())
           || (Target.InheritanceStrategy == CodeStrategy.TablePerConcreteType && Target.Subclasses.Any()))
-            context.LogError($"{GetDisplayText()}: Association endpoints can only be on most-derived classes in TPC inheritance strategy", "AEWrongEndpoints", this);
+            _ = context.LogError($"{GetDisplayText()}: Association endpoints can only be on most-derived classes in TPC inheritance strategy", "AEWrongEndpoints", this);
       }
 
       [ValidationMethod(ValidationCategories.Save | ValidationCategories.Menu)]
@@ -504,7 +487,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          using (Transaction _ = Store.TransactionManager.BeginTransaction())
          {
-            if (!Dependent.AllIdentityAttributes.Any())
+            if (Dependent != null && !Dependent.AllIdentityAttributes.Any())
                context.LogError($"{GetDisplayText()}: Dependent end must have at least one identity attribute", "AEDependentIdentity", this);
          }
       }
@@ -516,8 +499,8 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          using (Transaction _ = Store.TransactionManager.BeginTransaction())
          {
-            if (Principal?.Persistent == true 
-             && Dependent?.Persistent == false 
+            if (Principal?.Persistent == true
+             && Dependent?.Persistent == false
              && Principal.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
                context.LogError($"{GetDisplayText()}: {Principal.Name} must be in a TPH inheritance strategy to support Json serialization", "AEJsonRequiresTPH", this);
          }
@@ -539,13 +522,12 @@ namespace Sawczyn.EFDesigner.EFModel
 
       internal IEnumerable<ModelAttribute> GetFKAutoIdentityErrors()
       {
-         if (string.IsNullOrWhiteSpace(FKPropertyName) || (Dependent == null))
-            return Array.Empty<ModelAttribute>();
-
-         return FKPropertyName.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                              .Select(name => Dependent.Attributes.FirstOrDefault(a => a.Name == name.Trim()))
-                              .Where(a => (a != null) && a.IsIdentity && (a.IdentityType == IdentityType.AutoGenerated))
-                              .ToList();
+         return string.IsNullOrWhiteSpace(FKPropertyName) || Dependent == null
+            ? Array.Empty<ModelAttribute>()
+            : FKPropertyName.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(name => Dependent.Attributes.FirstOrDefault(a => a.Name == name.Trim()))
+                            .Where(a => a.IsIdentity && a.IdentityType == IdentityType.AutoGenerated)
+                            .ToArray();
       }
 
       /// <summary>
@@ -799,7 +781,7 @@ namespace Sawczyn.EFDesigner.EFModel
          if (!Store.InUndoRedoOrRollback && !this.IsLoading())
 
             // ReSharper disable once ArrangeRedundantParentheses
-            IsTargetImplementNotifyTracking = (targetImplementNotifyStorage == Target.ImplementNotify);
+            IsTargetImplementNotifyTracking = targetImplementNotifyStorage == Target.ImplementNotify;
       }
 
       internal sealed partial class IsTargetImplementNotifyTrackingPropertyHandler
