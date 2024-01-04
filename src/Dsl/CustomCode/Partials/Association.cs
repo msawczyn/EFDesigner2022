@@ -504,7 +504,7 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          using (Transaction _ = Store.TransactionManager.BeginTransaction())
          {
-            if (!Dependent.AllIdentityAttributes.Any())
+            if (Dependent != null && !Dependent.AllIdentityAttributes.Any())
                context.LogError($"{GetDisplayText()}: Dependent end must have at least one identity attribute", "AEDependentIdentity", this);
          }
       }

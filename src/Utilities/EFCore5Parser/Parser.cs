@@ -49,9 +49,10 @@ namespace EFCore5Parser
 
             if (types.Count > 1)
             {
-               log.Error($"Found more than one class derived from DbContext: {string.Join(", ", types.Select(t => t.FullName))}");
+               string msg = $"Found more than one class derived from DbContext: {string.Join(", ", types.Select(t => t.FullName))}";
+               log.Error(msg);
 
-               throw new AmbiguousMatchException("Found more than one class derived from DbContext");
+               throw new AmbiguousMatchException(msg);
             }
 
             contextType = types[0];
