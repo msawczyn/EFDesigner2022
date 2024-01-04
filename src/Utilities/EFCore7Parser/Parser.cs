@@ -103,6 +103,7 @@ namespace EFCore7Parser
          ModelRoot modelRoot = ProcessRoot();
 
          List<ModelClass> modelClasses = model.GetEntityTypes()
+                                              .Where(x => !x.ClrType.IsGenericType)
                                               .Select(type => ProcessEntity(type, modelRoot))
                                               .Where(x => x != null)
                                               .ToList();
@@ -145,15 +146,6 @@ namespace EFCore7Parser
          }
       }
 
-      private bool HasDbSet(IEntityType entityType)
-      {
-         Type clrType = entityType.ClrType;
-         Type dbSetType = typeof(DbSet<>).MakeGenericType(clrType);
-         bool result = dbContext.GetType().GetProperties().Any(p=>p.PropertyType == dbSetType);
-
-         return result;
-      }
-
       protected ModelClass ProcessEntity(IEntityType entityType, ModelRoot modelRoot)
       {
          ModelClass result = new ModelClass();
@@ -165,15 +157,10 @@ namespace EFCore7Parser
 
          result.BaseClass = GetTypeFullName(type.BaseType);
 
-         if (HasDbSet(entityType))
-         {
-            result.ViewName = entityType.GetViewName();
-            result.TableName = result.ViewName == null
-                                  ? entityType.GetTableName()
-                                  : null;
-         }
-         else
-            result.IsPersistent = false;
+         result.ViewName = entityType.GetViewName();
+         result.TableName = result.ViewName == null
+                               ? entityType.GetTableName()
+                               : null;
 
          result.IsDependentType = entityType.IsOwned();
          result.CustomAttributes = GetCustomAttributes(type.CustomAttributes);

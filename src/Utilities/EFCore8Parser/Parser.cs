@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -91,15 +92,6 @@ namespace EFCore8Parser
          model = dbContext.Model;
       }
 
-      private bool HasDbSet(IEntityType entityType)
-      {
-         Type clrType = entityType.ClrType;
-         Type dbSetType = typeof( DbSet<> ).MakeGenericType(clrType);
-         bool result = dbContext.GetType().GetProperties().Any(p => p.PropertyType == dbSetType);
-
-         return result;
-      }
-
       public string Process()
       {
          if (dbContext == null)
@@ -112,6 +104,7 @@ namespace EFCore8Parser
          ModelRoot modelRoot = ProcessRoot();
 
          List<ModelClass> modelClasses = model.GetEntityTypes()
+                                              .Where(x => !x.ClrType.IsGenericType)
                                               .Select(type => ProcessEntity(type, modelRoot))
                                               .Where(x => x != null)
                                               .ToList();
@@ -133,16 +126,10 @@ namespace EFCore8Parser
 
          result.BaseClass = GetTypeFullName(type.BaseType);
 
-         if (HasDbSet(entityType))
-         {
-            result.ViewName = entityType.GetViewName();
-
-            result.TableName = result.ViewName == null
-                                  ? entityType.GetTableName()
-                                  : null;
-         }
-         else
-            result.IsPersistent = false;
+         result.ViewName = entityType.GetViewName();
+         result.TableName = result.ViewName == null
+                               ? entityType.GetTableName()
+                               : null;
 
          result.IsDependentType = entityType.IsOwned();
          result.CustomAttributes = GetCustomAttributes(type.CustomAttributes);
@@ -226,6 +213,20 @@ namespace EFCore8Parser
          result.MaxStringLength = type == typeof( string )
                                      ? (propertyData.GetMaxLength() ?? 0)
                                      : 0;
+         if (result.MaxStringLength == 0)
+         {
+            Regex varcharPattern = new Regex(@"varacr\((.+)\)", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+
+            List<CustomAttributeData> typeNameAttributes = attributes.Where(a => a.AttributeType.Name == "TypeName").ToList();
+
+            foreach (CustomAttributeData attributeData in typeNameAttributes)
+            {
+               if (varcharPattern.Match(attributeData.ConstructorArguments))
+            }
+            result.MaxStringLength = typeNameAttributes.Any()
+                                        ? (int)typeNameAttributes.First().ConstructorArguments.First().Value
+                                        : 0;
+         }
 
          attributes.RemoveAll(a => (a.AttributeType.Name == "MaxLengthAttribute")
                                 || (a.AttributeType.Name == "StringLengthAttribute"));
