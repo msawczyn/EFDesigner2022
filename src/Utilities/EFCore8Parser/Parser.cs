@@ -77,7 +77,7 @@ namespace EFCore8Parser
 
          // ReSharper disable once UnthrowableException
          if (constructor != null)
-            dbContext = assembly.CreateInstance(contextType.FullName, true, BindingFlags.Default, null, new object[] { options }, null, null) as DbContext;
+            dbContext = assembly.CreateInstance(contextType.FullName, true, BindingFlags.Default, null, [options], null, null) as DbContext;
          else
          {
             constructor = contextType.GetConstructor(Type.EmptyTypes);
@@ -127,6 +127,7 @@ namespace EFCore8Parser
          result.BaseClass = GetTypeFullName(type.BaseType);
 
          result.ViewName = entityType.GetViewName();
+
          result.TableName = result.ViewName == null
                                ? entityType.GetTableName()
                                : null;
@@ -213,20 +214,9 @@ namespace EFCore8Parser
          result.MaxStringLength = type == typeof( string )
                                      ? (propertyData.GetMaxLength() ?? 0)
                                      : 0;
+
          if (result.MaxStringLength == 0)
-         {
-            Regex varcharPattern = new Regex(@"varacr\((.+)\)", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
-
-            List<CustomAttributeData> typeNameAttributes = attributes.Where(a => a.AttributeType.Name == "TypeName").ToList();
-
-            foreach (CustomAttributeData attributeData in typeNameAttributes)
-            {
-               if (varcharPattern.Match(attributeData.ConstructorArguments))
-            }
-            result.MaxStringLength = typeNameAttributes.Any()
-                                        ? (int)typeNameAttributes.First().ConstructorArguments.First().Value
-                                        : 0;
-         }
+            result.MaxStringLength = ParseVarcharTypeAttribute(attributes);
 
          attributes.RemoveAll(a => (a.AttributeType.Name == "MaxLengthAttribute")
                                 || (a.AttributeType.Name == "StringLengthAttribute"));

@@ -8,28 +8,34 @@ namespace ParsingModels
 {
    public abstract class ParserBase
    {
+      protected static readonly Regex TypeNameRegex = new Regex(@"([^`]+)`\d\[(\[[^\]]+\])(,(\[[^\]]+\]))*\]", RegexOptions.Compiled);
+
+      protected static readonly List<string> IgnoreAttributes = new List<string>(new[]
+                                                                                 {
+                                                                                    "System.SerializableAttribute"
+                                                                                  , "System.Runtime.InteropServices.ComVisibleAttribute"
+                                                                                  , "__DynamicallyInvokableAttribute"
+                                                                                  , "System.Reflection.DefaultMemberAttribute"
+                                                                                  , "System.Runtime.Versioning.NonVersionableAttribute"
+                                                                                  , "System.FlagsAttribute"
+                                                                                  , "TableAttribute("
+                                                                                  , "IsReadOnlyAttribute("
+                                                                                  , "NullableAttribute("
+                                                                                  , "NullableContextAttribute("
+                                                                                 });
+
       protected readonly Logger log;
+
+      private readonly Regex varcharPattern = new Regex(@"varchar\((.+)\)"
+                                                      , RegexOptions.CultureInvariant
+                                                      | RegexOptions.IgnoreCase
+                                                      | RegexOptions.IgnorePatternWhitespace
+                                                      | RegexOptions.Compiled);
 
       protected ParserBase(Logger logger)
       {
          log = logger;
       }
-
-      protected static readonly Regex TypeNameRegex = new Regex(@"([^`]+)`\d\[(\[[^\]]+\])(,(\[[^\]]+\]))*\]", RegexOptions.Compiled);
-
-      protected static readonly List<string> IgnoreAttributes = new List<string>(new[]
-                                                                                 {
-                                                                                    "System.SerializableAttribute",
-                                                                                    "System.Runtime.InteropServices.ComVisibleAttribute",
-                                                                                    "__DynamicallyInvokableAttribute",
-                                                                                    "System.Reflection.DefaultMemberAttribute",
-                                                                                    "System.Runtime.Versioning.NonVersionableAttribute",
-                                                                                    "System.FlagsAttribute",
-                                                                                    "TableAttribute(",
-                                                                                    "IsReadOnlyAttribute(",
-                                                                                    "NullableAttribute(",
-                                                                                    "NullableContextAttribute("
-                                                                                 });
 
       protected static Multiplicity ConvertMultiplicity(RelationshipMultiplicity relationshipMultiplicity)
       {
@@ -99,6 +105,30 @@ namespace ParsingModels
          }
 
          return fullName;
+      }
+
+      protected int ParseVarcharTypeAttribute(List<CustomAttributeData> attributes)
+      {
+         List<CustomAttributeData> typeNameAttributes = attributes.Where(a => a.AttributeType.Name == "TypeNameAttribute").ToList();
+
+         foreach (CustomAttributeData attributeData in typeNameAttributes)
+         {
+            List<CustomAttributeTypedArgument> stringArguments = attributeData.ConstructorArguments
+                                                                              .Where(x => x.Value is string)
+                                                                              .ToList();
+
+            foreach (Match match in stringArguments.Select(argument => varcharPattern.Match(argument.Value.ToString())))
+            {
+               if (match.Success && int.TryParse(match.Groups[1].ToString(), out int width))
+               {
+                  attributes.Remove(attributeData);
+
+                  return width;
+               }
+            }
+         }
+
+         return 0;
       }
    }
 }

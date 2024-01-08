@@ -51,14 +51,16 @@ namespace EFCore6Parser
 
       private static Assembly Context_Resolving(AssemblyLoadContext context, AssemblyName assemblyName)
       {
+         Console.Out.WriteLine($"Looking for {assemblyName.FullName}");
+         log.Info($"Looking for {assemblyName.FullName}");
          // avoid loading *.resources dlls, because of: https://github.com/dotnet/coreclr/issues/8416
          if (assemblyName.Name.EndsWith("resources"))
             return null;
 
          // check cached assemblies first
+
          // disable warning IL3002 for the next line
          // IL3002: Using member 'DependencyContext.Default' which has 'RequiresAssemblyFilesAttribute' can break functionality when trimming application code. The member might be removed.
-         //
          // This is a false positive.  The code is not being trimmed, and the attribute is not relevant.
          // The attribute is on the property, not the method, so it is not relevant to the code.
 #pragma warning disable IL3002 
@@ -66,30 +68,54 @@ namespace EFCore6Parser
 #pragma warning restore IL3002 
 
          if (library != null)
+         {
+            Console.Out.WriteLine($"Found in cache");
+            log.Info($"Found {assemblyName.FullName} in cache");
+
             return context.LoadFromAssemblyName(new AssemblyName(library.Name));
+         }
 
          // try known directories
 
          string pathInAppDirectory = Path.Combine(AppContext.BaseDirectory, $"{assemblyName.Name}.dll");
 
          if (File.Exists(pathInAppDirectory))
+         {
+            Console.Out.WriteLine($"Found at {pathInAppDirectory}");
+            log.Info($"Found {assemblyName.FullName} at {pathInAppDirectory}");
+
             return context.LoadFromAssemblyPath(pathInAppDirectory);
+         }
 
          // try the current directory
          string pathInCurrentDirectory = Path.Combine(Directory.GetCurrentDirectory(), $"{assemblyName.Name}.dll");
 
          if (File.Exists(pathInCurrentDirectory))
+         {
+            Console.Out.WriteLine($"Found at {pathInCurrentDirectory}");
+            log.Info($"Found {assemblyName.FullName} at {pathInCurrentDirectory}");
+
             return context.LoadFromAssemblyPath(pathInCurrentDirectory);
+         }
 
          // try gac
-         string found = Directory.GetFileSystemEntries(Environment.ExpandEnvironmentVariables("%windir%\\Microsoft.NET\\assembly"), 
-                                                       $"{assemblyName.Name}.dll", 
+         string location = Directory.GetFileSystemEntries(Environment.ExpandEnvironmentVariables("%windir%\\Microsoft.NET\\assembly"),
+                                                       $"{assemblyName.Name}.dll",
                                                        SearchOption.AllDirectories)
                                  .FirstOrDefault();
 
-         return found == null
-                   ? null
-                   : context.LoadFromAssemblyPath(found);
+         if (location == null)
+         {
+            Console.Out.WriteLine($"Not found");
+            log.Info($"Not found - {assemblyName.FullName}");
+
+            return null;
+         }
+
+         Console.Out.WriteLine($"Found at {location}");
+         log.Info($"Found {assemblyName.FullName} at {location}");
+
+         return context.LoadFromAssemblyPath(location);
       }
 
       private static void Exit(int returnCode, Exception ex = null)
