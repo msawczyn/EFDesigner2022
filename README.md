@@ -74,7 +74,7 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
 to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawczyn.github.io/EFDesigner/images/jetbrains-variant-2a.png"></a> for providing free development tools to support this project.
 
 ### Change Log
-[4.2.6](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.6/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
+[4.2.7](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.7/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - Support for per-entity inheritance in EF7
    - Arrays of native types can now be used as property types in EFCore8+ projects
    - Aggregate ("owned") types can now be stored as JSON properties in EFCore7+ projects

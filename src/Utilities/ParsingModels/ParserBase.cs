@@ -113,14 +113,16 @@ namespace ParsingModels
 
          foreach (CustomAttributeData attributeData in columnAttributes)
          {
-            CustomAttributeNamedArgument typeNameArgument = attributeData.NamedArguments.FirstOrDefault(x => x.MemberName=="TypeName");
+            CustomAttributeNamedArgument typeNameArgument = attributeData.NamedArguments.FirstOrDefault(x => x.MemberName == "TypeName");
 
-            if (varcharPattern.IsMatch(typeNameArgument.TypedValue.Value.ToString()))
+            if (typeNameArgument.TypedValue.Value != null && varcharPattern.IsMatch(typeNameArgument.TypedValue.Value.ToString()))
             {
                Match match = varcharPattern.Match(typeNameArgument.TypedValue.Value.ToString());
+
                if (int.TryParse(match.Groups[1].ToString(), out int width))
                {
                   attributes.Remove(attributeData);
+
                   return width;
                }
             }
