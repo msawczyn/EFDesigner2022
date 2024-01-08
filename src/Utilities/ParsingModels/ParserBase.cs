@@ -26,7 +26,7 @@ namespace ParsingModels
 
       protected readonly Logger log;
 
-      private readonly Regex varcharPattern = new Regex(@"varchar\((.+)\)"
+      private readonly Regex varcharPattern = new Regex(@"varchar\(\s*(\d+)\s*\)"
                                                       , RegexOptions.CultureInvariant
                                                       | RegexOptions.IgnoreCase
                                                       | RegexOptions.IgnorePatternWhitespace
