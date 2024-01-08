@@ -365,6 +365,11 @@
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
         </DomainProperty>
+        <DomainProperty Id="cbea9dd7-c512-45cb-b7d3-048b1c3b673c" Description="If true, generates nullable modifiers for non-required objects" Name="GenerateNullable" DisplayName="Generate Nullable" DefaultValue="false" Category="Code Generation">
+          <Type>
+            <ExternalTypeMoniker Name="/System/Boolean" />
+          </Type>
+        </DomainProperty>
       </Properties>
       <ElementMergeDirectives>
         <ElementMergeDirective>
@@ -2463,6 +2468,9 @@
           </XmlPropertyData>
           <XmlPropertyData XmlName="generateTableComments">
             <DomainPropertyMoniker Name="ModelRoot/GenerateTableComments" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="generateNullable">
+            <DomainPropertyMoniker Name="ModelRoot/GenerateNullable" />
           </XmlPropertyData>
         </ElementData>
       </XmlClassData>

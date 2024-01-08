@@ -1021,6 +1021,23 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
+	      // GenerateNullable
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribGenerateNullable = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "generateNullable");
+	         if (attribGenerateNullable != null)
+	         {
+	            global::System.Boolean valueOfGenerateNullable;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.Boolean>(serializationContext, attribGenerateNullable, out valueOfGenerateNullable))
+	            {
+	               instanceOfModelRoot.GenerateNullable = valueOfGenerateNullable;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "generateNullable", typeof(global::System.Boolean), attribGenerateNullable);
+	            }
+	         }
+	      }
 	   }
 	
 	   /// <summary>
@@ -2323,6 +2340,19 @@ namespace Sawczyn.EFDesigner.EFModel
 	            if (serializationContext.WriteOptionalPropertiesWithDefaultValue || string.CompareOrdinal(serializedPropValue, "true") != 0)
 	            {   // No need to write the value out if it's the same as default value.
 	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "generateTableComments", serializedPropValue);
+	            }
+	         }
+	      }
+	      // GenerateNullable
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.Boolean propValue = instanceOfModelRoot.GenerateNullable;
+	         string serializedPropValue = DslModeling::SerializationUtilities.GetString<global::System.Boolean>(serializationContext, propValue);
+	         if (!serializationContext.Result.Failed)
+	         {
+	            if (serializationContext.WriteOptionalPropertiesWithDefaultValue || string.CompareOrdinal(serializedPropValue, "false") != 0)
+	            {   // No need to write the value out if it's the same as default value.
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "generateNullable", serializedPropValue);
 	            }
 	         }
 	      }

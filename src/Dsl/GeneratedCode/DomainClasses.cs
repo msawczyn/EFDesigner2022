@@ -4783,6 +4783,94 @@ namespace Sawczyn.EFDesigner.EFModel
 		}
 		
 		#endregion
+		#region GenerateNullable domain property code
+		
+		/// <summary>
+		/// GenerateNullable domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid GenerateNullableDomainPropertyId = new global::System.Guid(0xcbea9dd7, 0xc512, 0x45cb, 0xb7, 0xd3, 0x04, 0x8b, 0x1c, 0x3b, 0x67, 0x3c);
+		
+		/// <summary>
+		/// Storage for GenerateNullable
+		/// </summary>
+		private global::System.Boolean generateNullablePropertyStorage;
+		
+		/// <summary>
+		/// Gets or sets the value of GenerateNullable domain property.
+		/// If true, generates nullable modifiers for non-required objects
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelRoot/GenerateNullable.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelRoot/GenerateNullable.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelRoot/GenerateNullable.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslModeling::DomainObjectId("cbea9dd7-c512-45cb-b7d3-048b1c3b673c")]
+		public global::System.Boolean GenerateNullable
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return generateNullablePropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				GenerateNullablePropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelRoot.GenerateNullable domain property.
+		/// </summary>
+		internal sealed partial class GenerateNullablePropertyHandler : DslModeling::DomainPropertyValueHandler<ModelRoot, global::System.Boolean>
+		{
+			private GenerateNullablePropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelRoot.GenerateNullable domain property value handler.
+			/// </summary>
+			public static readonly GenerateNullablePropertyHandler Instance = new GenerateNullablePropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelRoot.GenerateNullable domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return GenerateNullableDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.Boolean GetValue(ModelRoot element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.generateNullablePropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelRoot element, global::System.Boolean newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.Boolean oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.generateNullablePropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
 		#region Comments opposite domain role accessor
 		
 		/// <summary>

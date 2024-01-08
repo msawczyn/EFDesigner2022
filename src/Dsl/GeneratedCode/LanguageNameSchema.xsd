@@ -395,6 +395,12 @@
             <xsd:documentation>If true, will allow generating [Comment] attributes on C# class</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+        <!-- Property: GenerateNullable -->
+        <xsd:attribute name="generateNullable" type="xsd:boolean" >
+          <xsd:annotation>
+            <xsd:documentation>If true, generates nullable modifiers for non-required objects</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

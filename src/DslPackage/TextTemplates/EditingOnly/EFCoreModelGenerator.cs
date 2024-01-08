@@ -868,7 +868,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                                                        .OrderBy(x => x.Name))
             {
                string dbSetName = WriteDbSetHeader( modelClass );
-               Output($"{modelRoot.DbSetAccess.ToString().ToLower()} virtual Microsoft.EntityFrameworkCore.DbQuery<{modelClass.FullName}> {dbSetName} {{ get; set; }}");
+               Output($"{modelRoot.DbSetAccess.ToString().ToLower()} virtual Microsoft.EntityFrameworkCore.DbSet<{modelClass.FullName}> {dbSetName} {{ get; set; }}");
             }
 
             NL();

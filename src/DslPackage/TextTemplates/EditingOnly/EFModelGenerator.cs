@@ -214,31 +214,33 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          /// <summary>
          /// The list of non-nullable model types.
          /// </summary>
-         public static string[] NonNullableTypes
+         public string[] NonNullableTypes
          {
             get
             {
-               return new[]
-                   {
-                "Binary",
-                "Geography",
-                "GeographyCollection",
-                "GeographyLineString",
-                "GeographyMultiLineString",
-                "GeographyMultiPoint",
-                "GeographyMultiPolygon",
-                "GeographyPoint",
-                "GeographyPolygon",
-                "Geometry",
-                "GeometryCollection",
-                "GeometryLineString",
-                "GeometryMultiLineString",
-                "GeometryMultiPoint",
-                "GeometryMultiPolygon",
-                "GeometryPoint",
-                "GeometryPolygon",
-                "String"
-            };
+               return modelRoot.GenerateNullable
+                         ? Array.Empty<string>()
+                         : new[]
+                           {
+                              "Binary",
+                              "Geography",
+                              "GeographyCollection",
+                              "GeographyLineString",
+                              "GeographyMultiLineString",
+                              "GeographyMultiPoint",
+                              "GeographyMultiPolygon",
+                              "GeographyPoint",
+                              "GeographyPolygon",
+                              "Geometry",
+                              "GeometryCollection",
+                              "GeometryLineString",
+                              "GeometryMultiLineString",
+                              "GeometryMultiPoint",
+                              "GeometryMultiPolygon",
+                              "GeometryPoint",
+                              "GeometryPolygon",
+                              "String"
+                           };
             }
          }
          /// <summary>
@@ -635,7 +637,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          /// </summary>
          /// <param name="modelAttribute">The ModelAttribute to check.</param>
          /// <returns>True if the attribute is nullable, otherwise false.</returns>
-         public static bool IsNullable(ModelAttribute modelAttribute)
+         public bool IsNullable(ModelAttribute modelAttribute)
          {
             return !modelAttribute.Required && !modelAttribute.IsIdentity && !modelAttribute.IsConcurrencyToken && !modelAttribute.FQPrimitiveType.EndsWith("[]") && !NonNullableTypes.Contains(modelAttribute.Type);
          }
@@ -1248,9 +1250,13 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                                                                         .Where(x => !x.ConstructorParameterOnly)
                                                                         .OrderBy(x => x.PropertyName))
             {
+               string nullableIndicator = modelRoot.GenerateNullable 
+                                             ? (navigationProperty.Required ? string.Empty : "?")
+                                             : string.Empty;
+
                string type = navigationProperty.IsCollection
                                 ? $"ICollection<{navigationProperty.ClassType.FullName}>"
-                                : navigationProperty.ClassType.FullName;
+                                : $"{navigationProperty.ClassType.FullName}{nullableIndicator}";
 
                if (!navigationProperty.IsAutoProperty)
                {

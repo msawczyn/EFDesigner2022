@@ -171,6 +171,7 @@ namespace Sawczyn.EFDesigner.EFModel
 	         new DomainMemberInfo(typeof(ModelRoot), "AutoPropertyDefault", ModelRoot.AutoPropertyDefaultDomainPropertyId, typeof(ModelRoot.AutoPropertyDefaultPropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelRoot), "ShowInterfaceIndicators", ModelRoot.ShowInterfaceIndicatorsDomainPropertyId, typeof(ModelRoot.ShowInterfaceIndicatorsPropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelRoot), "GenerateTableComments", ModelRoot.GenerateTableCommentsDomainPropertyId, typeof(ModelRoot.GenerateTableCommentsPropertyHandler)),
+	         new DomainMemberInfo(typeof(ModelRoot), "GenerateNullable", ModelRoot.GenerateNullableDomainPropertyId, typeof(ModelRoot.GenerateNullablePropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelClass), "IsAbstract", ModelClass.IsAbstractDomainPropertyId, typeof(ModelClass.IsAbstractPropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelClass), "TableName", ModelClass.TableNameDomainPropertyId, typeof(ModelClass.TableNamePropertyHandler)),
 	         new DomainMemberInfo(typeof(ModelClass), "DatabaseSchema", ModelClass.DatabaseSchemaDomainPropertyId, typeof(ModelClass.DatabaseSchemaPropertyHandler)),

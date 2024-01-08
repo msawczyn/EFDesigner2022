@@ -53,6 +53,7 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
 
 **4.2.7**
    - **[NEW]** Support for per-entity inheritance in EF7
+   - **[NEW]** Added option to generate nullable indicators
    - **[NEW]** Arrays of native types can now be used as property types in EFCore8+ projects
    - **[NEW]** Aggregate ("owned") types can now be stored as JSON properties in EFCore7+ projects
    - **[NEW]** Associations with transient, non-collection objects can be stored as JSON properties in EFCore7+ projects

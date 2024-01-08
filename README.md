@@ -76,6 +76,7 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
 ### Change Log
 [4.2.7](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.7/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - Support for per-entity inheritance in EF7
+   - Added option to generate nullable indicators
    - Arrays of native types can now be used as property types in EFCore8+ projects
    - Aggregate ("owned") types can now be stored as JSON properties in EFCore7+ projects
    - Associations with transient, non-collection objects can be stored as JSON properties in EFCore7+ projects

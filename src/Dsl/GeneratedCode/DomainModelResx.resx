@@ -765,6 +765,18 @@
     <value>Database</value>
     <comment>Category for DomainProperty &apos;GenerateTableComments&apos; on DomainClass &apos;ModelRoot&apos;</comment>
   </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelRoot/GenerateNullable.Description" xml:space="preserve">
+    <value>If true, generates nullable modifiers for non-required objects</value>
+    <comment>Description for DomainProperty &apos;GenerateNullable&apos; on DomainClass &apos;ModelRoot&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelRoot/GenerateNullable.DisplayName" xml:space="preserve">
+    <value>Generate Nullable</value>
+    <comment>DisplayName for DomainProperty &apos;GenerateNullable&apos; on DomainClass &apos;ModelRoot&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelRoot/GenerateNullable.Category" xml:space="preserve">
+    <value>Code Generation</value>
+    <comment>Category for DomainProperty &apos;GenerateNullable&apos; on DomainClass &apos;ModelRoot&apos;</comment>
+  </data>
   <data name="Sawczyn.EFDesigner.EFModel.ModelClass.Description" xml:space="preserve">
     <value></value>
     <comment>Description for DomainClass &apos;ModelClass&apos;</comment>
