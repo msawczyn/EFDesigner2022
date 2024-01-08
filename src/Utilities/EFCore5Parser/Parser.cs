@@ -209,7 +209,7 @@ namespace EFCore5Parser
          result.MaxStringLength = type == typeof(string) ? (propertyData.GetMaxLength() ?? 0) : 0;
 
          if (result.MaxStringLength == 0)
-            result.MaxStringLength = ParseVarcharTypeAttribute(attributes);
+            result.MaxStringLength = ParseVarcharColumnTypeAttribute(attributes);
 
          attributes.RemoveAll(a => (a.AttributeType.Name == "MaxLengthAttribute")
                                 || (a.AttributeType.Name == "StringLengthAttribute"));

@@ -216,7 +216,7 @@ namespace EFCore8Parser
                                      : 0;
 
          if (result.MaxStringLength == 0)
-            result.MaxStringLength = ParseVarcharTypeAttribute(attributes);
+            result.MaxStringLength = ParseVarcharColumnTypeAttribute(attributes);
 
          attributes.RemoveAll(a => (a.AttributeType.Name == "MaxLengthAttribute")
                                 || (a.AttributeType.Name == "StringLengthAttribute"));

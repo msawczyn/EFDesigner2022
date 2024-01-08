@@ -107,22 +107,20 @@ namespace ParsingModels
          return fullName;
       }
 
-      protected int ParseVarcharTypeAttribute(List<CustomAttributeData> attributes)
+      protected int ParseVarcharColumnTypeAttribute(List<CustomAttributeData> attributes)
       {
-         List<CustomAttributeData> typeNameAttributes = attributes.Where(a => a.AttributeType.Name == "TypeNameAttribute").ToList();
+         List<CustomAttributeData> columnAttributes = attributes.Where(a => a.AttributeType.Name == "ColumnAttribute").ToList();
 
-         foreach (CustomAttributeData attributeData in typeNameAttributes)
+         foreach (CustomAttributeData attributeData in columnAttributes)
          {
-            List<CustomAttributeTypedArgument> stringArguments = attributeData.ConstructorArguments
-                                                                              .Where(x => x.Value is string)
-                                                                              .ToList();
+            CustomAttributeNamedArgument typeNameArgument = attributeData.NamedArguments.FirstOrDefault(x => x.MemberName=="TypeName");
 
-            foreach (Match match in stringArguments.Select(argument => varcharPattern.Match(argument.Value.ToString())))
+            if (varcharPattern.IsMatch(typeNameArgument.TypedValue.Value.ToString()))
             {
-               if (match.Success && int.TryParse(match.Groups[1].ToString(), out int width))
+               Match match = varcharPattern.Match(typeNameArgument.TypedValue.Value.ToString());
+               if (int.TryParse(match.Groups[1].ToString(), out int width))
                {
                   attributes.Remove(attributeData);
-
                   return width;
                }
             }
