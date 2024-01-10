@@ -37,8 +37,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          [SuppressMessage("ReSharper", "RedundantNameQualifier")]
          protected override void ConfigureBidirectionalAssociations(ModelClass modelClass, List<Association> visited, List<string> foreignKeyColumns, List<string> declaredShadowProperties)
          {
-            WriteBidirectionalNonDependentAssociations(modelClass, visited, foreignKeyColumns);
             WriteBidirectionalDependentAssociations(modelClass, $"modelBuilder.Entity<{modelClass.FullName}>()", visited);
+            WriteBidirectionalNonDependentAssociations(modelClass, visited, foreignKeyColumns);
          }
 
          /// <summary>
@@ -215,8 +215,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          [SuppressMessage("ReSharper", "RedundantNameQualifier")]
          protected override void ConfigureUnidirectionalAssociations(ModelClass modelClass, List<Association> visited, List<string> foreignKeyColumns, List<string> declaredShadowProperties)
          {
-            WriteUnidirectionalNonDependentAssociations(modelClass, visited, foreignKeyColumns);
             WriteUnidirectionalDependentAssociations(modelClass, $"modelBuilder.Entity<{modelClass.FullName}>()", visited);
+            WriteUnidirectionalNonDependentAssociations(modelClass, visited, foreignKeyColumns);
          }
 
          /// <summary>
@@ -420,7 +420,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (BidirectionalAssociation association in Association.GetLinksToTargets(sourceInstance)
                                                                         .OfType<BidirectionalAssociation>()
-                                                                        .Where(x => x.Persistent && !x.Target.Persistent))
+                                                                        .Where(x => x.Persistent && (!x.Target.Persistent || x.Target.IsDependentType)))
             {
                if (visited.Contains(association))
                   continue;
@@ -690,7 +690,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (UnidirectionalAssociation association in Association.GetLinksToTargets(sourceInstance)
                                                                          .OfType<UnidirectionalAssociation>()
-                                                                         .Where(x => x.Persistent && !x.Target.Persistent))
+                                                                         .Where(x => x.Persistent && (!x.Target.Persistent || x.Target.IsDependentType)))
             {
                if (visited.Contains(association))
                   continue;
