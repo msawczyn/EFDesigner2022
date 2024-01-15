@@ -136,6 +136,7 @@
     <Compile Include="..\Utilities\ParsingModels\Visibility.cs">
       <Link>CustomCode\ParsingModels\Visibility.cs</Link>
     </Compile>
+    <Compile Include="CustomCode\Domain Types\TemporalTableProperties.cs" />
     <Compile Include="CustomCode\Extensions\ColorExtensions.cs" />
     <Compile Include="CustomCode\Extensions\DiagramViewExtensions.cs" />
     <Compile Include="CustomCode\Extensions\ListExtensions.cs" />

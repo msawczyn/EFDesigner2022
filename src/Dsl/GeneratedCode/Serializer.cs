@@ -3247,6 +3247,91 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
+	      // IsTemporalTableActive
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribIsTemporalTableActive = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "isTemporalTableActive");
+	         if (attribIsTemporalTableActive != null)
+	         {
+	            global::System.Boolean valueOfIsTemporalTableActive;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.Boolean>(serializationContext, attribIsTemporalTableActive, out valueOfIsTemporalTableActive))
+	            {
+	               instanceOfModelClass.IsTemporalTableActive = valueOfIsTemporalTableActive;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "isTemporalTableActive", typeof(global::System.Boolean), attribIsTemporalTableActive);
+	            }
+	         }
+	      }
+	      // TemporalTableOptions
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribTemporalTableOptions = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "temporalTableOptions");
+	         if (attribTemporalTableOptions != null)
+	         {
+	            TemporalTableProperties valueOfTemporalTableOptions;
+	            if (DslModeling::SerializationUtilities.TryGetValue<TemporalTableProperties>(serializationContext, attribTemporalTableOptions, out valueOfTemporalTableOptions))
+	            {
+	               instanceOfModelClass.TemporalTableOptions = valueOfTemporalTableOptions;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "temporalTableOptions", typeof(TemporalTableProperties), attribTemporalTableOptions);
+	            }
+	         }
+	      }
+	      // HistoryTableName
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribHistoryTableName = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "historyTableName");
+	         if (attribHistoryTableName != null)
+	         {
+	            global::System.String valueOfHistoryTableName;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.String>(serializationContext, attribHistoryTableName, out valueOfHistoryTableName))
+	            {
+	               instanceOfModelClass.HistoryTableName = valueOfHistoryTableName;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "historyTableName", typeof(global::System.String), attribHistoryTableName);
+	            }
+	         }
+	      }
+	      // PeriodStartColumnName
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribPeriodStartColumnName = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "periodStartColumnName");
+	         if (attribPeriodStartColumnName != null)
+	         {
+	            global::System.String valueOfPeriodStartColumnName;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.String>(serializationContext, attribPeriodStartColumnName, out valueOfPeriodStartColumnName))
+	            {
+	               instanceOfModelClass.PeriodStartColumnName = valueOfPeriodStartColumnName;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "periodStartColumnName", typeof(global::System.String), attribPeriodStartColumnName);
+	            }
+	         }
+	      }
+	      // PeriodEndColumnName
+	      if (!serializationContext.Result.Failed)
+	      {
+	         string attribPeriodEndColumnName = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "periodEndColumnName");
+	         if (attribPeriodEndColumnName != null)
+	         {
+	            global::System.String valueOfPeriodEndColumnName;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.String>(serializationContext, attribPeriodEndColumnName, out valueOfPeriodEndColumnName))
+	            {
+	               instanceOfModelClass.PeriodEndColumnName = valueOfPeriodEndColumnName;
+	            }
+	            else
+	            {   // Invalid property value, ignored.
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "periodEndColumnName", typeof(global::System.String), attribPeriodEndColumnName);
+	            }
+	         }
+	      }
 	   }
 	
 	   /// <summary>
@@ -4342,6 +4427,59 @@ namespace Sawczyn.EFDesigner.EFModel
 	            {   // No need to write the value out if it's the same as default value.
 	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "isInheritanceStrategyTracking", serializedPropValue);
 	            }
+	         }
+	      }
+	      // IsTemporalTableActive
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.Boolean propValue = instanceOfModelClass.IsTemporalTableActive;
+	         string serializedPropValue = DslModeling::SerializationUtilities.GetString<global::System.Boolean>(serializationContext, propValue);
+	         if (!serializationContext.Result.Failed)
+	         {
+	            EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "isTemporalTableActive", serializedPropValue);
+	         }
+	      }
+	      // TemporalTableOptions
+	      if (!serializationContext.Result.Failed)
+	      {
+	         TemporalTableProperties propValue = instanceOfModelClass.TemporalTableOptions;
+	         string serializedPropValue = DslModeling::SerializationUtilities.GetString<TemporalTableProperties>(serializationContext, propValue);
+	         if (!serializationContext.Result.Failed)
+	         {
+	            EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "temporalTableOptions", serializedPropValue);
+	         }
+	      }
+	      // HistoryTableName
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.String propValue = instanceOfModelClass.HistoryTableName;
+	         if (!serializationContext.Result.Failed)
+	         {
+	            if (!string.IsNullOrEmpty(propValue))
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "historyTableName", propValue);
+	
+	         }
+	      }
+	      // PeriodStartColumnName
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.String propValue = instanceOfModelClass.PeriodStartColumnName;
+	         if (!serializationContext.Result.Failed)
+	         {
+	            if (!string.IsNullOrEmpty(propValue))
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "periodStartColumnName", propValue);
+	
+	         }
+	      }
+	      // PeriodEndColumnName
+	      if (!serializationContext.Result.Failed)
+	      {
+	         global::System.String propValue = instanceOfModelClass.PeriodEndColumnName;
+	         if (!serializationContext.Result.Failed)
+	         {
+	            if (!string.IsNullOrEmpty(propValue))
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "periodEndColumnName", propValue);
+	
 	         }
 	      }
 	   }

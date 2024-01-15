@@ -1201,6 +1201,62 @@
     <value>Is Inheritance Strategy Tracking</value>
     <comment>DisplayName for DomainProperty &apos;IsInheritanceStrategyTracking&apos; on DomainClass &apos;ModelClass&apos;</comment>
   </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/IsTemporalTableActive.Description" xml:space="preserve">
+    <value>If true, will configure the class to use temporal tables for storage. This is not supported in all database types.</value>
+    <comment>Description for DomainProperty &apos;IsTemporalTableActive&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/IsTemporalTableActive.DisplayName" xml:space="preserve">
+    <value>Use Temporal Tables</value>
+    <comment>DisplayName for DomainProperty &apos;IsTemporalTableActive&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/IsTemporalTableActive.Category" xml:space="preserve">
+    <value>Database</value>
+    <comment>Category for DomainProperty &apos;IsTemporalTableActive&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/TemporalTableOptions.Description" xml:space="preserve">
+    <value>Temporal Table customizations</value>
+    <comment>Description for DomainProperty &apos;TemporalTableOptions&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/TemporalTableOptions.DisplayName" xml:space="preserve">
+    <value>Temporal Table Options</value>
+    <comment>DisplayName for DomainProperty &apos;TemporalTableOptions&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/TemporalTableOptions.Category" xml:space="preserve">
+    <value>Database</value>
+    <comment>Category for DomainProperty &apos;TemporalTableOptions&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/HistoryTableName.Description" xml:space="preserve">
+    <value>Name of versioning table</value>
+    <comment>Description for DomainProperty &apos;HistoryTableName&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/HistoryTableName.DisplayName" xml:space="preserve">
+    <value>History Table Name</value>
+    <comment>DisplayName for DomainProperty &apos;HistoryTableName&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/HistoryTableName.Category" xml:space="preserve">
+    <value>Database</value>
+    <comment>Category for DomainProperty &apos;HistoryTableName&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/PeriodStartColumnName.Description" xml:space="preserve">
+    <value>Name of column holding lowest valid DateTime for the object&apos;s values</value>
+    <comment>Description for DomainProperty &apos;PeriodStartColumnName&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/PeriodStartColumnName.DisplayName" xml:space="preserve">
+    <value>Period Start Column Name</value>
+    <comment>DisplayName for DomainProperty &apos;PeriodStartColumnName&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/PeriodStartColumnName.Category" xml:space="preserve">
+    <value>Database</value>
+    <comment>Category for DomainProperty &apos;PeriodStartColumnName&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/PeriodEndColumnName.Description" xml:space="preserve">
+    <value>Name of column holding highest valid DateTime for the object&apos;s values</value>
+    <comment>Description for DomainProperty &apos;PeriodEndColumnName&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.ModelClass/PeriodEndColumnName.DisplayName" xml:space="preserve">
+    <value>Period End Column Name</value>
+    <comment>DisplayName for DomainProperty &apos;PeriodEndColumnName&apos; on DomainClass &apos;ModelClass&apos;</comment>
+  </data>
   <data name="Sawczyn.EFDesigner.EFModel.ModelAttribute.Description" xml:space="preserve">
     <value>An attribute of a class.</value>
     <comment>Description for DomainClass &apos;ModelAttribute&apos;</comment>

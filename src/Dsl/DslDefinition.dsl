@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" MinorVersion="2" Build="7" Revision="1" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
+<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" MinorVersion="2" Build="7" Revision="2" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
   <Classes>
     <DomainClass Id="95532cb8-3452-4b09-a654-aeb2e2d0b3ad" Description="" Name="ModelRoot" DisplayName="Entity Model" Namespace="Sawczyn.EFDesigner.EFModel">
       <CustomTypeDescriptor>
@@ -644,6 +644,38 @@
         <DomainProperty Id="c28f1c9d-614f-4883-b497-6f27dde49816" Description="If true, Model.InheritanceStrategyDefault" Name="IsInheritanceStrategyTracking" DisplayName="Is Inheritance Strategy Tracking" DefaultValue="true" IsBrowsable="false">
           <Type>
             <ExternalTypeMoniker Name="/System/Boolean" />
+          </Type>
+        </DomainProperty>
+        <DomainProperty Id="61d6f943-03c3-4646-8ff8-d53159f288c2" Description="If true, will configure the class to use temporal tables for storage. This is not supported in all database types." Name="IsTemporalTableActive" DisplayName="Use Temporal Tables" Category="Database" IsBrowsable="false">
+          <Type>
+            <ExternalTypeMoniker Name="/System/Boolean" />
+          </Type>
+        </DomainProperty>
+        <DomainProperty Id="27bfba48-fe5b-46d4-b50e-30e15de3c6b6" Description="Temporal Table customizations" Name="TemporalTableOptions" DisplayName="Temporal Table Options" Kind="CustomStorage" Category="Database">
+          <Attributes>
+            <ClrAttribute Name="System.ComponentModel.TypeConverter">
+              <Parameters>
+                <AttributeParameter Value="typeof(System.ComponentModel.ExpandableObjectConverter)" />
+              </Parameters>
+            </ClrAttribute>
+          </Attributes>
+          <Type>
+            <ExternalTypeMoniker Name="TemporalTableProperties" />
+          </Type>
+        </DomainProperty>
+        <DomainProperty Id="4ee56c81-96b1-4f00-9d80-c3ca0b9820bd" Description="Name of versioning table" Name="HistoryTableName" DisplayName="History Table Name" Category="Database" IsBrowsable="false">
+          <Type>
+            <ExternalTypeMoniker Name="/System/String" />
+          </Type>
+        </DomainProperty>
+        <DomainProperty Id="385f9ff1-4c65-44ad-8cbe-98435ef0b2e0" Description="Name of column holding lowest valid DateTime for the object's values" Name="PeriodStartColumnName" DisplayName="Period Start Column Name" Category="Database" IsBrowsable="false">
+          <Type>
+            <ExternalTypeMoniker Name="/System/String" />
+          </Type>
+        </DomainProperty>
+        <DomainProperty Id="7a547c49-4cc2-4bc5-9111-966e3ea6d92d" Description="Name of column holding highest valid DateTime for the object's values" Name="PeriodEndColumnName" DisplayName="Period End Column Name" IsBrowsable="false">
+          <Type>
+            <ExternalTypeMoniker Name="/System/String" />
           </Type>
         </DomainProperty>
       </Properties>
@@ -1950,6 +1982,7 @@
         <EnumerationLiteral Description="Description for Sawczyn.EFDesigner.EFModel.TypeAccessModifierExt1.Default" Name="Default" Value="4" />
       </Literals>
     </DomainEnumeration>
+    <ExternalType Name="TemporalTableProperties" Namespace="Sawczyn.EFDesigner.EFModel" />
   </Types>
   <Shapes>
     <CompartmentShape Id="8055f08f-3d3a-435f-8b47-7afcd0e051bd" Description="" Name="ClassShape" DisplayName="Class Shape" Namespace="Sawczyn.EFDesigner.EFModel" GeneratesDoubleDerived="true" FixedTooltipText="Class Shape" TextColor="White" ExposesTextColor="true" FillColor="0, 122, 204" InitialHeight="0.3" OutlineThickness="0.01" FillGradientMode="None" ExposesOutlineColorAsProperty="true" ExposesFillColorAsProperty="true" ExposesOutlineDashStyleAsProperty="true" ExposesOutlineThicknessAsProperty="true" Geometry="Rectangle">
@@ -2605,6 +2638,21 @@
           </XmlPropertyData>
           <XmlPropertyData XmlName="isInheritanceStrategyTracking">
             <DomainPropertyMoniker Name="ModelClass/IsInheritanceStrategyTracking" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="isTemporalTableActive">
+            <DomainPropertyMoniker Name="ModelClass/IsTemporalTableActive" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="temporalTableOptions">
+            <DomainPropertyMoniker Name="ModelClass/TemporalTableOptions" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="historyTableName">
+            <DomainPropertyMoniker Name="ModelClass/HistoryTableName" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="periodStartColumnName">
+            <DomainPropertyMoniker Name="ModelClass/PeriodStartColumnName" />
+          </XmlPropertyData>
+          <XmlPropertyData XmlName="periodEndColumnName">
+            <DomainPropertyMoniker Name="ModelClass/PeriodEndColumnName" />
           </XmlPropertyData>
         </ElementData>
       </XmlClassData>

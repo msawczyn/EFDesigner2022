@@ -8486,6 +8486,453 @@ namespace Sawczyn.EFDesigner.EFModel
 		}
 		
 		#endregion
+		#region IsTemporalTableActive domain property code
+		
+		/// <summary>
+		/// IsTemporalTableActive domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid IsTemporalTableActiveDomainPropertyId = new global::System.Guid(0x61d6f943, 0x03c3, 0x4646, 0x8f, 0xf8, 0xd5, 0x31, 0x59, 0xf2, 0x88, 0xc2);
+		
+		/// <summary>
+		/// Storage for IsTemporalTableActive
+		/// </summary>
+		private global::System.Boolean isTemporalTableActivePropertyStorage;
+		
+		/// <summary>
+		/// Gets or sets the value of IsTemporalTableActive domain property.
+		/// If true, will configure the class to use temporal tables for storage. This is
+		/// not supported in all database types.
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/IsTemporalTableActive.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelClass/IsTemporalTableActive.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelClass/IsTemporalTableActive.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[global::System.ComponentModel.Browsable(false)]
+		[DslModeling::DomainObjectId("61d6f943-03c3-4646-8ff8-d53159f288c2")]
+		public global::System.Boolean IsTemporalTableActive
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return isTemporalTableActivePropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				IsTemporalTableActivePropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelClass.IsTemporalTableActive domain property.
+		/// </summary>
+		internal sealed partial class IsTemporalTableActivePropertyHandler : DslModeling::DomainPropertyValueHandler<ModelClass, global::System.Boolean>
+		{
+			private IsTemporalTableActivePropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelClass.IsTemporalTableActive domain property value handler.
+			/// </summary>
+			public static readonly IsTemporalTableActivePropertyHandler Instance = new IsTemporalTableActivePropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelClass.IsTemporalTableActive domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return IsTemporalTableActiveDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.Boolean GetValue(ModelClass element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.isTemporalTableActivePropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelClass element, global::System.Boolean newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.Boolean oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.isTemporalTableActivePropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
+		#region TemporalTableOptions domain property code
+		
+		/// <summary>
+		/// TemporalTableOptions domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid TemporalTableOptionsDomainPropertyId = new global::System.Guid(0x27bfba48, 0xfe5b, 0x46d4, 0xb5, 0x0e, 0x30, 0xe1, 0x5d, 0xe3, 0xc6, 0xb6);
+		
+		/// <summary>
+		/// Gets or sets the value of TemporalTableOptions domain property.
+		/// Temporal Table customizations
+		/// </summary>
+		[System.ComponentModel.TypeConverter(typeof(System.ComponentModel.ExpandableObjectConverter))]
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/TemporalTableOptions.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelClass/TemporalTableOptions.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelClass/TemporalTableOptions.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslModeling::DomainProperty(Kind = DslModeling::DomainPropertyKind.CustomStorage)]
+		[DslModeling::DomainObjectId("27bfba48-fe5b-46d4-b50e-30e15de3c6b6")]
+		public TemporalTableProperties TemporalTableOptions
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return TemporalTableOptionsPropertyHandler.Instance.GetValue(this);
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				TemporalTableOptionsPropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelClass.TemporalTableOptions domain property.
+		/// </summary>
+		internal sealed partial class TemporalTableOptionsPropertyHandler : DslModeling::DomainPropertyValueHandler<ModelClass, TemporalTableProperties>
+		{
+			private TemporalTableOptionsPropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelClass.TemporalTableOptions domain property value handler.
+			/// </summary>
+			public static readonly TemporalTableOptionsPropertyHandler Instance = new TemporalTableOptionsPropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelClass.TemporalTableOptions domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return TemporalTableOptionsDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed TemporalTableProperties GetValue(ModelClass element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				// There is no storage for TemporalTableOptions because its Kind is
+				// set to CustomStorage. Please provide the GetTemporalTableOptionsValue()
+				// method on the domain class.
+				return element.GetTemporalTableOptionsValue();
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelClass element, TemporalTableProperties newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				TemporalTableProperties oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					// There is no storage for TemporalTableOptions because its Kind is
+					// set to CustomStorage. Please provide the SetTemporalTableOptionsValue()
+					// method on the domain class.
+					element.SetTemporalTableOptionsValue(newValue);
+					ValueChanged(element, oldValue, GetValue(element));
+				}
+			}
+		}
+		
+		#endregion
+		#region HistoryTableName domain property code
+		
+		/// <summary>
+		/// HistoryTableName domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid HistoryTableNameDomainPropertyId = new global::System.Guid(0x4ee56c81, 0x96b1, 0x4f00, 0x9d, 0x80, 0xc3, 0xca, 0x0b, 0x98, 0x20, 0xbd);
+		
+		/// <summary>
+		/// Storage for HistoryTableName
+		/// </summary>
+		private global::System.String historyTableNamePropertyStorage = string.Empty;
+		
+		/// <summary>
+		/// Gets or sets the value of HistoryTableName domain property.
+		/// Name of versioning table
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/HistoryTableName.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelClass/HistoryTableName.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelClass/HistoryTableName.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[global::System.ComponentModel.Browsable(false)]
+		[DslModeling::DomainObjectId("4ee56c81-96b1-4f00-9d80-c3ca0b9820bd")]
+		public global::System.String HistoryTableName
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return historyTableNamePropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				HistoryTableNamePropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelClass.HistoryTableName domain property.
+		/// </summary>
+		internal sealed partial class HistoryTableNamePropertyHandler : DslModeling::DomainPropertyValueHandler<ModelClass, global::System.String>
+		{
+			private HistoryTableNamePropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelClass.HistoryTableName domain property value handler.
+			/// </summary>
+			public static readonly HistoryTableNamePropertyHandler Instance = new HistoryTableNamePropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelClass.HistoryTableName domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return HistoryTableNameDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.String GetValue(ModelClass element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.historyTableNamePropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelClass element, global::System.String newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.String oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.historyTableNamePropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
+		#region PeriodStartColumnName domain property code
+		
+		/// <summary>
+		/// PeriodStartColumnName domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid PeriodStartColumnNameDomainPropertyId = new global::System.Guid(0x385f9ff1, 0x4c65, 0x44ad, 0x8c, 0xbe, 0x98, 0x43, 0x5e, 0xf0, 0xb2, 0xe0);
+		
+		/// <summary>
+		/// Storage for PeriodStartColumnName
+		/// </summary>
+		private global::System.String periodStartColumnNamePropertyStorage = string.Empty;
+		
+		/// <summary>
+		/// Gets or sets the value of PeriodStartColumnName domain property.
+		/// Name of column holding lowest valid DateTime for the object's values
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/PeriodStartColumnName.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelClass/PeriodStartColumnName.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelClass/PeriodStartColumnName.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[global::System.ComponentModel.Browsable(false)]
+		[DslModeling::DomainObjectId("385f9ff1-4c65-44ad-8cbe-98435ef0b2e0")]
+		public global::System.String PeriodStartColumnName
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return periodStartColumnNamePropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				PeriodStartColumnNamePropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelClass.PeriodStartColumnName domain property.
+		/// </summary>
+		internal sealed partial class PeriodStartColumnNamePropertyHandler : DslModeling::DomainPropertyValueHandler<ModelClass, global::System.String>
+		{
+			private PeriodStartColumnNamePropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelClass.PeriodStartColumnName domain property value handler.
+			/// </summary>
+			public static readonly PeriodStartColumnNamePropertyHandler Instance = new PeriodStartColumnNamePropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelClass.PeriodStartColumnName domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return PeriodStartColumnNameDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.String GetValue(ModelClass element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.periodStartColumnNamePropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelClass element, global::System.String newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.String oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.periodStartColumnNamePropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
+		#region PeriodEndColumnName domain property code
+		
+		/// <summary>
+		/// PeriodEndColumnName domain property Id.
+		/// </summary>
+		public static readonly global::System.Guid PeriodEndColumnNameDomainPropertyId = new global::System.Guid(0x7a547c49, 0x4cc2, 0x4bc5, 0x91, 0x11, 0x96, 0x6e, 0x3e, 0xa6, 0xd9, 0x2d);
+		
+		/// <summary>
+		/// Storage for PeriodEndColumnName
+		/// </summary>
+		private global::System.String periodEndColumnNamePropertyStorage = string.Empty;
+		
+		/// <summary>
+		/// Gets or sets the value of PeriodEndColumnName domain property.
+		/// Name of column holding highest valid DateTime for the object's values
+		/// </summary>
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelClass/PeriodEndColumnName.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelClass/PeriodEndColumnName.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[global::System.ComponentModel.Browsable(false)]
+		[DslModeling::DomainObjectId("7a547c49-4cc2-4bc5-9111-966e3ea6d92d")]
+		public global::System.String PeriodEndColumnName
+		{
+			[global::System.Diagnostics.DebuggerStepThrough]
+			get
+			{
+				return periodEndColumnNamePropertyStorage;
+			}
+			[global::System.Diagnostics.DebuggerStepThrough]
+			set
+			{
+				PeriodEndColumnNamePropertyHandler.Instance.SetValue(this, value);
+			}
+		}
+		/// <summary>
+		/// Value handler for the ModelClass.PeriodEndColumnName domain property.
+		/// </summary>
+		internal sealed partial class PeriodEndColumnNamePropertyHandler : DslModeling::DomainPropertyValueHandler<ModelClass, global::System.String>
+		{
+			private PeriodEndColumnNamePropertyHandler() { }
+		
+			/// <summary>
+			/// Gets the singleton instance of the ModelClass.PeriodEndColumnName domain property value handler.
+			/// </summary>
+			public static readonly PeriodEndColumnNamePropertyHandler Instance = new PeriodEndColumnNamePropertyHandler();
+		
+			/// <summary>
+			/// Gets the Id of the ModelClass.PeriodEndColumnName domain property.
+			/// </summary>
+			public sealed override global::System.Guid DomainPropertyId
+			{
+				[global::System.Diagnostics.DebuggerStepThrough]
+				get
+				{
+					return PeriodEndColumnNameDomainPropertyId;
+				}
+			}
+			
+			/// <summary>
+			/// Gets a strongly-typed value of the property on specified element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <returns>Property value.</returns>
+			public override sealed global::System.String GetValue(ModelClass element)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+				return element.periodEndColumnNamePropertyStorage;
+			}
+		
+			/// <summary>
+			/// Sets property value on an element.
+			/// </summary>
+			/// <param name="element">Element which owns the property.</param>
+			/// <param name="newValue">New property value.</param>
+			public override sealed void SetValue(ModelClass element, global::System.String newValue)
+			{
+				if (element == null) throw new global::System.ArgumentNullException("element");
+		
+				global::System.String oldValue = GetValue(element);
+				if (newValue != oldValue)
+				{
+					ValueChanging(element, oldValue, newValue);
+					element.periodEndColumnNamePropertyStorage = newValue;
+					ValueChanged(element, oldValue, newValue);
+				}
+			}
+		}
+		
+		#endregion
 		#region Targets opposite domain role accessor
 		
 		/// <summary>
@@ -14752,6 +15199,6 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
    partial class ModelRoot
    {
-      public const string DSLVersion = "4.2.7.1";
+      public const string DSLVersion = "4.2.7.2";
    }
 }
