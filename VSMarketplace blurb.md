@@ -49,10 +49,20 @@ That's it. Of course, if you customized any of the standard templates, you'll ha
 bump your changes up against the new templates. Not much has changed that didn't absolutely _need_ to be changed due to the VS2022 differences, but there
 may be a bugfix or two your customized templates don't have. But, hey ... if you've been customizing the templates, you know the drill, right?
 
+**We're looking for help!**
+
+Let's be honest -- the documentation is woefully out of date. There are a ton of new features in the tool that aren't mentioned in the docs anywhere,
+and that's just plain not good. 
+
+If you're interested in helping out, **please** drop a note at the GitHub project site. 
+More hands make the work lighter, and I know there are some really bright people amongst the userbase who are much better at writing documentation than I am.
+
 **ChangeLog**
 
-**4.2.6**
+**4.2.7**
    - **[NEW]** Support for per-entity inheritance in EF7
+   - **[NEW]** Added option to generate nullable indicators
+   - **[NEW]** Added temporal table support for EFCore6 and above. These aren't supported by every database, and you're on your own to know if your database supports them.
    - **[NEW]** Arrays of native types can now be used as property types in EFCore8+ projects
    - **[NEW]** Aggregate ("owned") types can now be stored as JSON properties in EFCore7+ projects
    - **[NEW]** Associations with transient, non-collection objects can be stored as JSON properties in EFCore7+ projects

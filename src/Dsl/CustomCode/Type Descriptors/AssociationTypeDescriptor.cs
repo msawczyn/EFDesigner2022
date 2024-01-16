@@ -142,7 +142,6 @@ namespace Sawczyn.EFDesigner.EFModel
             // things unavailable if < EFCore7+
             if (!modelRoot.IsEFCore7Plus)
             {
-               System.Diagnostics.Debug.WriteLine("Removing IsJSON from " + association.GetDisplayText());
                propertyDescriptors.Remove("IsJSON");
             }
 

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EFCore8Parser": {
+      "commandName": "Project",
+      "commandLineArgs": "\"D:\\Code\\Foxen\\PMPortal\\src\\server\\backend\\Foxen.Data.Pmp\\bin\\Debug\\net6.0\\Foxen.Data.Pmp.dll\" c:\\temp\\foo.txt"
+    }
+  }
+}

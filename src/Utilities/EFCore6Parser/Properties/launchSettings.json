@@ -2,7 +2,7 @@
   "profiles": {
     "EFCore6Parser": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Code\\_Clients\\AWH\\Apprisen\\src\\2023\\JCM\\Apprisen.ICM.Data\\bin\\Debug\\net6.0\\ICM.Data.dll\" \"c:\\temp\\views.txt\""
+      "commandLineArgs": "\"C:\\Code\\Foxen\\PMPortal\\src\\server\\backend\\Foxen.Data.Pmp\\bin\\Debug\\net6.0\\Foxen.Data.Pmp.dll\" c:\\temp\\foo.txt"
     }
   }
 }

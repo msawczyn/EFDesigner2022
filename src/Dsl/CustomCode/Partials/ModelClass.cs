@@ -413,6 +413,40 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
+      /// Gets the value of the TemporalTableOptions property
+      /// </summary>
+      /// <returns></returns>
+      private TemporalTableProperties GetTemporalTableOptionsValue()
+      {
+         return new TemporalTableProperties(this)
+                {
+                   HistoryTableName = HistoryTableName
+                 , PeriodStartColumnName = PeriodStartColumnName
+                 , PeriodEndColumnName = PeriodEndColumnName
+                };
+      }
+
+      private void SetTemporalTableOptionsValue(TemporalTableProperties value)
+      {
+         if (value == null)
+            return;
+
+         using (Transaction t = Store.TransactionManager.BeginTransaction("Set Temporal Table Options"))
+         {
+            if (value.HistoryTableName != HistoryTableName)
+               HistoryTableName = value.HistoryTableName;
+
+            if (value.PeriodStartColumnName != PeriodStartColumnName)
+               PeriodStartColumnName = value.PeriodStartColumnName;
+
+            if (value.PeriodEndColumnName != PeriodEndColumnName)
+               PeriodEndColumnName = value.PeriodEndColumnName;
+
+            t.Commit();
+         }
+      }
+
+      /// <summary>
       ///    Gets the name of the superclass, if any.
       /// </summary>
       /// <returns></returns>

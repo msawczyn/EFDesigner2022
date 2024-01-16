@@ -52,20 +52,22 @@ namespace Sawczyn.EFDesigner.EFModel
             string logFilename = Path.ChangeExtension(outputFilename, "log");
             StatusDisplay.Show("Detecting .NET and EF versions");
 
-            string[] parsers =
+            KeyValuePair<string, string>[] parsers =
             {
-               @"Parsers\EF6Parser.exe",
-               @"Parsers\EFCore5Parser.exe",
-               @"Parsers\EFCore6Parser.exe",
-               @"Parsers\EFCore7Parser.exe",
-               @"Parsers\EFCore8Parser.exe"
+               new KeyValuePair<string, string>("EF 6", @"Parsers\EF6Parser.exe"),
+               new KeyValuePair<string, string>("EF Core 5", @"Parsers\EFCore5Parser.exe"),
+               new KeyValuePair<string, string>("EF Core 6", @"Parsers\EFCore6Parser.exe"),
+               new KeyValuePair<string, string>("EF Core 7", @"Parsers\EFCore7Parser.exe"),
+               new KeyValuePair<string, string>("EF Core 8", @"Parsers\EFCore8Parser.exe")
             };
 
             Dictionary<string, bool> contexts = new Dictionary<string, bool>();
 
-            foreach (string parserPath in parsers)
+            foreach (KeyValuePair<string, string> parser in parsers)
             {
-               if (TryProcess(inputFile, ref newElements, parserPath, outputFilename, logFilename, contexts))
+               StatusDisplay.Show($"Detecting .NET and EF versions ... Trying {parser.Key} ...");
+
+               if (TryProcess(inputFile, ref newElements, parser.Value, outputFilename, logFilename, contexts))
                   return true;
             }
 

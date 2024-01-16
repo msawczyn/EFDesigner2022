@@ -73,9 +73,19 @@ may be a bugfix or two your customized templates don't have. But, hey ... if you
 </table> -->
 to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawczyn.github.io/EFDesigner/images/jetbrains-variant-2a.png"></a> for providing free development tools to support this project.
 
+### We're looking for help!
+
+Let's be honest -- the documentation is woefully out of date. There are a ton of new features in the tool that aren't mentioned in the docs anywhere,
+and that's just plain not good. 
+
+If you're interested in helping out, **please** drop a note at the GitHub project site. 
+More hands make the work lighter, and I know there are some really bright people amongst the userbase who are much better at writing documentation than I am.
+
 ### Change Log
-[4.2.6](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.6/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
+[4.2.7](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.7/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - Support for per-entity inheritance in EF7
+   - Added option to generate nullable indicators
+   - Added temporal table support for EFCore6 and above. These aren't supported by every database, and you're on your own to know if your database supports them.
    - Arrays of native types can now be used as property types in EFCore8+ projects
    - Aggregate ("owned") types can now be stored as JSON properties in EFCore7+ projects
    - Associations with transient, non-collection objects can be stored as JSON properties in EFCore7+ projects
@@ -84,6 +94,7 @@ to <a href="https://www.jetbrains.com/?from=EFDesigner"><img src="https://msawcz
    - Association classes are back, but only for cases where each side of the many-to-many bidirectional association has a single identity property. 
    - Removed EFCore2 and EFCore3 parsers. Those EFCore versions have been obsolete for quite a while. If you need to use them, you can still use the 4.2.5 version of the extension.
    - Constructors with required-but-transient associations no longer have those associations as parameters. If that constructor is needed, add it to the partial class file.
+   - Tightened up the concept of transient entities. We're now generating better code for these and the restriction that transient associations must be auto properties has been removed.
    - Entities now update their displays immediately when the Persistent flag is changed.
 
 [4.2.5](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.5/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)

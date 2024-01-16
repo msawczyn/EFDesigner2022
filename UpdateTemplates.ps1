@@ -28,17 +28,19 @@ $1
 #>'
 
 $files = 
-   'EFDesigner',
+   'EF6Designer',
    'EF6ModelGenerator',
    'EFCore2ModelGenerator',
    'EFCore3ModelGenerator',
    'EFCore5ModelGenerator',
+   'EFCoreDesigner',
    'EFCoreModelGenerator',
+   'EFDesigner',
    'EFModelFileManager',
    'EFModelGenerator',
-   'VSIntegration',
-   'MultipleOutputHelper'
-   
+   'MultipleOutputHelper',
+   'VSIntegration'
+
 foreach ($f in $files) {
    try {
       "Processing $f"

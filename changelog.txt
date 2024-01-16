@@ -1,5 +1,7 @@
-4.2.6
+4.2.7
    - Support for per-entity inheritance in EF7
+   - Added option to generate nullable indicators
+   - Added temporal table support for EFCore6 and above. These aren't supported by every database, and you're on your own to know if your database supports them.
    - Arrays of native types can now be used as property types in EFCore8+ projects
    - Aggregate ("owned") types can now be stored as JSON properties in EFCore7+ projects
    - Associations with transient, non-collection objects can be stored as JSON properties in EFCore7+ projects

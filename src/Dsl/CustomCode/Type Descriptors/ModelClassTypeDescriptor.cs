@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 
 using Microsoft.VisualStudio.Modeling;
@@ -43,6 +44,7 @@ namespace Sawczyn.EFDesigner.EFModel
             if (!modelRoot.IsEFCore6Plus)
             {
                propertyDescriptors.Remove("UseTemporalTables");
+               propertyDescriptors.Remove("TemporalTableOptions");
 
                if (modelClass.IsDependentType)
                   propertyDescriptors.Remove("TableName");
@@ -59,7 +61,10 @@ namespace Sawczyn.EFDesigner.EFModel
 
                if ((modelClass.Subclasses.Any() && modelClass.InheritanceStrategy != CodeStrategy.TablePerHierarchy)
                 || modelClass.Superclass != null)
+               {
                   propertyDescriptors.Remove("UseTemporalTables");
+                  propertyDescriptors.Remove("TemporalTableOptions");
+               }
 
                if (modelClass.InheritanceStrategy == CodeStrategy.TablePerHierarchy && modelClass.Superclass != null)
                {
@@ -95,6 +100,7 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("TableComment");
                propertyDescriptors.Remove("TableName");
                propertyDescriptors.Remove("UseTemporalTables");
+               propertyDescriptors.Remove("TemporalTableOptions");
             }
             else
                propertyDescriptors.Remove("ViewName");
@@ -111,6 +117,7 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("TableComment");
                propertyDescriptors.Remove("TableName");
                propertyDescriptors.Remove("UseTemporalTables");
+               propertyDescriptors.Remove("TemporalTableOptions");
                propertyDescriptors.Remove("ViewName");
             }
 
@@ -130,7 +137,13 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("TableComment");
                propertyDescriptors.Remove("TableName");
                propertyDescriptors.Remove("UseTemporalTables");
+               propertyDescriptors.Remove("TemporalTableOptions");
                propertyDescriptors.Remove("ViewName");
+            }
+
+            if (!modelClass.UseTemporalTables)
+            {
+               propertyDescriptors.Remove("TemporalTableOptions");
             }
 
             //Add the descriptors for the tracking properties 

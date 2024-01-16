@@ -395,6 +395,12 @@
             <xsd:documentation>If true, will allow generating [Comment] attributes on C# class</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+        <!-- Property: GenerateNullable -->
+        <xsd:attribute name="generateNullable" type="xsd:boolean" >
+          <xsd:annotation>
+            <xsd:documentation>If true, generates nullable modifiers for non-required objects</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
@@ -654,12 +660,6 @@
             <xsd:documentation>If true, ModelClass.AutoPropertyDefault tracks ModelRoot.AutoPropertyDefault</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
-        <!-- Property: UseTemporalTables -->
-        <xsd:attribute name="useTemporalTables" type="xsd:boolean" >
-          <xsd:annotation>
-            <xsd:documentation>If true, will configure the class to use temporal tables for storage. This is not supported in all database types.</xsd:documentation>
-          </xsd:annotation>
-        </xsd:attribute>
         <!-- Property: IsAssociationClass -->
         <xsd:attribute name="isAssociationClass" type="xsd:boolean" >
           <xsd:annotation>
@@ -694,6 +694,36 @@
         <xsd:attribute name="isInheritanceStrategyTracking" type="xsd:boolean" >
           <xsd:annotation>
             <xsd:documentation>If true, Model.InheritanceStrategyDefault</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <!-- Property: UseTemporalTables -->
+        <xsd:attribute name="UseTemporalTables" type="xsd:boolean" >
+          <xsd:annotation>
+            <xsd:documentation>If true, will configure the class to use temporal tables for storage. This is not supported in all database types.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <!-- Property: TemporalTableOptions -->
+        <xsd:attribute name="temporalTableOptions" type="xsd:string" >
+          <xsd:annotation>
+            <xsd:documentation>Temporal Table customizations</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <!-- Property: HistoryTableName -->
+        <xsd:attribute name="historyTableName" type="xsd:string" >
+          <xsd:annotation>
+            <xsd:documentation>Name of versioning table</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <!-- Property: PeriodStartColumnName -->
+        <xsd:attribute name="periodStartColumnName" type="xsd:string" >
+          <xsd:annotation>
+            <xsd:documentation>Name of column holding lowest valid DateTime for the object&apos;s values</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <!-- Property: PeriodEndColumnName -->
+        <xsd:attribute name="periodEndColumnName" type="xsd:string" >
+          <xsd:annotation>
+            <xsd:documentation>Name of column holding highest valid DateTime for the object&apos;s values</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
       </xsd:extension>

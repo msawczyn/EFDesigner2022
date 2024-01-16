@@ -15,7 +15,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.6
+      // EFDesigner v4.2.7.2
       // Copyright (c) 2017-2023 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -384,6 +384,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             {
                ClearIndent();
                efModelFileManager.StartNewFile(Path.Combine(modelClass.EffectiveOutputDirectory, $"{modelClass.Name}{fileNameMarker}.cs"));
+               Output($"#nullable {(modelRoot.GenerateNullable ? "enable" : "disable")}");
                WriteClass(modelClass);
             }
 
@@ -393,6 +394,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             {
                ClearIndent();
                efModelFileManager.StartNewFile(Path.Combine(modelEnum.EffectiveOutputDirectory, $"{modelEnum.Name}{fileNameMarker}.cs"));
+               Output($"#nullable {(modelRoot.GenerateNullable ? "enable" : "disable")}");
                WriteEnum(modelEnum);
             }
 
@@ -402,15 +404,18 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             {
                ClearIndent();
                efModelFileManager.StartNewFile(Path.Combine(modelRoot.ContextOutputDirectory, $"{modelRoot.EntityContainerName}DatabaseInitializer{fileNameMarker}.cs"));
+               Output($"#nullable {(modelRoot.GenerateNullable ? "enable" : "disable")}");
                WriteDatabaseInitializer();
             }
 
             ClearIndent();
             efModelFileManager.StartNewFile(Path.Combine(modelRoot.ContextOutputDirectory, $"{modelRoot.EntityContainerName}DbMigrationConfiguration{fileNameMarker}.cs"));
+            Output($"#nullable {(modelRoot.GenerateNullable ? "enable" : "disable")}");
             WriteMigrationConfiguration();
 
             ClearIndent();
             efModelFileManager.StartNewFile(Path.Combine(modelRoot.ContextOutputDirectory, $"{modelRoot.EntityContainerName}{fileNameMarker}.cs"));
+            Output($"#nullable {(modelRoot.GenerateNullable ? "enable" : "disable")}");
             WriteDbContext();
          }
 

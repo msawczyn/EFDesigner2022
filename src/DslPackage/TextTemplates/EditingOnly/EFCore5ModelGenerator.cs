@@ -12,7 +12,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    public partial class GeneratedTextTransformation
    {
       #region Template
-      // EFDesigner v4.2.6
+      // EFDesigner v4.2.7.2
       // Copyright (c) 2017-2023 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -37,8 +37,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          [SuppressMessage("ReSharper", "RedundantNameQualifier")]
          protected override void ConfigureBidirectionalAssociations(ModelClass modelClass, List<Association> visited, List<string> foreignKeyColumns, List<string> declaredShadowProperties)
          {
-            WriteBidirectionalNonDependentAssociations(modelClass, visited, foreignKeyColumns);
             WriteBidirectionalDependentAssociations(modelClass, $"modelBuilder.Entity<{modelClass.FullName}>()", visited);
+            WriteBidirectionalNonDependentAssociations(modelClass, visited, foreignKeyColumns);
          }
 
          /// <summary>
@@ -151,11 +151,12 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                modifiers.Add("t.ExcludeFromMigrations();");
 
             if (modelRoot.IsEFCore6Plus
+             && !modelClass.IsDatabaseView
              && modelClass.UseTemporalTables
              && !modelClass.IsDatabaseView && !modelClass.IsQueryType
              && (!modelClass.Subclasses.Any() || modelClass.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
              && modelClass.Superclass == null)
-               modifiers.Add("t.IsTemporal();");
+               modifiers.Add($"t.IsTemporal(b => {{ b.HasPeriodStart(\"{modelClass.PeriodStartColumnName}\"); b.HasPeriodEnd(\"{modelClass.PeriodEndColumnName}\"); b.UseHistoryTable(\"{modelClass.HistoryTableName}\"); }});");
 
             string buildActions = modifiers.Any()
                                      ? $", t => {{ {string.Join(" ", modifiers)} }}"
@@ -215,8 +216,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
          [SuppressMessage("ReSharper", "RedundantNameQualifier")]
          protected override void ConfigureUnidirectionalAssociations(ModelClass modelClass, List<Association> visited, List<string> foreignKeyColumns, List<string> declaredShadowProperties)
          {
-            WriteUnidirectionalNonDependentAssociations(modelClass, visited, foreignKeyColumns);
             WriteUnidirectionalDependentAssociations(modelClass, $"modelBuilder.Entity<{modelClass.FullName}>()", visited);
+            WriteUnidirectionalNonDependentAssociations(modelClass, visited, foreignKeyColumns);
          }
 
          /// <summary>
@@ -358,8 +359,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             List<string> modifiers = new List<string>();
 
-            if (associationClass.UseTemporalTables)
-               modifiers.Add(" t.IsTemporal();");
+            if (modelRoot.IsEFCore6Plus && associationClass.UseTemporalTables)
+               modifiers.Add($"t.IsTemporal(b => {{ b.HasPeriodStart(\"{associationClass.PeriodStartColumnName}\"); b.HasPeriodEnd(\"{associationClass.PeriodEndColumnName}\"); b.UseHistoryTable(\"{associationClass.HistoryTableName}\"); }});");
 
             string buildActions = modifiers.Any()
                                      ? $", t => {{ {string.Join(" ", modifiers)} }}"
@@ -420,7 +421,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (BidirectionalAssociation association in Association.GetLinksToTargets(sourceInstance)
                                                                         .OfType<BidirectionalAssociation>()
-                                                                        .Where(x => x.Persistent && !x.Target.Persistent))
+                                                                        .Where(x => x.Persistent && (!x.Target.Persistent || x.Target.IsDependentType)))
             {
                if (visited.Contains(association))
                   continue;
@@ -690,7 +691,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (UnidirectionalAssociation association in Association.GetLinksToTargets(sourceInstance)
                                                                          .OfType<UnidirectionalAssociation>()
-                                                                         .Where(x => x.Persistent && !x.Target.Persistent))
+                                                                         .Where(x => x.Persistent && (!x.Target.Persistent || x.Target.IsDependentType)))
             {
                if (visited.Contains(association))
                   continue;
@@ -750,9 +751,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             else
                segment += $"p{depth}.WithOwner(t => t.{bidirectionalAssociation.SourcePropertyName}); ";
 
-            if (modelRoot.IsEFCore7Plus 
-             && association.IsJSON 
-             && association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany 
+            if (modelRoot.IsEFCore7Plus
+             && association.IsJSON
+             && association.TargetMultiplicity != Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany
              && association.Principal?.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
                segment += $"p{depth}.ToJson(); ";
             else if (!string.IsNullOrEmpty(modelClass.TableName) && modelClass.TableName != association.Source.TableName)

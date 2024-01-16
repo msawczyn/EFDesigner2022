@@ -52,8 +52,8 @@ namespace EFCore8Parser
 
       private static Assembly Context_Resolving(AssemblyLoadContext context, AssemblyName assemblyName)
       {
-         Console.Out.WriteLine($"Looking for {assemblyName.Name}");
-         log.Info($"Looking for {assemblyName.Name}");
+         Console.Out.WriteLine($"Looking for {assemblyName.FullName}");
+         log.Info($"Looking for {assemblyName.FullName}");
          // avoid loading *.resources dlls, because of: https://github.com/dotnet/coreclr/issues/8416
          if (assemblyName.Name.EndsWith("resources"))
             return null;
@@ -71,7 +71,7 @@ namespace EFCore8Parser
          if (library != null)
          {
             Console.Out.WriteLine($"Found in cache");
-            log.Info($"Found {assemblyName.Name} in cache");
+            log.Info($"Found {assemblyName.FullName} in cache");
 
             return context.LoadFromAssemblyName(new AssemblyName(library.Name));
          }
@@ -83,7 +83,7 @@ namespace EFCore8Parser
          if (File.Exists(pathInAppDirectory))
          {
             Console.Out.WriteLine($"Found at {pathInAppDirectory}");
-            log.Info($"Found {assemblyName.Name} at {pathInAppDirectory}");
+            log.Info($"Found {assemblyName.FullName} at {pathInAppDirectory}");
 
             return context.LoadFromAssemblyPath(pathInAppDirectory);
          }
@@ -94,31 +94,29 @@ namespace EFCore8Parser
          if (File.Exists(pathInCurrentDirectory))
          {
             Console.Out.WriteLine($"Found at {pathInCurrentDirectory}");
-            log.Info($"Found {assemblyName.Name} at {pathInCurrentDirectory}");
+            log.Info($"Found {assemblyName.FullName} at {pathInCurrentDirectory}");
 
             return context.LoadFromAssemblyPath(pathInCurrentDirectory);
          }
 
          // try gac
-         string found = Directory.GetFileSystemEntries(Environment.ExpandEnvironmentVariables("%windir%\\Microsoft.NET\\assembly"),
+         string location = Directory.GetFileSystemEntries(Environment.ExpandEnvironmentVariables("%windir%\\Microsoft.NET\\assembly"),
                                                        $"{assemblyName.Name}.dll",
                                                        SearchOption.AllDirectories)
                                  .FirstOrDefault();
 
-         if (found == null)
+         if (location == null)
          {
             Console.Out.WriteLine($"Not found");
-            log.Info($"Not found - {assemblyName.Name}");
+            log.Info($"Not found - {assemblyName.FullName}");
 
             return null;
          }
-         else
-         {
-            Console.Out.WriteLine($"Found at {found}");
-            log.Info($"Found {assemblyName.Name} at {found}");
 
-            return context.LoadFromAssemblyPath(found);
-         }
+         Console.Out.WriteLine($"Found at {location}");
+         log.Info($"Found {assemblyName.FullName} at {location}");
+
+         return context.LoadFromAssemblyPath(location);
       }
 
       private static void Exit(int returnCode, Exception ex = null)

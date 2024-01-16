@@ -16,7 +16,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
    {
       #region Template
 
-      // EFDesigner v4.2.6
+      // EFDesigner v4.2.7.2
       // Copyright (c) 2017-2023 Michael Sawczyn
       // https://github.com/msawczyn/EFDesigner
 
@@ -337,6 +337,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             {
                ClearIndent();
                manager.StartNewFile(Path.Combine(modelClass.EffectiveOutputDirectory, $"{modelClass.Name}{fileNameMarker}.cs"));
+               Output($"#nullable {(modelRoot.GenerateNullable ? "enable" : "disable")}");
                WriteClass(modelClass);
             }
 
@@ -345,6 +346,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             {
                ClearIndent();
                manager.StartNewFile(Path.Combine(modelEnum.EffectiveOutputDirectory, $"{modelEnum.Name}{fileNameMarker}.cs"));
+               Output($"#nullable {(modelRoot.GenerateNullable ? "enable" : "disable")}");
                WriteEnum(modelEnum);
             }
 
@@ -358,7 +360,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             {
                ClearIndent();
                manager.StartNewFile(Path.Combine(modelRoot.ContextOutputDirectory, $"{modelRoot.EntityContainerName}Factory{fileNameMarker}.cs"));
+               Output($"#nullable {(modelRoot.GenerateNullable ? "enable" : "disable")}");
                WriteDbContextFactory();
+               Output($"#nullable {(modelRoot.GenerateNullable ? "enable" : "disable")}");
             }
          }
 
@@ -420,7 +424,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (BidirectionalAssociation association in Association.GetLinksToTargets(sourceInstance)
                                                                         .OfType<BidirectionalAssociation>()
-                                                                        .Where(x => x.Persistent && x.Target.IsDependentType))
+                                                                        .Where(x => x.Persistent && (!x.Target.Persistent || x.Target.IsDependentType)))
             {
                if (visited.Contains(association))
                   continue;
@@ -868,7 +872,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                                                        .OrderBy(x => x.Name))
             {
                string dbSetName = WriteDbSetHeader( modelClass );
-               Output($"{modelRoot.DbSetAccess.ToString().ToLower()} virtual Microsoft.EntityFrameworkCore.DbQuery<{modelClass.FullName}> {dbSetName} {{ get; set; }}");
+               Output($"{modelRoot.DbSetAccess.ToString().ToLower()} virtual Microsoft.EntityFrameworkCore.DbSet<{modelClass.FullName}> {dbSetName} {{ get; set; }}");
             }
 
             NL();
@@ -1045,7 +1049,7 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (UnidirectionalAssociation association in Association.GetLinksToTargets(sourceInstance)
                                                                          .OfType<UnidirectionalAssociation>()
-                                                                         .Where(x => x.Persistent && x.Target.IsDependentType))
+                                                                         .Where(x => x.Persistent && (!x.Target.Persistent || x.Target.IsDependentType)))
             {
                if (visited.Contains(association))
                   continue;

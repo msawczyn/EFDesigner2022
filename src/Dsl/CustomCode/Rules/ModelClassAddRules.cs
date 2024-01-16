@@ -70,6 +70,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
          if (modelRoot.ReservedWords.Contains(element.Name))
             element.Name = "@" + element.Name;
+
+         element.TemporalTableOptions = new TemporalTableProperties(element);
       }
    }
 }
