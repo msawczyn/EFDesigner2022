@@ -156,7 +156,11 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
              && !modelClass.IsDatabaseView && !modelClass.IsQueryType
              && (!modelClass.Subclasses.Any() || modelClass.InheritanceStrategy == CodeStrategy.TablePerHierarchy)
              && modelClass.Superclass == null)
-               modifiers.Add($"t.IsTemporal(b => {{ b.HasPeriodStart(\"{modelClass.PeriodStartColumnName}\"); b.HasPeriodEnd(\"{modelClass.PeriodEndColumnName}\"); b.UseHistoryTable(\"{modelClass.HistoryTableName}\"); }});");
+               modifiers.Add($"t.IsTemporal(b => {{ "
+                           + $"b.HasPeriodStart(\"{modelClass.TemporalTableOptions.PeriodStartColumnName}\"); "
+                           + $"b.HasPeriodEnd(\"{modelClass.TemporalTableOptions.PeriodEndColumnName}\"); "
+                           + $"b.UseHistoryTable(\"{modelClass.TemporalTableOptions.HistoryTableName}\"); "
+                           + $"}});");
 
             string buildActions = modifiers.Any()
                                      ? $", t => {{ {string.Join(" ", modifiers)} }}"

@@ -73,22 +73,14 @@ namespace Sawczyn.EFDesigner.EFModel
          {
             using (Transaction t = modelClass.Store.TransactionManager.BeginTransaction())
             {
-               Debug.WriteLine($"TemporalTableProperties.HistoryTableName.set");
-               Debug.WriteLine($"   value={value??"null"}"); 
                string temp = string.IsNullOrWhiteSpace(value) || (value == _defaultHistoryTableName)
                                 ? null
                                 : value;
 
                if (temp != modelClass.HistoryTableName)
                {
-                  Debug.WriteLine($"Setting modelClass.HistoryTableName to {temp}");
                   modelClass.HistoryTableName = temp;
                }
-               else
-               {
-                  Debug.WriteLine($"No change to modelClass.HistoryTableName ({modelClass.HistoryTableName})");
-               }
-
 
                t.Commit();
             }

@@ -628,16 +628,6 @@ namespace Sawczyn.EFDesigner.EFModel
       }
 
       /// <summary>
-      ///    required navigation (1.. cardinality) properties in this class
-      /// </summary>
-      /// <param name="except">Associations to remove from the result.</param>
-      /// <returns>All required associations found, except for those in the [except] parameter</returns>
-      public IEnumerable<NavigationProperty> RequiredNavigationProperties(params Association[] except)
-      {
-         return LocalNavigationProperties(except).Where(x => x.Required).ToList();
-      }
-
-      /// <summary>
       ///    Calls the reset method on the associated property value handler for each
       ///    tracking property of this model element.
       /// </summary>
@@ -647,8 +637,19 @@ namespace Sawczyn.EFDesigner.EFModel
          IsNamespaceTrackingPropertyHandler.Instance.ResetValue(this);
          IsOutputDirectoryTrackingPropertyHandler.Instance.ResetValue(this);
          IsInheritanceStrategyTrackingPropertyHandler.Instance.ResetValue(this);
+         IsDefaultConstructorVisibilityTrackingPropertyHandler.Instance.ResetValue(this);
 
          // same with other tracking properties as they get added
+      }
+
+      /// <summary>
+      ///    required navigation (1.. cardinality) properties in this class
+      /// </summary>
+      /// <param name="except">Associations to remove from the result.</param>
+      /// <returns>All required associations found, except for those in the [except] parameter</returns>
+      public IEnumerable<NavigationProperty> RequiredNavigationProperties(params Association[] except)
+      {
+         return LocalNavigationProperties(except).Where(x => x.Required).ToList();
       }
 
       /// <summary>
@@ -996,11 +997,11 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelClass element)
          {
-            object calculatedValue = null;
+            object defaultValue = null;
 
             try
             {
-               calculatedValue = element.ModelRoot?.DatabaseSchema;
+               defaultValue = element.ModelRoot?.DatabaseSchema;
             }
             catch (NullReferenceException) { }
             catch (Exception e)
@@ -1009,7 +1010,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if ((calculatedValue != null) && (element.DatabaseSchema == (string)calculatedValue))
+            if ((defaultValue != null) && (string.IsNullOrWhiteSpace(element.DatabaseSchema) || element.DatabaseSchema == (string)defaultValue))
                element.isDatabaseSchemaTrackingPropertyStorage = true;
          }
       }
@@ -1089,11 +1090,11 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelClass element)
          {
-            object calculatedValue = null;
+            object defaultValue = null;
 
             try
             {
-               calculatedValue = element.ModelRoot?.EntityDefaultConstructorVisibilityDefault;
+               defaultValue = element.ModelRoot?.EntityDefaultConstructorVisibilityDefault;
             }
             catch (NullReferenceException) { }
             catch (Exception e)
@@ -1102,7 +1103,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if ((calculatedValue != null) && (element.DefaultConstructorVisibility == (TypeAccessModifierExt)calculatedValue))
+            if ((defaultValue != null) && (element.DefaultConstructorVisibility == (TypeAccessModifierExt)defaultValue))
                element.isDefaultConstructorVisibilityTrackingPropertyStorage = true;
          }
       }
@@ -1185,7 +1186,21 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelClass element)
          {
-            element.isNamespaceTrackingPropertyStorage = string.IsNullOrWhiteSpace(element.namespaceStorage);
+            object defaultValue = null;
+
+            try
+            {
+               defaultValue = element.DefaultNamespace;
+            }
+            catch (NullReferenceException) { }
+            catch (Exception e)
+            {
+               if (CriticalException.IsCriticalException(e))
+                  throw;
+            }
+
+            if (defaultValue != null && (string.IsNullOrWhiteSpace(element.Namespace) || element.Namespace == (string)defaultValue))
+               element.isNamespaceTrackingPropertyStorage = true;
          }
       }
 
@@ -1266,11 +1281,11 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelClass element)
          {
-            object calculatedValue = null;
+            object defaultValue = null;
 
             try
             {
-               calculatedValue = element.IsDependentType
+               defaultValue = element.IsDependentType
                                     ? element.ModelRoot?.StructOutputDirectory
                                     : element.ModelRoot?.EntityOutputDirectory;
             }
@@ -1281,7 +1296,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if ((calculatedValue != null) && (element.OutputDirectory == (string)calculatedValue))
+            if ((defaultValue != null) && (string.IsNullOrWhiteSpace(element.OutputDirectory) || element.OutputDirectory == (string)defaultValue))
                element.isOutputDirectoryTrackingPropertyStorage = true;
          }
       }
@@ -1478,11 +1493,11 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelClass element)
          {
-            object calculatedValue = null;
+            object defaultValue = null;
 
             try
             {
-               calculatedValue = element.ModelRoot?.InheritanceStrategyDefault;
+               defaultValue = element.ModelRoot?.InheritanceStrategyDefault;
             }
             catch (NullReferenceException) { }
             catch (Exception e)
@@ -1491,7 +1506,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if ((calculatedValue != null) && (element.InheritanceStrategy == (CodeStrategy)calculatedValue))
+            if ((defaultValue != null) && (element.InheritanceStrategy == (CodeStrategy)defaultValue))
                element.isInheritanceStrategyTrackingPropertyStorage = true;
          }
       }

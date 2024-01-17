@@ -186,11 +186,11 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(BidirectionalAssociation element)
          {
-            object calculatedValue = null;
+            object defaultValue = null;
 
             try
             {
-               calculatedValue = element.Source?.ImplementNotify;
+               defaultValue = element.Source?.ImplementNotify;
             }
             catch (NullReferenceException) { }
             catch (Exception e)
@@ -199,7 +199,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if ((calculatedValue != null) && (element.SourceImplementNotify == (bool)calculatedValue))
+            if ((defaultValue != null) && (element.SourceImplementNotify == (bool)defaultValue))
                element.isSourceImplementNotifyTrackingPropertyStorage = true;
          }
       }
@@ -280,11 +280,11 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(BidirectionalAssociation element)
          {
-            object calculatedValue = null;
+            object defaultValue = null;
 
             try
             {
-               calculatedValue = element.Source?.AutoPropertyDefault;
+               defaultValue = element.Source?.AutoPropertyDefault;
             }
             catch (NullReferenceException) { }
             catch (Exception e)
@@ -293,7 +293,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if ((calculatedValue != null) && (element.SourceAutoProperty == (bool)calculatedValue))
+            if ((defaultValue != null) && (element.SourceAutoProperty == (bool)defaultValue))
                element.isSourceAutoPropertyTrackingPropertyStorage = true;
          }
       }

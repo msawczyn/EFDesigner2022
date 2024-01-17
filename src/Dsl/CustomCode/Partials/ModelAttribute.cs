@@ -779,9 +779,20 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelAttribute element)
          {
-            PropertyAccessMode? calculatedValue = element?.ModelClass.ModelRoot.PropertyAccessModeDefault;
+            object defaultValue = null;
 
-            if ((calculatedValue != null) && (element.PropertyAccessMode == calculatedValue))
+            try
+            {
+               defaultValue = element?.ModelClass.ModelRoot?.PropertyAccessModeDefault;
+            }
+            catch (NullReferenceException) { }
+            catch (Exception e)
+            {
+               if (CriticalException.IsCriticalException(e))
+                  throw;
+            }
+
+            if ((defaultValue != null) && (element.PropertyAccessMode == (PropertyAccessMode)defaultValue))
                element.isPropertyAccessModeTrackingPropertyStorage = true;
          }
       }
@@ -823,11 +834,11 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelAttribute element)
          {
-            string calculatedValue = null;
+            object defaultValue = null;
 
             try
             {
-               calculatedValue = "default";
+               defaultValue = "default";
             }
             catch (NullReferenceException) { }
             catch (Exception e)
@@ -836,7 +847,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if ((calculatedValue != null) && (element.DatabaseCollation == calculatedValue))
+            if ((defaultValue != null) && (string.IsNullOrWhiteSpace(element.DatabaseCollation) || element.DatabaseCollation == (string)defaultValue))
                element.isDatabaseCollationTrackingPropertyStorage = true;
          }
       }
@@ -878,11 +889,11 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelAttribute element)
          {
-            string calculatedValue = null;
+            string defaultValue = null;
 
             try
             {
-               calculatedValue = element.Name;
+               defaultValue = element.Name;
             }
             catch (NullReferenceException) { }
             catch (Exception e)
@@ -891,7 +902,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if ((calculatedValue != null) && (element.ColumnName == calculatedValue))
+            if ((defaultValue != null) && (string.IsNullOrWhiteSpace(element.ColumnName) || element.ColumnName == defaultValue))
                element.isColumnNameTrackingPropertyStorage = true;
          }
       }
@@ -933,11 +944,11 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelAttribute element)
          {
-            object calculatedValue = null;
+            object defaultValue = null;
 
             try
             {
-               calculatedValue = "default";
+               defaultValue = "default";
             }
             catch (NullReferenceException) { }
             catch (Exception e)
@@ -946,7 +957,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if ((calculatedValue != null) && (element.ColumnType == (string)calculatedValue))
+            if ((defaultValue != null) && (string.IsNullOrWhiteSpace(element.ColumnType) || element.ColumnType == (string)defaultValue))
                element.isColumnTypeTrackingPropertyStorage = true;
          }
       }
@@ -988,11 +999,11 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelAttribute element)
          {
-            object calculatedValue = null;
+            object defaultValue = null;
 
             try
             {
-               calculatedValue = element.ModelClass?.ImplementNotify;
+               defaultValue = element.ModelClass?.ImplementNotify;
             }
             catch (NullReferenceException) { }
             catch (Exception e)
@@ -1001,7 +1012,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if ((calculatedValue != null) && (element.ImplementNotify == (bool)calculatedValue))
+            if ((defaultValue != null) && (element.ImplementNotify == (bool)defaultValue))
                element.isImplementNotifyTrackingPropertyStorage = true;
          }
       }
@@ -1043,11 +1054,11 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelAttribute element)
          {
-            object calculatedValue = null;
+            object defaultValue = null;
 
             try
             {
-               calculatedValue = element.ModelClass?.AutoPropertyDefault;
+               defaultValue = element.ModelClass?.AutoPropertyDefault;
             }
             catch (NullReferenceException) { }
             catch (Exception e)
@@ -1056,7 +1067,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   throw;
             }
 
-            if ((calculatedValue != null) && (element.AutoProperty == (bool)calculatedValue))
+            if ((defaultValue != null) && (element.AutoProperty == (bool)defaultValue))
                element.isAutoPropertyTrackingPropertyStorage = true;
          }
       }

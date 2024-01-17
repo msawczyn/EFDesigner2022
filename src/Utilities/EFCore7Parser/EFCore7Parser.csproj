@@ -37,20 +37,21 @@
    </ItemGroup>
 
    <ItemGroup>
-      <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
+      <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.4" />
       <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="7.0.0" />
       <PackageReference Include="Microsoft.VisualStudio.RpcContracts" Version="17.4.9" />
       <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.5.22" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.3" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="7.0.3" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="7.0.3" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.3" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.3" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.3" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.3" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.15" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="7.0.15" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="7.0.15" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.15" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.15" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.15" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.15" />
       <PackageReference Include="PluralizeService.Core" Version="1.2.21147.2" />
       <PackageReference Include="StreamJsonRpc" Version="2.13.33" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.35.0" />
       <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
    </ItemGroup>
 

@@ -341,7 +341,21 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelEnum element)
          {
-            element.isNamespaceTrackingPropertyStorage = string.IsNullOrWhiteSpace(element.namespaceStorage);
+            object defaultValue = null;
+
+            try
+            {
+               defaultValue = element.DefaultNamespace;
+            }
+            catch (NullReferenceException) { }
+            catch (Exception e)
+            {
+               if (CriticalException.IsCriticalException(e))
+                  throw;
+            }
+
+            if (defaultValue != null && (string.IsNullOrWhiteSpace(element.Namespace) || element.Namespace == (string)defaultValue))
+               element.isNamespaceTrackingPropertyStorage = true;
          }
       }
 
@@ -423,7 +437,21 @@ namespace Sawczyn.EFDesigner.EFModel
          /// <param name="element">The model element that has the property to reset.</param>
          internal void ResetValue(ModelEnum element)
          {
-            element.isOutputDirectoryTrackingPropertyStorage = string.IsNullOrWhiteSpace(element.outputDirectoryStorage);
+            object defaultValue = null;
+
+            try
+            {
+               defaultValue = element.ModelRoot?.EnumOutputDirectory;
+            }
+            catch (NullReferenceException) { }
+            catch (Exception e)
+            {
+               if (CriticalException.IsCriticalException(e))
+                  throw;
+            }
+
+            if ((defaultValue != null) && (string.IsNullOrWhiteSpace(element.OutputDirectory) ||  element.OutputDirectory == (string)defaultValue))
+               element.isOutputDirectoryTrackingPropertyStorage = true;
          }
       }
 

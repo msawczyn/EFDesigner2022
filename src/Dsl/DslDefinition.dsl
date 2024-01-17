@@ -488,6 +488,13 @@
           </Type>
         </DomainProperty>
         <DomainProperty Id="7b385981-572c-4f6f-81aa-5de8608c3914" Description="Overrides default output directory" Name="OutputDirectory" DisplayName="Output Directory" Kind="CustomStorage" Category="Code Generation" IsBrowsable="false">
+          <Attributes>
+            <ClrAttribute Name="System.ComponentModel.TypeConverter">
+              <Parameters>
+                <AttributeParameter Value="typeof(ProjectDirectoryTypeConverter)" />
+              </Parameters>
+            </ClrAttribute>
+          </Attributes>
           <Type>
             <ExternalTypeMoniker Name="/System/String" />
           </Type>
@@ -1030,6 +1037,13 @@
           </Type>
         </DomainProperty>
         <DomainProperty Id="6556f5a3-cba4-415f-bd8c-1af786b61421" Description="Overrides default output directory" Name="OutputDirectory" DisplayName="Output Directory" Kind="CustomStorage" Category="Code Generation" IsBrowsable="false">
+          <Attributes>
+            <ClrAttribute Name="System.ComponentModel.TypeConverter">
+              <Parameters>
+                <AttributeParameter Value="typeof(ProjectDirectoryTypeConverter)" />
+              </Parameters>
+            </ClrAttribute>
+          </Attributes>
           <Type>
             <ExternalTypeMoniker Name="/System/String" />
           </Type>
