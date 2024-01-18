@@ -155,7 +155,8 @@ namespace Sawczyn.EFDesigner.EFModel
 
          foreach (Association association in modelRoot.Store.GetAll<Association>())
          {
-            association.SetEndpointRoles();
+            // should happen at parsing time now
+            // association.SetEndpointRoles();
             association.FixupForeignKeys();
          }
 

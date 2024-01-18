@@ -192,16 +192,19 @@ namespace Sawczyn.EFDesigner.EFModel
                                                                       new CategoryAttribute("Code Generation")
                                                                    }));
 
-            propertyDescriptors.Add(new TrackingPropertyDescriptor(modelClass,
-                                                                   storeDomainDataDirectory.GetDomainProperty(ModelClass.OutputDirectoryDomainPropertyId),
-                                                                   storeDomainDataDirectory.GetDomainProperty(ModelClass.IsOutputDirectoryTrackingDomainPropertyId),
-                                                                   new Attribute[]
-                                                                   {
-                                                                      new DisplayNameAttribute("Output Directory"),
-                                                                      new DescriptionAttribute("Overrides default output directory"),
-                                                                      new CategoryAttribute("Code Generation"),
-                                                                      new TypeConverterAttribute(typeof(ProjectDirectoryTypeConverter))
-                                                                   }));
+            if (modelClass.GenerateCode)
+            {
+               propertyDescriptors.Add(new TrackingPropertyDescriptor(modelClass
+                                                                    , storeDomainDataDirectory.GetDomainProperty(ModelClass.OutputDirectoryDomainPropertyId)
+                                                                    , storeDomainDataDirectory.GetDomainProperty(ModelClass.IsOutputDirectoryTrackingDomainPropertyId)
+                                                                    , new Attribute[]
+                                                                      {
+                                                                         new DisplayNameAttribute("Output Directory")
+                                                                       , new DescriptionAttribute("Overrides default output directory")
+                                                                       , new CategoryAttribute("Code Generation")
+                                                                       , new TypeConverterAttribute(typeof( ProjectDirectoryTypeConverter ))
+                                                                      }));
+            }
 
             if (modelRoot.IsEFCore7Plus && modelClass.Persistent)
             {

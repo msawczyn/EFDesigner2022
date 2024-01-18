@@ -250,18 +250,18 @@ namespace Sawczyn.EFDesigner.EFModel
          }
 
          // reparent existing properties if needed
-         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: {GetDisplayText()} has {fkProperties.Count} FK properties");
-         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Dependent class is {Dependent.Name}");
-         Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Principal class is {Principal.Name}");
+         //Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: {GetDisplayText()} has {fkProperties.Count} FK properties");
+         //Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Dependent class is {Dependent.Name}");
+         //Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Principal class is {Principal.Name}");
 
-         foreach (ModelAttribute existing in fkProperties.Where(x => x.ModelClass != Dependent))
-         {
-            Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Reparenting {existing.Name} from {existing.ModelClass.Name} to {Dependent.Name}");
+         //foreach (ModelAttribute existing in fkProperties.Where(x => x.ModelClass != Dependent))
+         //{
+         //   Debug.WriteLine($"AssociationChangedRules.FixupForeignKeys: Reparenting {existing.Name} from {existing.ModelClass.Name} to {Dependent.Name}");
 
-            existing.ClearFKMods();
-            existing.ModelClass.MoveAttribute(existing, Dependent);
-            existing.SetFKMods(this);
-         }
+         //   existing.ClearFKMods();
+         //   existing.ModelClass.MoveAttribute(existing, Dependent);
+         //   existing.SetFKMods(this);
+         //}
 
          // create new properties if they don't already exist
          foreach (string propertyName in addList.Where(n => Dependent.Attributes.All(a => a.Name != n)))

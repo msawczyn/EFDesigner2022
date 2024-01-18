@@ -270,6 +270,16 @@ namespace EFCore6Parser
                association.ForeignKey = fkPropertyDeclarations.Any()
                                            ? string.Join(",", fkPropertyDeclarations)
                                            : null;
+
+               IProperty fkProperty = navigationProperty.ForeignKey.Properties.First();
+               string dependentClassName = ((IEntityType)(fkProperty.DeclaringType)).ClrType.Name;
+               association.SourceRole = dependentClassName == association.SourceClassName
+                                           ? AssociationRole.Dependent
+                                           : AssociationRole.Principal;
+
+               association.TargetRole = dependentClassName == association.TargetClassName
+                                           ? AssociationRole.Dependent
+                                           : AssociationRole.Principal;
             }
 
             // unfortunately, EFCore doesn't serialize documentation like EF6 did
@@ -329,6 +339,16 @@ namespace EFCore6Parser
                association.ForeignKey = fkPropertyDeclarations.Any()
                                            ? string.Join(",", fkPropertyDeclarations)
                                            : null;
+
+               IProperty fkProperty = navigationProperty.ForeignKey.Properties.First();
+               string dependentClassName = ((IEntityType)(fkProperty.DeclaringType)).ClrType.Name;
+               association.SourceRole = dependentClassName == association.SourceClassName
+                                           ? AssociationRole.Dependent
+                                           : AssociationRole.Principal;
+
+               association.TargetRole = dependentClassName == association.TargetClassName
+                                           ? AssociationRole.Dependent
+                                           : AssociationRole.Principal;
             }
 
             result.Add(association);
