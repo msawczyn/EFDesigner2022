@@ -518,8 +518,30 @@ namespace Sawczyn.EFDesigner.EFModel
             elementLink.SourceRole = ConvertRole(data.SourceRole);
             elementLink.TargetRole = ConvertRole(data.TargetRole);
 
-            elementLink.SetEndpointRoles();
-            elementLink.FixupForeignKeys();
+            if (elementLink.SourceRole == EndpointRole.NotSet || elementLink.TargetRole == EndpointRole.NotSet)
+            {
+               elementLink.SetEndpointRoles();
+               elementLink.FixupForeignKeys();
+            }
+            else
+            {
+               string[] keyNames = elementLink.FKPropertyName?.Split(',') ?? Array.Empty<string>();
+
+               foreach (string keyName in keyNames)
+               {
+                  
+               }
+               foreach (ModelAttribute modelAttribute in elementLink.Dependent?.AllAttributes)
+               {
+                  if (modelAttribute.Name == propertyName)
+               }
+
+               foreach (ModelAttribute modelAttribute in keyNames.Select(propertyName => elementLink.Dependent.AllAttributes.FirstOrDefault(p => p.Name == propertyName))
+                                                                 .Where(modelAttribute => modelAttribute != null))
+               {
+                  modelAttribute.IsForeignKeyFor = elementLink.Id;
+               }
+            }
 
             // we could have a situation where there are no roles assigned (if 0/1-0/1 or 1-1). If we have exposed foreign keys, though, we can figure those out.
             if (((elementLink.SourceMultiplicity != Multiplicity.ZeroMany) || (elementLink.TargetMultiplicity != Multiplicity.ZeroMany))

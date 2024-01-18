@@ -263,27 +263,23 @@ namespace EFCore5Parser
             // the property in the target class (referencing the source class)
             association.SourceMultiplicity = ConvertMultiplicity(navigationProperty.GetSourceMultiplicity());
 
-            if (navigationProperty.ForeignKey != null)
-            {
-               List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
+            List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
                                                                        .Where(p => !p.IsShadowProperty())
                                                                        .Select(p => p.Name)
                                                                        .ToList();
 
-               association.ForeignKey = fkPropertyDeclarations.Any()
-                                           ? string.Join(",", fkPropertyDeclarations)
-                                           : null;
+            association.ForeignKey = fkPropertyDeclarations.Any()
+                                        ? string.Join(",", fkPropertyDeclarations)
+                                        : null;
 
-               IProperty fkProperty = navigationProperty.ForeignKey.Properties.First();
-               string dependentClassName = ((IEntityType)(fkProperty.DeclaringType)).ClrType.Name;
-               association.SourceRole = dependentClassName == association.SourceClassName
-                                           ? AssociationRole.Dependent
-                                           : AssociationRole.Principal;
+            string dependentClassName = navigationProperty.ForeignKey.DeclaringEntityType.ClrType.Name;
+            association.SourceRole = dependentClassName == association.SourceClassName
+                                        ? AssociationRole.Dependent
+                                        : AssociationRole.Principal;
 
-               association.TargetRole = dependentClassName == association.TargetClassName
-                                           ? AssociationRole.Dependent
-                                           : AssociationRole.Principal;
-            }
+            association.TargetRole = dependentClassName == association.TargetClassName
+                                        ? AssociationRole.Dependent
+                                        : AssociationRole.Principal;
 
             // unfortunately, EFCore doesn't serialize documentation like EF6 did
 
@@ -332,27 +328,23 @@ namespace EFCore5Parser
             //association.SourceSummary = navigationProperty.FromEndMember.Documentation?.Summary;
             //association.SourceDescription = navigationProperty.FromEndMember.Documentation?.LongDescription;
 
-            if (navigationProperty.ForeignKey != null)
-            {
-               List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
+            List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
                                                                        .Where(p => !p.IsShadowProperty())
                                                                        .Select(p => p.Name)
                                                                        .ToList();
 
-               association.ForeignKey = fkPropertyDeclarations.Any()
-                                           ? string.Join(",", fkPropertyDeclarations)
-                                           : null;
+            association.ForeignKey = fkPropertyDeclarations.Any()
+                                        ? string.Join(",", fkPropertyDeclarations)
+                                        : null;
 
-               IProperty fkProperty = navigationProperty.ForeignKey.Properties.First();
-               string dependentClassName = ((IEntityType)(fkProperty.DeclaringType)).ClrType.Name;
-               association.SourceRole = dependentClassName == association.SourceClassName
-                                           ? AssociationRole.Dependent
-                                           : AssociationRole.Principal;
+            string dependentClassName = navigationProperty.ForeignKey.DeclaringEntityType.ClrType.Name;
+            association.SourceRole = dependentClassName == association.SourceClassName
+                                        ? AssociationRole.Dependent
+                                        : AssociationRole.Principal;
 
-               association.TargetRole = dependentClassName == association.TargetClassName
-                                           ? AssociationRole.Dependent
-                                           : AssociationRole.Principal;
-            }
+            association.TargetRole = dependentClassName == association.TargetClassName
+                                        ? AssociationRole.Dependent
+                                        : AssociationRole.Principal;
 
             result.Add(association);
          }

@@ -60,13 +60,9 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
-            Debug.WriteLine($"TemporalTableProperties.HistoryTableName.get");
-
             string result = string.IsNullOrWhiteSpace(modelClass.HistoryTableName)
                                                    ? _defaultHistoryTableName
                                                    : modelClass.HistoryTableName;
-            Debug.WriteLine($"   result={result}");
-
             return result;
          }
          set
@@ -97,33 +93,22 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
-            Debug.WriteLine($"TemporalTableProperties.PeriodStartColumnName.get");
-
             string result = string.IsNullOrWhiteSpace(modelClass.PeriodStartColumnName)
                                                         ? _defaultPeriodStartColumnName
                                                         : modelClass.PeriodStartColumnName;
-            Debug.WriteLine($"   result={result}");
-
             return result;
          }
          set
          {
             using (Transaction t = modelClass.Store.TransactionManager.BeginTransaction())
             {
-               Debug.WriteLine($"TemporalTableProperties.PeriodStartColumnName.set");
-               Debug.WriteLine($"   value={value??"null"}"); 
                string temp = string.IsNullOrWhiteSpace(value) || value == _defaultPeriodStartColumnName
                                 ? null
                                 : value;
 
                if (temp != modelClass.PeriodStartColumnName)
                {
-                  Debug.WriteLine($"Setting modelClass.PeriodStartColumnName to {temp}");
                   modelClass.PeriodStartColumnName = temp;
-               }
-               else
-               {
-                  Debug.WriteLine($"No change to modelClass.PeriodStartColumnName ({modelClass.PeriodStartColumnName})");
                }
 
                t.Commit();
@@ -141,33 +126,22 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          get
          {
-            Debug.WriteLine($"TemporalTableProperties.PeriodEndColumnName.get");
-
             string result = string.IsNullOrWhiteSpace(modelClass.PeriodEndColumnName)
                                                       ? _defaultPeriodEndColumnName
                                                       : modelClass.PeriodEndColumnName;
-            Debug.WriteLine($"   result={result}");
-
             return result;
          }
          set
          {
             using (Transaction t = modelClass.Store.TransactionManager.BeginTransaction())
             {
-               Debug.WriteLine($"TemporalTableProperties.PeriodEndColumnName.set");
-               Debug.WriteLine($"   value={value??"null"}"); 
                string temp = string.IsNullOrWhiteSpace(value) || value == _defaultPeriodEndColumnName
                                 ? null
                                 : value;
 
                if (temp != modelClass.PeriodEndColumnName)
                {
-                  Debug.WriteLine($"Setting modelClass.PeriodEndColumnName to {temp}");
                   modelClass.PeriodEndColumnName = temp;
-               }
-               else
-               {
-                  Debug.WriteLine($"No change to modelClass.PeriodEndColumnName ({modelClass.PeriodEndColumnName})");
                }
 
                t.Commit();
