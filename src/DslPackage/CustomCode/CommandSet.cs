@@ -1271,9 +1271,10 @@ namespace Sawczyn.EFDesigner.EFModel
             command.Visible = true;
 
             IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
-            command.Enabled = childShapes.OfType<ClassShape>().Any(x => ((x.ModelElement as ModelClass)?.Persistent == false
-                                                                      || (x.ModelElement as ModelClass)?.IsDependentType == true)
-                                                                     && x.IsVisible());
+
+            command.Enabled = childShapes.OfType<ClassShape>().Any(x => x.IsVisible()
+                                                                     && x.ModelElement is ModelClass modelClass
+                                                                     && (!modelClass.Persistent || modelClass.IsDatabaseView || modelClass.IsDependentType));
          }
       }
 
@@ -1281,9 +1282,9 @@ namespace Sawczyn.EFDesigner.EFModel
       {
          IEnumerable<ShapeElement> childShapes = CurrentDocView?.CurrentDiagram.NavigationRoot.NestedChildShapes ?? Enumerable.Empty<ShapeElement>();
 
-         foreach (ClassShape shape in childShapes.OfType<ClassShape>().Where(x => ((x.ModelElement as ModelClass)?.Persistent == false
-                                                                                || (x.ModelElement as ModelClass)?.IsDependentType == true)
-                                                                               && x.IsVisible()))
+         foreach (ClassShape shape in childShapes.OfType<ClassShape>().Where(x => x.IsVisible()
+                                                                               && x.ModelElement is ModelClass modelClass
+                                                                               && (!modelClass.Persistent || modelClass.IsDatabaseView || modelClass.IsDependentType)))
             shape.Diagram.ActiveDiagramView.Selection.Add(new DiagramItem(shape));
       }
 

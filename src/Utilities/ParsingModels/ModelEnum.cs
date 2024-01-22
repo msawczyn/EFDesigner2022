@@ -19,6 +19,11 @@ namespace ParsingModels
       }
 
       /// <summary>
+      ///   Gets or sets a value indicating whether to generate code for the enumeration. May be false if the enum is defined in a referenced assembly.
+      /// </summary>
+      public bool GenerateCode { get; set; } = true;
+
+      /// <summary>
       ///    Gets or sets the name.
       /// </summary>
       public string Name { get; set; }

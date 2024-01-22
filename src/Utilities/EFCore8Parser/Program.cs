@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Reflection;
 using System.Runtime.Loader;
 
@@ -22,8 +21,8 @@ namespace EFCore8Parser
       public const int CANNOT_CREATE_DBCONTEXT = 4;
       public const int CANNOT_FIND_APPROPRIATE_CONSTRUCTOR = 5;
       public const int AMBIGUOUS_REQUEST = 6;
-
-      private static Logger log;
+    
+      private static Logger log = Logger.GetLogger("");
 
       private static List<string> Usage
       {
@@ -33,7 +32,7 @@ namespace EFCore8Parser
                                     {
                                        $"Usage: {typeof(Program).Assembly.GetName().Name} InputFileName OutputFileName [FullyQualifiedClassName]",
                                        "where",
-                                       "   (required) InputFileName           - path of assembly containing EFCore7 DbContext to parse",
+                                       "   (required) InputFileName           - path of assembly containing DbContext to parse",
                                        "   (required) OutputFileName          - path to create JSON file of results",
                                        "   (optional) FullyQualifiedClassName - fully-qualified name of DbContext class to process, if more than one available.",
                                        "                                        DbContext class must have a constructor that accepts one parameter of type DbContextOptions<>",
@@ -137,9 +136,6 @@ namespace EFCore8Parser
 
       private static int Main(string[] args)
       {
-         //Debugger.Launch();
-         //Debugger.Break();
-
          if ((args.Length < 2) || (args.Length > 3))
          {
             Usage.ForEach(x => Console.Error.WriteLine(x));
@@ -153,7 +149,7 @@ namespace EFCore8Parser
             string inputPath = args[0].Replace("\n", @"\n");
             string outputPath = args[1].Replace("\n", @"\n");
             string logPath = Path.ChangeExtension(outputPath, "log");
-
+           
             log = Logger.GetLogger(logPath);
 
             log.Info($"Starting {exePath}");
@@ -217,12 +213,10 @@ namespace EFCore8Parser
             }
 
             log.Info("Success");
-            Console.WriteLine("Success");
          }
          catch (Exception ex)
          {
             log.Error(ex.Message);
-            Console.WriteLine(ex.Message);
             Exit(CANNOT_WRITE_OUTPUTFILE, ex);
          }
          finally
@@ -235,7 +229,7 @@ namespace EFCore8Parser
 
       private static Assembly TryLoadFrom(string inputPath)
       {
-         AssemblyLoadContext context = new AssemblyLoadContext("EFCore8Parser");
+         AssemblyLoadContext context = new AssemblyLoadContext("EFCoreParser");
          context.Resolving += Context_Resolving;
 
          try

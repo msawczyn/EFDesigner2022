@@ -415,7 +415,8 @@ namespace Sawczyn.EFDesigner.EFModel
          if (string.IsNullOrWhiteSpace(FKPropertyName))
             return;
 
-         if (Dependent == null)
+         bool isManyToMany = SourceMultiplicity == Multiplicity.ZeroMany && TargetMultiplicity == Multiplicity.ZeroMany;
+         if (!isManyToMany && Dependent == null)
             context.LogError($"{GetDisplayText()}: FK property set without association having a Dependent end.", "AEFKWithNoDependent", this);
       }
 

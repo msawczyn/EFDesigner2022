@@ -65,6 +65,7 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="5.0.9" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.9" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.9" />
+      <PackageReference Include="PluralizeService.Core" Version="1.2.21147.2" />
       <PackageReference Include="StreamJsonRpc" Version="2.12.27" />
       <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
    </ItemGroup>

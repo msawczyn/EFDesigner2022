@@ -18,6 +18,11 @@ namespace ParsingModels
       }
 
       /// <summary>
+      ///   Gets or sets a value indicating whether to generate code for the model class. May be false if the class is defined in a referenced assembly.
+      /// </summary>
+      public bool GenerateCode { get; set; } = true;
+
+      /// <summary>
       ///    Gets the full name of the person.
       /// </summary>
       public string FullName

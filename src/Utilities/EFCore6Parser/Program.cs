@@ -32,7 +32,7 @@ namespace EFCore6Parser
                                     {
                                        $"Usage: {typeof(Program).Assembly.GetName().Name} InputFileName OutputFileName [FullyQualifiedClassName]",
                                        "where",
-                                       "   (required) InputFileName           - path of assembly containing EFcore6 DbContext to parse",
+                                       "   (required) InputFileName           - path of assembly containing DbContext to parse",
                                        "   (required) OutputFileName          - path to create JSON file of results",
                                        "   (optional) FullyQualifiedClassName - fully-qualified name of DbContext class to process, if more than one available.",
                                        "                                        DbContext class must have a constructor that accepts one parameter of type DbContextOptions<>",
@@ -229,7 +229,7 @@ namespace EFCore6Parser
 
       private static Assembly TryLoadFrom(string inputPath)
       {
-         AssemblyLoadContext context = new AssemblyLoadContext("EFCore6Parser");
+         AssemblyLoadContext context = new AssemblyLoadContext("EFCoreParser");
          context.Resolving += Context_Resolving;
 
          try

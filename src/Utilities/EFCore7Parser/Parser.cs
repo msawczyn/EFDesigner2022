@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 
 using Newtonsoft.Json;
 
 using ParsingModels;
-
-using PluralizeService.Core;
+// ReSharper disable NotResolvedInText
 
 // ReSharper disable UseObjectOrCollectionInitializer
 #pragma warning disable IDE0017 // Simplify object initialization
@@ -29,7 +27,7 @@ namespace EFCore7Parser
       public Parser(Assembly assembly, Logger logger, string dbContextTypeName = null) : base(logger)
       {
          Type contextType;
-         
+
          if (dbContextTypeName != null)
          {
             log.Debug($"dbContextTypeName parameter is {dbContextTypeName}");
@@ -73,11 +71,11 @@ namespace EFCore7Parser
                                                                                                      .BuildServiceProvider())
                                                   .Options;
 
-         ConstructorInfo constructor = contextType.GetConstructor(new[] {optionsType});
+         ConstructorInfo constructor = contextType.GetConstructor(new[] { optionsType });
 
          // ReSharper disable once UnthrowableException
          if (constructor != null)
-            dbContext = assembly.CreateInstance(contextType.FullName, true, BindingFlags.Default, null, new object[] {options}, null, null) as DbContext;
+            dbContext = assembly.CreateInstance(contextType.FullName, true, BindingFlags.Default, null, new object[] { options }, null, null) as DbContext;
          else
          {
             constructor = contextType.GetConstructor(Type.EmptyTypes);
@@ -94,8 +92,6 @@ namespace EFCore7Parser
       public string Process()
       {
          if (dbContext == null)
-
-            // ReSharper disable once NotResolvedInText
             throw new ArgumentNullException("dbContext");
 
          model = dbContext.Model;
@@ -109,41 +105,8 @@ namespace EFCore7Parser
                                               .ToList();
 
          modelRoot.Classes.AddRange(modelClasses);
-         ProcessShadowClasses(modelRoot); 
 
          return JsonConvert.SerializeObject(modelRoot);
-      }
-
-      private void ProcessShadowClasses(ModelRoot modelRoot)
-      {
-         foreach (PossibleAssociationMerge mergeData in PossibleAssociationMerges)
-         {
-            ModelClass sourceType = modelRoot.Classes.FirstOrDefault(x => x.Name == mergeData.SourceClassName);
-            ModelClass targetType = modelRoot.Classes.FirstOrDefault(x => x.Name == mergeData.TargetClassName);
-
-            if (sourceType != null && targetType != null)
-            {
-               ModelBidirectionalAssociation association = new ModelBidirectionalAssociation();
-
-               association.SourceClassName = sourceType.Name;
-               association.SourceClassNamespace = sourceType.Namespace;
-               association.SourceMultiplicity = Multiplicity.ZeroMany;
-               association.SourcePropertyName = PluralizationProvider.Pluralize(sourceType.Name);
-
-               association.TargetClassName = targetType.Name;
-               association.TargetClassNamespace = targetType.Namespace;
-               association.TargetMultiplicity = Multiplicity.ZeroMany;
-               association.TargetPropertyName = PluralizationProvider.Pluralize(targetType.Name);
-
-               association.JoinTableName = mergeData.JoinClass.TableName;
-
-               sourceType.BidirectionalAssociations.Remove(mergeData.AssociationToSource);
-               sourceType.BidirectionalAssociations.Remove(mergeData.AssociationToTarget);
-               sourceType.BidirectionalAssociations.Add(association);
-
-               modelRoot.Classes.Remove(mergeData.JoinClass);
-            }
-         }
       }
 
       protected ModelClass ProcessEntity(IEntityType entityType, ModelRoot modelRoot)
@@ -178,7 +141,6 @@ namespace EFCore7Parser
          result.UnidirectionalAssociations = GetUnidirectionalAssociations(entityType);
          result.BidirectionalAssociations = GetBidirectionalAssociations(entityType);
 
-         CheckForShadowClass(result);
          return result;
       }
 
@@ -201,7 +163,7 @@ namespace EFCore7Parser
                                          : null;
 
             result.Values = Enum.GetNames(enumType)
-                                .Select(name => new ModelEnumValue {Name = name, Value = Convert.ChangeType(Enum.Parse(enumType, name), underlyingType).ToString()})
+                                .Select(name => new ModelEnumValue { Name = name, Value = Convert.ChangeType(Enum.Parse(enumType, name), underlyingType).ToString() })
                                 .ToList();
 
             modelRoot.Enumerations.Add(result);
@@ -228,7 +190,9 @@ namespace EFCore7Parser
                               : type.Name;
 
          result.Name = propertyData.Name;
+#pragma warning disable CS0618
          result.ColumnName = propertyData.GetColumnName();
+#pragma warning restore CS0618
          result.IsIdentity = propertyData.IsKey();
          result.IsIdentityGenerated = result.IsIdentity && (propertyData.ValueGenerated == ValueGenerated.OnAdd);
 
@@ -271,7 +235,7 @@ namespace EFCore7Parser
          return result;
       }
 
-#region Associations
+      #region Associations
 
       protected List<ModelUnidirectionalAssociation> GetUnidirectionalAssociations(IEntityType entityType)
       {
@@ -331,6 +295,64 @@ namespace EFCore7Parser
       {
          List<ModelBidirectionalAssociation> result = new List<ModelBidirectionalAssociation>();
 
+         GetDirectBidirectionalAssociations(entityType, result);
+         GetSkipBidirectionalAssociations(entityType, result);
+
+         return result;
+      }
+
+      private static void GetSkipBidirectionalAssociations(IEntityType entityType, List<ModelBidirectionalAssociation> result)
+      {
+         foreach (ISkipNavigation navigationProperty in entityType.GetDeclaredSkipNavigations())
+         {
+            ModelBidirectionalAssociation association = new ModelBidirectionalAssociation();
+
+            Type sourceType = entityType.ClrType.Unwrap();
+            association.SourceClassName = sourceType.Name;
+            association.SourceClassNamespace = sourceType.Namespace;
+
+            Type targetType = navigationProperty.TargetEntityType.ClrType.Unwrap();
+            association.TargetClassName = targetType.Name;
+            association.TargetClassNamespace = targetType.Namespace;
+
+            ISkipNavigation inverse = navigationProperty.Inverse;
+
+            // the property in the source class (referencing the target class)
+            association.TargetPropertyTypeName = navigationProperty.PropertyInfo.PropertyType.Unwrap().Name;
+            association.TargetPropertyName = navigationProperty.Name;
+            association.TargetMultiplicity = Multiplicity.ZeroMany;
+
+            //association.TargetSummary = navigationProperty.ToEndMember.Documentation?.Summary;
+            //association.TargetDescription = navigationProperty.ToEndMember.Documentation?.LongDescription;
+
+            // the property in the target class (referencing the source class)
+            association.SourcePropertyTypeName = inverse.PropertyInfo.PropertyType.Unwrap().Name;
+            association.SourcePropertyName = inverse.Name;
+            association.SourceMultiplicity = Multiplicity.ZeroMany;
+
+            //association.SourceSummary = navigationProperty.FromEndMember.Documentation?.Summary;
+            //association.SourceDescription = navigationProperty.FromEndMember.Documentation?.LongDescription;
+
+            List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
+                                                                    .Where(p => !p.IsShadowProperty())
+                                                                    .Select(p => p.Name)
+                                                                    .ToList();
+
+            association.ForeignKey = fkPropertyDeclarations.Any()
+                                        ? string.Join(",", fkPropertyDeclarations)
+                                        : null;
+
+            association.SourceRole = AssociationRole.NotApplicable;
+            association.TargetRole = AssociationRole.NotApplicable;
+
+            association.JoinTableName = navigationProperty.JoinEntityType.GetTableName();
+
+            result.Add(association);
+         }
+      }
+
+      private static void GetDirectBidirectionalAssociations(IEntityType entityType, List<ModelBidirectionalAssociation> result)
+      {
          foreach (INavigation navigationProperty in entityType.GetDeclaredNavigations().Where(n => n.Inverse != null))
          {
             ModelBidirectionalAssociation association = new ModelBidirectionalAssociation();
@@ -362,9 +384,9 @@ namespace EFCore7Parser
             //association.SourceDescription = navigationProperty.FromEndMember.Documentation?.LongDescription;
 
             List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
-                                                                       .Where(p => !p.IsShadowProperty())
-                                                                       .Select(p => p.Name)
-                                                                       .ToList();
+                                                                    .Where(p => !p.IsShadowProperty())
+                                                                    .Select(p => p.Name)
+                                                                    .ToList();
 
             association.ForeignKey = fkPropertyDeclarations.Any()
                                         ? string.Join(",", fkPropertyDeclarations)
@@ -381,68 +403,8 @@ namespace EFCore7Parser
 
             result.Add(association);
          }
-
-         return result;
       }
 
-      protected void CheckForShadowClass(ModelClass modelClass)
-      {
-         ModelClass result = modelClass;
-
-         if (result.Properties.Count == 2 && result.Properties.All(p => p.IsIdentity) && result.BidirectionalAssociations.Count == 2)
-         {
-            PossibleAssociationMerge possibleMerge = new PossibleAssociationMerge();
-
-            possibleMerge.JoinClass = result;
-            possibleMerge.AssociationToSource = result.BidirectionalAssociations[0];
-            possibleMerge.AssociationToTarget = result.BidirectionalAssociations[1];
-
-            if (possibleMerge.AssociationToSource.SourceClassName == result.Name)
-            {
-               possibleMerge.SourceClassName = possibleMerge.AssociationToSource.TargetClassName;
-
-               if (possibleMerge.AssociationToSource.TargetMultiplicity != Multiplicity.One || possibleMerge.AssociationToSource.SourceMultiplicity != Multiplicity.ZeroMany)
-                  return;
-            }
-            else
-            {
-               possibleMerge.SourceClassName = possibleMerge.AssociationToSource.SourceClassName;
-               if (possibleMerge.AssociationToSource.SourceMultiplicity != Multiplicity.One || possibleMerge.AssociationToSource.TargetMultiplicity != Multiplicity.ZeroMany)
-                  return;
-            }
-
-
-            if (possibleMerge.AssociationToTarget.SourceClassName == result.Name)
-            {
-               possibleMerge.TargetClassName = possibleMerge.AssociationToTarget.TargetClassName;
-               if (possibleMerge.AssociationToTarget.TargetMultiplicity != Multiplicity.One || possibleMerge.AssociationToTarget.SourceMultiplicity != Multiplicity.ZeroMany)
-                  return;
-            }
-            else
-            {
-               possibleMerge.TargetClassName = possibleMerge.AssociationToTarget.SourceClassName;
-               if (possibleMerge.AssociationToTarget.SourceMultiplicity != Multiplicity.One || possibleMerge.AssociationToTarget.TargetMultiplicity != Multiplicity.ZeroMany)
-                  return;
-            }
-
-            PossibleAssociationMerges.Add(possibleMerge);
-         }
-
-      }
-
-      public class PossibleAssociationMerge
-      {
-         public ModelClass JoinClass { get; set; }
-         public string SourceClassName { get; set; }
-         public ModelClass SourceClass { get; set; }
-         public string TargetClassName { get; set; }
-         public ModelClass TargetClass { get; set;}
-         public ModelBidirectionalAssociation AssociationToSource { get; set; }
-         public ModelBidirectionalAssociation AssociationToTarget { get; set; }
-      }
-
-      protected readonly List<PossibleAssociationMerge> PossibleAssociationMerges = new List<PossibleAssociationMerge>();
-
-#endregion
+      #endregion
    }
 }

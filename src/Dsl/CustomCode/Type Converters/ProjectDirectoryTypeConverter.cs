@@ -24,6 +24,7 @@ namespace Sawczyn.EFDesigner.EFModel
             for (int index = 1; index <= projectItems.Count; index++)
             {
                ProjectItem item = projectItems.Item(index);
+               System.Diagnostics.Debug.WriteLine(item.Name);
 
                if (item.Kind == Constants.vsProjectItemKindPhysicalFolder)
                {
@@ -31,6 +32,7 @@ namespace Sawczyn.EFDesigner.EFModel
                                    ? $"{root}\\{item.Name}"
                                    : item.Name;
 
+                  System.Diagnostics.Debug.WriteLine($"Add path: {path}");
                   result.Add(path);
                   result.AddRange(GetProjectDirectories(item.ProjectItems, path));
                }

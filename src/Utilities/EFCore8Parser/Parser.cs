@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 
 using Newtonsoft.Json;
 
 using ParsingModels;
-
-using PluralizeService.Core;
+// ReSharper disable NotResolvedInText
 
 // ReSharper disable UseObjectOrCollectionInitializer
 #pragma warning disable IDE0017 // Simplify object initialization
@@ -39,7 +38,7 @@ namespace EFCore8Parser
          {
             log.Debug("dbContextTypeName parameter is null");
 
-            List<Type> types = assembly.GetExportedTypes().Where(t => typeof( DbContext ).IsAssignableFrom(t)).ToList();
+            List<Type> types = assembly.GetExportedTypes().Where(t => typeof(DbContext).IsAssignableFrom(t)).ToList();
 
             // ReSharper disable once UnthrowableException
             if (types.Count == 0)
@@ -61,9 +60,9 @@ namespace EFCore8Parser
             log.Info($"Using contextType = {contextType.FullName}");
          }
 
-         Type optionsBuilderType = typeof( DbContextOptionsBuilder<> ).MakeGenericType(contextType);
+         Type optionsBuilderType = typeof(DbContextOptionsBuilder<>).MakeGenericType(contextType);
          DbContextOptionsBuilder optionsBuilder = Activator.CreateInstance(optionsBuilderType) as DbContextOptionsBuilder;
-         Type optionsType = typeof( DbContextOptions<> ).MakeGenericType(contextType);
+         Type optionsType = typeof(DbContextOptions<>).MakeGenericType(contextType);
 
          DbContextOptions options = optionsBuilder.UseLazyLoadingProxies()
                                                   .UseInMemoryDatabase("Parser")
@@ -72,16 +71,14 @@ namespace EFCore8Parser
                                                                                                      .BuildServiceProvider())
                                                   .Options;
 
-         Type[] constructorTypes = { optionsType };
-         ConstructorInfo constructor = contextType.GetConstructor(constructorTypes);
+         ConstructorInfo constructor = contextType.GetConstructor(new[] { optionsType });
 
          // ReSharper disable once UnthrowableException
          if (constructor != null)
-            dbContext = assembly.CreateInstance(contextType.FullName, true, BindingFlags.Default, null, [options], null, null) as DbContext;
+            dbContext = assembly.CreateInstance(contextType.FullName, true, BindingFlags.Default, null, new object[] { options }, null, null) as DbContext;
          else
          {
             constructor = contextType.GetConstructor(Type.EmptyTypes);
-
             if (constructor != null)
                dbContext = assembly.CreateInstance(contextType.FullName, true, BindingFlags.Default, null, null, null, null) as DbContext;
          }
@@ -95,8 +92,6 @@ namespace EFCore8Parser
       public string Process()
       {
          if (dbContext == null)
-
-            // ReSharper disable once NotResolvedInText
             throw new ArgumentNullException("dbContext");
 
          model = dbContext.Model;
@@ -110,7 +105,6 @@ namespace EFCore8Parser
                                               .ToList();
 
          modelRoot.Classes.AddRange(modelClasses);
-         ProcessShadowClasses(modelRoot);
 
          return JsonConvert.SerializeObject(modelRoot);
       }
@@ -127,7 +121,6 @@ namespace EFCore8Parser
          result.BaseClass = GetTypeFullName(type.BaseType);
 
          result.ViewName = entityType.GetViewName();
-
          result.TableName = result.ViewName == null
                                ? entityType.GetTableName()
                                : null;
@@ -148,8 +141,6 @@ namespace EFCore8Parser
          result.UnidirectionalAssociations = GetUnidirectionalAssociations(entityType);
          result.BidirectionalAssociations = GetBidirectionalAssociations(entityType);
 
-         CheckForShadowClass(result);
-
          return result;
       }
 
@@ -164,7 +155,7 @@ namespace EFCore8Parser
          if (modelRoot.Enumerations.All(e => e.FullName != result.FullName))
          {
             Type underlyingType = Enum.GetUnderlyingType(enumType);
-            result.IsFlags = enumType.GetTypeInfo().GetCustomAttribute(typeof( FlagsAttribute )) is FlagsAttribute;
+            result.IsFlags = enumType.GetTypeInfo().GetCustomAttribute(typeof(FlagsAttribute)) is FlagsAttribute;
             result.ValueType = underlyingType.Name;
 
             result.CustomAttributes = customAttributes.Length > 2
@@ -191,7 +182,7 @@ namespace EFCore8Parser
             ProcessEnum(propertyData.ClrType, modelRoot);
 
          // If it is NULLABLE, then get the underlying type. eg if "Nullable<int>" then this will return just "int"
-         if (type.IsGenericType && (type.GetGenericTypeDefinition() == typeof( Nullable<> )))
+         if (type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(Nullable<>)))
             type = type.GetGenericArguments()[0];
 
          result.TypeName = type.IsEnum
@@ -199,7 +190,9 @@ namespace EFCore8Parser
                               : type.Name;
 
          result.Name = propertyData.Name;
+#pragma warning disable CS0618
          result.ColumnName = propertyData.GetColumnName();
+#pragma warning restore CS0618
          result.IsIdentity = propertyData.IsKey();
          result.IsIdentityGenerated = result.IsIdentity && (propertyData.ValueGenerated == ValueGenerated.OnAdd);
 
@@ -210,10 +203,7 @@ namespace EFCore8Parser
          result.Indexed = propertyData.IsIndex();
          result.IndexedUnique = result.Indexed && propertyData.IsUniqueIndex();
          result.IndexName = propertyData.GetContainingIndexes().FirstOrDefault(i => i.Properties.Count == 1)?.Name;
-
-         result.MaxStringLength = type == typeof( string )
-                                     ? (propertyData.GetMaxLength() ?? 0)
-                                     : 0;
+         result.MaxStringLength = type == typeof(string) ? (propertyData.GetMaxLength() ?? 0) : 0;
 
          if (result.MaxStringLength == 0)
             result.MaxStringLength = ParseVarcharColumnTypeAttribute(attributes);
@@ -245,39 +235,7 @@ namespace EFCore8Parser
          return result;
       }
 
-      private void ProcessShadowClasses(ModelRoot modelRoot)
-      {
-         foreach (PossibleAssociationMerge mergeData in PossibleAssociationMerges)
-         {
-            ModelClass sourceType = modelRoot.Classes.FirstOrDefault(x => x.Name == mergeData.SourceClassName);
-            ModelClass targetType = modelRoot.Classes.FirstOrDefault(x => x.Name == mergeData.TargetClassName);
-
-            if (sourceType != null && targetType != null)
-            {
-               ModelBidirectionalAssociation association = new ModelBidirectionalAssociation();
-
-               association.SourceClassName = sourceType.Name;
-               association.SourceClassNamespace = sourceType.Namespace;
-               association.SourceMultiplicity = Multiplicity.ZeroMany;
-               association.SourcePropertyName = PluralizationProvider.Pluralize(sourceType.Name);
-
-               association.TargetClassName = targetType.Name;
-               association.TargetClassNamespace = targetType.Namespace;
-               association.TargetMultiplicity = Multiplicity.ZeroMany;
-               association.TargetPropertyName = PluralizationProvider.Pluralize(targetType.Name);
-
-               association.JoinTableName = mergeData.JoinClass.TableName;
-
-               sourceType.BidirectionalAssociations.Remove(mergeData.AssociationToSource);
-               sourceType.BidirectionalAssociations.Remove(mergeData.AssociationToTarget);
-               sourceType.BidirectionalAssociations.Add(association);
-
-               modelRoot.Classes.Remove(mergeData.JoinClass);
-            }
-         }
-      }
-
-#region Associations
+      #region Associations
 
       protected List<ModelUnidirectionalAssociation> GetUnidirectionalAssociations(IEntityType entityType)
       {
@@ -302,11 +260,10 @@ namespace EFCore8Parser
             // the property in the target class (referencing the source class)
             association.SourceMultiplicity = ConvertMultiplicity(navigationProperty.GetSourceMultiplicity());
 
-            // handle foreign key properties
             List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
-                                                                    .Where(p => !p.IsShadowProperty())
-                                                                    .Select(p => p.Name)
-                                                                    .ToList();
+                                                                       .Where(p => !p.IsShadowProperty())
+                                                                       .Select(p => p.Name)
+                                                                       .ToList();
 
             association.ForeignKey = fkPropertyDeclarations.Any()
                                         ? string.Join(",", fkPropertyDeclarations)
@@ -338,6 +295,64 @@ namespace EFCore8Parser
       {
          List<ModelBidirectionalAssociation> result = new List<ModelBidirectionalAssociation>();
 
+         GetDirectBidirectionalAssociations(entityType, result);
+         GetSkipBidirectionalAssociations(entityType, result);
+
+         return result;
+      }
+
+      private static void GetSkipBidirectionalAssociations(IEntityType entityType, List<ModelBidirectionalAssociation> result)
+      {
+         foreach (ISkipNavigation navigationProperty in entityType.GetDeclaredSkipNavigations())
+         {
+            ModelBidirectionalAssociation association = new ModelBidirectionalAssociation();
+
+            Type sourceType = entityType.ClrType.Unwrap();
+            association.SourceClassName = sourceType.Name;
+            association.SourceClassNamespace = sourceType.Namespace;
+
+            Type targetType = navigationProperty.TargetEntityType.ClrType.Unwrap();
+            association.TargetClassName = targetType.Name;
+            association.TargetClassNamespace = targetType.Namespace;
+
+            ISkipNavigation inverse = navigationProperty.Inverse;
+
+            // the property in the source class (referencing the target class)
+            association.TargetPropertyTypeName = navigationProperty.PropertyInfo.PropertyType.Unwrap().Name;
+            association.TargetPropertyName = navigationProperty.Name;
+            association.TargetMultiplicity = Multiplicity.ZeroMany;
+
+            //association.TargetSummary = navigationProperty.ToEndMember.Documentation?.Summary;
+            //association.TargetDescription = navigationProperty.ToEndMember.Documentation?.LongDescription;
+
+            // the property in the target class (referencing the source class)
+            association.SourcePropertyTypeName = inverse.PropertyInfo.PropertyType.Unwrap().Name;
+            association.SourcePropertyName = inverse.Name;
+            association.SourceMultiplicity = Multiplicity.ZeroMany;
+
+            //association.SourceSummary = navigationProperty.FromEndMember.Documentation?.Summary;
+            //association.SourceDescription = navigationProperty.FromEndMember.Documentation?.LongDescription;
+
+            List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
+                                                                    .Where(p => !p.IsShadowProperty())
+                                                                    .Select(p => p.Name)
+                                                                    .ToList();
+
+            association.ForeignKey = fkPropertyDeclarations.Any()
+                                        ? string.Join(",", fkPropertyDeclarations)
+                                        : null;
+
+            association.SourceRole = AssociationRole.NotApplicable;
+            association.TargetRole = AssociationRole.NotApplicable;
+
+            association.JoinTableName = navigationProperty.JoinEntityType.GetTableName();
+
+            result.Add(association);
+         }
+      }
+
+      private static void GetDirectBidirectionalAssociations(IEntityType entityType, List<ModelBidirectionalAssociation> result)
+      {
          foreach (INavigation navigationProperty in entityType.GetDeclaredNavigations().Where(n => n.Inverse != null))
          {
             ModelBidirectionalAssociation association = new ModelBidirectionalAssociation();
@@ -368,7 +383,6 @@ namespace EFCore8Parser
             //association.SourceSummary = navigationProperty.FromEndMember.Documentation?.Summary;
             //association.SourceDescription = navigationProperty.FromEndMember.Documentation?.LongDescription;
 
-            // handle foreign key properties
             List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
                                                                     .Where(p => !p.IsShadowProperty())
                                                                     .Select(p => p.Name)
@@ -389,69 +403,8 @@ namespace EFCore8Parser
 
             result.Add(association);
          }
-
-         return result;
       }
 
-      protected void CheckForShadowClass(ModelClass modelClass)
-      {
-         ModelClass result = modelClass;
-
-         if (result.Properties.Count == 2 && result.Properties.All(p => p.IsIdentity) && result.BidirectionalAssociations.Count == 2)
-         {
-            PossibleAssociationMerge possibleMerge = new PossibleAssociationMerge();
-
-            possibleMerge.JoinClass = result;
-            possibleMerge.AssociationToSource = result.BidirectionalAssociations[0];
-            possibleMerge.AssociationToTarget = result.BidirectionalAssociations[1];
-
-            if (possibleMerge.AssociationToSource.SourceClassName == result.Name)
-            {
-               possibleMerge.SourceClassName = possibleMerge.AssociationToSource.TargetClassName;
-
-               if (possibleMerge.AssociationToSource.TargetMultiplicity != Multiplicity.One || possibleMerge.AssociationToSource.SourceMultiplicity != Multiplicity.ZeroMany)
-                  return;
-            }
-            else
-            {
-               possibleMerge.SourceClassName = possibleMerge.AssociationToSource.SourceClassName;
-
-               if (possibleMerge.AssociationToSource.SourceMultiplicity != Multiplicity.One || possibleMerge.AssociationToSource.TargetMultiplicity != Multiplicity.ZeroMany)
-                  return;
-            }
-
-            if (possibleMerge.AssociationToTarget.SourceClassName == result.Name)
-            {
-               possibleMerge.TargetClassName = possibleMerge.AssociationToTarget.TargetClassName;
-
-               if (possibleMerge.AssociationToTarget.TargetMultiplicity != Multiplicity.One || possibleMerge.AssociationToTarget.SourceMultiplicity != Multiplicity.ZeroMany)
-                  return;
-            }
-            else
-            {
-               possibleMerge.TargetClassName = possibleMerge.AssociationToTarget.SourceClassName;
-
-               if (possibleMerge.AssociationToTarget.SourceMultiplicity != Multiplicity.One || possibleMerge.AssociationToTarget.TargetMultiplicity != Multiplicity.ZeroMany)
-                  return;
-            }
-
-            PossibleAssociationMerges.Add(possibleMerge);
-         }
-      }
-
-      public class PossibleAssociationMerge
-      {
-         public ModelClass JoinClass { get; set; }
-         public string SourceClassName { get; set; }
-         public ModelClass SourceClass { get; set; }
-         public string TargetClassName { get; set; }
-         public ModelClass TargetClass { get; set; }
-         public ModelBidirectionalAssociation AssociationToSource { get; set; }
-         public ModelBidirectionalAssociation AssociationToTarget { get; set; }
-      }
-
-      protected readonly List<PossibleAssociationMerge> PossibleAssociationMerges = new List<PossibleAssociationMerge>();
-
-#endregion
+      #endregion
    }
 }
