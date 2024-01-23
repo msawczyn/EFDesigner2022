@@ -64,9 +64,8 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("IsJSON");
             }
 
-            // only display roles for 1..1 and 0-1..0-1 associations
-            if ((association.SourceMultiplicity != Multiplicity.One || association.TargetMultiplicity != Multiplicity.One)
-             && (association.SourceMultiplicity != Multiplicity.ZeroOne || association.TargetMultiplicity != Multiplicity.ZeroOne))
+            // don't display roles for N..N, 1..N or 0-1..N associations
+            if (association.SourceMultiplicity == Multiplicity.ZeroMany || association.TargetMultiplicity == Multiplicity.ZeroMany)
             {
                propertyDescriptors.Remove("SourceRole");
                propertyDescriptors.Remove("TargetRole");

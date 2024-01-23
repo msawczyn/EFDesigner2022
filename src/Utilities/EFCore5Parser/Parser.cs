@@ -204,7 +204,7 @@ namespace EFCore5Parser
          attributes.RemoveAll(a => a.AttributeType.Name == "RequiredAttribute");
 
          result.Indexed = propertyData.IsIndex();
-         result.IndexedUnique = propertyData.IsUniqueIndex();
+         result.IndexedUnique = result.Indexed && propertyData.IsUniqueIndex();
          result.IndexName = propertyData.GetContainingIndexes().FirstOrDefault(i => i.Properties.Count == 1)?.Name;
          result.MaxStringLength = type == typeof(string) ? (propertyData.GetMaxLength() ?? 0) : 0;
 
@@ -272,14 +272,8 @@ namespace EFCore5Parser
                                         ? string.Join(",", fkPropertyDeclarations)
                                         : null;
 
-            string dependentClassName = navigationProperty.ForeignKey.DeclaringEntityType.ClrType.Name;
-            association.SourceRole = dependentClassName == association.SourceClassName
-                                        ? AssociationRole.Dependent
-                                        : AssociationRole.Principal;
-
-            association.TargetRole = dependentClassName == association.TargetClassName
-                                        ? AssociationRole.Dependent
-                                        : AssociationRole.Principal;
+            association.SourceRole = navigationProperty.IsOnDependent ? AssociationRole.Dependent : AssociationRole.Principal;
+            association.TargetRole = navigationProperty.IsOnDependent ? AssociationRole.Principal : AssociationRole.Dependent;
 
             // unfortunately, EFCore doesn't serialize documentation like EF6 did
 
@@ -337,14 +331,8 @@ namespace EFCore5Parser
                                         ? string.Join(",", fkPropertyDeclarations)
                                         : null;
 
-            string dependentClassName = navigationProperty.ForeignKey.DeclaringEntityType.ClrType.Name;
-            association.SourceRole = dependentClassName == association.SourceClassName
-                                        ? AssociationRole.Dependent
-                                        : AssociationRole.Principal;
-
-            association.TargetRole = dependentClassName == association.TargetClassName
-                                        ? AssociationRole.Dependent
-                                        : AssociationRole.Principal;
+            association.SourceRole = navigationProperty.IsOnDependent ? AssociationRole.Dependent : AssociationRole.Principal;
+            association.TargetRole = navigationProperty.IsOnDependent ? AssociationRole.Principal : AssociationRole.Dependent;
 
             result.Add(association);
          }

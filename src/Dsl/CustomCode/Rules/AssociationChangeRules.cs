@@ -79,9 +79,9 @@ namespace Sawczyn.EFDesigner.EFModel
             {
                case "FKPropertyName":
                   {
-                     if ((store.ModelRoot().EntityFrameworkVersion == EFVersion.EF6)
-                      && (element.SourceMultiplicity != Multiplicity.ZeroMany)
-                      && (element.TargetMultiplicity != Multiplicity.ZeroMany))
+                     if (store.ModelRoot().EntityFrameworkVersion == EFVersion.EF6
+                      && element.SourceMultiplicity != Multiplicity.ZeroMany
+                      && element.TargetMultiplicity != Multiplicity.ZeroMany)
                      {
                         element.FKPropertyName = null;
                         doForeignKeyFixup = true;
@@ -136,7 +136,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
                case "SourceCustomAttributes":
                   {
-                     if ((bidirectionalAssociation != null) && !string.IsNullOrWhiteSpace(bidirectionalAssociation.SourceCustomAttributes))
+                     if (bidirectionalAssociation != null && !string.IsNullOrWhiteSpace(bidirectionalAssociation.SourceCustomAttributes))
                      {
                         bidirectionalAssociation.SourceCustomAttributes = $"[{bidirectionalAssociation.SourceCustomAttributes.Trim('[', ']')}]";
                         CheckSourceForDisplayText(bidirectionalAssociation);
@@ -159,18 +159,19 @@ namespace Sawczyn.EFDesigner.EFModel
                      {
                         Multiplicity priorSourceMultiplicity = (Multiplicity)e.OldValue;
 
-                        if ((((priorSourceMultiplicity == Multiplicity.ZeroOne) || (priorSourceMultiplicity == Multiplicity.ZeroMany)) && (element.SourceMultiplicity == Multiplicity.One))
-                         || (((element.SourceMultiplicity == Multiplicity.ZeroOne) || (element.SourceMultiplicity == Multiplicity.ZeroMany)) && (priorSourceMultiplicity == Multiplicity.One)))
+                        // if we're going from required to optional (or vice versa), we need to fixup the FK property
+                        if ((priorSourceMultiplicity != Multiplicity.One && element.SourceMultiplicity == Multiplicity.One)
+                         || (priorSourceMultiplicity == Multiplicity.One && element.SourceMultiplicity != Multiplicity.One))
                            doForeignKeyFixup = true;
 
                         string defaultSourcePropertyName =
-                           (priorSourceMultiplicity == Multiplicity.ZeroMany) && (ModelRoot.PluralizationService?.IsSingular(element.Source.Name) == true)
+                           priorSourceMultiplicity == Multiplicity.ZeroMany && ModelRoot.PluralizationService?.IsSingular(element.Source.Name) == true
                               ? ModelRoot.PluralizationService.Pluralize(element.Source.Name)
                               : element.Source.Name;
 
-                        if (element is BidirectionalAssociation bidirectional && (bidirectional.SourcePropertyName == defaultSourcePropertyName))
+                        if (element is BidirectionalAssociation bidirectional && bidirectional.SourcePropertyName == defaultSourcePropertyName)
                         {
-                           bidirectional.SourcePropertyName = (element.SourceMultiplicity == Multiplicity.ZeroMany) && (ModelRoot.PluralizationService?.IsSingular(element.Source.Name) == true)
+                           bidirectional.SourcePropertyName = element.SourceMultiplicity == Multiplicity.ZeroMany && ModelRoot.PluralizationService?.IsSingular(element.Source.Name) == true
                                                                  ? ModelRoot.PluralizationService.Pluralize(element.Source.Name)
                                                                  : element.Source.Name;
                         }
@@ -188,7 +189,7 @@ namespace Sawczyn.EFDesigner.EFModel
                   {
                      string sourcePropertyNameErrorMessage = ValidateAssociationIdentifier(element, element.Target, (string)e.NewValue);
 
-                     if (EFModelDiagram.IsDroppingExternal && (sourcePropertyNameErrorMessage != null))
+                     if (EFModelDiagram.IsDroppingExternal && sourcePropertyNameErrorMessage != null)
                         element.Delete();
                      else
                         errorMessages.Add(sourcePropertyNameErrorMessage);
@@ -203,9 +204,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
                      if (!element.SetEndpointRoles())
                      {
-                        if ((element.SourceRole == EndpointRole.Dependent) && (element.TargetRole != EndpointRole.Principal))
+                        if (element.SourceRole == EndpointRole.Dependent && element.TargetRole != EndpointRole.Principal)
                            element.TargetRole = EndpointRole.Principal;
-                        else if ((element.SourceRole == EndpointRole.Principal) && (element.TargetRole != EndpointRole.Dependent))
+                        else if (element.SourceRole == EndpointRole.Principal && element.TargetRole != EndpointRole.Dependent)
                            element.TargetRole = EndpointRole.Dependent;
                      }
 
@@ -238,18 +239,19 @@ namespace Sawczyn.EFDesigner.EFModel
                      {
                         Multiplicity priorTargetMultiplicity = (Multiplicity)e.OldValue;
 
-                        if ((((priorTargetMultiplicity == Multiplicity.ZeroOne) || (priorTargetMultiplicity == Multiplicity.ZeroMany)) && (element.TargetMultiplicity == Multiplicity.One))
-                         || (((element.TargetMultiplicity == Multiplicity.ZeroOne) || (element.TargetMultiplicity == Multiplicity.ZeroMany)) && (priorTargetMultiplicity == Multiplicity.One)))
+                        // if we're going from required to optional (or vice versa), we need to fixup the FK property
+                        if ((priorTargetMultiplicity != Multiplicity.One && element.TargetMultiplicity == Multiplicity.One)
+                         || (priorTargetMultiplicity == Multiplicity.One && element.TargetMultiplicity != Multiplicity.One))
                            doForeignKeyFixup = true;
 
                         string defaultTargetPropertyName =
-                           (priorTargetMultiplicity == Multiplicity.ZeroMany) && (ModelRoot.PluralizationService?.IsSingular(element.Target.Name) == true)
+                           priorTargetMultiplicity == Multiplicity.ZeroMany && ModelRoot.PluralizationService?.IsSingular(element.Target.Name) == true
                               ? ModelRoot.PluralizationService.Pluralize(element.Target.Name)
                               : element.Target.Name;
 
                         if (element.TargetPropertyName == defaultTargetPropertyName)
                         {
-                           element.TargetPropertyName = (element.TargetMultiplicity == Multiplicity.ZeroMany) && (ModelRoot.PluralizationService?.IsSingular(element.Target.Name) == true)
+                           element.TargetPropertyName = element.TargetMultiplicity == Multiplicity.ZeroMany && ModelRoot.PluralizationService?.IsSingular(element.Target.Name) == true
                                                            ? ModelRoot.PluralizationService.Pluralize(element.Target.Name)
                                                            : element.Target.Name;
                         }
@@ -269,7 +271,7 @@ namespace Sawczyn.EFDesigner.EFModel
 
                      string targetPropertyNameErrorMessage = ValidateAssociationIdentifier(element, element.Source, (string)e.NewValue);
 
-                     if (EFModelDiagram.IsDroppingExternal && (targetPropertyNameErrorMessage != null))
+                     if (EFModelDiagram.IsDroppingExternal && targetPropertyNameErrorMessage != null)
                         element.Delete();
                      else
                         errorMessages.Add(targetPropertyNameErrorMessage);
@@ -284,12 +286,12 @@ namespace Sawczyn.EFDesigner.EFModel
 
                      if (!element.SetEndpointRoles())
                      {
-                        if ((element.TargetRole == EndpointRole.Dependent) && (element.SourceRole != EndpointRole.Principal))
+                        if (element.TargetRole == EndpointRole.Dependent && element.SourceRole != EndpointRole.Principal)
                         {
                            element.SourceRole = EndpointRole.Principal;
                            doForeignKeyFixup = true;
                         }
-                        else if ((element.TargetRole == EndpointRole.Principal) && (element.SourceRole != EndpointRole.Dependent))
+                        else if (element.TargetRole == EndpointRole.Principal && element.SourceRole != EndpointRole.Dependent)
                         {
                            element.SourceRole = EndpointRole.Dependent;
                            doForeignKeyFixup = true;

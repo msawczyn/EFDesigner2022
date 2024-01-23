@@ -1,5 +1,7 @@
 4.2.8
    - Better handling of N-N relations in assembly parser
+   - Better detection of principal/dependent roles in assembly parser
+
 4.2.7
    - Support for per-entity inheritance in EF7
    - Added option to generate nullable indicators

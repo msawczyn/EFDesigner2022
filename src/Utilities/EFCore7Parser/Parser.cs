@@ -269,14 +269,8 @@ namespace EFCore7Parser
                                         ? string.Join(",", fkPropertyDeclarations)
                                         : null;
 
-            string dependentClassName = navigationProperty.ForeignKey.DeclaringEntityType.ClrType.Name;
-            association.SourceRole = dependentClassName == association.SourceClassName
-                                        ? AssociationRole.Dependent
-                                        : AssociationRole.Principal;
-
-            association.TargetRole = dependentClassName == association.TargetClassName
-                                        ? AssociationRole.Dependent
-                                        : AssociationRole.Principal;
+            association.SourceRole = navigationProperty.IsOnDependent ? AssociationRole.Dependent : AssociationRole.Principal;
+            association.TargetRole = navigationProperty.IsOnDependent ? AssociationRole.Principal : AssociationRole.Dependent;
 
             // unfortunately, EFCore doesn't serialize documentation like EF6 did
 
@@ -392,14 +386,8 @@ namespace EFCore7Parser
                                         ? string.Join(",", fkPropertyDeclarations)
                                         : null;
 
-            string dependentClassName = navigationProperty.ForeignKey.DeclaringEntityType.ClrType.Name;
-            association.SourceRole = dependentClassName == association.SourceClassName
-                                        ? AssociationRole.Dependent
-                                        : AssociationRole.Principal;
-
-            association.TargetRole = dependentClassName == association.TargetClassName
-                                        ? AssociationRole.Dependent
-                                        : AssociationRole.Principal;
+            association.SourceRole = navigationProperty.IsOnDependent ? AssociationRole.Dependent : AssociationRole.Principal;
+            association.TargetRole = navigationProperty.IsOnDependent ? AssociationRole.Principal : AssociationRole.Dependent;
 
             result.Add(association);
          }

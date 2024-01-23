@@ -207,9 +207,9 @@ namespace Sawczyn.EFDesigner.EFModel
 
          // EF6 can't have declared foreign keys for 1..1 / 0-1..1 / 1..0-1 / 0-1..0-1 relationships
          if (!string.IsNullOrEmpty(FKPropertyName)
-          && (Source.ModelRoot.EntityFrameworkVersion == EFVersion.EF6)
-          && (SourceMultiplicity != Multiplicity.ZeroMany)
-          && (TargetMultiplicity != Multiplicity.ZeroMany))
+          && Source.ModelRoot.EntityFrameworkVersion == EFVersion.EF6
+          && SourceMultiplicity != Multiplicity.ZeroMany
+          && TargetMultiplicity != Multiplicity.ZeroMany)
             FKPropertyName = null;
 
          // if no FKs, remove FK properties in the Dependent class, if they exist
