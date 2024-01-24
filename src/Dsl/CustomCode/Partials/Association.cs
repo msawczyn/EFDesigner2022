@@ -279,13 +279,16 @@ namespace Sawczyn.EFDesigner.EFModel
          for (int index = 0; index < currentForeignKeyPropertyNames.Length; index++)
          {
             ModelAttribute fkProperty = Dependent.Attributes.First(x => x.Name == currentForeignKeyPropertyNames[index]);
-            ModelAttribute idProperty = principalIdentityAttributes[index];
+            if (principalIdentityAttributes.Length > index)
+            {
+               ModelAttribute idProperty = principalIdentityAttributes[index];
 
-            bool required = Dependent == Source
-                               ? TargetMultiplicity == Multiplicity.One
-                               : SourceMultiplicity == Multiplicity.One;
+               bool required = Dependent == Source
+                                  ? TargetMultiplicity == Multiplicity.One
+                                  : SourceMultiplicity == Multiplicity.One;
 
-            fkProperty.SetFKMods(this, summaryBoilerplate, required, idProperty.Type);
+               fkProperty.SetFKMods(this, summaryBoilerplate, required, idProperty.Type);
+            }
          }
       }
 
@@ -343,17 +346,9 @@ namespace Sawczyn.EFDesigner.EFModel
                      return true;
 
                   case Multiplicity.One:
+                  case Multiplicity.ZeroOne:
 
                      return false;
-
-                  case Multiplicity.ZeroOne:
-                     if (SourceRole != EndpointRole.Dependent)
-                        SourceRole = EndpointRole.Dependent;
-
-                     if (TargetRole != EndpointRole.Principal)
-                        TargetRole = EndpointRole.Principal;
-
-                     return true;
                }
 
                break;
@@ -372,14 +367,6 @@ namespace Sawczyn.EFDesigner.EFModel
                      return true;
 
                   case Multiplicity.One:
-                     if (SourceRole != EndpointRole.Principal)
-                        SourceRole = EndpointRole.Principal;
-
-                     if (TargetRole != EndpointRole.Dependent)
-                        TargetRole = EndpointRole.Dependent;
-
-                     return true;
-
                   case Multiplicity.ZeroOne:
 
                      return false;
