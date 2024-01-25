@@ -134,21 +134,24 @@ namespace EFCore6Parser
                                       ? string.Join(",", type.GetInterfaces().Select(GetTypeFullName).Where(s => s != null))
                                       : null;
 
-         result.Properties = entityType.GetDeclaredProperties()
-                                       .Where(p => !p.IsShadowProperty())
-                                       .Select(p => ProcessProperty(p, modelRoot))
-                                       .Where(x => x != null)
-                                       .ToList();
+         // for a generic base class, hoist the properties up to the derived class
+         IEnumerable<IProperty> properties = ((type.BaseType?.IsGenericType == true) ? entityType.GetProperties() : entityType.GetDeclaredProperties() );
 
-         if (type.BaseType?.IsGenericType == true)
-         {
-            PropertyInfo[] baseProperties = type.BaseType.GetProperties().ToArray();
+         result.Properties = properties
+                            .Where(p => !p.IsShadowProperty())
+                            .Select(p => ProcessProperty(p, modelRoot))
+                            .Where(x => x != null)
+                            .ToList();
 
-            foreach (PropertyInfo property in baseProperties)
-            {
-               result.Properties.Add(ProcessProperty(property, modelRoot));
-            }
-         }
+         //if (type.BaseType?.IsGenericType == true)
+         //{
+         //   PropertyInfo[] baseProperties = type.BaseType.GetProperties().ToArray();
+
+         //   foreach (PropertyInfo property in baseProperties)
+         //   {
+         //      result.Properties.Add(ProcessProperty(property, modelRoot));
+         //   }
+         //}
 
          result.UnidirectionalAssociations = GetUnidirectionalAssociations(entityType);
          result.BidirectionalAssociations = GetBidirectionalAssociations(entityType);
@@ -180,68 +183,6 @@ namespace EFCore6Parser
 
             modelRoot.Enumerations.Add(result);
          }
-      }
-
-      protected ModelProperty ProcessProperty(PropertyInfo propertyData, ModelRoot modelRoot)
-      {
-         Type type = propertyData.PropertyType;
-         List<CustomAttributeData> attributes = propertyData.CustomAttributes.ToList();
-      
-         ModelProperty result = new ModelProperty();
-      
-         if (type.IsEnum)
-            ProcessEnum(propertyData.PropertyType, modelRoot);
-      
-         // If it is NULLABLE, then get the underlying type. eg if "Nullable<int>" then this will return just "int"
-         bool isNullableType = type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-
-         if (isNullableType)
-            type = type.GetGenericArguments()[0];
-
-         result.TypeName = type.IsEnum
-                              ? type.FullName
-                              : type.Name;
-         result.Name = propertyData.Name;
-
-         ColumnAttribute columnAttribute = propertyData.CustomAttributes.OfType<System.ComponentModel.DataAnnotations.Schema.ColumnAttribute>().FirstOrDefault();
-
-         if (columnAttribute != null)
-         {
-            result.ColumnName = columnAttribute.Name;
-            attributes.RemoveAll(a => a.AttributeType.Name == "ColumnAttribute");
-         }
-
-         result.IsIdentity = propertyData.CustomAttributes.OfType<System.ComponentModel.DataAnnotations.KeyAttribute>().Any();
-         //result.IsIdentityGenerated = result.IsIdentity && (propertyData.ValueGenerated == ValueGenerated.OnAdd);
-
-         CustomAttributeData requiredAttribute = attributes.FirstOrDefault(a => a.AttributeType.Name == "RequiredAttribute");
-
-         result.Required = (bool)(requiredAttribute?.ConstructorArguments.FirstOrDefault().Value
-                               ?? !isNullableType);
-         attributes.RemoveAll(a => a.AttributeType.Name == "RequiredAttribute");
-
-         //result.Indexed = propertyData.IsIndex();
-         //result.IndexedUnique = result.Indexed && propertyData.IsUniqueIndex();
-         //result.IndexName = propertyData.GetContainingIndexes().FirstOrDefault(i => i.Properties.Count == 1)?.Name;
-         //result.MaxStringLength = type == typeof(string) ? (propertyData.GetMaxLength() ?? 0) : 0;
-
-         if (result.MaxStringLength == 0)
-            result.MaxStringLength = ParseVarcharColumnTypeAttribute(attributes);
-
-         attributes.RemoveAll(a => (a.AttributeType.Name == "MaxLengthAttribute")
-                                || (a.AttributeType.Name == "StringLengthAttribute"));
-
-         CustomAttributeData minLengthAttribute = attributes.FirstOrDefault(a => a.AttributeType.Name == "MinLengthAttribute");
-         result.MinStringLength = (int?)minLengthAttribute?.ConstructorArguments.FirstOrDefault().Value ?? 0;
-         attributes.RemoveAll(a => a.AttributeType.Name == "MinLengthAttribute");
-
-         string customAttributes = GetCustomAttributes(attributes);
-
-         result.CustomAttributes = customAttributes.Length > 2
-                                      ? customAttributes
-                                      : null;
-
-         return result;
       }
 
       protected ModelProperty ProcessProperty(IProperty propertyData, ModelRoot modelRoot)
