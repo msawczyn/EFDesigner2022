@@ -343,19 +343,21 @@ namespace EFCore6Parser
             //association.SourceSummary = navigationProperty.FromEndMember.Documentation?.Summary;
             //association.SourceDescription = navigationProperty.FromEndMember.Documentation?.LongDescription;
 
-            List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
-                                                                    .Where(p => !p.IsShadowProperty())
-                                                                    .Select(p => p.Name)
-                                                                    .ToList();
-
-            association.ForeignKey = fkPropertyDeclarations.Any()
-                                        ? string.Join(",", fkPropertyDeclarations)
-                                        : null;
-
             association.SourceRole = AssociationRole.NotApplicable;
             association.TargetRole = AssociationRole.NotApplicable;
 
             association.JoinTableName = navigationProperty.JoinEntityType.GetTableName();
+            string joinTableSchema = navigationProperty.JoinEntityType.GetSchema();
+            StoreObjectIdentifier storeObjectIdentifier = StoreObjectIdentifier.Table(association.JoinTableName, joinTableSchema);
+            IProperty[] foreignKeyProperties = navigationProperty.JoinEntityType.GetForeignKeyProperties().ToArray();
+
+            association.End1ColumnName = string.Join(",", foreignKeyProperties.OfType<RuntimeProperty>()
+                                                                              .Where(p => p.ForeignKeys.Any(k => k.PrincipalEntityType == entityType))
+                                                                              .Select(x => x.GetColumnName(storeObjectIdentifier)));
+
+            association.End2ColumnName = string.Join(",", foreignKeyProperties.OfType<RuntimeProperty>()
+                                                                              .Where(p => p.ForeignKeys.Any(k => k.PrincipalEntityType != entityType))
+                                                                              .Select(x => x.GetColumnName(storeObjectIdentifier)));
 
             result.Add(association);
          }

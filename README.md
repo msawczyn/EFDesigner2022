@@ -4,7 +4,7 @@
 
 ### For Visual Studio 2022
 
-Model and generate code for both Entity Framework v6.x and Entity Framework Core 2 through 7.
+Model and generate code for both Entity Framework v6.x and Entity Framework Core 2 through 8.
 
 **[Install with NuGet](https://docs.microsoft.com/en-us/visualstudio/ide/finding-and-using-visual-studio-extensions) from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner2022)** 
 

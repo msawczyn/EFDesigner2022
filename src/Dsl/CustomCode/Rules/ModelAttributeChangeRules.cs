@@ -329,17 +329,25 @@ namespace Sawczyn.EFDesigner.EFModel
                break;
             case "TypePrecision":
                {
-                  if (modelRoot.IsEFCore6Plus && !string.IsNullOrEmpty(element.TypePrecision) && (element.Type == "decimal" || element.Type == "Decimal"))
+                  if (modelRoot.IsEFCore6Plus && !string.IsNullOrEmpty(element.TypePrecision) && element.Type.ToLowerInvariant() == "decimal")
                   {
                      if (!int.TryParse(element.TypePrecision, out _))
                         errorMessages.Add($"{modelClass.Name}.{element.Name}: {e.NewValue} isn't a valid value for Precision. It must be an integer.");
+                  }
+
+                  if (modelRoot.IsEFCore6Plus && !string.IsNullOrEmpty(element.ColumnType) && element.ColumnType.ToLowerInvariant() == "datetime")
+                  {
+                     if (!int.TryParse(element.TypePrecision, out int precision))
+                        errorMessages.Add($"{modelClass.Name}.{element.Name}: {e.NewValue} isn't a valid value for Precision. It must be an integer.");
+                     if (precision < 0 || precision > 7)
+                        errorMessages.Add($"{modelClass.Name}.{element.Name}: {e.NewValue} isn't a valid value for Precision. It must be in the range 0-7.");
                   }
                }
 
                break;
             case "TypeScale":
                {
-                  if (modelRoot.IsEFCore6Plus && !string.IsNullOrEmpty(element.TypeScale) && (element.Type == "decimal" || element.Type == "Decimal"))
+                  if (modelRoot.IsEFCore6Plus && !string.IsNullOrEmpty(element.TypeScale) && element.Type.ToLowerInvariant() == "decimal")
                   {
                      if (!int.TryParse(element.TypeScale, out _))
                         errorMessages.Add($"{modelClass.Name}.{element.Name}: {e.NewValue} isn't a valid value for Scale. It must be an integer.");

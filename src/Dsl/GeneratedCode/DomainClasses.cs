@@ -955,7 +955,7 @@ namespace Sawczyn.EFDesigner.EFModel
 		/// <summary>
 		/// Storage for DatabaseSchema
 		/// </summary>
-		private global::System.String databaseSchemaPropertyStorage = "dbo";
+		private global::System.String databaseSchemaPropertyStorage = string.Empty;
 		
 		/// <summary>
 		/// Gets or sets the value of DatabaseSchema domain property.
@@ -964,7 +964,7 @@ namespace Sawczyn.EFDesigner.EFModel
 		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.ModelRoot/DatabaseSchema.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.ModelRoot/DatabaseSchema.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.ModelRoot/DatabaseSchema.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
-		[global::System.ComponentModel.DefaultValue("dbo")]
+		[global::System.ComponentModel.DefaultValue("")]
 		[DslModeling::DomainObjectId("02d27f11-3c30-4837-a56a-d63f0e629d95")]
 		public global::System.String DatabaseSchema
 		{
@@ -15114,6 +15114,6 @@ namespace Sawczyn.EFDesigner.EFModel
    /// </summary>
    partial class ModelRoot
    {
-      public const string DSLVersion = "4.2.7.5";
+      public const string DSLVersion = "4.2.8.0";
    }
 }

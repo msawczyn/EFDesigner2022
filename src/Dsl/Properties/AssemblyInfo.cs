@@ -19,8 +19,8 @@ using System.Runtime.InteropServices;
 [assembly : AssemblyCulture("")]
 [assembly : NeutralResourcesLanguage("en")]
 
-[assembly : AssemblyVersion("4.2.7.0")]
-[assembly : AssemblyFileVersion("4.2.7.0")]
+[assembly : AssemblyVersion("4.2.8.0")]
+[assembly : AssemblyFileVersion("4.2.8.0")]
 [assembly : ComVisible(false)]
 [assembly : CLSCompliant(true)]
 [assembly : ReliabilityContract(Consistency.MayCorruptProcess, Cer.None)]

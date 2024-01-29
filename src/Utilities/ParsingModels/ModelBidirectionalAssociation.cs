@@ -30,6 +30,16 @@ namespace ParsingModels
       /// </summary>
       public string JoinTableName { get; set; }
 
+      /// <summary>
+      /// Gets or sets the name of the column in the join table that references the source.
+      /// </summary>
+      public string End1ColumnName { get; set; }
+
+      /// <summary>
+      /// Gets or sets the name of the column in the join table that references the target.
+      /// </summary>
+      public string End2ColumnName { get; set; }
+
       /// <summary>Determines whether the specified object is equal to the current object.</summary>
       /// <param name="obj">The object to compare with the current object.</param>
       /// <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>

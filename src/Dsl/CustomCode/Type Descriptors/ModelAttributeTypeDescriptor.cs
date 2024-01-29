@@ -138,12 +138,14 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("DatabaseDefaultValue");
             }
 
-            // precision and scale introduced in EFCore6. Only use if decimal (ignoring the potential use in DateTime2)
-            if (!modelRoot.IsEFCore6Plus || (modelAttribute.Type != "decimal" && modelAttribute.Type != "Decimal"))
-            {
+            // precision and scale introduced in EFCore6. Only use if decimal and DateTime
+            string[] hasPrecision = new[] { "decimal", "datetime" };
+
+            if (!modelRoot.IsEFCore6Plus || (!hasPrecision.Contains(modelAttribute.Type.ToLowerInvariant())))
                propertyDescriptors.Remove("TypePrecision");
+
+            if (!modelRoot.IsEFCore6Plus || (modelAttribute.Type != "decimal" && modelAttribute.Type != "Decimal"))
                propertyDescriptors.Remove("TypeScale");
-            }
 
             if (string.IsNullOrEmpty(modelAttribute.TypePrecision))
                propertyDescriptors.Remove("TypeScale");

@@ -306,6 +306,62 @@ namespace EFCore5Parser
       {
          List<ModelBidirectionalAssociation> result = new List<ModelBidirectionalAssociation>();
 
+         GetDirectBidirectionalAssociations(entityType, result);
+         GetSkipBidirectionalAssociations(entityType, result);
+
+         return result;
+      }
+
+      private static void GetSkipBidirectionalAssociations(IEntityType entityType, List<ModelBidirectionalAssociation> result)
+      {
+         foreach (ISkipNavigation navigationProperty in entityType.GetDeclaredSkipNavigations())
+         {
+            ModelBidirectionalAssociation association = new ModelBidirectionalAssociation();
+
+            Type sourceType = entityType.ClrType.Unwrap();
+            association.SourceClassName = sourceType.Name;
+            association.SourceClassNamespace = sourceType.Namespace;
+
+            Type targetType = navigationProperty.TargetEntityType.ClrType.Unwrap();
+            association.TargetClassName = targetType.Name;
+            association.TargetClassNamespace = targetType.Namespace;
+
+            ISkipNavigation inverse = navigationProperty.Inverse;
+
+            // the property in the source class (referencing the target class)
+            association.TargetPropertyTypeName = navigationProperty.PropertyInfo.PropertyType.Unwrap().Name;
+            association.TargetPropertyName = navigationProperty.Name;
+            association.TargetMultiplicity = Multiplicity.ZeroMany;
+
+            //association.TargetSummary = navigationProperty.ToEndMember.Documentation?.Summary;
+            //association.TargetDescription = navigationProperty.ToEndMember.Documentation?.LongDescription;
+
+            // the property in the target class (referencing the source class)
+            association.SourcePropertyTypeName = inverse.PropertyInfo.PropertyType.Unwrap().Name;
+            association.SourcePropertyName = inverse.Name;
+            association.SourceMultiplicity = Multiplicity.ZeroMany;
+
+            //association.SourceSummary = navigationProperty.FromEndMember.Documentation?.Summary;
+            //association.SourceDescription = navigationProperty.FromEndMember.Documentation?.LongDescription;
+
+            association.SourceRole = AssociationRole.NotApplicable;
+            association.TargetRole = AssociationRole.NotApplicable;
+
+            association.JoinTableName = navigationProperty.JoinEntityType.GetTableName();
+            string joinTableSchema = navigationProperty.JoinEntityType.GetSchema();
+            StoreObjectIdentifier storeObjectIdentifier = StoreObjectIdentifier.Table(association.JoinTableName, joinTableSchema);
+            IProperty[] end1ForeignKeyProperties = navigationProperty.JoinEntityType.GetForeignKeys().Where(k=>k.PrincipalEntityType==entityType).SelectMany(k=>k.Properties).ToArray();
+            IProperty[] end2ForeignKeyProperties = navigationProperty.JoinEntityType.GetForeignKeys().Where(k=>k.PrincipalEntityType!=entityType).SelectMany(k=>k.Properties).ToArray();
+
+            association.End1ColumnName = string.Join(",", end1ForeignKeyProperties.Select(x => x.GetColumnName(storeObjectIdentifier)));
+            association.End2ColumnName = string.Join(",", end2ForeignKeyProperties.Select(x => x.GetColumnName(storeObjectIdentifier)));
+
+            result.Add(association);
+         }
+      }
+
+      private static void GetDirectBidirectionalAssociations(IEntityType entityType, List<ModelBidirectionalAssociation> result)
+      {
          foreach (INavigation navigationProperty in entityType.GetDeclaredNavigations().Where(n => n.Inverse != null))
          {
             ModelBidirectionalAssociation association = new ModelBidirectionalAssociation();
@@ -350,11 +406,8 @@ namespace EFCore5Parser
 
             result.Add(association);
          }
-
-         return result;
       }
 
 #endregion
    }
-
 }
