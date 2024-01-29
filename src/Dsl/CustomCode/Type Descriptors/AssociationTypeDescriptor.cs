@@ -71,6 +71,12 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("TargetRole");
             }
 
+            if (association.SourceMultiplicity != Multiplicity.ZeroMany || association.TargetMultiplicity != Multiplicity.ZeroMany)
+            {
+               propertyDescriptors.Remove("SourceRole");
+               propertyDescriptors.Remove("TargetRole");
+            }
+
             // only display delete behavior on the principal end
             // except that owned types don't have deletion behavior choices
             if (association.SourceRole != EndpointRole.Principal || association.Source.IsDependentType || association.Target.IsDependentType)

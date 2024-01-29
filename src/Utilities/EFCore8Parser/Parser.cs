@@ -274,17 +274,35 @@ namespace EFCore8Parser
             // the property in the target class (referencing the source class)
             association.SourceMultiplicity = ConvertMultiplicity(navigationProperty.GetSourceMultiplicity());
 
-            List<string> fkPropertyDeclarations = navigationProperty.ForeignKey.Properties
+            List<string> fkPropertyNames = navigationProperty.ForeignKey.Properties
                                                                        .Where(p => !p.IsShadowProperty())
-                                                                       .Select(p => p.Name)
-                                                                       .ToList();
+                                                             .Select(p => p.Name)
+                                                             .ToList();
 
-            association.ForeignKey = fkPropertyDeclarations.Any()
-                                        ? string.Join(",", fkPropertyDeclarations)
+            association.ForeignKey = fkPropertyNames.Any()
+                                        ? string.Join(",", fkPropertyNames)
                                         : null;
+
+            List<string> fkColumnNames = navigationProperty.ForeignKey.Properties
+                                                           .Where(p => !p.IsShadowProperty())
+                                                           .Select(p => p.GetColumnName())
+                                                           .ToList();
+            association.ForeignKeyColumnName = fkColumnNames.Any()
+                                                  ? string.Join(",", fkPropertyNames)
+                                                  : null;
 
             association.SourceRole = navigationProperty.IsOnDependent ? AssociationRole.Dependent : AssociationRole.Principal;
             association.TargetRole = navigationProperty.IsOnDependent ? AssociationRole.Principal : AssociationRole.Dependent;
+
+            //IProperty[] foreignKeyProperties = navigationProperty.JoinEntityType.GetForeignKeyProperties().ToArray();
+
+            //association.End1ColumnName = string.Join(",", foreignKeyProperties.OfType<RuntimeProperty>()
+            //                                                                  .Where(p => p.ForeignKeys.Any(k => k.PrincipalEntityType == entityType))
+            //                                                                  .Select(x => x.GetColumnName(storeObjectIdentifier)));
+
+            //association.End2ColumnName = string.Join(",", foreignKeyProperties.OfType<RuntimeProperty>()
+            //                                                                  .Where(p => p.ForeignKeys.Any(k => k.PrincipalEntityType != entityType))
+            //                                                                  .Select(x => x.GetColumnName(storeObjectIdentifier)));
 
             // unfortunately, EFCore doesn't serialize documentation like EF6 did
 
@@ -356,7 +374,6 @@ namespace EFCore8Parser
             association.End2ColumnName = string.Join(",", foreignKeyProperties.OfType<RuntimeProperty>()
                                                                               .Where(p => p.ForeignKeys.Any(k => k.PrincipalEntityType != entityType))
                                                                               .Select(x => x.GetColumnName(storeObjectIdentifier)));
-
             result.Add(association);
          }
       }

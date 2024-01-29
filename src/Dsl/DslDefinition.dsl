@@ -1420,7 +1420,7 @@
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
         </DomainProperty>
-        <DomainProperty Id="33c1f80e-1661-4666-9112-918463abc4ec" Description="Optional name of column holding foreign key value for this end of the association" Name="FKColumnName" DisplayName="Foreign Key Column Name" Category="Database">
+        <DomainProperty Id="33c1f80e-1661-4666-9112-918463abc4ec" Description="Optional name of column holding foreign key value for this end of the association" Name="TargetFKColumnName" DisplayName="Foreign Key Column Name" Category="End 2">
           <Type>
             <ExternalTypeMoniker Name="/System/String" />
           </Type>
@@ -1623,7 +1623,7 @@
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
         </DomainProperty>
-        <DomainProperty Id="695d0645-c6d9-416a-bc18-7967f8339ced" Description="Optional name of column holding foreign key value for this end of the association" Name="SourceFKColumnName" DisplayName="End1 Foreign Key Column Name" Category="Database">
+        <DomainProperty Id="695d0645-c6d9-416a-bc18-7967f8339ced" Description="Optional name of column holding foreign key value for this end of the association" Name="SourceFKColumnName" DisplayName="End1 Foreign Key Column Name" Category="End 1">
           <Type>
             <ExternalTypeMoniker Name="/System/String" />
           </Type>
@@ -2336,8 +2336,8 @@
           <XmlPropertyData XmlName="isJSON">
             <DomainPropertyMoniker Name="Association/IsJSON" />
           </XmlPropertyData>
-          <XmlPropertyData XmlName="fKColumnName">
-            <DomainPropertyMoniker Name="Association/FKColumnName" />
+          <XmlPropertyData XmlName="targetFKColumnName">
+            <DomainPropertyMoniker Name="Association/TargetFKColumnName" />
           </XmlPropertyData>
         </ElementData>
       </XmlClassData>
