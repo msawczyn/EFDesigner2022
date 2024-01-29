@@ -83,9 +83,13 @@ namespace ParsingModels
       /// </summary>
       public string TargetDescription { get; set; }
       /// <summary>
-      /// Gets or sets the name of the declared foreign key poperty for the association, if any.
+      /// Gets or sets the name of the declared foreign key property for the association, if any.
       /// </summary>
       public string ForeignKey { get; set; }
+      /// <summary>
+      /// Gets or sets the name of the column in the target table that references the source table.
+      /// </summary>
+      public string ForeignKeyColumnName { get; set; }
       /// <summary>
       /// Gets or sets the target role.
       /// </summary>

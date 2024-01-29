@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" MinorVersion="2" Build="8" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
+<Dsl xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="2f9962d2-544c-40e2-a4ba-a2babee17a5b" Description="Entity Framework visual editor for EF6, EFCore and beyond." Name="EFModel" DisplayName="Entity Framework Visual Editor" Namespace="Sawczyn.EFDesigner.EFModel" MajorVersion="4" MinorVersion="2" Build="8" Revision="1" ProductName="EFDesigner" CompanyName="Michael Sawczyn" PackageGuid="dd1c2ec0-b732-4b74-a591-4d78684bb231" PackageNamespace="Sawczyn.EFDesigner.EFModel" xmlns="http://schemas.microsoft.com/VisualStudio/2005/DslTools/DslDefinitionModel">
   <Classes>
     <DomainClass Id="95532cb8-3452-4b09-a654-aeb2e2d0b3ad" Description="" Name="ModelRoot" DisplayName="Entity Model" Namespace="Sawczyn.EFDesigner.EFModel">
       <CustomTypeDescriptor>
@@ -1420,6 +1420,11 @@
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
         </DomainProperty>
+        <DomainProperty Id="33c1f80e-1661-4666-9112-918463abc4ec" Description="Optional name of column holding foreign key value for this end of the association" Name="FKColumnName" DisplayName="Foreign Key Column Name" Category="Database">
+          <Type>
+            <ExternalTypeMoniker Name="/System/String" />
+          </Type>
+        </DomainProperty>
       </Properties>
       <Source>
         <DomainRole Id="d2edf927-64c2-4fe3-8d4e-c44e87142c4c" Description="" Name="Source" DisplayName="Source" PropertyName="Targets" PropertyDisplayName="Targets">
@@ -1619,11 +1624,6 @@
           </Type>
         </DomainProperty>
         <DomainProperty Id="695d0645-c6d9-416a-bc18-7967f8339ced" Description="Optional name of column holding foreign key value for this end of the association" Name="SourceFKColumnName" DisplayName="End1 Foreign Key Column Name" Category="Database">
-          <Type>
-            <ExternalTypeMoniker Name="/System/String" />
-          </Type>
-        </DomainProperty>
-        <DomainProperty Id="c687cd9e-c441-4d8e-9cf2-cba48066703b" Description="Optional name of column holding foreign key value for this end of the association" Name="TargetFKColumnName" DisplayName="End2 Foreign Key Column Name" Category="Database">
           <Type>
             <ExternalTypeMoniker Name="/System/String" />
           </Type>
@@ -2336,6 +2336,9 @@
           <XmlPropertyData XmlName="isJSON">
             <DomainPropertyMoniker Name="Association/IsJSON" />
           </XmlPropertyData>
+          <XmlPropertyData XmlName="fKColumnName">
+            <DomainPropertyMoniker Name="Association/FKColumnName" />
+          </XmlPropertyData>
         </ElementData>
       </XmlClassData>
       <XmlClassData TypeName="ClassHasAttributes" MonikerAttributeName="" SerializeId="true" MonikerElementName="classHasAttributesMoniker" ElementName="classHasAttributes" MonikerTypeName="ClassHasAttributesMoniker">
@@ -2872,9 +2875,6 @@
           </XmlPropertyData>
           <XmlPropertyData XmlName="sourceFKColumnName">
             <DomainPropertyMoniker Name="BidirectionalAssociation/SourceFKColumnName" />
-          </XmlPropertyData>
-          <XmlPropertyData XmlName="targetFKColumnName">
-            <DomainPropertyMoniker Name="BidirectionalAssociation/TargetFKColumnName" />
           </XmlPropertyData>
         </ElementData>
       </XmlClassData>

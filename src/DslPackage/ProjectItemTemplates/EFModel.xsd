@@ -1509,6 +1509,12 @@
             <xsd:documentation>If true, the aggregate will be stored as JSON in the database</xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+        <!-- Property: FKColumnName -->
+        <xsd:attribute name="fKColumnName" type="xsd:string" >
+          <xsd:annotation>
+            <xsd:documentation>Optional name of column holding foreign key value for this end of the association</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
@@ -1767,12 +1773,6 @@
         </xsd:attribute>
         <!-- Property: SourceFKColumnName -->
         <xsd:attribute name="sourceFKColumnName" type="xsd:string" >
-          <xsd:annotation>
-            <xsd:documentation>Optional name of column holding foreign key value for this end of the association</xsd:documentation>
-          </xsd:annotation>
-        </xsd:attribute>
-        <!-- Property: TargetFKColumnName -->
-        <xsd:attribute name="targetFKColumnName" type="xsd:string" >
           <xsd:annotation>
             <xsd:documentation>Optional name of column holding foreign key value for this end of the association</xsd:documentation>
           </xsd:annotation>

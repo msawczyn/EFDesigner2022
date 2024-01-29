@@ -2333,6 +2333,18 @@
     <value>Database</value>
     <comment>Category for DomainProperty &apos;IsJSON&apos; on DomainClass &apos;Association&apos;</comment>
   </data>
+  <data name="Sawczyn.EFDesigner.EFModel.Association/FKColumnName.Description" xml:space="preserve">
+    <value>Optional name of column holding foreign key value for this end of the association</value>
+    <comment>Description for DomainProperty &apos;FKColumnName&apos; on DomainClass &apos;Association&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.Association/FKColumnName.DisplayName" xml:space="preserve">
+    <value>Foreign Key Column Name</value>
+    <comment>DisplayName for DomainProperty &apos;FKColumnName&apos; on DomainClass &apos;Association&apos;</comment>
+  </data>
+  <data name="Sawczyn.EFDesigner.EFModel.Association/FKColumnName.Category" xml:space="preserve">
+    <value>Database</value>
+    <comment>Category for DomainProperty &apos;FKColumnName&apos; on DomainClass &apos;Association&apos;</comment>
+  </data>
   <data name="Sawczyn.EFDesigner.EFModel.Association/Source.Description" xml:space="preserve">
     <value></value>
     <comment>Description for DomainRole &apos;Source&apos; on DomainRelationship &apos;Association&apos;</comment>
@@ -2672,18 +2684,6 @@
   <data name="Sawczyn.EFDesigner.EFModel.BidirectionalAssociation/SourceFKColumnName.Category" xml:space="preserve">
     <value>Database</value>
     <comment>Category for DomainProperty &apos;SourceFKColumnName&apos; on DomainClass &apos;BidirectionalAssociation&apos;</comment>
-  </data>
-  <data name="Sawczyn.EFDesigner.EFModel.BidirectionalAssociation/TargetFKColumnName.Description" xml:space="preserve">
-    <value>Optional name of column holding foreign key value for this end of the association</value>
-    <comment>Description for DomainProperty &apos;TargetFKColumnName&apos; on DomainClass &apos;BidirectionalAssociation&apos;</comment>
-  </data>
-  <data name="Sawczyn.EFDesigner.EFModel.BidirectionalAssociation/TargetFKColumnName.DisplayName" xml:space="preserve">
-    <value>End2 Foreign Key Column Name</value>
-    <comment>DisplayName for DomainProperty &apos;TargetFKColumnName&apos; on DomainClass &apos;BidirectionalAssociation&apos;</comment>
-  </data>
-  <data name="Sawczyn.EFDesigner.EFModel.BidirectionalAssociation/TargetFKColumnName.Category" xml:space="preserve">
-    <value>Database</value>
-    <comment>Category for DomainProperty &apos;TargetFKColumnName&apos; on DomainClass &apos;BidirectionalAssociation&apos;</comment>
   </data>
   <data name="Sawczyn.EFDesigner.EFModel.BidirectionalAssociation/BidirectionalSource.Description" xml:space="preserve">
     <value></value>

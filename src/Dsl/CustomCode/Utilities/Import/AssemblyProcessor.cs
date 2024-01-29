@@ -496,6 +496,7 @@ namespace Sawczyn.EFDesigner.EFModel
                if (string.IsNullOrWhiteSpace(existing.FKPropertyName) && !string.IsNullOrWhiteSpace(data.ForeignKey))
                {
                   existing.FKPropertyName = data.ForeignKey;
+                  existing.FKColumnName = data.ForeignKeyColumnName;
                   existing.Source.ModelRoot.ExposeForeignKeys = true;
                }
 
@@ -515,6 +516,7 @@ namespace Sawczyn.EFDesigner.EFModel
             elementLink.TargetSummary = data.TargetSummary;
             elementLink.TargetDescription = data.TargetDescription;
             elementLink.FKPropertyName = data.ForeignKey;
+            elementLink.FKColumnName = data.ForeignKeyColumnName;
             elementLink.SourceRole = ConvertRole(data.SourceRole);
             elementLink.TargetRole = ConvertRole(data.TargetRole);
 
@@ -574,6 +576,7 @@ namespace Sawczyn.EFDesigner.EFModel
                if (string.IsNullOrWhiteSpace(existing.FKPropertyName) && !string.IsNullOrWhiteSpace(data.ForeignKey))
                {
                   existing.FKPropertyName = string.Join(",", data.ForeignKey.Split(',').ToList().Select(p => p.Split('/').Last().Split(' ').Last()));
+                  existing.FKColumnName = data.ForeignKeyColumnName;
                   existing.Source.ModelRoot.ExposeForeignKeys = true;
                }
 
@@ -593,6 +596,7 @@ namespace Sawczyn.EFDesigner.EFModel
             elementLink.TargetSummary = data.TargetSummary;
             elementLink.TargetDescription = data.TargetDescription;
             elementLink.FKPropertyName = data.ForeignKey;
+            elementLink.FKColumnName = data.ForeignKeyColumnName;
             elementLink.SourceRole = ConvertRole(data.SourceRole);
             elementLink.TargetRole = ConvertRole(data.TargetRole);
             elementLink.SourcePropertyName = data.SourcePropertyName;
