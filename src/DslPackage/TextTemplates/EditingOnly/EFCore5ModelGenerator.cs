@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -542,10 +543,10 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
                   case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
                      segments.Add($"WithOne(p => p.{association.SourcePropertyName})");
-                     string foreignKeySegment = CreateForeignKeySegment(association, foreignKeyColumns);
+                     string[] fkNames = GetForeignKeys(association, foreignKeyColumns).Select(x => x.Trim('"')).Select(x => $"\"{x}\"").ToArray();
 
-                     if (!string.IsNullOrEmpty(foreignKeySegment))
-                        segments.Add(foreignKeySegment);
+                     if (fkNames.Length > 0)
+                        segments.Add($"HasForeignKey({string.Join(",",fkNames)})");
 
                      WriteSourceDeleteBehavior(association, segments);
 
@@ -588,6 +589,28 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
                   Output(segments);
                }
+
+               if (association.Dependent == association.Target && !string.IsNullOrEmpty(association.TargetFKColumnName))
+               {
+                  string fk = association.GetForeignKeyPropertyNames().FirstOrDefault();
+
+                  if (string.IsNullOrEmpty(fk))
+                     fk = association.TargetFKColumnName;
+
+                  string requiredIndicator = association.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One ? "?" : string.Empty;
+                  Output($"modelBuilder.Entity<{association.Target.FullName}>().Property<{association.Source.AllIdentityAttributes.First().CLRType}{requiredIndicator}>(\"{fk}\").HasColumnName(\"{association.TargetFKColumnName}\");");
+               }
+
+               if (association.Dependent == association.Source && !string.IsNullOrEmpty(association.SourceFKColumnName))
+               {
+                  string fk = association.GetForeignKeyPropertyNames().FirstOrDefault();
+                  if (string.IsNullOrEmpty(fk))
+                     fk = association.SourceFKColumnName;
+
+                  string requiredIndicator = association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One ? "?" : string.Empty;
+                  Output($"modelBuilder.Entity<{association.Source.FullName}>().Property<{association.Target.AllIdentityAttributes.First().CLRType}{requiredIndicator}>(\"{fk}\").HasColumnName(\"{association.SourceFKColumnName}\");");
+               }
+
             }
          }
 
@@ -649,9 +672,17 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             if (association.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany && association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
             {
-               string targetFKs = string.Join(", ", association.Target.IdentityAttributes.Select(a => $"\"{association.Target.Name}_{a.Name}\""));
-               string sourceFKs = string.Join(", ", association.Source.IdentityAttributes.Select(a => $"\"{association.Source.Name}_{a.Name}\""));
-               string joinTable = string.IsNullOrEmpty(association.JoinTableName) ? $"{association.Target.Name}_x_{association.Source.Name}" : association.JoinTableName;
+               string targetFKs = string.IsNullOrEmpty(association.TargetFKColumnName)
+                                     ? string.Join(", ", association.Target.IdentityAttributes.Select(a => $"\"{association.Target.Name}_{a.Name}\""))
+                                     : "\"" + association.TargetFKColumnName + "\"";
+
+               string sourceFKs = string.IsNullOrEmpty(association.SourceFKColumnName)
+                                     ? string.Join(", ", association.Source.IdentityAttributes.Select(a => $"\"{association.Source.Name}_{a.Name}\""))
+                                     : "\"" + association.SourceFKColumnName + "\"";
+
+               string joinTable = string.IsNullOrEmpty(association.JoinTableName)
+                                     ? $"{association.Target.Name}_x_{association.Source.Name}"
+                                     : association.JoinTableName;
 
                string segment =
                   "UsingEntity<Dictionary<string, object>>("
@@ -665,10 +696,9 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
             {
                segments.Add($"UsingEntity(x => x.ToTable(\"{tableMap}\"))");
 
-               string foreignKeySegment = CreateForeignKeySegment(association, foreignKeyColumns);
-
-               if (!string.IsNullOrEmpty(foreignKeySegment))
-                  segments.Add(foreignKeySegment);
+               string[] foreignKeys = GetForeignKeys(association, foreignKeyColumns).Select(x => x.Trim('"')).Select(x => $"\"{x}\"").ToArray();
+               if (foreignKeys.Length > 0)
+                  segments.Add($"HasForeignKey({string.Join(", ", foreignKeys)})");
 
                WriteSourceDeleteBehavior(association, segments);
                WriteTargetDeleteBehavior(association, segments);
@@ -796,110 +826,8 @@ namespace Sawczyn.EFDesigner.EFModel.EditingOnly
 
             return segment;
          }
-
-         /// <summary>
-         /// Writes unidirectional non-dependent associations
-         /// </summary>
-         /// <param name="modelClass">The model class</param>
-         /// <param name="visited">The list of already-visited association</param>
-         /// <param name="foreignKeyColumns">The list of foreign key columns</param>
-         protected override void WriteUnidirectionalNonDependentAssociations(ModelClass modelClass, List<Association> visited, List<string> foreignKeyColumns)
-         {
-            // ReSharper disable once LoopCanBePartlyConvertedToQuery
-            foreach (UnidirectionalAssociation association in Association.GetLinksToTargets(modelClass)
-                                                                         .OfType<UnidirectionalAssociation>()
-                                                                         .Where(x => x.Persistent && x.Target.Persistent))
-            {
-               if (visited.Contains(association))
-                  continue;
-
-               visited.Add(association);
-
-               List<string> segments = new List<string>();
-               bool required = false;
-
-               segments.Add($"modelBuilder.Entity<{modelClass.FullName}>()");
-
-               switch (association.TargetMultiplicity) // realized by property on source
-               {
-                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
-                     segments.Add($"HasMany<{association.Target.FullName}>(p => p.{association.TargetPropertyName})");
-                     required = association.SourceMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One;
-
-                     break;
-
-                  case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
-                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
-                     segments.Add($"HasOne<{association.Target.FullName}>(p => p.{association.TargetPropertyName})");
-
-                     break;
-               }
-
-               switch (association.SourceMultiplicity) // realized by property on target, but no property on target
-               {
-                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany:
-                     segments.Add("WithMany()");
-                     required = association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.One;
-
-                     if (association.TargetMultiplicity == Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroMany)
-                     {
-                        string tableMap = string.IsNullOrEmpty(association.JoinTableName)
-                                             ? $"{association.Target.Name}_x_{association.Source.Name}_{association.TargetPropertyName}"
-                                             : association.JoinTableName;
-
-                        segments.Add($"UsingEntity(x => x.ToTable(\"{tableMap}\"))");
-                     }
-
-                     break;
-
-                  case Sawczyn.EFDesigner.EFModel.Multiplicity.One:
-                  case Sawczyn.EFDesigner.EFModel.Multiplicity.ZeroOne:
-                     segments.Add("WithOne()");
-
-                     break;
-               }
-
-               string foreignKeySegment = CreateForeignKeySegment(association, foreignKeyColumns);
-
-               if (!string.IsNullOrEmpty(foreignKeySegment))
-                  segments.Add(foreignKeySegment);
-
-               if (association.Dependent == association.Target)
-               {
-                  if (association.SourceDeleteAction == DeleteAction.None)
-                     segments.Add("OnDelete(DeleteBehavior.NoAction)");
-                  else if (association.SourceDeleteAction == DeleteAction.Cascade)
-                     segments.Add("OnDelete(DeleteBehavior.Cascade)");
-               }
-               else if (association.Dependent == association.Source)
-               {
-                  if (association.TargetDeleteAction == DeleteAction.None)
-                     segments.Add("OnDelete(DeleteBehavior.NoAction)");
-                  else if (association.TargetDeleteAction == DeleteAction.Cascade)
-                     segments.Add("OnDelete(DeleteBehavior.Cascade)");
-               }
-
-               if (required)
-                  segments.Add("IsRequired()");
-
-               Output(segments);
-
-               if (association.TargetAutoInclude)
-                  Output($"modelBuilder.Entity<{association.Source.FullName}>().Navigation(e => e.{association.TargetPropertyName}).AutoInclude();");
-
-               if (!association.TargetAutoProperty)
-               {
-                  segments.Add($"modelBuilder.Entity<{association.Source.FullName}>().Navigation(e => e.{association.TargetPropertyName})");
-
-                  segments.Add(modelClass.ModelRoot.IsEFCore6Plus
-                                  ? $"UsePropertyAccessMode(PropertyAccessMode.{association.TargetPropertyAccessMode})"
-                                  : $"Metadata.SetPropertyAccessMode(PropertyAccessMode.{association.TargetPropertyAccessMode})");
-
-                  Output(segments);
-               }
-            }
-         }
       }
+
       #endregion Template
    }
 }

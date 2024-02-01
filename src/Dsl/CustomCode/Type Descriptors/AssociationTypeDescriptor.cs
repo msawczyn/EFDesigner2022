@@ -64,14 +64,8 @@ namespace Sawczyn.EFDesigner.EFModel
                propertyDescriptors.Remove("IsJSON");
             }
 
-            // don't display roles for N..N, 1..N or 0-1..N associations
+            // don't display roles for X..N associations
             if (association.SourceMultiplicity == Multiplicity.ZeroMany || association.TargetMultiplicity == Multiplicity.ZeroMany)
-            {
-               propertyDescriptors.Remove("SourceRole");
-               propertyDescriptors.Remove("TargetRole");
-            }
-
-            if (association.SourceMultiplicity != Multiplicity.ZeroMany || association.TargetMultiplicity != Multiplicity.ZeroMany)
             {
                propertyDescriptors.Remove("SourceRole");
                propertyDescriptors.Remove("TargetRole");
@@ -85,8 +79,19 @@ namespace Sawczyn.EFDesigner.EFModel
             if (association.TargetRole != EndpointRole.Principal || association.Source.IsDependentType || association.Target.IsDependentType)
                propertyDescriptors.Remove("TargetDeleteAction");
 
-            // only show join table details if is *..* association and no association class
-            if ((!isManyToMany || !modelRoot.IsEFCore5Plus) && association.GetAssociationClass() != null)
+            if (association.Source.IsDependentType || association.Target.IsDependentType)
+            {
+               propertyDescriptors.Remove("SourceFKColumnName");
+               propertyDescriptors.Remove("TargetFKColumnName");
+            }
+
+            if (!isManyToMany/* || association.GetAssociationClass() != null*/)
+            {
+               propertyDescriptors.Remove("JoinTableName");
+               propertyDescriptors.Remove("SourceFKColumnName");
+            }
+
+            if (!modelRoot.IsEFCore5Plus)
             {
                propertyDescriptors.Remove("JoinTableName");
                propertyDescriptors.Remove("SourceFKColumnName");

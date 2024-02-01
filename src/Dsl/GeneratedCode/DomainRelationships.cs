@@ -2796,61 +2796,61 @@ namespace Sawczyn.EFDesigner.EFModel
 		}
 		
 		#endregion
-		#region FKColumnName domain property code
+		#region TargetFKColumnName domain property code
 		
 		/// <summary>
-		/// FKColumnName domain property Id.
+		/// TargetFKColumnName domain property Id.
 		/// </summary>
-		public static readonly global::System.Guid FKColumnNameDomainPropertyId = new global::System.Guid(0x33c1f80e, 0x1661, 0x4666, 0x91, 0x12, 0x91, 0x84, 0x63, 0xab, 0xc4, 0xec);
+		public static readonly global::System.Guid TargetFKColumnNameDomainPropertyId = new global::System.Guid(0x33c1f80e, 0x1661, 0x4666, 0x91, 0x12, 0x91, 0x84, 0x63, 0xab, 0xc4, 0xec);
 		
 		/// <summary>
-		/// Storage for FKColumnName
+		/// Storage for TargetFKColumnName
 		/// </summary>
-		private global::System.String fKColumnNamePropertyStorage = string.Empty;
+		private global::System.String targetFKColumnNamePropertyStorage = string.Empty;
 		
 		/// <summary>
-		/// Gets or sets the value of FKColumnName domain property.
+		/// Gets or sets the value of TargetFKColumnName domain property.
 		/// Optional name of column holding foreign key value for this end of the
 		/// association
 		/// </summary>
-		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.Association/FKColumnName.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
-		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.Association/FKColumnName.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
-		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.Association/FKColumnName.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DisplayNameResource("Sawczyn.EFDesigner.EFModel.Association/TargetFKColumnName.DisplayName", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::CategoryResource("Sawczyn.EFDesigner.EFModel.Association/TargetFKColumnName.Category", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
+		[DslDesign::DescriptionResource("Sawczyn.EFDesigner.EFModel.Association/TargetFKColumnName.Description", typeof(global::Sawczyn.EFDesigner.EFModel.EFModelDomainModel), "Sawczyn.EFDesigner.EFModel.GeneratedCode.DomainModelResx")]
 		[DslModeling::DomainObjectId("33c1f80e-1661-4666-9112-918463abc4ec")]
-		public global::System.String FKColumnName
+		public global::System.String TargetFKColumnName
 		{
 			[global::System.Diagnostics.DebuggerStepThrough]
 			get
 			{
-				return fKColumnNamePropertyStorage;
+				return targetFKColumnNamePropertyStorage;
 			}
 			[global::System.Diagnostics.DebuggerStepThrough]
 			set
 			{
-				FKColumnNamePropertyHandler.Instance.SetValue(this, value);
+				TargetFKColumnNamePropertyHandler.Instance.SetValue(this, value);
 			}
 		}
 		/// <summary>
-		/// Value handler for the Association.FKColumnName domain property.
+		/// Value handler for the Association.TargetFKColumnName domain property.
 		/// </summary>
-		internal sealed partial class FKColumnNamePropertyHandler : DslModeling::DomainPropertyValueHandler<Association, global::System.String>
+		internal sealed partial class TargetFKColumnNamePropertyHandler : DslModeling::DomainPropertyValueHandler<Association, global::System.String>
 		{
-			private FKColumnNamePropertyHandler() { }
+			private TargetFKColumnNamePropertyHandler() { }
 		
 			/// <summary>
-			/// Gets the singleton instance of the Association.FKColumnName domain property value handler.
+			/// Gets the singleton instance of the Association.TargetFKColumnName domain property value handler.
 			/// </summary>
-			public static readonly FKColumnNamePropertyHandler Instance = new FKColumnNamePropertyHandler();
+			public static readonly TargetFKColumnNamePropertyHandler Instance = new TargetFKColumnNamePropertyHandler();
 		
 			/// <summary>
-			/// Gets the Id of the Association.FKColumnName domain property.
+			/// Gets the Id of the Association.TargetFKColumnName domain property.
 			/// </summary>
 			public sealed override global::System.Guid DomainPropertyId
 			{
 				[global::System.Diagnostics.DebuggerStepThrough]
 				get
 				{
-					return FKColumnNameDomainPropertyId;
+					return TargetFKColumnNameDomainPropertyId;
 				}
 			}
 			
@@ -2862,7 +2862,7 @@ namespace Sawczyn.EFDesigner.EFModel
 			public override sealed global::System.String GetValue(Association element)
 			{
 				if (element == null) throw new global::System.ArgumentNullException("element");
-				return element.fKColumnNamePropertyStorage;
+				return element.targetFKColumnNamePropertyStorage;
 			}
 		
 			/// <summary>
@@ -2878,7 +2878,7 @@ namespace Sawczyn.EFDesigner.EFModel
 				if (newValue != oldValue)
 				{
 					ValueChanging(element, oldValue, newValue);
-					element.fKColumnNamePropertyStorage = newValue;
+					element.targetFKColumnNamePropertyStorage = newValue;
 					ValueChanged(element, oldValue, newValue);
 				}
 			}

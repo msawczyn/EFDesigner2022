@@ -10842,20 +10842,20 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
-	      // FKColumnName
+	      // TargetFKColumnName
 	      if (!serializationContext.Result.Failed)
 	      {
-	         string attribFKColumnName = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "fKColumnName");
-	         if (attribFKColumnName != null)
+	         string attribTargetFKColumnName = EFModelSerializationHelper.Instance.ReadAttribute(serializationContext, element, reader, "targetFKColumnName");
+	         if (attribTargetFKColumnName != null)
 	         {
-	            global::System.String valueOfFKColumnName;
-	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.String>(serializationContext, attribFKColumnName, out valueOfFKColumnName))
+	            global::System.String valueOfTargetFKColumnName;
+	            if (DslModeling::SerializationUtilities.TryGetValue<global::System.String>(serializationContext, attribTargetFKColumnName, out valueOfTargetFKColumnName))
 	            {
-	               instanceOfAssociation.FKColumnName = valueOfFKColumnName;
+	               instanceOfAssociation.TargetFKColumnName = valueOfTargetFKColumnName;
 	            }
 	            else
 	            {   // Invalid property value, ignored.
-	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "fKColumnName", typeof(global::System.String), attribFKColumnName);
+	               EFModelSerializationBehaviorSerializationMessages.IgnoredPropertyValue(serializationContext, reader, "targetFKColumnName", typeof(global::System.String), attribTargetFKColumnName);
 	            }
 	         }
 	      }
@@ -11498,14 +11498,14 @@ namespace Sawczyn.EFDesigner.EFModel
 	            }
 	         }
 	      }
-	      // FKColumnName
+	      // TargetFKColumnName
 	      if (!serializationContext.Result.Failed)
 	      {
-	         global::System.String propValue = instanceOfAssociation.FKColumnName;
+	         global::System.String propValue = instanceOfAssociation.TargetFKColumnName;
 	         if (!serializationContext.Result.Failed)
 	         {
 	            if (!string.IsNullOrEmpty(propValue))
-	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "fKColumnName", propValue);
+	               EFModelSerializationHelper.Instance.WriteAttributeString(serializationContext, element, writer, "targetFKColumnName", propValue);
 	
 	         }
 	      }

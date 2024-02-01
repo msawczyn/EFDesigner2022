@@ -541,7 +541,12 @@ namespace Sawczyn.EFDesigner.EFModel
       /// </summary>
       public string[] GetForeignKeyPropertyNames()
       {
-         return FKPropertyName?.Split(',').Select(n => n.Trim()).ToArray() ?? Array.Empty<string>();
+         if (!string.IsNullOrEmpty(FKPropertyName))
+            return FKPropertyName?.Split(',').Select(n => n.Trim()).ToArray() ?? Array.Empty<string>();
+
+         string[] fkProperties = Source.ModelRoot.Store.GetAll<ModelAttribute>().Where(a => a.IsForeignKeyFor == Id).Select(a => a.Name).ToArray();
+
+         return fkProperties;
       }
 
       private string GetNameValue()

@@ -2,6 +2,7 @@
    - Better handling of N-N relations in assembly parser
    - Better detection of principal/dependent roles in assembly parser
    - Removed "dbo" as default schema in design surface properties. Not specifying will allow the database to use whatever default schema is appropriate for it.
+   - Corrected some deficits in how column name overrides were being handled in EFCore
 
 4.2.7
    - Support for per-entity inheritance in EF7

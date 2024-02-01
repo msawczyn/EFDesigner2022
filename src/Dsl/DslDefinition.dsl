@@ -1420,7 +1420,7 @@
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>
         </DomainProperty>
-        <DomainProperty Id="33c1f80e-1661-4666-9112-918463abc4ec" Description="Optional name of column holding foreign key value for this end of the association" Name="TargetFKColumnName" DisplayName="Foreign Key Column Name" Category="End 2">
+        <DomainProperty Id="33c1f80e-1661-4666-9112-918463abc4ec" Description="Optional name of column holding foreign key value for this end of the association" Name="TargetFKColumnName" DisplayName="End2 Foreign Key Column Name" Category="End 2">
           <Type>
             <ExternalTypeMoniker Name="/System/String" />
           </Type>
@@ -1571,7 +1571,7 @@
             <ExternalTypeMoniker Name="/System/String" />
           </Type>
         </DomainProperty>
-        <DomainProperty Id="44fda399-d8f1-4d63-80f1-881277cb8115" Description="Should this end participate in INotifyPropertyChanged activities? Only valid for non-collection targets." Name="SourceImplementNotify" DisplayName="Implement INotifyPropertyChanged" Kind="CustomStorage" Category="End 1" IsBrowsable="false">
+        <DomainProperty Id="44fda399-d8f1-4d63-80f1-881277cb8115" Description="Should this end participate in INotifyPropertyChanged activities? Only valid for non-collection targets." Name="SourceImplementNotify" DisplayName="End1 Implement INotifyPropertyChanged" Kind="CustomStorage" Category="End 1" IsBrowsable="false">
           <Type>
             <ExternalTypeMoniker Name="/System/Boolean" />
           </Type>

@@ -82,6 +82,12 @@ If you're interested in helping out, **please** drop a note at the GitHub projec
 More hands make the work lighter, and I know there are some really bright people amongst the userbase who are much better at writing documentation than I am.
 
 ### Change Log
+4.2.8
+   - Better handling of N-N relations in assembly parser
+   - Better detection of principal/dependent roles in assembly parser
+   - Removed "dbo" as default schema in design surface properties. Not specifying will allow the database to use whatever default schema is appropriate for it.
+   - Corrected some deficits in how column name overrides were being handled in EFCore
+
 [4.2.7](https://github.com/msawczyn/EFDesigner2022/releases/download/v4.2.7/Sawczyn.EFDesigner.EFModel.DslPackage.vsix)
    - Support for per-entity inheritance in EF7
    - Added option to generate nullable indicators
