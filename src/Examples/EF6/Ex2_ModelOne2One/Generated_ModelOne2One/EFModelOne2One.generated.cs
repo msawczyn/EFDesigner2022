@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.1.3
+//     Produced by Entity Framework Visual Editor v4.2.5.1
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -37,7 +37,7 @@ namespace Ex2_ModelOne2One
       /// <summary>
       /// Default connection string
       /// </summary>
-      public static string ConnectionString { get; set; } = @"Data Source=(localdb)\dbinstance;Initial Catalog=EFLocalDb;Integrated Security=True";
+      public static string ConnectionString { get; set; } = @"Name=MyLocalDb";
       /// <inheritdoc />
       public EFModelOne2One() : base(ConnectionString)
       {
@@ -121,10 +121,6 @@ namespace Ex2_ModelOne2One
                      .Property(t => t.AddressId)
                      .IsRequired()
                      .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-         modelBuilder.Entity<global::Ex2_ModelOne2One.Address>()
-                     .HasRequired(x => x.Person)
-                     .WithOptional(x => x.Address)
-                     .WillCascadeOnDelete(false);
 
          modelBuilder.Entity<global::Ex2_ModelOne2One.Person>()
                      .ToTable("People")

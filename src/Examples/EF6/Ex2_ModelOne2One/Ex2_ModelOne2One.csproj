@@ -34,6 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -97,6 +98,9 @@
     <PackageReference Include="EntityFramework">
       <Version>6.4.4</Version>
     </PackageReference>
+    <PackageReference Include="EntityFramework.SqlServerCompact">
+      <Version>6.4.4</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="EFModelOne2One.tt">
@@ -106,6 +110,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Ex1_ModelPerson\Ex1_Person.csproj">
+      <Project>{B0C345BB-4B38-44CE-8D42-3E00545347BA}</Project>
+      <Name>Ex1_Person</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

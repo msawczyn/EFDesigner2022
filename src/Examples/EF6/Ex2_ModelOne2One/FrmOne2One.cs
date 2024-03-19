@@ -50,7 +50,7 @@ namespace Ex2_ModelOne2One
             txtDebug.Text += "Created DB\r\n";
 
             var person = context.People.Create();
-            var address = context.Address.Create();
+            //var address = context.Address.Create();
 
             person.FirstName = "Bob";
             person.MiddleName = "James";
@@ -58,15 +58,15 @@ namespace Ex2_ModelOne2One
             person.Phone = "555-123-321";
             CultureInfo culture = new CultureInfo("en-AU");
             person.DOB = Convert.ToDateTime("6/12/70", culture);
-
-            address.Number = "1";
-            address.StreetLine1 = "High St";
-            address.City = "Perth";
-            address.Country = "Australia";
+            
+            person.Address = new Address();
+            person.Address.Number = "1";
+            person.Address.StreetLine1 = "High St";
+            person.Address.City = "Perth";
+            person.Address.Country = "Australia";
 
             //One to One
-            person.Address = address;
-
+            //person.Address = address;
             context.People.Add(person);
             
             try

@@ -98,6 +98,9 @@
     <PackageReference Include="EntityFramework">
       <Version>6.4.4</Version>
     </PackageReference>
+    <PackageReference Include="EntityFramework.SqlServerCompact">
+      <Version>6.4.4</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="CourseManager.tt">
