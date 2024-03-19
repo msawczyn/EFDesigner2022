@@ -37,6 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
@@ -58,9 +59,9 @@
       <DependentUpon>frmPerson.cs</DependentUpon>
     </Compile>
     <Compile Include="Generated_PersonModel\Person.generated.cs" />
-    <Compile Include="Generated_PersonModel\PersonModel.generated.cs" />
-    <Compile Include="Generated_PersonModel\PersonModelDatabaseInitializer.generated.cs" />
-    <Compile Include="Generated_PersonModel\PersonModelDbMigrationConfiguration.generated.cs" />
+    <Compile Include="Generated_PersonModel\PersonDb.generated.cs" />
+    <Compile Include="Generated_PersonModel\PersonDbDatabaseInitializer.generated.cs" />
+    <Compile Include="Generated_PersonModel\PersonDbDbMigrationConfiguration.generated.cs" />
     <Compile Include="PersonModel.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -100,6 +101,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EntityFramework">
+      <Version>6.4.4</Version>
+    </PackageReference>
+    <PackageReference Include="EntityFramework.SqlServerCompact">
       <Version>6.4.4</Version>
     </PackageReference>
   </ItemGroup>

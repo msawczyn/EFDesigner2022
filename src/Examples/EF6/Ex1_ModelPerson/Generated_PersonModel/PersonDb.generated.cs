@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.1.3
+//     Produced by Entity Framework Visual Editor v4.2.5.1
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -23,7 +23,7 @@ using System.Data.Entity.Infrastructure.Annotations;
 namespace Ex1_Person
 {
    /// <inheritdoc/>
-   public partial class PersonModel : DbContext
+   public partial class PersonDb : DbContext
    {
       #region DbSets
       public virtual System.Data.Entity.DbSet<global::Ex1_Person.Person> People { get; set; }
@@ -36,67 +36,67 @@ namespace Ex1_Person
       /// <summary>
       /// Default connection string
       /// </summary>
-      public static string ConnectionString { get; set; } = @"Data Source=(localdb)\mssqllocaldb;Initial Catalog=EFVisualExamples;Integrated Security=True";
+      public static string ConnectionString { get; set; } = @"Name=MyLocalDb";
       /// <inheritdoc />
-      public PersonModel() : base(ConnectionString)
+      public PersonDb() : base(ConnectionString)
       {
          Configuration.LazyLoadingEnabled = true;
          Configuration.ProxyCreationEnabled = true;
-         System.Data.Entity.Database.SetInitializer<PersonModel>(new PersonModelDatabaseInitializer());
+         System.Data.Entity.Database.SetInitializer<PersonDb>(new PersonDbDatabaseInitializer());
          CustomInit();
       }
 
       /// <inheritdoc />
-      public PersonModel(string connectionString) : base(connectionString)
+      public PersonDb(string connectionString) : base(connectionString)
       {
          Configuration.LazyLoadingEnabled = true;
          Configuration.ProxyCreationEnabled = true;
-         System.Data.Entity.Database.SetInitializer<PersonModel>(new PersonModelDatabaseInitializer());
+         System.Data.Entity.Database.SetInitializer<PersonDb>(new PersonDbDatabaseInitializer());
          CustomInit();
       }
 
       /// <inheritdoc />
-      public PersonModel(string connectionString, System.Data.Entity.Infrastructure.DbCompiledModel model) : base(connectionString, model)
+      public PersonDb(string connectionString, System.Data.Entity.Infrastructure.DbCompiledModel model) : base(connectionString, model)
       {
          Configuration.LazyLoadingEnabled = true;
          Configuration.ProxyCreationEnabled = true;
-         System.Data.Entity.Database.SetInitializer<PersonModel>(new PersonModelDatabaseInitializer());
+         System.Data.Entity.Database.SetInitializer<PersonDb>(new PersonDbDatabaseInitializer());
          CustomInit();
       }
 
       /// <inheritdoc />
-      public PersonModel(System.Data.Common.DbConnection existingConnection, bool contextOwnsConnection) : base(existingConnection, contextOwnsConnection)
+      public PersonDb(System.Data.Common.DbConnection existingConnection, bool contextOwnsConnection) : base(existingConnection, contextOwnsConnection)
       {
          Configuration.LazyLoadingEnabled = true;
          Configuration.ProxyCreationEnabled = true;
-         System.Data.Entity.Database.SetInitializer<PersonModel>(new PersonModelDatabaseInitializer());
+         System.Data.Entity.Database.SetInitializer<PersonDb>(new PersonDbDatabaseInitializer());
          CustomInit();
       }
 
       /// <inheritdoc />
-      public PersonModel(System.Data.Common.DbConnection existingConnection, System.Data.Entity.Infrastructure.DbCompiledModel model, bool contextOwnsConnection) : base(existingConnection, model, contextOwnsConnection)
+      public PersonDb(System.Data.Common.DbConnection existingConnection, System.Data.Entity.Infrastructure.DbCompiledModel model, bool contextOwnsConnection) : base(existingConnection, model, contextOwnsConnection)
       {
          Configuration.LazyLoadingEnabled = true;
          Configuration.ProxyCreationEnabled = true;
-         System.Data.Entity.Database.SetInitializer<PersonModel>(new PersonModelDatabaseInitializer());
+         System.Data.Entity.Database.SetInitializer<PersonDb>(new PersonDbDatabaseInitializer());
          CustomInit();
       }
 
       /// <inheritdoc />
-      public PersonModel(System.Data.Entity.Infrastructure.DbCompiledModel model) : base(model)
+      public PersonDb(System.Data.Entity.Infrastructure.DbCompiledModel model) : base(model)
       {
          Configuration.LazyLoadingEnabled = true;
          Configuration.ProxyCreationEnabled = true;
-         System.Data.Entity.Database.SetInitializer<PersonModel>(new PersonModelDatabaseInitializer());
+         System.Data.Entity.Database.SetInitializer<PersonDb>(new PersonDbDatabaseInitializer());
          CustomInit();
       }
 
       /// <inheritdoc />
-      public PersonModel(System.Data.Entity.Core.Objects.ObjectContext objectContext, bool dbContextOwnsObjectContext) : base(objectContext, dbContextOwnsObjectContext)
+      public PersonDb(System.Data.Entity.Core.Objects.ObjectContext objectContext, bool dbContextOwnsObjectContext) : base(objectContext, dbContextOwnsObjectContext)
       {
          Configuration.LazyLoadingEnabled = true;
          Configuration.ProxyCreationEnabled = true;
-         System.Data.Entity.Database.SetInitializer<PersonModel>(new PersonModelDatabaseInitializer());
+         System.Data.Entity.Database.SetInitializer<PersonDb>(new PersonDbDatabaseInitializer());
          CustomInit();
       }
 
