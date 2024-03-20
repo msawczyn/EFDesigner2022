@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.1.3
+//     Produced by Entity Framework Visual Editor v4.2.5.1
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -18,12 +18,12 @@ using System.Data.Entity.Migrations;
 namespace Migrations
 {
    /// <inheritdoc/>
-   public sealed partial class PersonModelDbMigrationConfiguration : DbMigrationsConfiguration<Ex1_Person.PersonModel>
+   public sealed partial class PersonDbDbMigrationConfiguration : DbMigrationsConfiguration<Ex1_Person.PersonDb>
    {
       partial void Init();
 
       /// <inheritdoc/>
-      public PersonModelDbMigrationConfiguration()
+      public PersonDbDbMigrationConfiguration()
       {
          AutomaticMigrationsEnabled = true;
          AutomaticMigrationDataLossAllowed = false;
