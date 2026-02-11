@@ -416,7 +416,7 @@ public abstract partial class <#= dslName #>SerializationHelperBase
                }
             }
          }
-         catch (FileFormatException)
+         catch (Exception ex) when (ex is InvalidDataException || ex is FileFormatException) 
          {
             XDocument xmlDocument = XDocument.Load(diagramsFileName);
 

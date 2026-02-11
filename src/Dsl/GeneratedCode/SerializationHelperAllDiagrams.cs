@@ -363,7 +363,7 @@ namespace Sawczyn.EFDesigner.EFModel
 	               }
 	            }
 	         }
-	         catch (FileFormatException)
+	         catch (Exception ex) when (ex is InvalidDataException || ex is FileFormatException) 
 	         {
 	            XDocument xmlDocument = XDocument.Load(diagramsFileName);
 	
