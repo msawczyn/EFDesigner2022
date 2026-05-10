@@ -12,3 +12,5 @@ docs/_site
 /src - Copy
 *.dtt
 /src/DslPackage/temp.cmd
+/src/DslPackage/VSIX
+/dist

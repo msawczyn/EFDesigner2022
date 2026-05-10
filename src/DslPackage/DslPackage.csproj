@@ -48,9 +48,11 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>3</WarningLevel>
     <NoWarn>CS1762;VSTHRD001;MSB3277</NoWarn>
     <DocumentationFile>bin\Release\Sawczyn.EFDesigner.EFModel.DslPackage.xml</DocumentationFile>
+    <CopyVsixExtensionFiles>True</CopyVsixExtensionFiles>
+    <CopyVsixExtensionLocation>D:\Source\Repos\EFDesigner2022\src\DslPackage\vsix</CopyVsixExtensionLocation>
   </PropertyGroup>
   <!-- Properties for VSSDK/DSL Targets: Must be defined before importing the targets -->
   <PropertyGroup>
@@ -91,9 +93,11 @@
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.3.32804.24" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <!--  DUPLICATED
     <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk" Version="17.3.32803.143" />
     <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Diagrams" Version="17.3.32803.143" />
     <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Shell" Version="17.3.32804.24" />
+    -->
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />

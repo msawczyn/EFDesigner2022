@@ -25,7 +25,7 @@ namespace Ex1_Person
 
       private void Form1_Load(object sender, EventArgs e)
       {
-         using (PersonModel context = new PersonModel())
+         using (PersonDb context = new PersonDb())
          {
             txtConnection.Text = context.Database.Connection.ConnectionString;
          }
@@ -41,7 +41,7 @@ namespace Ex1_Person
       {
          txtDebug.Text = "TestPerson()\r\n";
 
-         using (PersonModel context = new PersonModel())
+         using (PersonDb context = new PersonDb())
          {
             // Perform data access using the context
             context.Database.Log = Console.Write;

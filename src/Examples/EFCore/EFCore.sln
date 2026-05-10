@@ -5,19 +5,19 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex1_ModelPerson", "Ex1_ModelPerson\Ex1_ModelPerson.csproj", "{ED41C359-960E-40AE-91A7-26E588F77244}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex7_WebApi", "Ex7_WebApi\Ex7_WebApi.csproj", "{5FC51BA7-2336-464A-B641-FC2FD0D469AB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex2_ModelOne2One", "Ex2_ModelOne2One\Ex2_ModelOne2One.csproj", "{C14DCEF2-17A2-440A-ADD2-20AB84383B81}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex3_ModelOnetoMany", "Ex3_ModelManytoMany\Ex3_ModelOnetoMany.csproj", "{CD767834-7004-444D-B7D8-58AC359ED441}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex3_ModelOnetoMany", "Ex3_ModelOnetoMany\Ex3_ModelOnetoMany.csproj", "{CD767834-7004-444D-B7D8-58AC359ED441}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex4_ModelInvoice", "Ex4_ModelInvoice\Ex4_ModelInvoice.csproj", "{2B46097A-AE7A-4F87-A7D8-EC7F9865A681}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex5_ModelInvoice", "Ex5_ModelInvoice\Ex5_ModelInvoice.csproj", "{2B46097A-AE7A-4F87-A7D8-EC7F9865A681}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex5_Course", "Ex5_Course\Ex5_Course.csproj", "{BF56F02E-DCEB-413D-8DE6-A1FFA71870A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex6_Course", "Ex6_Course\Ex6_Course.csproj", "{BF56F02E-DCEB-413D-8DE6-A1FFA71870A8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex6_Mvp", "Ex6_Mvp\Ex6_Mvp.csproj", "{7C2F0CD7-CF1B-41F9-A9B9-132EBA642217}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex7_Mvp", "Ex7_Mvp\Ex7_Mvp.csproj", "{7C2F0CD7-CF1B-41F9-A9B9-132EBA642217}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoredProcs", "StoredProcs\StoredProcs.csproj", "{552C17AA-8ECE-4487-A504-628A5ABCBB2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ex4_ModelManytoMany", "Ex4_ModeManytoMany\Ex4_ModelManytoMany.csproj", "{9829AFD3-3E79-4F86-ACDA-CD719BEC826C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Transient (Owned)", "Transient\Transient (Owned).csproj", "{6600A3A5-71D7-4B6F-8B54-84E73DB22414}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,6 @@ Global
 		{ED41C359-960E-40AE-91A7-26E588F77244}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED41C359-960E-40AE-91A7-26E588F77244}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED41C359-960E-40AE-91A7-26E588F77244}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5FC51BA7-2336-464A-B641-FC2FD0D469AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5FC51BA7-2336-464A-B641-FC2FD0D469AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5FC51BA7-2336-464A-B641-FC2FD0D469AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5FC51BA7-2336-464A-B641-FC2FD0D469AB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C14DCEF2-17A2-440A-ADD2-20AB84383B81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C14DCEF2-17A2-440A-ADD2-20AB84383B81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C14DCEF2-17A2-440A-ADD2-20AB84383B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,10 +49,14 @@ Global
 		{7C2F0CD7-CF1B-41F9-A9B9-132EBA642217}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C2F0CD7-CF1B-41F9-A9B9-132EBA642217}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C2F0CD7-CF1B-41F9-A9B9-132EBA642217}.Release|Any CPU.Build.0 = Release|Any CPU
-		{552C17AA-8ECE-4487-A504-628A5ABCBB2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{552C17AA-8ECE-4487-A504-628A5ABCBB2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{552C17AA-8ECE-4487-A504-628A5ABCBB2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{552C17AA-8ECE-4487-A504-628A5ABCBB2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9829AFD3-3E79-4F86-ACDA-CD719BEC826C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9829AFD3-3E79-4F86-ACDA-CD719BEC826C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9829AFD3-3E79-4F86-ACDA-CD719BEC826C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9829AFD3-3E79-4F86-ACDA-CD719BEC826C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6600A3A5-71D7-4B6F-8B54-84E73DB22414}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6600A3A5-71D7-4B6F-8B54-84E73DB22414}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6600A3A5-71D7-4B6F-8B54-84E73DB22414}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6600A3A5-71D7-4B6F-8B54-84E73DB22414}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

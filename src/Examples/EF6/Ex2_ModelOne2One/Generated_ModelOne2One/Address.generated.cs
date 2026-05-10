@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.1.3
+//     Produced by Entity Framework Visual Editor v4.2.5.1
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -40,12 +40,13 @@ namespace Ex2_ModelOne2One
       /// Public constructor with required data
       /// </summary>
       /// <param name="person"></param>
-      public Address(global::Ex2_ModelOne2One.Person person) : this()
+      public Address(global::Ex2_ModelOne2One.Person person)
       {
          if (person == null) throw new ArgumentNullException(nameof(person));
          this.Person = person;
          person.Address = this;
 
+         Init();
       }
 
       /// <summary>
@@ -97,6 +98,7 @@ namespace Ex2_ModelOne2One
       /// <summary>
       /// Required
       /// </summary>
+      [NotMapped]
       public virtual global::Ex2_ModelOne2One.Person Person { get; set; }
 
    }

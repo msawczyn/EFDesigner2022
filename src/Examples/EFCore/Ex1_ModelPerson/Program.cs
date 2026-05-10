@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace Ex1_ModelPerson
 {
     internal static class Program

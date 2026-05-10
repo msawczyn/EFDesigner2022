@@ -1,54 +1,19 @@
 ﻿using System;
-using System.Data.Entity.Validation;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Windows.Forms;
-using Microsoft.EntityFrameworkCore; //<- Add this
-
-// Install Nuget PAckages
-// ----------------------
-// TOOLS>NUGET PACKAGE MANAGE> 'Nuget GUI' or 'Package Manager Console'
-// PM:> nuget install Microsoft.EntityFramework
-// PM:> NUGET Microsoft.EntityFrameworkCore.SqlServer
-
+using Bogus;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ex2_ModelOne2One
 {
     public partial class FrmOne2One : Form
     {
-        //https://medium.com/@emekadc/how-to-implement-one-to-one-one-to-many-and-many-to-many-relationships-when-designing-a-database-9da2de684710
-        DbContextOptionsBuilder<EFModelOne2One> optionsBuilder;
-
         public FrmOne2One()
         {
             InitializeComponent();
-
-            // If you have issues: 
-            // Check nuget packages are installed / reinstall
-            // ----------------------------------------------
-            // PM> Install-Package Microsoft.EntityFrameworkCore.SqlServer
-
-            // Check your connection string matches you sqllocaldb
-            // ----------------------------------------------------
-            //> sqllocaldb i
-
-            // MSSQLLocalDB
-            // or
-            // (localdb)\v11.0
-
-
-            optionsBuilder = new DbContextOptionsBuilder<EFModelOne2One>();
-            optionsBuilder.UseSqlServer(EFModelOne2One.ConnectionString);
-            optionsBuilder.LogTo(Console.WriteLine);
-            
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-            using (EFModelOne2One context = new EFModelOne2One(optionsBuilder.Options))
-            {
-                txtConnection.Text = EFModelOne2One.ConnectionString;
-            }
         }
 
         private void btnTestOne2One_Click(object sender, EventArgs e)
@@ -60,15 +25,21 @@ namespace Ex2_ModelOne2One
         {
             txtDebug.Text = "TestOne2One()\r\n";
 
-            using (EFModelOne2One context = new EFModelOne2One(optionsBuilder.Options))
+            using (EFModelOne2One context = new EFModelOne2One())
             {
-                // Perform data access using the context
-                txtDebug.Text += "Deleting DB...";
-                context.Database.EnsureDeleted();
-                txtDebug.Text += "Deleted Ok\r\n";
+                // Ask for confirmation before deleting the database
+                var result = MessageBox.Show("Do you really want to delete the existing database?", "Confirm Delete", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    txtDebug.Text += "Deleting DB...\r\n";
+                    context.Database.EnsureDeleted();
+                    txtDebug.Text += "Deleted Ok\r\n";
+                }
 
+                txtDebug.Text += "Creating DB...\r\n";
                 context.Database.EnsureCreated();
                 txtDebug.Text += "Created DB\r\n";
+
 
                 Person person1 = new Person();
                 Address address1 = new Address();
@@ -85,16 +56,14 @@ namespace Ex2_ModelOne2One
                 address1.City = "Perth";
                 address1.Country = "Australia";
 
-                //Create Address row
+                txtDebug.Text += "Adding Address1...\r\n";
                 context.Addresses.Add(address1);
-                
-                // Create reference, One to One
+
+                txtDebug.Text += "Linking Address1 to Person1...\r\n";
                 person1.Address = address1;
 
+                txtDebug.Text += "Adding Person1...\r\n";
                 context.People.Add(person1);
-
-
-                //Create another 1 : 0/1 record 
 
                 Person person2 = new Person();
                 Address address2 = new Address();
@@ -110,45 +79,54 @@ namespace Ex2_ModelOne2One
                 address2.City = "Melbourne";
                 address2.Country = "Australia";
 
-                //Create Address row
+                txtDebug.Text += "Adding Address2...\r\n";
                 context.Addresses.Add(address2);
 
-                // Create reference, One to One
+                txtDebug.Text += "Linking Address2 to Person2...\r\n";
                 person2.Address = address2;
+
+                txtDebug.Text += "Adding Person2...\r\n";
                 context.People.Add(person2);
 
                 try
                 {
-                    // SqlException: Cannot insert duplicate key row in object 'dbo.Addresses' with unique index 'IX_Addresses_AddressId'.
-                    // The duplicate key value is (0).
+                    txtDebug.Text += "Saving changes...\r\n";
                     context.SaveChanges();
+                    txtDebug.Text += "Changes saved successfully.\r\n";
                 }
-                catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
+                catch (DbUpdateException dbEx)
                 {
                     Exception raise = dbEx;
-                    foreach (DbEntityValidationResult validationErrors in dbEx.EntityValidationErrors)
+                    foreach (var entry in dbEx.Entries)
                     {
-                        foreach (DbValidationError validationError in validationErrors.ValidationErrors)
-                        {
-                            string message = string.Format("{0}:{1}",
-                                validationErrors.Entry.Entity.ToString(),
-                                validationError.ErrorMessage);
-                            // raise a new exception nesting the current instance as InnerException  
-                            raise = new InvalidOperationException(message, raise);
-                        }
+                        string message = $"Entity of type {entry.Entity.GetType().Name} in state {entry.State} could not be updated";
+                        raise = new InvalidOperationException(message, raise);
                     }
+                    txtDebug.Text += $"Error: {raise.Message}\r\n";
                     throw raise;
                 }
 
-                //Read it back
                 var items = context.People;
+
+                txtDebug.Text += "\r\n\r\n------- READ  --------\r\n";
+                txtDebug.Text += "Recalled from Db.\r\n";
 
                 foreach (var x in items)
                 {
-                    txtDebug.Text += String.Format("{0} {1} {2} {3} {4} ", x.PersonId, x.FirstName, x.MiddleName, x.LastName, x.Phone) + "\r\n";
-                    txtDebug.Text += String.Format("{0} {1} {2} {3} {4} {5} ", x.Address.Number, x.Address.StreetLine1, x.Address.StreetLine2, x.Address.StreetType, x.Address.City, x.Address.PostalCode) + "\r\n\r\n";
+                    txtDebug.Text += $"Person: [Pk {x.PersonId}]  {x.FirstName} {x.MiddleName} {x.LastName} {x.Phone}\r\n";
+                    txtDebug.Text += $"Address: [Pk {x.Address.AddressId}] {x.Address.Number} {x.Address.StreetLine1} {x.Address.StreetLine2} {x.Address.StreetType} {x.Address.City} {x.Address.PostalCode}\r\n\r\n";
+                }
+
+                result = MessageBox.Show("Do you want to view the database filesystem?", "Open Folder", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    // Open the database folder
+                    string dbFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, EFModelOne2One.DatabaseName);
+                    Process.Start("explorer.exe", dbFolderPath);
                 }
             }
         }
+
+
     }
 }

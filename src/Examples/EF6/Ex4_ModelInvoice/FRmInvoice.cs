@@ -28,7 +28,7 @@ namespace Ex4_ModelInvoice
          {
             // Perform data access using the context
             db.Database.Log = Console.Write;
-            db.Database.CommandTimeout = 120;
+            //db.Database.CommandTimeout = 120;
 
             // ---------------
             // TODO: I dont know where to set AutomaticMigrationDataLossAllowed = true in tool?

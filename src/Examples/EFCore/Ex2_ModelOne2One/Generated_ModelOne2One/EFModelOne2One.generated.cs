@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.1.3
+//     Produced by Entity Framework Visual Editor v4.2.7.3
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -30,10 +30,10 @@ namespace Ex2_ModelOne2One
 
       #endregion DbSets
 
-      /// <summary>
-      /// Default connection string
-      /// </summary>
-      public static string ConnectionString { get; set; } = @"Data Source=(localdb)\mssqllocaldb;Initial Catalog=EFLocalDb;Integrated Security=True";
+      /// <inheritdoc />
+      public EFModelOne2One() : base()
+      {
+      }
 
       /// <summary>
       ///     <para>
@@ -80,7 +80,7 @@ namespace Ex2_ModelOne2One
          modelBuilder.HasDefaultSchema("dbo");
 
          modelBuilder.Entity<global::Ex2_ModelOne2One.Address>()
-                     .ToTable("Addresses")
+                     .UseTpcMappingStrategy().ToTable("Addresses")
                      .HasKey(t => t.AddressId);
          modelBuilder.Entity<global::Ex2_ModelOne2One.Address>()
                      .Property(t => t.AddressId)
@@ -88,7 +88,7 @@ namespace Ex2_ModelOne2One
                      .IsRequired();
 
          modelBuilder.Entity<global::Ex2_ModelOne2One.Person>()
-                     .ToTable("People")
+                     .UseTpcMappingStrategy().ToTable("People")
                      .HasKey(t => t.PersonId);
          modelBuilder.Entity<global::Ex2_ModelOne2One.Person>()
                      .Property(t => t.PersonId)

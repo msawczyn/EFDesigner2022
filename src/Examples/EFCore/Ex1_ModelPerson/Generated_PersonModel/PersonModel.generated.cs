@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v4.2.1.3
+//     Produced by Entity Framework Visual Editor v4.2.7.3
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -29,10 +29,10 @@ namespace Ex1_ModelPerson
 
       #endregion DbSets
 
-      /// <summary>
-      /// Default connection string
-      /// </summary>
-      public static string ConnectionString { get; set; } = @"Data Source=(localdb)\mssqllocaldb;Initial Catalog=EFVisualExamples;Integrated Security=True";
+      /// <inheritdoc />
+      public PersonModel() : base()
+      {
+      }
 
       /// <summary>
       ///     <para>
@@ -79,7 +79,7 @@ namespace Ex1_ModelPerson
          modelBuilder.HasDefaultSchema("dbo");
 
          modelBuilder.Entity<global::Ex1_ModelPerson.Person>()
-                     .ToTable("People")
+                     .UseTpcMappingStrategy().ToTable("People")
                      .HasKey(t => t.Id);
          modelBuilder.Entity<global::Ex1_ModelPerson.Person>()
                      .Property(t => t.Id)

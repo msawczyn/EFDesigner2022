@@ -5,7 +5,7 @@
 //     Manual changes to this file may cause unexpected behavior in your application.
 //     Manual changes to this file will be overwritten if the code is regenerated.
 //
-//     Produced by Entity Framework Visual Editor v3.0.7.2
+//     Produced by Entity Framework Visual Editor v4.2.5.1
 //     Source:                    https://github.com/msawczyn/EFDesigner
 //     Visual Studio Marketplace: https://marketplace.visualstudio.com/items?itemName=michaelsawczyn.EFDesigner
 //     Documentation:             https://msawczyn.github.io/EFDesigner/
@@ -79,18 +79,18 @@ namespace Ex3_ModelManytoMany
       public long BookId { get; set; }
 
       /// <summary>
-      /// Max length = 255
-      /// </summary>
-      [MaxLength(255)]
-      [StringLength(255)]
-      public string Title { get; set; }
-
-      /// <summary>
       /// Max length = 75
       /// </summary>
       [MaxLength(75)]
       [StringLength(75)]
       public string ISBN { get; set; }
+
+      /// <summary>
+      /// Max length = 255
+      /// </summary>
+      [MaxLength(255)]
+      [StringLength(255)]
+      public string Title { get; set; }
 
       /*************************************************************************
        * Navigation properties

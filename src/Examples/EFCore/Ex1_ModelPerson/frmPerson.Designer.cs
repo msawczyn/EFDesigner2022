@@ -28,68 +28,45 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnTestPerson = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.txtConnection = new System.Windows.Forms.TextBox();
-            this.txtDebug = new System.Windows.Forms.TextBox();
-            this.SuspendLayout();
+            btnTestPerson = new Button();
+            txtDebug = new TextBox();
+            SuspendLayout();
             // 
             // btnTestPerson
             // 
-            this.btnTestPerson.Location = new System.Drawing.Point(92, 86);
-            this.btnTestPerson.Name = "btnTestPerson";
-            this.btnTestPerson.Size = new System.Drawing.Size(75, 23);
-            this.btnTestPerson.TabIndex = 0;
-            this.btnTestPerson.Text = "Test Person";
-            this.btnTestPerson.UseVisualStyleBackColor = true;
-            this.btnTestPerson.Click += new System.EventHandler(this.btnTestPerson_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 13);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(103, 15);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Connection String";
-            // 
-            // txtConnection
-            // 
-            this.txtConnection.Location = new System.Drawing.Point(7, 31);
-            this.txtConnection.Name = "txtConnection";
-            this.txtConnection.Size = new System.Drawing.Size(241, 23);
-            this.txtConnection.TabIndex = 2;
+            btnTestPerson.Location = new Point(41, 12);
+            btnTestPerson.Name = "btnTestPerson";
+            btnTestPerson.Size = new Size(75, 23);
+            btnTestPerson.TabIndex = 0;
+            btnTestPerson.Text = "Test Person";
+            btnTestPerson.UseVisualStyleBackColor = true;
+            btnTestPerson.Click += btnTestPerson_Click;
             // 
             // txtDebug
             // 
-            this.txtDebug.Location = new System.Drawing.Point(266, 31);
-            this.txtDebug.Multiline = true;
-            this.txtDebug.Name = "txtDebug";
-            this.txtDebug.Size = new System.Drawing.Size(242, 167);
-            this.txtDebug.TabIndex = 3;
+            txtDebug.Location = new Point(159, 12);
+            txtDebug.Multiline = true;
+            txtDebug.Name = "txtDebug";
+            txtDebug.ScrollBars = ScrollBars.Both;
+            txtDebug.Size = new Size(321, 329);
+            txtDebug.TabIndex = 3;
             // 
             // FrmPerson
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(519, 210);
-            this.Controls.Add(this.txtDebug);
-            this.Controls.Add(this.txtConnection);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.btnTestPerson);
-            this.Name = "FrmPerson";
-            this.Text = "FrmPerson";
-            this.Load += new System.EventHandler(this.FrmPerson_Load);
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(492, 353);
+            Controls.Add(txtDebug);
+            Controls.Add(btnTestPerson);
+            Name = "FrmPerson";
+            Text = "FrmPerson";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private Button btnTestPerson;
-        private Label label1;
-        private TextBox txtConnection;
         private TextBox txtDebug;
     }
 }
