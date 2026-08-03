@@ -10,10 +10,10 @@
 using ExtensionEnablement = global::Microsoft.VisualStudio.Modeling.Diagrams.ExtensionEnablement;
 
 namespace Sawczyn.EFDesigner.EFModel.ExtensionEnablement
-{ 
+{
 	/// <summary>
-	/// GestureExtensionController base class to import and invoke GestureExtensions 
-	/// </summary>	
+	/// GestureExtensionController base class to import and invoke GestureExtensions
+	/// </summary>
 	internal abstract class EFModelGestureExtensionControllerBase : ExtensionEnablement::GestureExtensionController
 	{
 		/// <summary>
@@ -24,17 +24,17 @@ namespace Sawczyn.EFDesigner.EFModel.ExtensionEnablement
 			[global::System.Diagnostics.DebuggerStepThrough]
 			get
 			{
-				return  EFModelExtensionFilter.MefMetadataFilter;
+				return EFModelExtensionFilter.MefMetadataFilter;
 			}
 		}
 	}
-	
+
 	/// <summary>
-	/// GestureExtensionController class to import and invoke GestureExtensions 
+	/// GestureExtensionController class to import and invoke GestureExtensions
 	/// </summary>
 	/// <remarks>
 	/// Double-derived to allow customizations by Dsl Authors.
-	/// </remarks>	
+	/// </remarks>
 	internal partial class EFModelGestureExtensionController : EFModelGestureExtensionControllerBase
 	{
 	}

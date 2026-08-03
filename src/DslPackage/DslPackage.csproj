@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="17.0">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\DSLTools\Microsoft.DslTools.settings.targets" />
@@ -41,6 +41,7 @@
     <NoWarn>CS1762,VSTHRD001,MSB3277,IDE0005</NoWarn>
     <PlatformTarget>x64</PlatformTarget>
     <DocumentationFile>bin\Debug\Sawczyn.EFDesigner.EFModel.DslPackage.xml</DocumentationFile>
+    <DeployExtension>True</DeployExtension>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -74,6 +75,46 @@
       <VSIXCopyLocalReferenceSourceItem Include="@(ReferenceCopyLocalPaths)" />
     </ItemGroup>
   </Target>
+
+  <!--
+    VS2026 (18.x) changed how the experimental instance extension manager registers extensions at
+    build time. EnableExtension deploys the files correctly but its post-deployment registry check
+    fails, and the shipped targets treat that as a fatal error (FailIfNotInstalled="true"). The
+    extension IS correctly unzipped and VS loads it on next launch, so the only effect of the
+    failure is a spurious build error. This override is identical to the shipped target except
+    FailIfNotInstalled is set to "false", suppressing the misleading error while keeping every
+    other deployment step intact.
+  -->
+  <Target Name="DeployVsixExtensionFiles"
+          Condition="'$(DeployExtension)'=='true' and '$(CreateVsixContainer)'=='true'"
+          DependsOnTargets="$(DeployVsixExtensionFilesDependsOn)">
+    <Error Text="VSIX deployment is not supported with 'dotnet build'"
+           Condition="'$(MSBuildRuntimeType)' == 'Core'" />
+    <UninstallExtension Condition="'$(ExistingDeploymentPath)' != '$(VsixDeploymentPath)' AND '$(ExistingDeploymentPath)' != '' AND '$(AllUsersExtension)' != 'true'"
+                        VsixIdentifier="$(VsixID)"
+                        DevenvInstallationDirectory="$(DeployTargetInstallationDirectory)"
+                        RootSuffix="$(VSSDKTargetPlatformRegRootSuffix)"
+                        FailIfNotInstalled="false" />
+    <Message Text="VsixID = $(VsixID)" />
+    <Message Text="VsixVersion = $(VsixVersion)" />
+    <Message Text="VsixDeploymentPath = $(VsixDeploymentPath)" />
+    <Unzip ZipFile="@(_CreatedVsixContainer->'%(FullPath)')"
+           TargetDirectory="$(VsixDeploymentPath)" />
+    <EnableLoadingAllExtensions DevenvInstallationDirectory="$(DeployTargetInstallationDirectory)"
+                                RootSuffix="$(VSSDKTargetPlatformRegRootSuffix)" />
+    <EnableExtension VsixIdentifier="$(VsixID)"
+                     VsixVersion="$(VsixVersion)"
+                     DevenvInstallationDirectory="$(DeployTargetInstallationDirectory)"
+                     RootSuffix="$(VSSDKTargetPlatformRegRootSuffix)"
+                     FailIfNotInstalled="false" />
+
+    <!-- VS2026: VSIXInstaller properly registers the extension in the new random-named directory
+         format that VS2026 uses. The old Unzip path is ignored by VS2026 at runtime. -->
+    <Exec Command="&quot;$(DevEnvDir)VSIXInstaller.exe&quot; /quiet /rootSuffix:$(VSSDKTargetPlatformRegRootSuffix) &quot;@(_CreatedVsixContainer->'%(FullPath)')&quot;"
+          Condition="Exists('$(DevEnvDir)VSIXInstaller.exe')"
+          ContinueOnError="WarnAndContinue" />
+  </Target>
+
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -320,7 +361,6 @@
     <Content Include="ProjectItemTemplates\EFModel.xsd">
       <SubType>Designer</SubType>
       <IncludeInVSIX>true</IncludeInVSIX>
-      <InstallRoot>Schemas</InstallRoot>
     </Content>
     <Content Include="System.Spatial.dll">
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -504,13 +544,10 @@ if "$(ConfigurationName)"=="Release" del "$(ProjectDir)Parsers\*.pdb
     <PackageReference Include="System.Security.Cryptography.X509Certificates">
       <Version>4.3.2</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk" Version="17.0.31902.203" />
-    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Diagrams" Version="17.0.31902.203" />
     <PackageReference Include="Microsoft.VisualStudio.TextTemplating" Version="17.3.32803.143" />
     <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Interfaces.10.0" Version="17.0.32112.339" />
     <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Interfaces.11.0" Version="17.0.32112.339" />
     <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Modeling" Version="17.3.32804.24" />
-    <PackageReference Include="Microsoft.VisualStudio.Modeling.Sdk.Shell" Version="17.0.31902.203" />
   </ItemGroup>
   <ItemGroup />
 </Project>
